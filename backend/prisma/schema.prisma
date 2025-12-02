@@ -1,0 +1,299 @@
+// Prisma Schema for TrekPal
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model (Traveler)
+model User {
+  id        String   @id @default(cuid())
+  firebaseUid String @unique
+  email     String   @unique
+  name      String?
+  phone     String?
+  cnic      String?  @unique
+  cnicVerified Boolean @default(false)
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tripRequests TripRequest[]
+  bookings     Booking[]
+  reviews      Review[]
+  messages     Message[]
+  tripGroups   TripGroupMember[]
+
+  @@map("users")
+}
+
+// Agency model
+model Agency {
+  id          String   @id @default(cuid())
+  firebaseUid String   @unique
+  email       String   @unique
+  name        String
+  phone       String?
+  address     String?
+  license     String?  @unique
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  hotels      Hotel[]
+  vehicles    Vehicle[]
+  packages    Package[]
+  bids        Bid[]
+  bookings    Booking[]
+
+  @@map("agencies")
+}
+
+// Admin model
+model Admin {
+  id        String   @id @default(cuid())
+  firebaseUid String @unique
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// Hotel model
+model Hotel {
+  id          String   @id @default(cuid())
+  agencyId    String
+  name        String
+  description String?
+  address     String
+  city        String
+  country     String
+  latitude    Float?
+  longitude   Float?
+  rating      Float?   @default(0)
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  images      String[] // Array of image URLs
+  amenities   String[] // Array of amenities
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  rooms       Room[]
+  bookings    Booking[]
+  reviews     Review[]
+
+  @@map("hotels")
+}
+
+// Room model
+model Room {
+  id          String   @id @default(cuid())
+  hotelId     String
+  type        String   // SINGLE, DOUBLE, SUITE, etc.
+  price       Float
+  capacity    Int
+  amenities   String[]
+  images      String[]
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+
+  @@map("rooms")
+}
+
+// Vehicle model
+model Vehicle {
+  id          String   @id @default(cuid())
+  agencyId    String
+  type        String   // CAR, BUS, VAN, etc.
+  make        String
+  model       String
+  year        Int
+  capacity    Int
+  pricePerDay Float
+  images      String[]
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+
+  @@map("vehicles")
+}
+
+// Package model
+model Package {
+  id          String   @id @default(cuid())
+  agencyId    String
+  name        String
+  description String?
+  price       Float
+  duration    Int      // Days
+  destinations String[]
+  images      String[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+
+  @@map("packages")
+}
+
+// Trip Request model
+model TripRequest {
+  id          String   @id @default(cuid())
+  userId      String
+  destination String
+  startDate   DateTime
+  endDate     DateTime
+  budget      Float?
+  travelers   Int      @default(1)
+  description String?
+  status      String   @default("PENDING") // PENDING, ACCEPTED, CANCELLED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bids        Bid[]
+  booking     Booking?
+
+  @@map("trip_requests")
+}
+
+// Bid model
+model Bid {
+  id            String   @id @default(cuid())
+  tripRequestId String
+  agencyId      String
+  price         Float
+  description   String?
+  status        String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  tripRequest   TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  agency        Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  booking       Booking?
+
+  @@map("bids")
+}
+
+// Booking model
+model Booking {
+  id            String   @id @default(cuid())
+  userId        String
+  agencyId      String?
+  tripRequestId String?  @unique
+  bidId         String?  @unique
+  hotelId       String?
+  roomId        String?
+  vehicleId     String?
+  packageId     String?
+  status        String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  totalAmount   Float
+  startDate     DateTime
+  endDate       DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agency        Agency?  @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+  tripRequest   TripRequest? @relation(fields: [tripRequestId], references: [id], onDelete: SetNull)
+  bid           Bid?     @relation(fields: [bidId], references: [id], onDelete: SetNull)
+  hotel         Hotel?   @relation(fields: [hotelId], references: [id], onDelete: SetNull)
+  room          Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  vehicle       Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  package       Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  review        Review?
+
+  @@map("bookings")
+}
+
+// Review model
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  bookingId String   @unique
+  hotelId   String?
+  rating    Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  hotel     Hotel?   @relation(fields: [hotelId], references: [id], onDelete: SetNull)
+
+  @@map("reviews")
+}
+
+// Trip Group model
+model TripGroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  tripRequestId String? @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  members     TripGroupMember[]
+  messages    Message[]
+
+  @@map("trip_groups")
+}
+
+// Trip Group Member model
+model TripGroupMember {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  joinedAt  DateTime @default(now())
+
+  // Relations
+  group     TripGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@map("trip_group_members")
+}
+
+// Message model
+model Message {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  // Relations
+  group     TripGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
