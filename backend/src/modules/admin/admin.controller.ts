@@ -234,3 +234,6 @@ export class AdminController {
     }
   }
 }
+
+// Export singleton instance
+export const adminController = new AdminController();

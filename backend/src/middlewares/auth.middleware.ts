@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { getFirebaseAuth } from '../config/firebase';
-import { generateJWT } from '../utils/jwt.util';
+import { generateJWT, verifyJWT } from '../utils/jwt.util';
 import { ROLES } from '../config/constants';
 
 /**
@@ -33,41 +33,47 @@ export const authenticate = async (
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
-    // Verify Firebase token
-    // TODO: In production, always verify with Firebase
-    // For development/testing, allow simple token strings
+    // Try to verify as JWT token first (from our backend login)
     let decodedToken: any;
     
-    if (process.env.NODE_ENV === 'development' && token.length < 100) {
-      // Development mode: Simple token (for testing)
-      // Check token prefix to determine role
-      // Admin tokens: 'admin-dummy-token-'
-      // Agency tokens: 'dummy-token-' (or anything else)
-      const tokenLower = token.toLowerCase();
-      const isAdminToken = tokenLower.startsWith('admin-dummy-token') || tokenLower.includes('admin');
-      console.log(`[Auth] Development mode - Token: ${token.substring(0, 40)}..., isAdmin: ${isAdminToken}`);
-      decodedToken = {
-        uid: isAdminToken ? 'admin-firebase-uid-123' : `agency-firebase-uid-${token.substring(0, 10)}`,
-        email: isAdminToken ? 'admin@trekpal.com' : 'agency@trekpal.com',
-        role: isAdminToken ? ROLES.ADMIN : ROLES.AGENCY,
-      };
-      console.log(`[Auth] Decoded token - Role: ${decodedToken.role}, Email: ${decodedToken.email}, UID: ${decodedToken.uid}`);
-    } else {
-      // Production: Verify with Firebase
-      try {
-        const firebaseAuth = getFirebaseAuth();
-        decodedToken = await firebaseAuth.verifyIdToken(token);
-      } catch (error) {
-        // If Firebase is not configured, fall back to development mode
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('⚠️  Firebase not configured, using development mode authentication');
-          decodedToken = {
-            uid: `dev-uid-${token.substring(0, 10)}`,
-            email: 'dev@example.com',
-            role: ROLES.TRAVELER,
-          };
-        } else {
-          throw error;
+    try {
+      // First, try to verify as JWT token (from our backend)
+      const jwtPayload = verifyJWT(token);
+      console.log(`[Auth] JWT token verified - Role: ${jwtPayload.role}, Email: ${jwtPayload.email}, UID: ${jwtPayload.uid}`);
+      decodedToken = jwtPayload;
+    } catch (jwtError) {
+      // Not a JWT token, try other methods
+      if (process.env.NODE_ENV === 'development' && token.length < 100) {
+        // Development mode: Simple token (for testing)
+        // Check token prefix to determine role
+        // Admin tokens: 'admin-dummy-token-'
+        // Agency tokens: 'dummy-token-' (or anything else)
+        const tokenLower = token.toLowerCase();
+        const isAdminToken = tokenLower.startsWith('admin-dummy-token') || tokenLower.includes('admin');
+        console.log(`[Auth] Development mode - Token: ${token.substring(0, 40)}..., isAdmin: ${isAdminToken}`);
+        decodedToken = {
+          uid: isAdminToken ? 'admin-firebase-uid-123' : `agency-firebase-uid-${token.substring(0, 10)}`,
+          email: isAdminToken ? 'admin@trekpal.com' : 'agency@trekpal.com',
+          role: isAdminToken ? ROLES.ADMIN : ROLES.AGENCY,
+        };
+        console.log(`[Auth] Decoded token - Role: ${decodedToken.role}, Email: ${decodedToken.email}, UID: ${decodedToken.uid}`);
+      } else {
+        // Production: Verify with Firebase
+        try {
+          const firebaseAuth = getFirebaseAuth();
+          decodedToken = await firebaseAuth.verifyIdToken(token);
+        } catch (error) {
+          // If Firebase is not configured, fall back to development mode
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('⚠️  Firebase not configured, using development mode authentication');
+            decodedToken = {
+              uid: `dev-uid-${token.substring(0, 10)}`,
+              email: 'dev@example.com',
+              role: ROLES.TRAVELER,
+            };
+          } else {
+            throw error;
+          }
         }
       }
     }
