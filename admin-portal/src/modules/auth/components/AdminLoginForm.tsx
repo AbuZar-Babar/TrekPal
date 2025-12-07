@@ -102,7 +102,7 @@ const AdminLoginForm = () => {
                 />
               </div>
               <p className="mt-2 text-xs text-gray-500">
-                💡 Dummy authentication - any credentials will work
+                💡 Use: hashim@gmail.com / 1q2w3e
               </p>
             </div>
 

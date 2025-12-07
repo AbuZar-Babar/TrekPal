@@ -8,6 +8,7 @@ export interface User {
   email: string;
   name: string;
   role: 'TRAVELER' | 'AGENCY' | 'ADMIN';
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED'; // For agencies
 }
 
 export interface Agency {

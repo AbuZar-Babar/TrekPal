@@ -5,23 +5,31 @@ import { User } from '../../../shared/types';
  */
 export const authService = {
   /**
-   * Dummy login - just validates credentials locally
+   * Dummy login - validates specific credentials only
    */
   async login(email: string, password: string): Promise<{ user: User; token: string }> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Dummy validation - accept any credentials
+    // Validate required fields
     if (!email || !password) {
       throw new Error('Email and password are required');
+    }
+
+    // Check for specific credentials only
+    const validEmail = 'hashim@gmail.com';
+    const validPassword = '1q2w3e';
+
+    if (email.toLowerCase().trim() !== validEmail || password !== validPassword) {
+      throw new Error('Invalid email or password');
     }
 
     // Create dummy user
     const user: User = {
       id: 'admin-1',
       firebaseUid: 'dummy-uid',
-      email: email,
-      name: 'Admin User',
+      email: validEmail,
+      name: 'Hashim Admin',
       role: 'ADMIN',
     };
 

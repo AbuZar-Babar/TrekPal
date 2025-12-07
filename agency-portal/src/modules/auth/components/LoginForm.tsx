@@ -102,7 +102,7 @@ const LoginForm = () => {
                 />
               </div>
               <p className="mt-2 text-xs text-gray-500">
-                💡 Dummy authentication - any credentials will work
+                💡 Your account must be approved by admin to log in
               </p>
             </div>
 

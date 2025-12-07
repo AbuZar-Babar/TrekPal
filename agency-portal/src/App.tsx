@@ -1,8 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from './store';
+import Layout from './shared/components/Layout/Layout';
 import LoginForm from './modules/auth/components/LoginForm';
 import RegisterForm from './modules/auth/components/RegisterForm';
+import PendingApproval from './modules/auth/components/PendingApproval';
 import Dashboard from './modules/dashboard/components/Dashboard';
 import VehicleList from './modules/transport/components/VehicleList';
 import VehicleForm from './modules/transport/components/VehicleForm';
@@ -25,13 +27,14 @@ function App() {
     <Routes>
       <Route path="/login" element={<LoginForm />} />
       <Route path="/signup" element={<RegisterForm />} />
+      <Route path="/pending-approval" element={<PendingApproval />} />
       <Route
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 p-8">
+            <Layout>
               <Dashboard />
-            </div>
+            </Layout>
           </ProtectedRoute>
         }
       />
@@ -39,9 +42,9 @@ function App() {
         path="/transport"
         element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 p-8">
+            <Layout>
               <VehicleList />
-            </div>
+            </Layout>
           </ProtectedRoute>
         }
       />
@@ -49,9 +52,9 @@ function App() {
         path="/transport/new"
         element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 p-8">
+            <Layout>
               <VehicleForm />
-            </div>
+            </Layout>
           </ProtectedRoute>
         }
       />
@@ -59,9 +62,9 @@ function App() {
         path="/transport/:id/edit"
         element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 p-8">
+            <Layout>
               <VehicleForm />
-            </div>
+            </Layout>
           </ProtectedRoute>
         }
       />
@@ -69,9 +72,9 @@ function App() {
         path="/hotels"
         element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 p-8">
+            <Layout>
               <HotelList />
-            </div>
+            </Layout>
           </ProtectedRoute>
         }
       />
@@ -79,9 +82,9 @@ function App() {
         path="/hotels/new"
         element={
           <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 p-8">
+            <Layout>
               <HotelForm />
-            </div>
+            </Layout>
           </ProtectedRoute>
         }
       />

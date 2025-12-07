@@ -14,6 +14,12 @@ const AgencyList = () => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
+    console.log('[AgencyList] Fetching agencies with params:', {
+      page,
+      limit: 20,
+      status: statusFilter || undefined,
+      search: search || undefined,
+    });
     dispatch(
       fetchAgencies({
         page,
@@ -106,7 +112,20 @@ const AgencyList = () => {
       </div>
 
       {agencies.length === 0 && !loading && (
-        <div className="text-center py-8 text-gray-500">No agencies found</div>
+        <div className="text-center py-8">
+          <p className="text-gray-500 mb-2">No agencies found</p>
+          <p className="text-sm text-gray-400">
+            {statusFilter ? `No agencies with status "${statusFilter}"` : 'No agencies registered yet'}
+          </p>
+          {!statusFilter && (
+            <button
+              onClick={() => dispatch(fetchAgencies({ page: 1, limit: 20 }) as any)}
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Refresh List
+            </button>
+          )}
+        </div>
       )}
 
       {pagination.total > pagination.limit && (

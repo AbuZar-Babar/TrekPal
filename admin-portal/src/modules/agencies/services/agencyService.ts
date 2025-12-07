@@ -14,15 +14,45 @@ export const agencyService = {
     status?: string;
     search?: string;
   }): Promise<PaginatedResponse<Agency>> {
-    const response = await apiClient.get('/admin/agencies', { params });
-    const result = response.data.data;
-    // Backend returns { agencies, total, page, limit }, convert to { data, total, page, limit }
-    return {
-      data: result.agencies,
-      total: result.total,
-      page: result.page,
-      limit: result.limit,
-    };
+    try {
+      const response = await apiClient.get('/admin/agencies', { params });
+      console.log('[Agency Service] Response:', response.data);
+      
+      // Handle response structure
+      const result = response.data.data || response.data;
+      
+      // Check if result has agencies property
+      if (result.agencies) {
+        return {
+          data: result.agencies,
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+        };
+      }
+      
+      // If result is already an array (unlikely but handle it)
+      if (Array.isArray(result)) {
+        return {
+          data: result,
+          total: result.length,
+          page: params?.page || 1,
+          limit: params?.limit || 20,
+        };
+      }
+      
+      // Fallback
+      console.error('[Agency Service] Unexpected response structure:', result);
+      return {
+        data: [],
+        total: 0,
+        page: params?.page || 1,
+        limit: params?.limit || 20,
+      };
+    } catch (error: any) {
+      console.error('[Agency Service] Error fetching agencies:', error);
+      throw error;
+    }
   },
 
   /**

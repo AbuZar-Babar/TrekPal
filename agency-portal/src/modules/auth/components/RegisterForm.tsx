@@ -21,8 +21,17 @@ const RegisterForm = () => {
     setLoading(true);
 
     try {
-      await dispatch(signup({ email, password, name }) as any);
-      navigate('/dashboard');
+      const result = await dispatch(signup({ email, password, name }) as any);
+      // Check if registration was successful but status is PENDING
+      if (result.payload && 'status' in result.payload && result.payload.status === 'PENDING') {
+        // Redirect to pending approval page
+        navigate('/pending-approval', { 
+          state: { email, name } 
+        });
+      } else {
+        // If somehow approved immediately, go to dashboard
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       setError(err.message || 'Signup failed');
     } finally {
@@ -126,7 +135,7 @@ const RegisterForm = () => {
                 />
               </div>
               <p className="mt-2 text-xs text-gray-500">
-                💡 Dummy authentication - any credentials will work
+                💡 Your account will be pending admin approval after registration
               </p>
             </div>
 

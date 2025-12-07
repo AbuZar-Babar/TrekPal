@@ -4,6 +4,7 @@ import { RootState } from './store';
 import Layout from './shared/components/Layout/Layout';
 import AdminLoginForm from './modules/auth/components/AdminLoginForm';
 import AdminSignupForm from './modules/auth/components/AdminSignupForm';
+import Dashboard from './modules/dashboard/components/Dashboard';
 import AgencyList from './modules/agencies/components/AgencyList';
 import HotelApprovalList from './modules/hotels/components/HotelApprovalList';
 import VehicleApprovalList from './modules/vehicles/components/VehicleApprovalList';
@@ -29,10 +30,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <div>
-                  <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-                  <p className="text-gray-600">Dashboard content coming soon...</p>
-                </div>
+                <Dashboard />
               </Layout>
             </ProtectedRoute>
           }

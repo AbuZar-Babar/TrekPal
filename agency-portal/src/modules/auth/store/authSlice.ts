@@ -34,8 +34,12 @@ export const login = createAsyncThunk(
  */
 export const signup = createAsyncThunk(
   'auth/signup',
-  async ({ email, password, name }: { email: string; password: string; name: string }) => {
-    const response = await authService.signup(email, password, name);
+  async ({ email, password, name, phone, address, license }: { email: string; password: string; name: string; phone?: string; address?: string; license?: string }) => {
+    const response = await authService.signup(email, password, name, phone, address, license);
+    // Don't store token/user if status is PENDING - they need approval first
+    if (response.status === 'PENDING') {
+      return { user: response.user, status: 'PENDING' };
+    }
     localStorage.setItem('token', response.token);
     localStorage.setItem('user', JSON.stringify(response.user));
     return response.user;
@@ -84,10 +88,16 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(signup.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(signup.fulfilled, (state, action: PayloadAction<User | { user: User; status: string }>) => {
         state.loading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
+        // If status is PENDING, don't authenticate
+        if ('status' in action.payload && action.payload.status === 'PENDING') {
+          state.user = action.payload.user;
+          state.isAuthenticated = false; // Don't authenticate until approved
+        } else {
+          state.user = action.payload as User;
+          state.isAuthenticated = true;
+        }
       })
       .addCase(signup.rejected, (state, action) => {
         state.loading = false;

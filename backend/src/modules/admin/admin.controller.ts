@@ -25,9 +25,25 @@ export class AdminController {
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
 
+      console.log('[Admin Controller] GET /admin/agencies - Request:', {
+        page,
+        limit,
+        status,
+        search,
+        user: req.user?.email,
+        role: req.user?.role,
+      });
+
       const result = await adminService.getAgencies(page, limit, status, search);
+      
+      console.log('[Admin Controller] Sending response:', {
+        agenciesCount: result.agencies.length,
+        total: result.total,
+      });
+      
       sendSuccess(res, result, 'Agencies retrieved successfully');
     } catch (error: any) {
+      console.error('[Admin Controller] Error getting agencies:', error);
       sendError(res, error.message || 'Failed to get agencies', 500);
     }
   }
@@ -218,5 +234,3 @@ export class AdminController {
     }
   }
 }
-
-export const adminController = new AdminController();

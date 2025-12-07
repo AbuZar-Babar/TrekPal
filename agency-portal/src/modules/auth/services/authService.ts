@@ -1,58 +1,86 @@
 import { User } from '../../../shared/types';
+import apiClient from '../../../shared/services/apiClient';
 
 /**
- * Dummy Auth Service - No backend calls
+ * Auth Service - Calls backend API
  */
 export const authService = {
   /**
-   * Dummy login - just validates credentials locally
+   * Login agency - checks if approved
    */
   async login(email: string, password: string): Promise<{ user: User; token: string }> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Dummy validation - accept any credentials
     if (!email || !password) {
       throw new Error('Email and password are required');
     }
 
-    // Create dummy user
-    const user: User = {
-      id: 'agency-1',
-      firebaseUid: 'dummy-uid',
-      email: email,
-      name: 'Agency User',
-      role: 'AGENCY',
-    };
+    try {
+      // In development mode, use dummy authentication that checks backend
+      // For now, we'll use a simple email/password check with backend
+      const response = await apiClient.post('/auth/login', {
+        email,
+        password,
+      });
 
-    const token = 'dummy-token-' + Date.now();
+      const { user, token } = response.data.data || response.data;
 
-    return { user, token };
+      // Store token and user
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      return { user, token };
+    } catch (error: any) {
+      // Handle specific error messages from backend
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Login failed';
+      
+      // Check if it's a pending approval error
+      if (errorMessage.toLowerCase().includes('pending approval') || errorMessage.toLowerCase().includes('pending admin')) {
+        throw new Error('Your agency account is pending admin approval. Please wait for approval before logging in.');
+      }
+      
+      if (error.message?.includes('Network Error') || error.isNetworkError) {
+        throw new Error('Cannot connect to server. Please make sure the backend is running.');
+      }
+      
+      throw new Error(errorMessage);
+    }
   },
 
   /**
-   * Dummy signup
+   * Register new agency - creates with PENDING status
    */
-  async signup(email: string, password: string, name: string): Promise<{ user: User; token: string }> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+  async signup(email: string, password: string, name: string, phone?: string, address?: string, license?: string): Promise<{ user: User; token: string; status: string }> {
     if (!email || !password || !name) {
       throw new Error('All fields are required');
     }
 
-    // Create dummy user
-    const user: User = {
-      id: 'agency-' + Date.now(),
-      firebaseUid: 'dummy-uid-' + Date.now(),
-      email: email,
-      name: name,
-      role: 'AGENCY',
-    };
+    try {
+      const response = await apiClient.post('/auth/register/agency', {
+        email,
+        password,
+        name,
+        phone,
+        address,
+        license,
+      });
 
-    const token = 'dummy-token-' + Date.now();
+      const { user, token } = response.data.data || response.data;
 
-    return { user, token };
+      // Don't store token/user yet - they need approval first
+      // Return status so UI can show pending message
+      return { 
+        user: { ...user, status: 'PENDING' }, 
+        token: token || '', 
+        status: 'PENDING' 
+      };
+    } catch (error: any) {
+      if (error.response?.data?.error) {
+        throw new Error(error.response.data.error);
+      }
+      if (error.message?.includes('Network Error') || error.isNetworkError) {
+        throw new Error('Cannot connect to server. Please make sure the backend is running.');
+      }
+      throw new Error(error.message || 'Registration failed');
+    }
   },
 
   /**

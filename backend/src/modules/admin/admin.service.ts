@@ -36,6 +36,14 @@ export class AdminService {
       ];
     }
 
+    console.log('[Admin Service] Fetching agencies with filters:', {
+      page,
+      limit,
+      status,
+      search,
+      where,
+    });
+
     const [agencies, total] = await Promise.all([
       prisma.agency.findMany({
         where,
@@ -53,6 +61,12 @@ export class AdminService {
       }),
       prisma.agency.count({ where }),
     ]);
+
+    console.log('[Admin Service] Found agencies:', {
+      count: agencies.length,
+      total,
+      agencies: agencies.map(a => ({ id: a.id, email: a.email, name: a.name, status: a.status })),
+    });
 
     const agenciesResponse: AgencyResponse[] = agencies.map((agency) => ({
       id: agency.id,

@@ -106,6 +106,12 @@ export class AuthService {
     }
 
     // Create agency in database (status: PENDING - needs admin approval)
+    console.log('[Auth Service] Creating agency in database:', {
+      email: input.email,
+      name: input.name,
+      firebaseUid: firebaseUid,
+    });
+    
     const agency = await prisma.agency.create({
       data: {
         firebaseUid: firebaseUid,
@@ -116,6 +122,13 @@ export class AuthService {
         license: input.license,
         status: APPROVAL_STATUS.PENDING,
       },
+    });
+    
+    console.log('[Auth Service] Agency created successfully:', {
+      id: agency.id,
+      email: agency.email,
+      name: agency.name,
+      status: agency.status,
     });
 
     // Generate JWT token
