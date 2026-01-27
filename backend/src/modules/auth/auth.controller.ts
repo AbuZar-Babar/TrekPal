@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../../middlewares/auth.middleware';
 import { authService } from './auth.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
+import { getErrorMessage, getErrorCode } from '../../utils/error.util';
 
 /**
  * Auth Controller
@@ -96,8 +97,8 @@ export class AuthController {
       // Otherwise, use email/password (for testing/development)
       const result = await authService.login(req.body);
       sendSuccess(res, result, 'Login successful');
-    } catch (error: any) {
-      sendError(res, error.message || 'Login failed', 401);
+    } catch (error: unknown) {
+      sendError(res, getErrorMessage(error) || 'Login failed', 401);
     }
   }
 
@@ -124,8 +125,8 @@ export class AuthController {
       const profile = await authService.getProfile(req.user.uid);
       const result = await authService.verifyCnic(profile.id, req.body);
       sendSuccess(res, result, 'CNIC verification submitted');
-    } catch (error: any) {
-      sendError(res, error.message || 'CNIC verification failed', 400);
+    } catch (error: unknown) {
+      sendError(res, getErrorMessage(error) || 'CNIC verification failed', 400);
     }
   }
 
@@ -143,8 +144,8 @@ export class AuthController {
 
       const profile = await authService.getProfile(req.user.uid);
       sendSuccess(res, profile, 'Profile retrieved successfully');
-    } catch (error: any) {
-      sendError(res, error.message || 'Failed to get profile', 404);
+    } catch (error: unknown) {
+      sendError(res, getErrorMessage(error) || 'Failed to get profile', 404);
     }
   }
 
@@ -163,8 +164,8 @@ export class AuthController {
       // TODO: Implement refresh token logic
       // For now, return error
       sendError(res, 'Refresh token not implemented yet', 501);
-    } catch (error: any) {
-      sendError(res, error.message || 'Token refresh failed', 400);
+    } catch (error: unknown) {
+      sendError(res, getErrorMessage(error) || 'Token refresh failed', 400);
     }
   }
 }

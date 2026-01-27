@@ -1,43 +1,136 @@
-# PostgreSQL Database Setup Guide
+# 🗄️ PostgreSQL Database Setup Guide
 
-## The schema.prisma file is correct!
+<div align="center">
 
-The `schema.prisma` file uses `env("DATABASE_URL")` which means it reads the connection string from your `.env` file. **You don't need to change the schema.prisma file.**
+**Complete guide for setting up PostgreSQL database for TrekPal**
 
-## Step 1: Create .env file
+[Quick Setup](#-quick-setup) • [Detailed Steps](#-detailed-setup-steps) • [Troubleshooting](#-troubleshooting)
 
-In the `backend/` directory, create a `.env` file (if it doesn't exist).
+</div>
 
-## Step 2: Add DATABASE_URL to .env
+---
 
-Add this line to your `.env` file:
+## 📋 Table of Contents
+
+- [Overview](#-overview)
+- [Quick Setup](#-quick-setup)
+- [Detailed Setup Steps](#-detailed-setup-steps)
+- [Connection String Examples](#-connection-string-examples)
+- [Verification](#-verification)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+## 🎯 Overview
+
+The TrekPal backend uses **PostgreSQL** as its database with **Prisma ORM** for type-safe database access. This guide will help you set up the database correctly.
+
+> [!IMPORTANT]
+> The `schema.prisma` file is already configured! It reads the connection string from your `.env` file using `env("DATABASE_URL")`. **You don't need to modify the schema file.**
+
+---
+
+## ⚡ Quick Setup
+
+```bash
+# 1. Create database
+psql -U postgres -c "CREATE DATABASE trekpal;"
+
+# 2. Create .env file in backend/ directory
+cat > .env << EOF
+DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/trekpal?schema=public"
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters-long
+NODE_ENV=development
+PORT=3000
+EOF
+
+# 3. Generate Prisma Client
+npm run prisma:generate
+
+# 4. Run migrations
+npm run prisma:migrate
+
+# 5. Seed database (optional)
+npm run seed
+```
+
+> [!WARNING]
+> Replace `YOUR_PASSWORD` with your actual PostgreSQL password!
+
+---
+
+## 📝 Detailed Setup Steps
+
+### Step 1: Create `.env` File
+
+In the `backend/` directory, create a `.env` file:
+
+```bash
+cd backend
+touch .env  # Mac/Linux
+# or
+type nul > .env  # Windows
+```
+
+### Step 2: Configure Database Connection
+
+Add the following to your `.env` file:
 
 ```env
 DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/DATABASE_NAME?schema=public"
 ```
 
-## Common PostgreSQL Connection Strings
+---
+
+## 🔗 Connection String Examples
 
 ### Default PostgreSQL Installation (Windows)
+
 ```env
 DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/trekpal?schema=public"
 ```
 
-### If you set a custom username
+### Custom Username
+
 ```env
 DATABASE_URL="postgresql://YOUR_USERNAME:YOUR_PASSWORD@localhost:5432/trekpal?schema=public"
 ```
 
-### If PostgreSQL is on a different port
+### Different Port
+
 ```env
 DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5433/trekpal?schema=public"
 ```
 
-## Step 3: Create the Database
+### Remote Database
 
-Before running migrations, you need to create the database:
+```env
+DATABASE_URL="postgresql://username:password@remote-host.com:5432/trekpal?schema=public"
+```
+
+### Connection String Format
+
+```
+postgresql://[USERNAME]:[PASSWORD]@[HOST]:[PORT]/[DATABASE]?schema=[SCHEMA]
+```
+
+| Component | Description | Default | Example |
+|-----------|-------------|---------|---------|
+| `USERNAME` | PostgreSQL user | `postgres` | `postgres` |
+| `PASSWORD` | User password | Set during install | `mypassword123` |
+| `HOST` | Database host | `localhost` | `localhost` |
+| `PORT` | PostgreSQL port | `5432` | `5432` |
+| `DATABASE` | Database name | - | `trekpal` |
+| `SCHEMA` | Database schema | `public` | `public` |
+
+---
+
+## 🔨 Step 3: Create the Database
+
+Before running migrations, create the database:
 
 ### Option A: Using psql (Command Line)
+
 ```bash
 # Connect to PostgreSQL
 psql -U postgres
@@ -45,18 +138,23 @@ psql -U postgres
 # Create database
 CREATE DATABASE trekpal;
 
+# Verify creation
+\l
+
 # Exit
 \q
 ```
 
 ### Option B: Using pgAdmin (GUI)
-1. Open pgAdmin
+
+1. Open **pgAdmin**
 2. Connect to your PostgreSQL server
-3. Right-click on "Databases" → "Create" → "Database"
-4. Name: `trekpal`
-5. Click "Save"
+3. Right-click on **"Databases"** → **"Create"** → **"Database"**
+4. Enter name: `trekpal`
+5. Click **"Save"**
 
 ### Option C: Using Command Prompt (Windows)
+
 ```cmd
 # If PostgreSQL bin is in your PATH
 createdb -U postgres trekpal
@@ -65,93 +163,300 @@ createdb -U postgres trekpal
 psql -U postgres -c "CREATE DATABASE trekpal;"
 ```
 
-## Step 4: Find Your PostgreSQL Credentials
+### Option D: Using PowerShell (Windows)
 
-### Default Credentials (if you didn't change them)
-- **Username:** `postgres`
-- **Password:** (the password you set during PostgreSQL installation)
-- **Port:** `5432` (default)
-- **Host:** `localhost`
+```powershell
+# Create database
+& "C:\Program Files\PostgreSQL\15\bin\psql.exe" -U postgres -c "CREATE DATABASE trekpal;"
+```
 
-### If you forgot your password:
-1. **Windows:** Check if you saved it during installation
-2. **Reset password:** 
-   - Edit `pg_hba.conf` file (usually in `C:\Program Files\PostgreSQL\XX\data\`)
-   - Change authentication method temporarily
-   - Or use pgAdmin to reset
+---
 
-## Complete .env File Example
+## 🔑 Step 4: Find Your PostgreSQL Credentials
+
+### Default Credentials
+
+| Credential | Default Value |
+|------------|---------------|
+| **Username** | `postgres` |
+| **Password** | Set during installation |
+| **Port** | `5432` |
+| **Host** | `localhost` |
+
+### If You Forgot Your Password
+
+<details>
+<summary><strong>Windows</strong></summary>
+
+1. Locate `pg_hba.conf` file:
+   ```
+   C:\Program Files\PostgreSQL\XX\data\pg_hba.conf
+   ```
+2. Change authentication method to `trust` temporarily
+3. Restart PostgreSQL service
+4. Connect and change password:
+   ```sql
+   ALTER USER postgres PASSWORD 'new_password';
+   ```
+5. Revert `pg_hba.conf` changes
+6. Restart PostgreSQL service
+</details>
+
+<details>
+<summary><strong>Mac/Linux</strong></summary>
+
+1. Locate `pg_hba.conf`:
+   ```bash
+   sudo find / -name pg_hba.conf 2>/dev/null
+   ```
+2. Edit the file and change method to `trust`
+3. Restart PostgreSQL:
+   ```bash
+   sudo systemctl restart postgresql  # Linux
+   brew services restart postgresql   # Mac
+   ```
+4. Change password:
+   ```bash
+   psql -U postgres -c "ALTER USER postgres PASSWORD 'new_password';"
+   ```
+5. Revert changes and restart
+</details>
+
+---
+
+## ✅ Step 5: Complete `.env` File
+
+Your complete `.env` file should look like this:
 
 ```env
 # Environment
 NODE_ENV=development
 PORT=3000
 
-# Database
+# Database (REQUIRED)
 DATABASE_URL="postgresql://postgres:your_password_here@localhost:5432/trekpal?schema=public"
 
-# JWT
+# JWT (REQUIRED - minimum 32 characters)
 JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters-long
 JWT_EXPIRES_IN=7d
 
-# Firebase (for production - can be dummy for now)
-FIREBASE_PROJECT_ID=your-firebase-project-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
-FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+# Firebase (Optional for development)
+FIREBASE_PROJECT_ID=
+FIREBASE_PRIVATE_KEY=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_STORAGE_BUCKET=
 
 # CORS
 CORS_ORIGIN=http://localhost:5173
 ```
 
-## Step 5: Test the Connection
+> [!TIP]
+> You can leave Firebase credentials empty for development. The backend will use dummy authentication.
 
-After setting up `.env`, test the connection:
+---
+
+## 🧪 Step 6: Test the Connection
+
+After setting up `.env`, test the database connection:
 
 ```bash
+# Generate Prisma Client
+npm run prisma:generate
+
+# Run migrations (creates all tables)
+npm run prisma:migrate
+
+# If successful, you're connected! ✅
+```
+
+### Expected Output
+
+```
+✔ Generated Prisma Client
+✔ Your database is now in sync with your schema
+```
+
+---
+
+## 🔍 Verification
+
+### Verify Database Exists
+
+```bash
+psql -U postgres -c "\l" | grep trekpal
+```
+
+### Verify Tables Created
+
+```bash
+psql -U postgres -d trekpal -c "\dt"
+```
+
+### Open Prisma Studio (Database GUI)
+
+```bash
+npm run prisma:studio
+```
+
+This opens a web interface at `http://localhost:5555` where you can view and edit your database.
+
+---
+
+## 🔧 Troubleshooting
+
+### 🔴 Error: "password authentication failed"
+
+**Cause:** Incorrect password in `.env`
+
+**Solution:**
+1. Check your PostgreSQL password
+2. Verify username is correct (usually `postgres`)
+3. Try connecting with psql to confirm credentials:
+   ```bash
+   psql -U postgres
+   ```
+
+---
+
+### 🔴 Error: "database does not exist"
+
+**Cause:** Database hasn't been created yet
+
+**Solution:**
+```bash
+psql -U postgres -c "CREATE DATABASE trekpal;"
+```
+
+---
+
+### 🔴 Error: "connection refused"
+
+**Cause:** PostgreSQL service not running
+
+**Solution:**
+
+**Windows:**
+1. Open Services (`Win + R` → `services.msc`)
+2. Find "postgresql-x64-XX"
+3. Right-click → Start
+
+**Mac:**
+```bash
+brew services start postgresql
+```
+
+**Linux:**
+```bash
+sudo systemctl start postgresql
+sudo systemctl enable postgresql  # Start on boot
+```
+
+---
+
+### 🔴 Error: "role does not exist"
+
+**Cause:** Using wrong username
+
+**Solution:**
+1. Use `postgres` as username (default)
+2. Or create a new role:
+   ```sql
+   CREATE ROLE your_username WITH LOGIN PASSWORD 'your_password';
+   ```
+
+---
+
+### 🔴 Error: "Prisma Client not generated"
+
+**Cause:** Prisma Client needs to be generated after schema changes
+
+**Solution:**
+```bash
+npm run prisma:generate
+```
+
+---
+
+### 🔴 Error: "Migration failed"
+
+**Cause:** Database schema conflicts
+
+**Solution:**
+
+> [!CAUTION]
+> This will delete all data!
+
+```bash
+npm run prisma:migrate reset
+```
+
+---
+
+## 📊 Database Schema Overview
+
+```mermaid
+erDiagram
+    User ||--o{ Agency : owns
+    User ||--o{ TripRequest : creates
+    User ||--o{ Booking : makes
+    User ||--o{ Review : writes
+    
+    Agency ||--o{ Hotel : manages
+    Agency ||--o{ Vehicle : owns
+    Agency ||--o{ TravelPackage : offers
+    Agency ||--o{ Bid : submits
+    
+    Hotel ||--o{ Room : contains
+    Hotel ||--o{ Review : receives
+    
+    TripRequest ||--o{ Bid : receives
+    
+    Bid ||--o| Booking : converts_to
+    
+    Booking ||--o{ Review : generates
+```
+
+---
+
+## 🎯 Quick Reference Commands
+
+```bash
+# Create database
+psql -U postgres -c "CREATE DATABASE trekpal;"
+
 # Generate Prisma Client
 npm run prisma:generate
 
 # Run migrations
 npm run prisma:migrate
 
-# If successful, you're connected!
-```
-
-## Troubleshooting
-
-### Error: "password authentication failed"
-- Check your password in `.env`
-- Make sure username is correct (usually `postgres`)
-
-### Error: "database does not exist"
-- Create the database first (see Step 3)
-
-### Error: "connection refused"
-- Make sure PostgreSQL service is running
-- Check if port is correct (default: 5432)
-- Verify PostgreSQL is installed and running
-
-### Error: "role does not exist"
-- Use the correct username (usually `postgres`)
-- Or create a new role in PostgreSQL
-
-## Quick Setup Commands
-
-```bash
-# 1. Create .env file with DATABASE_URL
-# (Edit manually or copy from .env.example)
-
-# 2. Create database
-psql -U postgres -c "CREATE DATABASE trekpal;"
-
-# 3. Generate Prisma Client
-npm run prisma:generate
-
-# 4. Run migrations
-npm run prisma:migrate
-
-# 5. Seed database
+# Seed database
 npm run seed
+
+# Open Prisma Studio
+npm run prisma:studio
+
+# Reset database (⚠️ deletes all data)
+npm run prisma:migrate reset
+
+# Check database connection
+psql -U postgres -d trekpal -c "SELECT version();"
 ```
 
+---
+
+## 📚 Additional Resources
+
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Connection String Format](https://www.prisma.io/docs/reference/database-reference/connection-urls)
+
+---
+
+<div align="center">
+
+**[⬆ Back to Top](#️-postgresql-database-setup-guide)**
+
+Need help? Check the [main README](../README.md) or open an issue.
+
+</div>
