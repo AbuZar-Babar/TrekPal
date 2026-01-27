@@ -9,7 +9,7 @@
 
 **A comprehensive travel management platform connecting travelers, agencies, and administrators**
 
-[Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](docs/CONTRIBUTING.md)
+[Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation) • [Contributing](docs/CONTRIBUTING.md)
 
 </div>
 
@@ -23,6 +23,81 @@ TrekPal is a modular, full-stack travel management ecosystem with three main app
 - **🏢 Agency Portal** (React + Vite) - Web portal for travel agencies  
 - **⚙️ Admin Portal** (React + Vite) - Web portal for administrators
 - **🔧 Backend API** (Node.js + Express + Prisma + PostgreSQL) - RESTful API server
+
+---
+
+## 🏗 Architecture
+
+### System Overview
+
+```mermaid
+graph TB
+    subgraph "Client Applications"
+        A[Traveler Mobile App<br/>Flutter]
+        B[Agency Portal<br/>React + Vite]
+        C[Admin Portal<br/>React + Vite]
+    end
+    
+    subgraph "Backend Services"
+        D[REST API<br/>Node.js + Express]
+        E[WebSocket Server<br/>Socket.IO]
+    end
+    
+    subgraph "Data Layer"
+        F[(PostgreSQL<br/>Database)]
+        G[Prisma ORM]
+    end
+    
+    subgraph "External Services"
+        H[Firebase Auth]
+        I[Firebase Storage]
+    end
+    
+    A -->|HTTP/WS| D
+    B -->|HTTP/WS| D
+    C -->|HTTP| D
+    D --> E
+    D --> G
+    G --> F
+    D -.->|Optional| H
+    D -.->|Optional| I
+    
+    style A fill:#4CAF50
+    style B fill:#2196F3
+    style C fill:#FF9800
+    style D fill:#9C27B0
+    style F fill:#F44336
+    style M fill:#00BCD4
+```
+
+### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant T as Traveler
+    participant A as Agency
+    participant API as Backend API
+    participant DB as Database
+    participant WS as WebSocket
+    
+    T->>API: Create Trip Request
+    API->>DB: Save Request
+    DB-->>API: Request ID
+    API->>WS: Notify Agencies
+    WS-->>A: New Request Alert
+    
+    A->>API: Submit Bid
+    API->>DB: Save Bid
+    DB-->>API: Bid ID
+    API->>WS: Notify Traveler
+    WS-->>T: New Bid Alert
+    
+    T->>API: Accept Bid
+    API->>DB: Create Booking
+    API-->>T: Booking Confirmed
+```
+
+For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ---
 
@@ -137,6 +212,31 @@ TrekPal/
 
 ---
 
+## ✨ Features
+
+### For Travelers 👤
+- 🔐 Secure authentication with Firebase
+- 🔍 Browse and search travel packages
+- 🏨 Book hotels and transportation
+- 💬 Real-time chat with agencies
+- ⭐ Rate and review services
+
+### For Travel Agencies 🏢
+- 📊 Comprehensive dashboard
+- 🏨 Hotel management
+- 🚗 Vehicle fleet management
+- 📦 Create custom travel packages
+- 💼 Bid on trip requests
+- 💬 Real-time customer communication
+
+### For Administrators ⚙️
+- ✅ Approve/reject agencies, hotels, and vehicles
+- 👥 User management
+- 📊 Platform-wide analytics
+- 🔍 Content moderation
+
+---
+
 ## 🔧 Development
 
 ### Backend Commands
@@ -164,12 +264,17 @@ npm run lint     # Run linter
 
 ## 🔧 Troubleshooting
 
-### Database Connection Failed
+<details>
+<summary><strong>🔴 Database connection failed</strong></summary>
+
+**Solution:**
 1. Ensure PostgreSQL is running
 2. Check `DATABASE_URL` in `.env`
 3. Verify database exists: `psql -U postgres -c "CREATE DATABASE trekpal;"`
+</details>
 
-### Port Already in Use
+<details>
+<summary><strong>🔴 Port already in use</strong></summary>
 
 **Windows:**
 ```bash
@@ -181,6 +286,17 @@ taskkill /PID <PID> /F
 ```bash
 lsof -ti:3000 | xargs kill -9
 ```
+</details>
+
+<details>
+<summary><strong>🔴 Prisma Client not generated</strong></summary>
+
+**Solution:**
+```bash
+cd backend
+npm run prisma:generate
+```
+</details>
 
 For more troubleshooting, see [Database Setup Guide](docs/setup/database.md).
 
