@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: trekpal-db
+    restart: always
+    environment:
+      POSTGRES_USER: trekpal
+      POSTGRES_PASSWORD: trekpal
+      POSTGRES_DB: trekpal
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: trekpal-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://trekpal:trekpal@db:5432/trekpal
+    volumes:
+      - ./backend:/app
+
+  agency:
+    build: ./agency-portal
+    container_name: trekpal-agency
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./agency-portal:/app
+
+  admin:
+    build: ./admin-portal
+    container_name: trekpal-admin
+    restart: always
+    ports:
+      - "5174:5174"
+    depends_on:
+      - backend
+    volumes:
+      - ./admin-portal:/app
+
+volumes:
+  pgdata:
