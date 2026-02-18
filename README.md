@@ -103,20 +103,56 @@ For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITE
 
 ## 🚀 Quick Start
 
+> **NEW:** TrekPal now uses npm workspaces for easy one-click startup!
+
 ### Prerequisites
 
-- Node.js 18+
-- PostgreSQL 14+
-- npm or yarn
+- **Node.js** 18+ (with npm 7+)
+- **PostgreSQL** 14+
 
-### 1. Clone Repository
+### 🎯 One-Command Setup (Recommended)
 
 ```bash
+# 1. Clone repository
 git clone <your-repository-url>
 cd TrekPal
+
+# 2. Install all dependencies
+npm install
+
+# 3. Setup database
+npm run db:setup
+
+# 4. Start EVERYTHING (backend + admin + agency)
+npm run dev
 ```
 
-### 2. Backend Setup
+That's it! 🎉
+
+- **Backend API:** http://localhost:3000
+- **Admin Portal:** http://localhost:5174
+- **Agency Portal:** http://localhost:5173
+
+### 🔧 Selective Startup
+
+```bash
+# Start only backend
+npm run dev:backend-only
+
+# Start only web portals (admin + agency)
+npm run dev:web
+
+# Start individual services
+npm run dev:admin-only
+npm run dev:agency-only
+```
+
+### 📝 Manual Setup (Legacy)
+
+<details>
+<summary>Click to expand manual setup instructions</summary>
+
+#### Backend Setup
 
 ```bash
 cd backend
@@ -137,7 +173,7 @@ npm run dev
 
 Backend runs at `http://localhost:3000`
 
-### 3. Agency Portal
+#### Agency Portal
 
 ```bash
 cd agency-portal
@@ -147,7 +183,7 @@ npm run dev
 
 Runs at `http://localhost:5173`
 
-### 4. Admin Portal
+#### Admin Portal
 
 ```bash
 cd admin-portal
@@ -156,6 +192,111 @@ npm run dev
 ```
 
 Runs at `http://localhost:5174`
+
+</details>
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### `npm install` fails
+
+**Issue:** Installation fails with peer dependency errors or ERESOLVE errors.
+
+**Solution:**
+```bash
+# Use legacy peer deps flag
+npm install --legacy-peer-deps
+
+# Or clean install
+npm run clean
+npm install
+```
+
+####  Database connection fails
+
+**Issue:** "Can't reach database server" or "Connection refused"
+
+**Solution:**
+1. Ensure PostgreSQL is running
+2. Check credentials in `backend/.env`
+3. Verify database URL format:
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/trekpal"
+   ```
+
+#### `concurrently` not found
+
+**Issue:** Getting "command not found: concurrently" when running `npm run dev`
+
+**Solution:**
+```bash
+# Install root dependencies
+npm install
+```
+
+#### Port already in use
+
+**Issue:** "Port 3000 is already in use" (or 5173, 5174)
+
+**Solution:**
+```bash
+# Windows - Kill process on port
+netstat -ano | findstr :<PORT>
+taskkill /PID <PID> /F
+
+# Or change port in respective .env or vite.config.ts files
+```
+
+#### Prisma schema issues
+
+**Issue:** "Environment variable not found: DATABASE_URL"
+
+**Solution:**
+```bash
+# Ensure .env exists in backend folder
+cd backend
+cp .env.example .env
+# Edit .env
+
+# Regenerate Prisma client
+npm run prisma:generate
+```
+
+#### Services don't auto-restart
+
+**Issue:** Changes not reflecting, need to manually restart
+
+**Solution:**
+- Frontend portals use Vite HMR - should auto-reload
+- Backend uses `nodemon` - should auto-restart
+- If stuck, stop (`Ctrl+C`) and run `npm run dev` again
+
+### Database Management Scripts
+
+```bash
+# View database in browser
+npm run db:studio
+
+# Reset database (WARNING: deletes all data)
+npm run db:reset
+
+# Regenerate Prisma client
+npm run prisma:generate
+
+# Create new migration
+cd backend
+npx prisma migrate dev --name your_migration_name
+```
+
+### Need More Help?
+
+- Check the [full documentation](#-documentation)
+- Review backend logs in the terminal
+- Ensure all `.env` files are properly configured
+- Make sure Node.js version is 18+ (`node --version`)
 
 ---
 

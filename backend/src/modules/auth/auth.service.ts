@@ -1,6 +1,5 @@
 import { getFirebaseAuth } from '../../config/firebase';
 import { setCustomClaims } from '../../utils/firebase.util';
-import { prisma } from '../../config/database';
 import { ROLES, APPROVAL_STATUS } from '../../config/constants';
 import { generateJWT } from '../../utils/jwt.util';
 import {
@@ -10,12 +9,38 @@ import {
   VerifyCnicInput,
   AuthResponse,
 } from './auth.types';
+import {
+  IUserRepository,
+  IAgencyRepository,
+  IAdminRepository,
+  PrismaUserRepository,
+  PrismaAgencyRepository,
+  PrismaAdminRepository,
+} from '../../repositories';
 
 /**
  * Auth Service
- * Handles authentication business logic
+ * Handles authentication business logic using repository pattern
+ * 
+ * NOTE: Refactored to use repository pattern for database decoupling
+ * User, Agency, and Admin operations now go through repository interfaces
  */
 export class AuthService {
+  private userRepo: IUserRepository;
+  private agencyRepo: IAgencyRepository;
+  private adminRepo: IAdminRepository;
+
+  constructor(
+    userRepo?: IUserRepository,
+    agencyRepo?: IAgencyRepository,
+    adminRepo?: IAdminRepository
+  ) {
+    // Use dependency injection with defaults
+    this.userRepo = userRepo || new PrismaUserRepository();
+    this.agencyRepo = agencyRepo || new PrismaAgencyRepository();
+    this.adminRepo = adminRepo || new PrismaAdminRepository();
+  }
+
   /**
    * Register a new traveler (user)
    * @param input - User registration data
@@ -23,7 +48,7 @@ export class AuthService {
    */
   async registerUser(input: UserRegisterInput): Promise<AuthResponse> {
     let firebaseUid: string;
-    
+
     try {
       const firebaseAuth = getFirebaseAuth();
       // Create user in Firebase
@@ -45,16 +70,14 @@ export class AuthService {
       }
     }
 
-    // Create user in database
-    const user = await prisma.user.create({
-      data: {
-        firebaseUid: firebaseUid,
-        email: input.email,
-        name: input.name,
-        phone: input.phone,
-        cnic: input.cnic,
-        cnicVerified: false,
-      },
+    // Create user in database via repository
+    const user = await this.userRepo.create({
+      firebaseUid: firebaseUid,
+      email: input.email,
+      name: input.name,
+      phone: input.phone,
+      cnic: input.cnic,
+      cnicVerified: false,
     });
 
     // Generate JWT token
@@ -83,7 +106,7 @@ export class AuthService {
    */
   async registerAgency(input: AgencyRegisterInput): Promise<AuthResponse> {
     let firebaseUid: string;
-    
+
     try {
       const firebaseAuth = getFirebaseAuth();
       // Create user in Firebase
@@ -105,25 +128,23 @@ export class AuthService {
       }
     }
 
-    // Create agency in database (status: PENDING - needs admin approval)
-    console.log('[Auth Service] Creating agency in database:', {
+    // Create agency in database via repository (status: PENDING - needs admin approval)
+    console.log('[Auth Service] Creating agency via repository:', {
       email: input.email,
       name: input.name,
       firebaseUid: firebaseUid,
     });
-    
-    const agency = await prisma.agency.create({
-      data: {
-        firebaseUid: firebaseUid,
-        email: input.email,
-        name: input.name,
-        phone: input.phone,
-        address: input.address,
-        license: input.license,
-        status: APPROVAL_STATUS.PENDING,
-      },
+
+    const agency = await this.agencyRepo.create({
+      firebaseUid: firebaseUid,
+      email: input.email,
+      name: input.name,
+      phone: input.phone,
+      address: input.address,
+      license: input.license,
+      status: APPROVAL_STATUS.PENDING,
     });
-    
+
     console.log('[Auth Service] Agency created successfully:', {
       id: agency.id,
       email: agency.email,
@@ -158,10 +179,8 @@ export class AuthService {
    * @returns Auth response with user and token
    */
   async login(input: LoginInput): Promise<AuthResponse> {
-    // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email: input.email },
-    });
+    // Find user by email via repository
+    const user = await this.userRepo.findByEmail(input.email);
 
     if (user) {
       // User found - traveler
@@ -183,10 +202,8 @@ export class AuthService {
       };
     }
 
-    // Check if it's an agency
-    const agency = await prisma.agency.findUnique({
-      where: { email: input.email },
-    });
+    // Check if it's an agency via repository
+    const agency = await this.agencyRepo.findByEmail(input.email);
 
     if (agency) {
       // Check if agency is approved
@@ -212,10 +229,8 @@ export class AuthService {
       };
     }
 
-    // Check if it's an admin
-    const admin = await prisma.admin.findUnique({
-      where: { email: input.email },
-    });
+    // Check if it's an admin via repository
+    const admin = await this.adminRepo.findByEmail(input.email);
 
     if (admin) {
       const token = generateJWT({
@@ -252,13 +267,10 @@ export class AuthService {
     // 2. Third-party verification service
     // 3. Manual admin review
 
-    // For now, just update the CNIC and mark as verified
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        cnic: input.cnic,
-        cnicVerified: true,
-      },
+    // For now, just update the CNIC and mark as verified via repository
+    const user = await this.userRepo.update(userId, {
+      cnic: input.cnic,
+      cnicVerified: true,
     });
 
     return {
@@ -272,10 +284,8 @@ export class AuthService {
    * @returns User profile
    */
   async getProfile(firebaseUid: string): Promise<AuthResponse['user']> {
-    // Try to find as user
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid },
-    });
+    // Try to find as user via repository
+    const user = await this.userRepo.findByFirebaseUid(firebaseUid);
 
     if (user) {
       return {
@@ -287,10 +297,8 @@ export class AuthService {
       };
     }
 
-    // Try to find as agency
-    const agency = await prisma.agency.findUnique({
-      where: { firebaseUid },
-    });
+    // Try to find as agency via repository
+    const agency = await this.agencyRepo.findByFirebaseUid(firebaseUid);
 
     if (agency) {
       return {
@@ -302,10 +310,8 @@ export class AuthService {
       };
     }
 
-    // Try to find as admin
-    const admin = await prisma.admin.findUnique({
-      where: { firebaseUid },
-    });
+    // Try to find as admin via repository
+    const admin = await this.adminRepo.findByFirebaseUid(firebaseUid);
 
     if (admin) {
       return {
@@ -328,7 +334,7 @@ export class AuthService {
    */
   async verifyFirebaseToken(firebaseToken: string): Promise<AuthResponse> {
     let decodedToken: any;
-    
+
     try {
       const firebaseAuth = getFirebaseAuth();
       decodedToken = await firebaseAuth.verifyIdToken(firebaseToken);
@@ -345,7 +351,7 @@ export class AuthService {
       }
     }
 
-    // Get user profile
+    // Get user profile via repositories
     const profile = await this.getProfile(decodedToken.uid);
 
     // Generate JWT token

@@ -9,6 +9,7 @@ const AgencyList = () => {
   const { agencies, loading, error, pagination } = useSelector(
     (state: RootState) => state.agencies
   );
+  console.log('[AgencyList] State:', { agencies, loading, error, pagination });
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../store/authSlice';
 import ErrorPopup from '../../../shared/components/ErrorPopup';
 
@@ -21,6 +21,11 @@ const AdminLoginForm = () => {
     setLoading(true);
 
     try {
+      if (password.length < 8) {
+        setError('Password must be at least 8 characters');
+        setLoading(false);
+        return;
+      }
       await dispatch(login({ email, password }) as any);
       navigate('/dashboard');
     } catch (err: any) {
@@ -139,18 +144,6 @@ const AdminLoginForm = () => {
                   'Sign in'
                 )}
               </button>
-            </div>
-
-            <div className="text-center pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link
-                  to="/signup"
-                  className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
-                >
-                  Sign up
-                </Link>
-              </p>
             </div>
           </form>
         </div>

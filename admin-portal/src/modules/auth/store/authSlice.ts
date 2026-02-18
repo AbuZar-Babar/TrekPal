@@ -9,16 +9,11 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-// Validate and clean up old tokens on initialization
-const validateToken = () => {
+// Check if user is authenticated based on localStorage
+const checkAuthentication = () => {
   const token = localStorage.getItem('token');
-  if (token && !token.startsWith('admin-dummy-token-')) {
-    console.warn('[Auth] Invalid token format detected. Clearing old token...');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    return false;
-  }
-  return !!token;
+  const user = localStorage.getItem('user');
+  return !!(token && user);
 };
 
 const initialState: AuthState = {
@@ -33,29 +28,16 @@ const initialState: AuthState = {
   })(),
   loading: false,
   error: null,
-  isAuthenticated: validateToken(),
+  isAuthenticated: checkAuthentication(),
 };
 
 /**
- * Login thunk
+ * Login thunk - Calls backend API for authentication
  */
 export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }: { email: string; password: string }) => {
     const response = await authService.login(email, password);
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    return response.user;
-  }
-);
-
-/**
- * Signup thunk
- */
-export const signup = createAsyncThunk(
-  'auth/signup',
-  async ({ email, password, name }: { email: string; password: string; name: string }) => {
-    const response = await authService.signup(email, password, name);
     localStorage.setItem('token', response.token);
     localStorage.setItem('user', JSON.stringify(response.user));
     return response.user;
@@ -97,21 +79,6 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Login failed';
-        state.isAuthenticated = false;
-      })
-      // Signup
-      .addCase(signup.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(signup.fulfilled, (state, action: PayloadAction<User>) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-      })
-      .addCase(signup.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Signup failed';
         state.isAuthenticated = false;
       })
       // Get Profile

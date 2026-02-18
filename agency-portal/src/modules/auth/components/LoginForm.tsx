@@ -21,6 +21,11 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
+      if (password.length < 8) {
+        setError('Password must be at least 8 characters');
+        setLoading(false);
+        return;
+      }
       await dispatch(login({ email, password }) as any);
       navigate('/dashboard');
     } catch (err: any) {

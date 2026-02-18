@@ -107,4 +107,34 @@ router.get(
   adminController.getDashboardStats.bind(adminController)
 );
 
+/**
+ * @route   GET /api/admin/reports/revenue
+ * @desc    Get revenue chart data
+ * @access  Private (Admin only)
+ */
+router.get(
+  '/reports/revenue',
+  adminController.getRevenueChartData.bind(adminController)
+);
+
+/**
+ * @route   GET /api/admin/reports/bookings
+ * @desc    Get bookings chart data
+ * @access  Private (Admin only)
+ */
+router.get(
+  '/reports/bookings',
+  adminController.getBookingsChartData.bind(adminController)
+);
+
+/**
+ * @route   GET /api/admin/reports/user-growth
+ * @desc    Get user growth chart data
+ * @access  Private (Admin only)
+ */
+router.get(
+  '/reports/user-growth',
+  adminController.getUserGrowthData.bind(adminController)
+);
+
 export default router;

@@ -1,82 +1,51 @@
 import { User } from '../../../shared/types';
+import apiClient from '../../../shared/services/apiClient';
 
 /**
- * Dummy Auth Service - No backend calls
+ * Auth Service - Connects to backend API for authentication
+ * Uses PostgreSQL database for admin credentials
  */
 export const authService = {
   /**
-   * Dummy login - validates specific credentials only
+   * Login via backend API - validates against database
    */
   async login(email: string, password: string): Promise<{ user: User; token: string }> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
     // Validate required fields
     if (!email || !password) {
       throw new Error('Email and password are required');
     }
 
-    // Check for specific credentials only
-    const validEmail = 'hashim@gmail.com';
-    const validPassword = '1q2w3e';
+    try {
+      // Call backend API for authentication
+      const response = await apiClient.post('/auth/login', {
+        email: email.toLowerCase().trim(),
+        password: password,
+      });
 
-    if (email.toLowerCase().trim() !== validEmail || password !== validPassword) {
-      throw new Error('Invalid email or password');
+      const { user, token } = response.data.data || response.data;
+
+      // Store token and user in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      console.log('[Auth Service] Login successful for:', user.email);
+
+      return { user, token };
+    } catch (error: any) {
+      console.error('[Auth Service] Login failed:', error);
+
+      // Extract error message from response
+      const message = error.response?.data?.message
+        || error.response?.data?.error
+        || error.message
+        || 'Login failed. Please check your credentials.';
+
+      throw new Error(message);
     }
-
-    // Create dummy user
-    const user: User = {
-      id: 'admin-1',
-      firebaseUid: 'dummy-uid',
-      email: validEmail,
-      name: 'Hashim Admin',
-      role: 'ADMIN',
-    };
-
-    const token = 'admin-dummy-token-' + Date.now();
-    
-    // Store token and user in localStorage
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    
-    console.log('[Auth Service] Admin login successful, token stored:', token.substring(0, 30) + '...');
-
-    return { user, token };
   },
 
   /**
-   * Dummy signup
-   */
-  async signup(email: string, password: string, name: string): Promise<{ user: User; token: string }> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    if (!email || !password || !name) {
-      throw new Error('All fields are required');
-    }
-
-    // Create dummy user
-    const user: User = {
-      id: 'admin-' + Date.now(),
-      firebaseUid: 'dummy-uid-' + Date.now(),
-      email: email,
-      name: name,
-      role: 'ADMIN',
-    };
-
-    const token = 'admin-dummy-token-' + Date.now();
-    
-    // Store token and user in localStorage
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    
-    console.log('[Auth Service] Admin login successful, token stored:', token.substring(0, 30) + '...');
-
-    return { user, token };
-  },
-
-  /**
-   * Get current user profile
+   * Get current user profile from localStorage
    */
   async getProfile(): Promise<User> {
     const userStr = localStorage.getItem('user');
@@ -87,7 +56,7 @@ export const authService = {
   },
 
   /**
-   * Logout
+   * Logout - clears session and redirects to login
    */
   logout(): void {
     localStorage.removeItem('token');

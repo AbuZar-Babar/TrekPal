@@ -35,12 +35,14 @@ export class AdminController {
       });
 
       const result = await adminService.getAgencies(page, limit, status, search);
-      
+
+      console.log('[Admin Controller] Result from service:', JSON.stringify(result, null, 2));
+
       console.log('[Admin Controller] Sending response:', {
         agenciesCount: result.agencies.length,
         total: result.total,
       });
-      
+
       sendSuccess(res, result, 'Agencies retrieved successfully');
     } catch (error: any) {
       console.error('[Admin Controller] Error getting agencies:', error);
@@ -231,6 +233,48 @@ export class AdminController {
       sendSuccess(res, stats, 'Dashboard stats retrieved successfully');
     } catch (error: any) {
       sendError(res, error.message || 'Failed to get dashboard stats', 500);
+    }
+  }
+
+  /**
+   * Get revenue chart data
+   * GET /api/admin/reports/revenue
+   */
+  async getRevenueChartData(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const range = req.query.range as string || '6months';
+      const data = await adminService.getRevenueChartData(range);
+      sendSuccess(res, data, 'Revenue chart data retrieved successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to get revenue chart data', 500);
+    }
+  }
+
+  /**
+   * Get bookings chart data
+   * GET /api/admin/reports/bookings
+   */
+  async getBookingsChartData(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const range = req.query.range as string || '6months';
+      const data = await adminService.getBookingsChartData(range);
+      sendSuccess(res, data, 'Bookings chart data retrieved successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to get bookings chart data', 500);
+    }
+  }
+
+  /**
+   * Get user growth chart data
+   * GET /api/admin/reports/user-growth
+   */
+  async getUserGrowthData(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const range = req.query.range as string || '6months';
+      const data = await adminService.getUserGrowthData(range);
+      sendSuccess(res, data, 'User growth data retrieved successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to get user growth data', 500);
     }
   }
 }

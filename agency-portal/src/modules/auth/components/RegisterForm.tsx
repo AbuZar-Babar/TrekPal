@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { signup } from '../store/authSlice';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
+import ErrorPopup from '../../../shared/components/ErrorPopup';
 
 /**
  * Agency Registration Form - Modern Design
@@ -19,19 +20,33 @@ const RegisterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Client-side validation
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const result = await dispatch(signup({ email, password, name }) as any);
-      // Check if registration was successful but status is PENDING
-      if (result.payload && 'status' in result.payload && result.payload.status === 'PENDING') {
-        // Redirect to pending approval page
-        navigate('/pending-approval', {
-          state: { email, name }
-        });
-      } else {
-        // If somehow approved immediately, go to dashboard
-        navigate('/dashboard');
+      console.log('[RegisterForm] Signup Result:', result);
+
+      // Check if registration was successful
+      if (signup.fulfilled.match(result)) {
+        const payload = result.payload as any;
+        // If status is PENDING or it's a successful signup without immediate approval
+        if (payload?.status === 'PENDING' || !payload?.token) {
+          console.log('[RegisterForm] Redirecting to pending-approval');
+          navigate('/pending-approval', {
+            state: { email, name }
+          });
+        } else {
+          // If approved immediately (rare in this flow)
+          console.log('[RegisterForm] Redirecting to dashboard');
+          navigate('/dashboard');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Signup failed');
@@ -42,6 +57,13 @@ const RegisterForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Error Popup */}
+      {error && (
+        <ErrorPopup
+          message={error}
+          onClose={() => setError(null)}
+        />
+      )}
       {/* Background Image */}
       <div
         className="absolute inset-0 z-0"
@@ -73,15 +95,6 @@ const RegisterForm = () => {
         {/* Form Card */}
         <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 p-8 transform transition-all hover:scale-[1.01]">
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-2">
-                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {error}
-              </div>
-            )}
-
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                 Agency Name
