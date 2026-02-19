@@ -333,6 +333,15 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 ---
 
+## 🛠️ Automated Workflows
+
+This project includes pre-configured workflows to automate common development tasks.
+
+- **/dev**: Starts the Backend, Admin Portal, and Agency Portal simultaneously.
+- **/db-reset**: Wipes the database, re-applies migrations, and re-seeds it with fresh test data.
+
+To use these, simply type the slash command in your AI assistant's chat.
+
 ## 📁 Project Structure
 
 ```

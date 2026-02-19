@@ -1,4 +1,4 @@
-import { UseMutationOptions, useMutation, useQueryClient } from '@tantml:query';
+import { UseMutationOptions, useMutation } from '@tanstack/react-query';
 
 /**
  * Shared API Mutation Hook
@@ -23,8 +23,6 @@ export function useApiMutation<TData = unknown, TVariables = void>(
     mutationFn: (variables: TVariables) => Promise<TData>,
     options?: Omit<UseMutationOptions<TData, Error, TVariables>, 'mutationFn'>
 ) {
-    const queryClient = useQueryClient();
-
     return useMutation<TData, Error, TVariables>({
         mutationFn,
         onError: (error) => {

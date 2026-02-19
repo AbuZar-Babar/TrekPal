@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Agency, PaginatedResponse } from '../../../shared/types';
+import { Agency } from '../../../shared/types';
 import { agencyService } from '../services/agencyService';
 
 interface AgencyState {

@@ -1,310 +1,134 @@
-# 📝 TrekPal TODO & Project Status
+# TrekPal TODO (SRS/SDD Aligned)
 
-## ✅ Completed Tasks
+## 1. Project Baseline (As of 2026-02-19)
+- Architecture present: monorepo + Prisma schema + seeded data.
+- Working backend modules: Auth, Admin, Transport.
+- Partially working web apps: Admin approvals/analytics and Agency auth/vehicle/hotel UIs.
+- Major gap: Traveler-facing flows and core trip lifecycle APIs are not implemented end-to-end.
 
-### Backend
-- [x] Setup Express server with TypeScript
-- [x] Configure Prisma ORM with PostgreSQL
-- [x] Implement authentication system (JWT + Firebase)
-- [x] Create user registration and login endpoints
-- [x] Implement agency management module
-- [x] Implement hotel management module
-- [x] Implement vehicle/transport module
-- [x] Implement booking system
-- [x] Implement admin approval workflows
-- [x] Add WebSocket support with Socket.IO
-- [x] Create database seed script
-- [x] Add error handling middleware
-- [x] Implement CORS configuration
+### Current-State Findings
+- `191` explicit `// TODO: Implement` markers across codebase.
+- Backend routes are effectively implemented only for `auth`, `admin`, and `transport`.
+- Backend stubs still exist for `agency`, `hotels`, `tripRequests`, `bids`, `bookings`, `users`.
+- Agency portal still has partial implementation with `ComingSoon` pages; admin user/report placeholders are now implemented.
+- Traveler app is mostly scaffold/TODO (current `main.dart` is placeholder app shell).
+- SRS says no payment integration (CO-4), so payment tasks are de-prioritized/optional.
 
-### Frontend - Agency Portal
-- [x] Setup React + Vite + TypeScript
-- [x] Configure Redux Toolkit
-- [x] Implement authentication flow
-- [x] Create hotel management UI
-- [x] Create vehicle management UI
-- [x] Add responsive design with Tailwind CSS
-- [x] Implement protected routes
+## 2. SRS Traceability Status
+Status labels used: `Done`, `Partial`, `Missing`.
 
-### Frontend - Admin Portal
-- [x] Setup React + Vite + TypeScript
-- [x] Configure Redux Toolkit
-- [x] Implement admin authentication
-- [x] Create agency approval UI
-- [x] Create hotel approval UI
-- [x] Create vehicle approval UI
-- [x] Add responsive sidebar navigation
-- [x] Update admin-portal/src/modules/auth/store/authSlice.ts to store JWT token
+### Traveler FRs
+- `FR-USER-01` User Registration: `Partial` (backend exists, traveler app missing).
+- `FR-USER-02` Traveler Login: `Partial` (backend exists, traveler app missing).
+- `FR-USER-03` Identity Verification: `Partial` (backend marks verified; no admin review flow).
+- `FR-USER-04` Search Hotels: `Missing`.
+- `FR-USER-05` Search Transport: `Missing` for traveler role.
+- `FR-USER-06` Create Trip Request: `Missing`.
+- `FR-USER-07` View Bids: `Missing`.
+- `FR-USER-08` Accept Bid: `Missing`.
+- `FR-USER-09` Join Group Trip: `Missing`.
+- `FR-USER-10` Submit Review: `Missing`.
 
-### Documentation
-- [x] Create comprehensive README.md
-- [x] Improve DATABASE_SETUP.md with modern formatting
-- [x] Enhance ADMIN_PORTAL_SETUP.md
-- [x] Create ARCHITECTURE.md with system diagrams
-- [x] Add Mermaid diagrams throughout documentation
+### Agency FRs
+- `FR-AGENCY-01` Registration: `Done`.
+- `FR-AGENCY-02` Verification Docs: `Done`.
+- `FR-AGENCY-03` Manage Hotels: `Partial` (UI exists, backend routes missing).
+- `FR-AGENCY-04` Manage Rooms/Menus: `Missing`.
+- `FR-AGENCY-05` Manage Vehicles: `Done`.
+- `FR-AGENCY-06` Date-based availability/pricing: `Missing`.
+- `FR-AGENCY-07` View Trip Requests: `Missing`.
+- `FR-AGENCY-08` Submit Bid: `Missing`.
+- `FR-AGENCY-09` Manage Accepted Bookings: `Missing`.
+- `FR-AGENCY-10` Create Tour Packages: `Missing`.
 
-### Code Quality
-- [x] Fix TypeScript types in backend utilities
-- [x] Add error handling utilities
-- [x] Improve type safety in response utilities
+### Admin FRs
+- `FR-ADMIN-01` Approve/Reject Agencies: `Done`.
+- `FR-ADMIN-02` Approve/Reject Hotels: `Partial` (endpoint/UI exists, upstream hotel creation API missing).
+- `FR-ADMIN-03` Approve/Reject Vehicles: `Done`.
+- `FR-ADMIN-04` Approve Traveler Verification: `Missing`.
+- `FR-ADMIN-05` Moderate Content: `Missing`.
+- `FR-ADMIN-06` View Analytics: `Partial` (dashboard and reports module implemented; broader analytics scope still pending).
+- `FR-ADMIN-07` Block/Unblock Accounts: `Missing`.
 
----
+## 3. Priority Backlog
 
-## 🚧 In Progress
+### P0 (Critical Path: Core Trip Workflow)
+- [ ] Implement backend `hotels` module routes/controllers/services.
+- [ ] Implement backend `tripRequests` module routes/controllers/services.
+- [ ] Implement backend `bids` module routes/controllers/services.
+- [ ] Implement backend `bookings` module routes/controllers/services.
+- [ ] Implement backend `users` module routes/controllers/services (`/users/profile`).
+- [ ] Add traveler-facing transport search endpoints (separate from agency-only transport CRUD).
+- [ ] Implement atomic bid acceptance flow: accept bid -> create booking -> mark status transitions.
+- [ ] Wire Agency Portal hotel pages to working backend endpoints.
+- [ ] Fix Traveler API constants to real backend contract (`/auth/register/user`, etc.).
+- [ ] Add role-guarded integration tests for all P0 endpoints.
 
-### Backend
-- [ ] Complete TypeScript type fixes in all controllers
-- [ ] Add comprehensive API tests
-- [ ] Implement refresh token mechanism
-- [ ] Add rate limiting middleware
+### P1 (Business Operations Completeness)
+- [ ] Implement agency trip request viewing and bid submission UI + APIs.
+- [ ] Implement agency booking management UI + APIs.
+- [ ] Implement rooms management (data model + APIs + UI).
+- [ ] Implement packages management (data model already exists; add APIs + UI).
+- [x] Implement Admin Users module (`UserList.tsx`, service, slice, hooks).
+- [x] Implement Admin Reports module (`ReportDashboard.tsx`, charts, services, slices).
+- [ ] Implement Admin traveler verification workflow (queue + approve/reject actions).
+- [ ] Implement block/unblock for users/agencies (admin API + UI).
 
-### Frontend
-- [ ] Fix ESLint errors in admin-portal
-- [ ] Fix ESLint errors in agency-portal
-- [ ] Add loading states for all API calls
-- [ ] Implement error boundaries
+### P2 (Collaboration + Trust Features)
+- [ ] Implement reviews API and traveler review submission flow.
+- [ ] Implement group trips APIs and membership flows.
+- [ ] Persist chat messages in DB and expose chat history endpoints.
+- [ ] Add moderation pipeline for reported reviews/messages/content.
+- [ ] Integrate FCM notifications for bids, booking updates, trip group messages.
 
----
+### P3 (Quality, Security, NFRs)
+- [ ] Add automated test suites (backend unit/integration + portal component tests).
+- [ ] Add rate limiting and security headers.
+- [ ] Add structured logging (Winston/Pino) and request correlation IDs.
+- [ ] Add backup strategy and restore runbook for PostgreSQL.
+- [ ] Add performance SLO checks for search and chat latency.
+- [ ] Remove or resolve placeholder/stub TODO files across portals and traveler app.
 
-## 📋 Planned Features
+## 4. API/Interface Additions Required
+Document these explicitly as contract work.
 
-### High Priority
+### Add/Complete REST Resources
+- [ ] `/api/hotels` (public search + agency CRUD + admin moderation hooks).
+- [ ] `/api/trip-requests` (traveler create/list/detail + agency listing).
+- [ ] `/api/bids` (agency submit/list + traveler accept).
+- [ ] `/api/bookings` (list/detail/status by role).
+- [ ] `/api/users/profile` (get/update).
+- [ ] `/api/reviews` (create/list by entity).
+- [ ] `/api/trip-groups` (create/join/list/members).
+- [ ] `/api/admin/verifications/travelers` (review CNIC queue).
+- [ ] `/api/admin/moderation/*` (reported content actions).
+- [ ] `/api/admin/users/:id/block` and `/api/admin/agencies/:id/block`.
 
-#### Backend
-- [ ] Implement payment integration (Stripe/PayPal)
-- [ ] Add email notification system
-- [ ] Implement file upload for images (hotels, vehicles, CNIC)
-- [ ] Add search and filtering for all entities
-- [ ] Implement pagination for large datasets
-- [ ] Add API rate limiting
-- [ ] Create comprehensive API documentation with Swagger
-- [ ] Add logging system (Winston/Pino)
-- [ ] Implement caching with Redis
-- [ ] Add automated testing (Jest/Supertest)
+### Data Model Changes to Plan in Migrations
+- [ ] `isBlocked`, `blockedAt`, `blockedReason` on `User` and `Agency`.
+- [ ] Content reporting/moderation tables.
+- [ ] Date-based transport availability/pricing table.
+- [ ] Booking conflict constraints to enforce no double-booking.
 
-#### Frontend - Agency Portal
-- [ ] Create dashboard with analytics
-- [ ] Implement trip request bidding UI
-- [ ] Add real-time chat interface
-- [ ] Create booking management UI
-- [ ] Add revenue reports and analytics
-- [ ] Implement image upload for hotels/vehicles
-- [ ] Add calendar view for bookings
-- [ ] Create package builder UI
+## 5. Test Scenarios to Track
+- [ ] Auth registration/login across traveler, agency, admin.
+- [ ] Agency approval gate: pending agency cannot access protected agency actions.
+- [ ] Hotel/vehicle approval gating for traveler search visibility.
+- [ ] Bid acceptance transactional integrity (single winner + booking creation).
+- [ ] Double-booking prevention under concurrent requests.
+- [ ] Role authorization boundaries for admin/agency/traveler routes.
+- [ ] Chat persistence + websocket broadcast behavior.
+- [ ] End-to-end flow: traveler trip request -> agency bid -> traveler accept -> booking visible to both.
 
-#### Frontend - Admin Portal
-- [ ] Create comprehensive dashboard with charts
-- [ ] Implement user management UI
-- [ ] Add reports and analytics page
-- [ ] Create audit log viewer
-- [ ] Add platform settings page
-- [ ] Implement data export functionality
-- [ ] Add email template management
+## 6. Documentation Cleanup Tasks
+- [ ] Align SRS and SDD requirement numbering inconsistencies (agency FR indexing mismatch).
+- [ ] Update `docs/api/endpoints.md` from "ready for implementation" wording to actual statuses.
+- [ ] Update `docs/guides/testing-agencies.md` credentials/examples to current seed data.
+- [ ] Keep `docs/TODO.md` as single source of truth for roadmap (root `TODO.md` intentionally unchanged for now).
 
-#### Mobile App (Flutter)
-- [ ] Complete traveler app development
-- [ ] Implement trip request creation
-- [ ] Add hotel browsing and booking
-- [ ] Create chat interface
-- [ ] Implement payment flow
-- [ ] Add review and rating system
-- [ ] Create user profile management
-- [ ] Add push notifications
-
-### Medium Priority
-
-#### Backend
-- [ ] Add GraphQL API option
-- [ ] Implement microservices architecture
-- [ ] Add message queue (RabbitMQ/Kafka)
-- [ ] Create admin analytics endpoints
-- [ ] Add geolocation services
-- [ ] Implement recommendation system
-- [ ] Add multi-language support
-
-#### Frontend
-- [ ] Add dark mode support
-- [ ] Implement PWA features
-- [ ] Add offline support
-- [ ] Create mobile-responsive views
-- [ ] Add accessibility features (WCAG compliance)
-- [ ] Implement advanced search filters
-- [ ] Add data visualization with charts
-
-### Low Priority
-
-- [ ] Add social media integration
-- [ ] Implement referral system
-- [ ] Add loyalty points program
-- [ ] Create blog/content management
-- [ ] Add weather integration for destinations
-- [ ] Implement currency conversion
-- [ ] Add travel insurance integration
-
----
-
-## 🐛 Known Issues
-
-### Backend
-- [ ] Some TypeScript `any` types still need to be fixed
-- [ ] ESLint warnings in transport module
-- [ ] Need to add proper error types throughout
-
-### Frontend
-- [ ] ESLint errors in both portals need fixing
-- [ ] Some components need loading states
-- [ ] Error handling could be more consistent
-- [ ] Need to add form validation feedback
-
-### General
-- [ ] Need comprehensive testing coverage
-- [ ] Documentation could include more examples
-- [ ] Need deployment guides for production
-
----
-
-## 🔄 Refactoring Needed
-
-### Backend
-- [ ] Extract common controller logic to base class
-- [ ] Standardize error responses
-- [ ] Improve service layer separation
-- [ ] Add DTOs for request/response validation
-- [ ] Refactor auth middleware for better reusability
-
-### Frontend
-- [ ] Create reusable form components
-- [ ] Standardize API error handling
-- [ ] Extract common hooks
-- [ ] Improve Redux store structure
-- [ ] Add component documentation
-
----
-
-## 📊 Performance Improvements
-
-- [ ] Add database query optimization
-- [ ] Implement response caching
-- [ ] Add CDN for static assets
-- [ ] Optimize bundle sizes
-- [ ] Add lazy loading for routes
-- [ ] Implement virtual scrolling for large lists
-- [ ] Add image optimization pipeline
-
----
-
-## 🔒 Security Enhancements
-
-- [ ] Add rate limiting per user
-- [ ] Implement CSRF protection
-- [ ] Add input sanitization
-- [ ] Implement API key rotation
-- [ ] Add security headers
-- [ ] Implement audit logging
-- [ ] Add intrusion detection
-- [ ] Perform security audit
-
----
-
-## 📱 Mobile App Roadmap
-
-### Phase 1: Core Features
-- [ ] User authentication
-- [ ] Browse travel packages
-- [ ] Search hotels and vehicles
-- [ ] Create trip requests
-- [ ] View and accept bids
-
-### Phase 2: Booking & Payment
-- [ ] Complete booking flow
-- [ ] Payment integration
-- [ ] Booking management
-- [ ] Cancellation handling
-
-### Phase 3: Communication
-- [ ] Real-time chat
-- [ ] Push notifications
-- [ ] Email notifications
-- [ ] In-app messaging
-
-### Phase 4: Social Features
-- [ ] Reviews and ratings
-- [ ] User profiles
-- [ ] Trip sharing
-- [ ] Photo galleries
-
----
-
-## 🚀 Deployment Checklist
-
-### Pre-Deployment
-- [ ] Complete all high-priority features
-- [ ] Fix all critical bugs
-- [ ] Complete security audit
-- [ ] Add comprehensive tests
-- [ ] Optimize performance
-- [ ] Update documentation
-
-### Production Setup
-- [ ] Setup production database
-- [ ] Configure environment variables
-- [ ] Setup CI/CD pipeline
-- [ ] Configure monitoring (Sentry, etc.)
-- [ ] Setup logging service
-- [ ] Configure backup strategy
-- [ ] Setup CDN
-- [ ] Configure SSL certificates
-
-### Post-Deployment
-- [ ] Monitor error rates
-- [ ] Track performance metrics
-- [ ] Gather user feedback
-- [ ] Plan iteration cycles
-
----
-
-## 📈 Success Metrics
-
-### Technical Metrics
-- [ ] API response time < 200ms
-- [ ] 99.9% uptime
-- [ ] Test coverage > 80%
-- [ ] Zero critical security vulnerabilities
-- [ ] Lighthouse score > 90
-
-### Business Metrics
-- [ ] User registration rate
-- [ ] Booking conversion rate
-- [ ] Agency approval rate
-- [ ] User satisfaction score
-- [ ] Revenue growth
-
----
-
-## 🎯 Next Sprint Goals
-
-1. **Complete TypeScript type fixes** in backend
-2. **Fix all ESLint errors** in frontend portals
-3. **Implement payment integration**
-4. **Add comprehensive testing**
-5. **Create deployment documentation**
-
----
-
-## 📝 Notes
-
-- Keep this TODO updated as tasks are completed
-- Prioritize security and performance
-- Focus on user experience
-- Maintain code quality standards
-- Document all major changes
-
----
-
-<div align="center">
-
-**Last Updated:** 2026-01-27
-
-**[⬆ Back to Top](#-trekpal-todo--project-status)**
-
-</div>
+## Assumptions and Defaults
+- Target file to update: `docs/TODO.md`.
+- Update style: full replacement (not append).
+- Keep `TODO.md` at repo root unchanged in this pass.
+- Follow SRS constraint `CO-4` (no payment integration in core scope).
+- Preserve existing stack choices (Express + Prisma + React + Flutter) and REST architecture.

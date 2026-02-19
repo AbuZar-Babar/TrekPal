@@ -7,7 +7,8 @@ import Dashboard from './modules/dashboard/components/Dashboard';
 import AgencyList from './modules/agencies/components/AgencyList';
 import HotelApprovalList from './modules/hotels/components/HotelApprovalList';
 import VehicleApprovalList from './modules/vehicles/components/VehicleApprovalList';
-import ComingSoon from './shared/components/ComingSoon';
+import UserList from './modules/users/components/UserList';
+import ReportDashboard from './modules/reports/components/ReportDashboard';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -69,10 +70,7 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <ComingSoon
-                title="User Management"
-                description="Manage platform users, view profiles, and handle account issues."
-              />
+              <UserList />
             </Layout>
           </ProtectedRoute>
         }
@@ -82,10 +80,7 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <ComingSoon
-                title="Reports & Analytics"
-                description="Detailed reports, exports, and advanced analytics are on the way."
-              />
+              <ReportDashboard />
             </Layout>
           </ProtectedRoute>
         }

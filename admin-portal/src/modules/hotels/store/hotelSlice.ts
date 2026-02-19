@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Hotel, PaginatedResponse } from '../../../shared/types';
+import { Hotel } from '../../../shared/types';
 import { hotelService } from '../services/hotelService';
 
 interface HotelState {
