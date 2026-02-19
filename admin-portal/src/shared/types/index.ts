@@ -18,6 +18,10 @@ export interface Agency {
   address: string | null;
   license: string | null;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  ownerName: string | null;
+  cnic: string | null;
+  cnicImageUrl: string | null;
+  ownerPhotoUrl: string | null;
   createdAt: string;
   updatedAt: string;
   hotelsCount?: number;

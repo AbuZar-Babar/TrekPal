@@ -91,6 +91,24 @@ export class AdminController {
   }
 
   /**
+   * Delete an agency
+   * DELETE /api/admin/agencies/:id
+   */
+  async deleteAgency(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      await adminService.deleteAgency(id);
+      sendSuccess(res, null, 'Agency deleted successfully');
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        sendError(res, 'Agency not found', 404);
+      } else {
+        sendError(res, error.message || 'Failed to delete agency', 500);
+      }
+    }
+  }
+
+  /**
    * Get all hotels
    * GET /api/admin/hotels
    */

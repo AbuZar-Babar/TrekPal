@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ROLES } from '../../config/constants';
 
 /**
  * Auth request/response types
@@ -19,6 +18,7 @@ export const userRegisterSchema = z.object({
 export type UserRegisterInput = z.infer<typeof userRegisterSchema>['body'];
 
 // Agency Registration Schema
+// Note: cnicImageUrl and ownerPhotoUrl are populated by the controller after multer processes the files
 export const agencyRegisterSchema = z.object({
   body: z.object({
     email: z.string().email('Invalid email address'),
@@ -27,10 +27,15 @@ export const agencyRegisterSchema = z.object({
     phone: z.string().optional(),
     address: z.string().optional(),
     license: z.string().optional(),
+    ownerName: z.string().min(2, 'Owner name must be at least 2 characters'),
+    cnic: z.string().length(13, 'CNIC must be exactly 13 digits'),
   }),
 });
 
-export type AgencyRegisterInput = z.infer<typeof agencyRegisterSchema>['body'];
+export type AgencyRegisterInput = z.infer<typeof agencyRegisterSchema>['body'] & {
+  cnicImageUrl?: string;
+  ownerPhotoUrl?: string;
+};
 
 // Login Schema (for both user and agency)
 // Supports both Firebase token and email/password

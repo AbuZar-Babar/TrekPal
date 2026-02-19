@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Vehicle, PaginatedResponse } from '../../../shared/types';
+import { Vehicle } from '../../../shared/types';
 import { transportService } from '../services/transportService';
 
 interface TransportState {

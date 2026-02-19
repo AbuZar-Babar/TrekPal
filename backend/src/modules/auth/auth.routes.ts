@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { authController } from './auth.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
+import { uploadKycDocuments } from '../../middlewares/upload.middleware';
 import {
   validateBody,
-  validateParams,
 } from '../../middlewares/validation.middleware';
 import {
   userRegisterSchema,
@@ -27,11 +27,13 @@ router.post(
 
 /**
  * @route   POST /api/auth/register/agency
- * @desc    Register a new travel agency
+ * @desc    Register a new travel agency with KYC documents
  * @access  Public
+ * @note    Accepts multipart/form-data with cnicImage and ownerPhoto files
  */
 router.post(
   '/register/agency',
+  uploadKycDocuments as any,
   validateBody(agencyRegisterSchema.shape.body),
   authController.registerAgency.bind(authController)
 );

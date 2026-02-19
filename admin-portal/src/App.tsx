@@ -7,6 +7,7 @@ import Dashboard from './modules/dashboard/components/Dashboard';
 import AgencyList from './modules/agencies/components/AgencyList';
 import HotelApprovalList from './modules/hotels/components/HotelApprovalList';
 import VehicleApprovalList from './modules/vehicles/components/VehicleApprovalList';
+import ComingSoon from './shared/components/ComingSoon';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -38,10 +39,7 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <div>
-                <h1 className="text-2xl font-bold mb-4">Agencies</h1>
-                <AgencyList />
-              </div>
+              <AgencyList />
             </Layout>
           </ProtectedRoute>
         }
@@ -51,10 +49,7 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <div>
-                <h1 className="text-2xl font-bold mb-4">Hotels</h1>
-                <HotelApprovalList />
-              </div>
+              <HotelApprovalList />
             </Layout>
           </ProtectedRoute>
         }
@@ -64,10 +59,7 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <div>
-                <h1 className="text-2xl font-bold mb-4">Transport Vehicles</h1>
-                <VehicleApprovalList />
-              </div>
+              <VehicleApprovalList />
             </Layout>
           </ProtectedRoute>
         }
@@ -77,10 +69,10 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <div>
-                <h1 className="text-2xl font-bold mb-4">Users</h1>
-                <p className="text-gray-600">User management coming soon...</p>
-              </div>
+              <ComingSoon
+                title="User Management"
+                description="Manage platform users, view profiles, and handle account issues."
+              />
             </Layout>
           </ProtectedRoute>
         }
@@ -90,10 +82,10 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <div>
-                <h1 className="text-2xl font-bold mb-4">Reports</h1>
-                <p className="text-gray-600">Reports coming soon...</p>
-              </div>
+              <ComingSoon
+                title="Reports & Analytics"
+                description="Detailed reports, exports, and advanced analytics are on the way."
+              />
             </Layout>
           </ProtectedRoute>
         }

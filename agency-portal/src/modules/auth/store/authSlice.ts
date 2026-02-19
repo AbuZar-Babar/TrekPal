@@ -30,12 +30,23 @@ export const login = createAsyncThunk(
 );
 
 /**
- * Signup thunk
+ * Signup thunk - sends KYC documents with FormData
  */
 export const signup = createAsyncThunk(
   'auth/signup',
-  async ({ email, password, name, phone, address, license }: { email: string; password: string; name: string; phone?: string; address?: string; license?: string }) => {
-    const response = await authService.signup(email, password, name, phone, address, license);
+  async (data: {
+    email: string;
+    password: string;
+    name: string;
+    ownerName: string;
+    cnic: string;
+    cnicImage: File;
+    ownerPhoto: File;
+    phone?: string;
+    address?: string;
+    license?: string;
+  }) => {
+    const response = await authService.signup(data);
     // Don't store token/user if status is PENDING - they need approval first
     if (response.status === 'PENDING') {
       return { user: response.user, status: 'PENDING' };
@@ -88,14 +99,15 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(signup.fulfilled, (state, action: PayloadAction<User | { user: User; status: string }>) => {
+      .addCase(signup.fulfilled, (state, action) => {
         state.loading = false;
+        const payload = action.payload as any;
         // If status is PENDING, don't authenticate
-        if ('status' in action.payload && action.payload.status === 'PENDING') {
-          state.user = action.payload.user;
-          state.isAuthenticated = false; // Don't authenticate until approved
+        if (payload?.status === 'PENDING') {
+          state.user = payload.user;
+          state.isAuthenticated = false;
         } else {
-          state.user = action.payload as User;
+          state.user = payload as User;
           state.isAuthenticated = true;
         }
       })

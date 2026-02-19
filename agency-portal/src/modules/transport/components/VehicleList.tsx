@@ -40,9 +40,8 @@ const VehicleList = () => {
     };
     return (
       <span
-        className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-          colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-200'
-        }`}
+        className={`px-3 py-1 rounded-full text-xs font-semibold border ${colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-200'
+          }`}
       >
         {status}
       </span>
@@ -219,7 +218,11 @@ const VehicleList = () => {
 
       {vehicles.length === 0 && !loading && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-          <div className="text-6xl mb-4">🚗</div>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-50 rounded-2xl mb-4">
+            <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 17h.01M16 17h.01M3 11l1.5-5.25A2 2 0 016.42 4h11.16a2 2 0 011.92 1.75L21 11M3 11v6a1 1 0 001 1h1a2 2 0 004 0h6a2 2 0 004 0h1a1 1 0 001-1v-6M3 11h18" />
+            </svg>
+          </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No vehicles found</h3>
           <p className="text-gray-600 mb-6">Get started by adding your first vehicle.</p>
           <button

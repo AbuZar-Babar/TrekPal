@@ -80,6 +80,10 @@ export class AdminService {
       address: agency.address,
       license: agency.license,
       status: agency.status,
+      ownerName: agency.ownerName,
+      cnic: agency.cnic,
+      cnicImageUrl: agency.cnicImageUrl,
+      ownerPhotoUrl: agency.ownerPhotoUrl,
       createdAt: agency.createdAt,
       updatedAt: agency.updatedAt,
       hotelsCount: agency.hotelsCount || 0,
@@ -112,6 +116,10 @@ export class AdminService {
       address: agencyWithCounts.address,
       license: agencyWithCounts.license,
       status: agencyWithCounts.status,
+      ownerName: agencyWithCounts.ownerName,
+      cnic: agencyWithCounts.cnic,
+      cnicImageUrl: agencyWithCounts.cnicImageUrl,
+      ownerPhotoUrl: agencyWithCounts.ownerPhotoUrl,
       createdAt: agencyWithCounts.createdAt,
       updatedAt: agencyWithCounts.updatedAt,
       hotelsCount: (agencyWithCounts as any).hotelsCount || 0,
@@ -137,11 +145,22 @@ export class AdminService {
       address: agencyWithCounts.address,
       license: agencyWithCounts.license,
       status: agencyWithCounts.status,
+      ownerName: agencyWithCounts.ownerName,
+      cnic: agencyWithCounts.cnic,
+      cnicImageUrl: agencyWithCounts.cnicImageUrl,
+      ownerPhotoUrl: agencyWithCounts.ownerPhotoUrl,
       createdAt: agencyWithCounts.createdAt,
       updatedAt: agencyWithCounts.updatedAt,
       hotelsCount: (agencyWithCounts as any).hotelsCount || 0,
       vehiclesCount: (agencyWithCounts as any).vehiclesCount || 0,
     };
+  }
+
+  /**
+   * Delete an agency permanently
+   */
+  async deleteAgency(agencyId: string): Promise<void> {
+    await this.agencyRepo.delete(agencyId);
   }
 
   /**

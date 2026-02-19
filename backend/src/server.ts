@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import cors from 'cors';
+import path from 'path';
 import { createServer } from 'http';
 import { env } from './config/env';
 import { initializeFirebase } from './config/firebase';
@@ -56,6 +57,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files (KYC documents, etc.)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

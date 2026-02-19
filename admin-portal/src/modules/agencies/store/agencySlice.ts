@@ -45,6 +45,14 @@ export const rejectAgency = createAsyncThunk(
   }
 );
 
+export const deleteAgency = createAsyncThunk(
+  'agencies/deleteAgency',
+  async (id: string) => {
+    await agencyService.deleteAgency(id);
+    return id;
+  }
+);
+
 const agencySlice = createSlice({
   name: 'agencies',
   initialState,
@@ -79,6 +87,10 @@ const agencySlice = createSlice({
         if (index !== -1) {
           state.agencies[index] = action.payload;
         }
+      })
+      .addCase(deleteAgency.fulfilled, (state, action) => {
+        state.agencies = state.agencies.filter((a) => a.id !== action.payload);
+        state.pagination.total -= 1;
       });
   },
 });

@@ -17,10 +17,10 @@ export const agencyService = {
     try {
       const response = await apiClient.get('/admin/agencies', { params });
       console.log('[Agency Service] Response:', response.data);
-      
+
       // Handle response structure
       const result = response.data.data || response.data;
-      
+
       // Check if result has agencies property
       if (result.agencies) {
         return {
@@ -30,7 +30,7 @@ export const agencyService = {
           limit: result.limit,
         };
       }
-      
+
       // If result is already an array (unlikely but handle it)
       if (Array.isArray(result)) {
         return {
@@ -40,7 +40,7 @@ export const agencyService = {
           limit: params?.limit || 20,
         };
       }
-      
+
       // Fallback
       console.error('[Agency Service] Unexpected response structure:', result);
       return {
@@ -73,6 +73,13 @@ export const agencyService = {
       reason,
     });
     return response.data.data;
+  },
+
+  /**
+   * Delete agency permanently
+   */
+  async deleteAgency(id: string): Promise<void> {
+    await apiClient.delete(`/admin/agencies/${id}`);
   },
 };
 

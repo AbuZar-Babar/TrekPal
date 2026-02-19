@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../../middlewares/auth.middleware';
 import { authService } from './auth.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
-import { getErrorMessage, getErrorCode } from '../../utils/error.util';
+import { getErrorMessage } from '../../utils/error.util';
 
 /**
  * Auth Controller
@@ -37,23 +37,38 @@ export class AuthController {
   }
 
   /**
-   * Register a new travel agency
+   * Register a new travel agency with KYC documents
    * POST /api/auth/register/agency
+   * Content-Type: multipart/form-data
    * 
    * @example
-   * Request body:
-   * {
-   *   "email": "agency@example.com",
-   *   "password": "password123",
-   *   "name": "Travel Agency Inc",
-   *   "phone": "+1234567890",
-   *   "address": "123 Main St",
-   *   "license": "TA-12345"
-   * }
+   * Form fields:
+   *   email, password, name, phone, address, license, ownerName, cnic
+   * Files:
+   *   cnicImage (JPEG/PNG), ownerPhoto (JPEG/PNG)
    */
   async registerAgency(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const result = await authService.registerAgency(req.body);
+      // Build file URLs from uploaded files
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+      let cnicImageUrl: string | undefined;
+      let ownerPhotoUrl: string | undefined;
+
+      if (files?.cnicImage?.[0]) {
+        cnicImageUrl = `${baseUrl}/uploads/kyc/${files.cnicImage[0].filename}`;
+      }
+      if (files?.ownerPhoto?.[0]) {
+        ownerPhotoUrl = `${baseUrl}/uploads/kyc/${files.ownerPhoto[0].filename}`;
+      }
+
+      const result = await authService.registerAgency({
+        ...req.body,
+        cnicImageUrl,
+        ownerPhotoUrl,
+      });
+
       sendSuccess(
         res,
         result,
@@ -61,8 +76,13 @@ export class AuthController {
         201
       );
     } catch (error: any) {
+      console.error('[Auth Controller] registerAgency error:', error.message || error);
       if (error.code === 'auth/email-already-exists') {
         sendError(res, 'Email already registered', 409);
+      } else if (error.code === 'P2002') {
+        // Prisma unique constraint violation
+        const field = error.meta?.target?.[0] || 'field';
+        sendError(res, `A record with this ${field} already exists`, 409);
       } else {
         sendError(res, error.message || 'Registration failed', 400);
       }

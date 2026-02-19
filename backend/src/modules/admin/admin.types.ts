@@ -34,6 +34,10 @@ export interface AgencyResponse {
   address: string | null;
   license: string | null;
   status: string;
+  ownerName: string | null;
+  cnic: string | null;
+  cnicImageUrl: string | null;
+  ownerPhotoUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
   hotelsCount?: number;

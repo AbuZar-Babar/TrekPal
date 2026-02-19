@@ -142,6 +142,10 @@ export class AuthService {
       phone: input.phone,
       address: input.address,
       license: input.license,
+      ownerName: input.ownerName,
+      cnic: input.cnic,
+      cnicImageUrl: input.cnicImageUrl,
+      ownerPhotoUrl: input.ownerPhotoUrl,
       status: APPROVAL_STATUS.PENDING,
     });
 

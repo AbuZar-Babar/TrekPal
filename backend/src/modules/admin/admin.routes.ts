@@ -37,6 +37,16 @@ router.post(
 );
 
 /**
+ * @route   DELETE /api/admin/agencies/:id
+ * @desc    Delete an agency permanently
+ * @access  Private (Admin only)
+ */
+router.delete(
+  '/agencies/:id',
+  adminController.deleteAgency.bind(adminController)
+);
+
+/**
  * @route   GET /api/admin/hotels
  * @desc    Get all hotels with filtering and pagination
  * @access  Private (Admin only)

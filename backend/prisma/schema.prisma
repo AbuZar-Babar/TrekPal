@@ -35,16 +35,20 @@ model User {
 
 // Agency model
 model Agency {
-  id          String   @id @default(cuid())
-  firebaseUid String   @unique
-  email       String   @unique
-  name        String
-  phone       String?
-  address     String?
-  license     String?  @unique
-  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  firebaseUid   String   @unique
+  email         String   @unique
+  name          String
+  phone         String?
+  address       String?
+  license       String?  @unique
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  ownerName     String?
+  cnic          String?  @unique
+  cnicImageUrl  String?
+  ownerPhotoUrl String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
   hotels      Hotel[]
