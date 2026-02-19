@@ -10,6 +10,7 @@ import {
 } from '../../repositories';
 import { prisma } from '../../config/database';
 import { APPROVAL_STATUS } from '../../config/constants';
+import { createSignedKycUrl, deleteKycFile, isHttpUrl } from '../../services/kyc-storage.service';
 import {
   AgencyResponse,
   HotelResponse,
@@ -45,6 +46,48 @@ export class AdminService {
     this.userRepo = userRepo || new PrismaUserRepository();
   }
 
+  private async resolveKycUrl(value: string | null): Promise<string | null> {
+    if (!value) {
+      return null;
+    }
+
+    if (isHttpUrl(value)) {
+      return value;
+    }
+
+    try {
+      return await createSignedKycUrl(value);
+    } catch (error) {
+      console.error('[Admin Service] Failed to create signed KYC URL:', error);
+      return null;
+    }
+  }
+
+  private async mapAgencyResponse(agency: any): Promise<AgencyResponse> {
+    const [cnicImageUrl, ownerPhotoUrl] = await Promise.all([
+      this.resolveKycUrl(agency.cnicImageUrl),
+      this.resolveKycUrl(agency.ownerPhotoUrl),
+    ]);
+
+    return {
+      id: agency.id,
+      email: agency.email,
+      name: agency.name,
+      phone: agency.phone,
+      address: agency.address,
+      license: agency.license,
+      status: agency.status,
+      ownerName: agency.ownerName,
+      cnic: agency.cnic,
+      cnicImageUrl,
+      ownerPhotoUrl,
+      createdAt: agency.createdAt,
+      updatedAt: agency.updatedAt,
+      hotelsCount: agency.hotelsCount || 0,
+      vehiclesCount: agency.vehiclesCount || 0,
+    };
+  }
+
   /**
    * Get all agencies with filtering and pagination
    */
@@ -72,23 +115,9 @@ export class AdminService {
       total,
     });
 
-    const agenciesResponse: AgencyResponse[] = agencies.map((agency) => ({
-      id: agency.id,
-      email: agency.email,
-      name: agency.name,
-      phone: agency.phone,
-      address: agency.address,
-      license: agency.license,
-      status: agency.status,
-      ownerName: agency.ownerName,
-      cnic: agency.cnic,
-      cnicImageUrl: agency.cnicImageUrl,
-      ownerPhotoUrl: agency.ownerPhotoUrl,
-      createdAt: agency.createdAt,
-      updatedAt: agency.updatedAt,
-      hotelsCount: agency.hotelsCount || 0,
-      vehiclesCount: agency.vehiclesCount || 0,
-    }));
+    const agenciesResponse = await Promise.all(
+      agencies.map((agency) => this.mapAgencyResponse(agency))
+    );
 
     return {
       agencies: agenciesResponse,
@@ -101,65 +130,43 @@ export class AdminService {
   /**
    * Approve an agency
    */
-  async approveAgency(agencyId: string, reason?: string): Promise<AgencyResponse> {
+  async approveAgency(agencyId: string, _reason?: string): Promise<AgencyResponse> {
     const agency = await this.agencyRepo.updateStatus(agencyId, APPROVAL_STATUS.APPROVED);
 
     // Refetch with counts
     const agencies = await this.agencyRepo.findMany({ page: 1, limit: 1 });
     const agencyWithCounts = agencies.find(a => a.id === agencyId) || agency;
 
-    return {
-      id: agencyWithCounts.id,
-      email: agencyWithCounts.email,
-      name: agencyWithCounts.name,
-      phone: agencyWithCounts.phone,
-      address: agencyWithCounts.address,
-      license: agencyWithCounts.license,
-      status: agencyWithCounts.status,
-      ownerName: agencyWithCounts.ownerName,
-      cnic: agencyWithCounts.cnic,
-      cnicImageUrl: agencyWithCounts.cnicImageUrl,
-      ownerPhotoUrl: agencyWithCounts.ownerPhotoUrl,
-      createdAt: agencyWithCounts.createdAt,
-      updatedAt: agencyWithCounts.updatedAt,
-      hotelsCount: (agencyWithCounts as any).hotelsCount || 0,
-      vehiclesCount: (agencyWithCounts as any).vehiclesCount || 0,
-    };
+    return this.mapAgencyResponse(agencyWithCounts);
   }
 
   /**
    * Reject an agency
    */
-  async rejectAgency(agencyId: string, reason?: string): Promise<AgencyResponse> {
+  async rejectAgency(agencyId: string, _reason?: string): Promise<AgencyResponse> {
     const agency = await this.agencyRepo.updateStatus(agencyId, APPROVAL_STATUS.REJECTED);
 
     // Refetch with counts
     const agencies = await this.agencyRepo.findMany({ page: 1, limit: 1 });
     const agencyWithCounts = agencies.find(a => a.id === agencyId) || agency;
 
-    return {
-      id: agencyWithCounts.id,
-      email: agencyWithCounts.email,
-      name: agencyWithCounts.name,
-      phone: agencyWithCounts.phone,
-      address: agencyWithCounts.address,
-      license: agencyWithCounts.license,
-      status: agencyWithCounts.status,
-      ownerName: agencyWithCounts.ownerName,
-      cnic: agencyWithCounts.cnic,
-      cnicImageUrl: agencyWithCounts.cnicImageUrl,
-      ownerPhotoUrl: agencyWithCounts.ownerPhotoUrl,
-      createdAt: agencyWithCounts.createdAt,
-      updatedAt: agencyWithCounts.updatedAt,
-      hotelsCount: (agencyWithCounts as any).hotelsCount || 0,
-      vehiclesCount: (agencyWithCounts as any).vehiclesCount || 0,
-    };
+    return this.mapAgencyResponse(agencyWithCounts);
   }
 
   /**
    * Delete an agency permanently
    */
   async deleteAgency(agencyId: string): Promise<void> {
+    const agency = await this.agencyRepo.findById(agencyId);
+    if (!agency) {
+      throw new Error('Agency not found');
+    }
+
+    const objectPaths = [agency.cnicImageUrl, agency.ownerPhotoUrl]
+      .filter((value): value is string => !!value)
+      .filter((value) => !isHttpUrl(value));
+
+    await Promise.all(objectPaths.map((objectPath) => deleteKycFile(objectPath)));
     await this.agencyRepo.delete(agencyId);
   }
 
@@ -206,7 +213,7 @@ export class AdminService {
   /**
    * Approve a hotel
    */
-  async approveHotel(hotelId: string, reason?: string): Promise<HotelResponse> {
+  async approveHotel(hotelId: string, _reason?: string): Promise<HotelResponse> {
     const hotel = await this.hotelRepo.updateStatus(hotelId, APPROVAL_STATUS.APPROVED);
 
     // Refetch with relations
@@ -234,7 +241,7 @@ export class AdminService {
   /**
    * Reject a hotel
    */
-  async rejectHotel(hotelId: string, reason?: string): Promise<HotelResponse> {
+  async rejectHotel(hotelId: string, _reason?: string): Promise<HotelResponse> {
     const hotel = await this.hotelRepo.updateStatus(hotelId, APPROVAL_STATUS.REJECTED);
 
     // Refetch with relations
@@ -301,7 +308,7 @@ export class AdminService {
   /**
    * Approve a vehicle
    */
-  async approveVehicle(vehicleId: string, reason?: string): Promise<VehicleResponse> {
+  async approveVehicle(vehicleId: string, _reason?: string): Promise<VehicleResponse> {
     const vehicle = await this.vehicleRepo.updateStatus(vehicleId, APPROVAL_STATUS.APPROVED);
 
     // Refetch with relations
@@ -328,7 +335,7 @@ export class AdminService {
   /**
    * Reject a vehicle
    */
-  async rejectVehicle(vehicleId: string, reason?: string): Promise<VehicleResponse> {
+  async rejectVehicle(vehicleId: string, _reason?: string): Promise<VehicleResponse> {
     const vehicle = await this.vehicleRepo.updateStatus(vehicleId, APPROVAL_STATUS.REJECTED);
 
     // Refetch with relations
@@ -455,7 +462,7 @@ export class AdminService {
    * Get revenue chart data (last 6 months)
    * Returns monthly revenue aggregated from bookings
    */
-  async getRevenueChartData(range: string = '6months'): Promise<{ month: string; revenue: number }[]> {
+  async getRevenueChartData(_range: string = '6months'): Promise<{ month: string; revenue: number }[]> {
     const months = 6; // TODO: Parse range parameter
     const data: { month: string; revenue: number }[] = [];
 
@@ -490,7 +497,7 @@ export class AdminService {
    * Get bookings chart data (last 6 months)
    * Returns monthly booking counts
    */
-  async getBookingsChartData(range: string = '6months'): Promise<{ month: string; bookings: number }[]> {
+  async getBookingsChartData(_range: string = '6months'): Promise<{ month: string; bookings: number }[]> {
     const months = 6; // TODO: Parse range parameter
     const data: { month: string; bookings: number }[] = [];
 
@@ -522,7 +529,7 @@ export class AdminService {
    * Get user growth data (last 6 months)
    * Returns cumulative user count by month
    */
-  async getUserGrowthData(range: string = '6months'): Promise<{ month: string; users: number }[]> {
+  async getUserGrowthData(_range: string = '6months'): Promise<{ month: string; users: number }[]> {
     const months = 6; // TODO: Parse range parameter
     const data: { month: string; users: number }[] = [];
 

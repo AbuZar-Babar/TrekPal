@@ -1,8 +1,30 @@
 import { Response } from 'express';
+import path from 'path';
 import { AuthRequest } from '../../middlewares/auth.middleware';
 import { authService } from './auth.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
 import { getErrorMessage } from '../../utils/error.util';
+import { deleteKycFile, uploadKycFile } from '../../services/kyc-storage.service';
+
+const inferExtensionFromMimeType = (mimeType: string): string => {
+  const map: Record<string, string> = {
+    'image/jpeg': '.jpg',
+    'image/jpg': '.jpg',
+    'image/png': '.png',
+    'image/webp': '.webp',
+  };
+  return map[mimeType] || '.bin';
+};
+
+const buildKycObjectPath = (
+  uploadBatchId: string,
+  fieldName: string,
+  file: Express.Multer.File
+): string => {
+  const originalExt = path.extname(file.originalname || '').toLowerCase();
+  const extension = originalExt || inferExtensionFromMimeType(file.mimetype);
+  return `agencies/pending/${uploadBatchId}/${fieldName}${extension}`;
+};
 
 /**
  * Auth Controller
@@ -48,19 +70,27 @@ export class AuthController {
    *   cnicImage (JPEG/PNG), ownerPhoto (JPEG/PNG)
    */
   async registerAgency(req: AuthRequest, res: Response): Promise<void> {
+    const uploadedObjectPaths: string[] = [];
     try {
-      // Build file URLs from uploaded files
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const uploadBatchId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
 
       let cnicImageUrl: string | undefined;
       let ownerPhotoUrl: string | undefined;
 
       if (files?.cnicImage?.[0]) {
-        cnicImageUrl = `${baseUrl}/uploads/kyc/${files.cnicImage[0].filename}`;
+        const cnicImage = files.cnicImage[0];
+        const objectPath = buildKycObjectPath(uploadBatchId, 'cnicImage', cnicImage);
+        await uploadKycFile(cnicImage.buffer, cnicImage.mimetype, objectPath);
+        uploadedObjectPaths.push(objectPath);
+        cnicImageUrl = objectPath;
       }
       if (files?.ownerPhoto?.[0]) {
-        ownerPhotoUrl = `${baseUrl}/uploads/kyc/${files.ownerPhoto[0].filename}`;
+        const ownerPhoto = files.ownerPhoto[0];
+        const objectPath = buildKycObjectPath(uploadBatchId, 'ownerPhoto', ownerPhoto);
+        await uploadKycFile(ownerPhoto.buffer, ownerPhoto.mimetype, objectPath);
+        uploadedObjectPaths.push(objectPath);
+        ownerPhotoUrl = objectPath;
       }
 
       const result = await authService.registerAgency({
@@ -76,6 +106,16 @@ export class AuthController {
         201
       );
     } catch (error: any) {
+      if (uploadedObjectPaths.length > 0) {
+        const cleanupResults = await Promise.allSettled(
+          uploadedObjectPaths.map((objectPath) => deleteKycFile(objectPath))
+        );
+        const failedCleanupCount = cleanupResults.filter((result) => result.status === 'rejected').length;
+        if (failedCleanupCount > 0) {
+          console.error(`[Auth Controller] Failed to cleanup ${failedCleanupCount} uploaded KYC object(s)`);
+        }
+      }
+
       console.error('[Auth Controller] registerAgency error:', error.message || error);
       if (error.code === 'auth/email-already-exists') {
         sendError(res, 'Email already registered', 409);

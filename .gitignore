@@ -10,7 +10,6 @@ coverage/
 # Production
 dist/
 build/
-*.log
 
 # Environment variables
 .env
@@ -22,10 +21,10 @@ build/
 # IDE
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Flutter
 traveler-app/.dart_tool/
@@ -37,9 +36,6 @@ traveler-app/.pub/
 traveler-app/build/
 traveler-app/.ios/
 traveler-app/.android/
-
-# Prisma
-backend/prisma/migrations/
 
 # Logs
 logs/
@@ -58,3 +54,5 @@ Thumbs.db
 *.temp
 .cache/
 
+# Uploads (local KYC files)
+uploads/

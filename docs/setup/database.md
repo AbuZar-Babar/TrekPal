@@ -460,3 +460,56 @@ psql -U postgres -d trekpal -c "SELECT version();"
 Need help? Check the [main README](../README.md) or open an issue.
 
 </div>
+
+---
+
+## Supabase Cutover Runbook
+
+Use this runbook to migrate TrekPal from local PostgreSQL to Supabase PostgreSQL and migrate local KYC files to private Supabase Storage.
+
+### Required backend environment variables
+
+```bash
+# Supabase database URLs
+DATABASE_URL="postgresql://<pooler-user>:<password>@<pooler-host>:6543/postgres?sslmode=require"
+DIRECT_URL="postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres?sslmode=require"
+
+# Supabase storage credentials
+SUPABASE_URL="https://<project-ref>.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="<service-role-key>"
+SUPABASE_STORAGE_BUCKET_KYC="kyc-private"
+SUPABASE_SIGNED_URL_TTL_SECONDS=3600
+```
+
+### One-time migration sequence
+
+```bash
+# 1) Capture baseline counts from local database
+npm run db:counts
+
+# 2) Ensure private KYC bucket exists in Supabase
+npm run storage:kyc:ensure
+
+# 3) Apply schema to Supabase
+npm run prisma:migrate:deploy
+
+# 4) Export local data (data only)
+pg_dump --dbname="$LOCAL_DATABASE_URL" --data-only --no-owner --no-privileges --exclude-table=public._prisma_migrations --file=.tmp/trekpal_data.sql
+
+# 5) Import into Supabase
+psql "$DIRECT_URL" -f .tmp/trekpal_data.sql
+
+# 6) Preview KYC migration (dry run)
+npm run migrate:kyc
+
+# 7) Execute KYC migration
+npm run migrate:kyc:execute
+```
+
+### Validation checklist
+
+- Compare local and Supabase row counts using `npm run db:counts` against each environment.
+- Verify admin agency endpoints return valid signed URLs for `cnicImageUrl` and `ownerPhotoUrl`.
+- Verify new agency registration uploads KYC files to Supabase Storage.
+
+---

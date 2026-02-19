@@ -7,11 +7,17 @@ import { z } from 'zod';
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().default('3000'),
-  // Make DATABASE_URL optional in development for easier setup
+  // Keep DB URLs optional in development (defaults are applied below)
   DATABASE_URL: z.string().url().optional(),
-  // Make JWT_SECRET optional in development (will use a default)
+  DIRECT_URL: z.string().url().optional(),
+  // Keep JWT secret optional in development (default is applied below)
   JWT_SECRET: z.string().min(32).optional(),
   JWT_EXPIRES_IN: z.string().default('7d'),
+  // Supabase Storage (required in production for KYC uploads/signing)
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  SUPABASE_STORAGE_BUCKET_KYC: z.string().min(1).default('kyc-private'),
+  SUPABASE_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
   // Firebase is optional in development
   FIREBASE_PROJECT_ID: z.string().optional(),
   FIREBASE_PRIVATE_KEY: z.string().optional(),
@@ -27,8 +33,13 @@ const parsedEnv = envSchema.parse({
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
   DATABASE_URL: process.env.DATABASE_URL,
+  DIRECT_URL: process.env.DIRECT_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+  SUPABASE_URL: process.env.SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_STORAGE_BUCKET_KYC: process.env.SUPABASE_STORAGE_BUCKET_KYC,
+  SUPABASE_SIGNED_URL_TTL_SECONDS: process.env.SUPABASE_SIGNED_URL_TTL_SECONDS,
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
   FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
   FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
@@ -42,7 +53,7 @@ const defaultJwtSecret = 'development-jwt-secret-key-minimum-32-characters-long-
 
 export const env = {
   ...parsedEnv,
-  DATABASE_URL: parsedEnv.DATABASE_URL || (parsedEnv.NODE_ENV === 'development' 
+  DATABASE_URL: parsedEnv.DATABASE_URL || (parsedEnv.NODE_ENV === 'development'
     ? defaultDatabaseUrl
     : (() => { throw new Error('DATABASE_URL is required'); })()),
   JWT_SECRET: parsedEnv.JWT_SECRET || (parsedEnv.NODE_ENV === 'development'
@@ -52,8 +63,13 @@ export const env = {
   NODE_ENV: 'development' | 'production' | 'test';
   PORT: string;
   DATABASE_URL: string;
+  DIRECT_URL?: string;
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
+  SUPABASE_URL?: string;
+  SUPABASE_SERVICE_ROLE_KEY?: string;
+  SUPABASE_STORAGE_BUCKET_KYC: string;
+  SUPABASE_SIGNED_URL_TTL_SECONDS: number;
   FIREBASE_PROJECT_ID?: string;
   FIREBASE_PRIVATE_KEY?: string;
   FIREBASE_CLIENT_EMAIL?: string;
@@ -69,16 +85,27 @@ if (env.NODE_ENV === 'production') {
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
     throw new Error('JWT_SECRET must be at least 32 characters long in production');
   }
+  if (!process.env.SUPABASE_URL) {
+    throw new Error('SUPABASE_URL is required in production');
+  }
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required in production');
+  }
 }
 
 // Warn in development if using defaults
 if (env.NODE_ENV === 'development') {
   if (!process.env.DATABASE_URL) {
-    console.warn('⚠️  DATABASE_URL not set, using default: postgresql://postgres:postgres@localhost:5432/trekpal');
-    console.warn('⚠️  Make sure PostgreSQL is running and the database "trekpal" exists');
+    console.warn('WARNING: DATABASE_URL not set, using default local PostgreSQL URL.');
+    console.warn('WARNING: Ensure PostgreSQL is running and database "trekpal" exists.');
   }
   if (!process.env.JWT_SECRET) {
-    console.warn('⚠️  JWT_SECRET not set, using development default (not secure for production)');
+    console.warn('WARNING: JWT_SECRET not set, using development default (not secure).');
+  }
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn('WARNING: SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY not set. KYC upload/signing features will fail.');
+  }
+  if (!process.env.DIRECT_URL) {
+    console.warn('WARNING: DIRECT_URL not set. prisma migrate deploy against Supabase direct connection will not work.');
   }
 }
-

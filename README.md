@@ -22,7 +22,7 @@ TrekPal is a modular, full-stack travel management ecosystem with three main app
 - **👤 Traveler App** (Flutter) - Mobile app for travelers
 - **🏢 Agency Portal** (React + Vite) - Web portal for travel agencies  
 - **⚙️ Admin Portal** (React + Vite) - Web portal for administrators
-- **🔧 Backend API** (Node.js + Express + Prisma + PostgreSQL) - RESTful API server
+- **🔧 Backend API** (Node.js + Express + Prisma + Supabase PostgreSQL) - RESTful API server
 
 ---
 
@@ -44,13 +44,13 @@ graph TB
     end
     
     subgraph "Data Layer"
-        F[(PostgreSQL<br/>Database)]
+        F[(Supabase<br/>PostgreSQL)]
         G[Prisma ORM]
     end
     
     subgraph "External Services"
         H[Firebase Auth]
-        I[Firebase Storage]
+        I[Supabase Storage]
     end
     
     A -->|HTTP/WS| D
@@ -108,9 +108,10 @@ For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITE
 ### Prerequisites
 
 - **Node.js** 18+ (with npm 7+)
-- **PostgreSQL** 14+
+- **Supabase account** — [Create one for free](https://supabase.com)
+- *(Optional)* Local **PostgreSQL** 14+ for offline development
 
-### 🎯 One-Command Setup (Recommended)
+### 🎯 Quick Setup
 
 ```bash
 # 1. Clone repository
@@ -120,10 +121,14 @@ cd TrekPal
 # 2. Install all dependencies
 npm install
 
-# 3. Setup database
+# 3. Configure environment
+cp backend/.env.example backend/.env
+# Edit backend/.env with your database credentials
+
+# 4. Setup database (generate Prisma client, run migrations, seed)
 npm run db:setup
 
-# 4. Start EVERYTHING (backend + admin + agency)
+# 5. Start EVERYTHING (backend + admin + agency)
 npm run dev
 ```
 
@@ -132,6 +137,8 @@ That's it! 🎉
 - **Backend API:** http://localhost:3000
 - **Admin Portal:** http://localhost:5174
 - **Agency Portal:** http://localhost:5173
+
+> **Note:** If using Supabase, get your `DATABASE_URL` and `DIRECT_URL` from **Supabase Dashboard → Settings → Database → Connection string**, and `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` from **Settings → API**.
 
 ### 🔧 Selective Startup
 
@@ -147,7 +154,7 @@ npm run dev:admin-only
 npm run dev:agency-only
 ```
 
-### 📝 Manual Setup (Legacy)
+### 📝 Manual Setup
 
 <details>
 <summary>Click to expand manual setup instructions</summary>
@@ -160,7 +167,7 @@ npm install
 
 # Create .env file
 cp .env.example .env
-# Edit .env with your PostgreSQL credentials
+# Edit .env with your database credentials (Supabase or local PostgreSQL)
 
 # Setup database
 npm run prisma:generate
@@ -220,10 +227,14 @@ npm install
 **Issue:** "Can't reach database server" or "Connection refused"
 
 **Solution:**
-1. Ensure PostgreSQL is running
-2. Check credentials in `backend/.env`
-3. Verify database URL format:
+1. If using Supabase: verify your project is active and credentials are correct
+2. If using local PostgreSQL: ensure PostgreSQL is running
+3. Check credentials in `backend/.env`
+4. Verify database URL format:
    ```
+   # Supabase
+   DATABASE_URL="postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres?sslmode=require"
+   # Local
    DATABASE_URL="postgresql://username:password@localhost:5432/trekpal"
    ```
 
@@ -327,7 +338,8 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 |-----------|-------------|
 | **Mobile** | Flutter 3.0+, Riverpod/Bloc, Firebase |
 | **Web** | React 18.2, TypeScript, Vite, Redux Toolkit, Tailwind CSS |
-| **Backend** | Node.js 18+, Express, TypeScript, Prisma, PostgreSQL |
+| **Backend** | Node.js 18+, Express, TypeScript, Prisma, Supabase (PostgreSQL) |
+| **Storage** | Supabase Storage (KYC documents) |
 | **Real-time** | Socket.IO |
 | **Auth** | JWT, Firebase Auth |
 

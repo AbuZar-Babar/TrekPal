@@ -34,8 +34,13 @@
     
     "prisma:generate": "npm run prisma:generate --workspace=backend",
     "prisma:migrate": "npm run prisma:migrate --workspace=backend",
+    "prisma:migrate:deploy": "npm run prisma:migrate:deploy --workspace=backend",
     "prisma:studio": "npm run prisma:studio --workspace=backend",
     "seed": "npm run seed --workspace=backend",
+    "db:counts": "npm run db:counts --workspace=backend",
+    "migrate:kyc": "npm run migrate:kyc --workspace=backend",
+    "migrate:kyc:execute": "npm run migrate:kyc:execute --workspace=backend",
+    "storage:kyc:ensure": "npm run storage:kyc:ensure --workspace=backend",
     
     "db:setup": "echo 🗄️ Setting up database... && npm run prisma:generate && npm run prisma:migrate && npm run seed && echo ✅ Database setup complete!",
     "db:studio": "npm run prisma:studio",
