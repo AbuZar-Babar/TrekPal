@@ -240,18 +240,18 @@ DATABASE_URL="postgresql://postgres:your_password_here@localhost:5432/trekpal?sc
 JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters-long
 JWT_EXPIRES_IN=7d
 
-# Firebase (Optional for development)
-FIREBASE_PROJECT_ID=
-FIREBASE_PRIVATE_KEY=
-FIREBASE_CLIENT_EMAIL=
-FIREBASE_STORAGE_BUCKET=
+# Supabase (Optional for development)
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_STORAGE_BUCKET_KYC=kyc-private
+SUPABASE_SIGNED_URL_TTL_SECONDS=3600
 
 # CORS
 CORS_ORIGIN=http://localhost:5173
 ```
 
 > [!TIP]
-> You can leave Firebase credentials empty for development. The backend will use dummy authentication.
+> You can leave Supabase credentials empty for development. The backend will use dummy authentication.
 
 ---
 

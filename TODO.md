@@ -31,7 +31,7 @@ This document outlines the current state of the TrekPal project and the remainin
 - [ ] **Feature Completion**: Resolve the 150+ `TODO` items in the `traveler-app` codebase.
 - [ ] **Real-time Messaging**: Fully integrate the Socket.io backend with the Flutter chat UI.
 - [ ] **Payment Integration**: Add Stripe/Stax integration for traveler bookings.
-- [ ] **Push Notifications**: Configure Firebase Cloud Messaging (FCM) for trip alerts and bid updates.
+- [ ] **Push Notifications**: Configure a push provider (FCM/APNs) for trip alerts and bid updates.
 
 ### 4. Backend (Node.js/Prisma)
 - [ ] **Search Engine**: Optimize the hotel and vehicle search with advanced filters (price range, amenities, availability).

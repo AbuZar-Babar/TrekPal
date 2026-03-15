@@ -18,11 +18,6 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   SUPABASE_STORAGE_BUCKET_KYC: z.string().min(1).default('kyc-private'),
   SUPABASE_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
-  // Firebase is optional in development
-  FIREBASE_PROJECT_ID: z.string().optional(),
-  FIREBASE_PRIVATE_KEY: z.string().optional(),
-  FIREBASE_CLIENT_EMAIL: z.string().optional(),
-  FIREBASE_STORAGE_BUCKET: z.string().optional(),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
 });
 
@@ -40,10 +35,6 @@ const parsedEnv = envSchema.parse({
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   SUPABASE_STORAGE_BUCKET_KYC: process.env.SUPABASE_STORAGE_BUCKET_KYC,
   SUPABASE_SIGNED_URL_TTL_SECONDS: process.env.SUPABASE_SIGNED_URL_TTL_SECONDS,
-  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
-  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
-  FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
 });
 
@@ -70,10 +61,6 @@ export const env = {
   SUPABASE_SERVICE_ROLE_KEY?: string;
   SUPABASE_STORAGE_BUCKET_KYC: string;
   SUPABASE_SIGNED_URL_TTL_SECONDS: number;
-  FIREBASE_PROJECT_ID?: string;
-  FIREBASE_PRIVATE_KEY?: string;
-  FIREBASE_CLIENT_EMAIL?: string;
-  FIREBASE_STORAGE_BUCKET?: string;
   CORS_ORIGIN: string;
 };
 

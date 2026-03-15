@@ -42,7 +42,7 @@ router.post(
  * @route   POST /api/auth/login
  * @desc    Login user, agency, or admin
  * @access  Public
- * @note    Client should authenticate with Firebase first, then call this endpoint
+ * @note    Can accept Supabase access token or email/password
  */
 router.post(
   '/login',

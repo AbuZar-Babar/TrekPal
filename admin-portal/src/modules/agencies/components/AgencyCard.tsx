@@ -8,11 +8,68 @@ interface AgencyCardProps {
   onDelete: (id: string) => Promise<void>;
 }
 
+const currencyFormatter = new Intl.NumberFormat('en-PK', {
+  style: 'currency',
+  currency: 'PKR',
+  maximumFractionDigits: 0,
+});
+
+const formatLegalEntityType = (value: Agency['legalEntityType']) => {
+  if (!value) {
+    return 'Not provided';
+  }
+
+  return value
+    .toLowerCase()
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
+
+const urlLooksLikeImage = (url: string) => {
+  const cleanUrl = url.split('?')[0].toLowerCase();
+  return ['.jpg', '.jpeg', '.png', '.webp'].some((extension) => cleanUrl.endsWith(extension));
+};
+
+const DocumentCard = ({ label, url }: { label: string; url: string }) => (
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="group rounded-xl border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/40 transition-all overflow-hidden"
+  >
+    {urlLooksLikeImage(url) ? (
+      <img src={url} alt={label} className="w-full h-24 object-cover" />
+    ) : (
+      <div className="h-24 flex items-center justify-center bg-gray-50 text-gray-500">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 21h10a2 2 0 002-2V8l-6-6H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 3v5h5" />
+        </svg>
+      </div>
+    )}
+    <div className="px-3 py-2">
+      <div className="text-xs font-semibold text-gray-800">{label}</div>
+      <div className="text-[11px] text-indigo-600 mt-1 group-hover:underline">Open document</div>
+    </div>
+  </a>
+);
+
 const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) => {
   const isPending = agency.status === 'PENDING';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const documentEntries = [
+    { label: 'CNIC Image', url: agency.cnicImageUrl },
+    { label: 'Owner Photo', url: agency.ownerPhotoUrl },
+    { label: 'Tourism License Certificate', url: agency.licenseCertificateUrl },
+    { label: 'NTN Certificate', url: agency.ntnCertificateUrl },
+    { label: 'Business Registration Proof', url: agency.businessRegistrationProofUrl },
+    { label: 'Office Proof', url: agency.officeProofUrl },
+    { label: 'Bank Certificate', url: agency.bankCertificateUrl },
+    { label: 'Additional Supporting Document', url: agency.additionalSupportingDocumentUrl },
+  ].filter((entry): entry is { label: string; url: string } => !!entry.url);
 
   const statusBadge = {
     PENDING: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
@@ -67,110 +124,66 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
             </div>
           </div>
 
-          {/* Agency Info */}
-          <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-            {agency.phone && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                {agency.phone}
+          <div className="grid md:grid-cols-2 gap-6 text-sm mb-4">
+            <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">Business Summary</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Jurisdiction</span><span className="font-medium text-gray-800">{agency.jurisdiction || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Legal Entity</span><span className="font-medium text-gray-800">{formatLegalEntityType(agency.legalEntityType)}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Tourism License</span><span className="font-medium text-gray-800">{agency.license || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">NTN</span><span className="font-medium text-gray-800">{agency.ntn || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Office City</span><span className="font-medium text-gray-800">{agency.officeCity || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Capital</span><span className="font-medium text-gray-800">{agency.capitalAvailablePkr ? currencyFormatter.format(agency.capitalAvailablePkr) : 'Not provided'}</span></div>
               </div>
-            )}
-            {agency.address && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {agency.address}
+            </div>
+
+            <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">Representative</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Name</span><span className="font-medium text-gray-800">{agency.ownerName || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">CNIC</span><span className="font-medium text-gray-800 font-mono">{agency.cnic || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Phone</span><span className="font-medium text-gray-800">{agency.phone || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-gray-500">Submitted</span><span className="font-medium text-gray-800">{new Date(agency.applicationSubmittedAt || agency.createdAt).toLocaleDateString()}</span></div>
+                {agency.secpRegistrationNumber && (
+                  <div className="flex justify-between gap-4"><span className="text-gray-500">SECP Registration</span><span className="font-medium text-gray-800">{agency.secpRegistrationNumber}</span></div>
+                )}
+                {agency.partnershipRegistrationNumber && (
+                  <div className="flex justify-between gap-4"><span className="text-gray-500">Partnership Registration</span><span className="font-medium text-gray-800">{agency.partnershipRegistrationNumber}</span></div>
+                )}
               </div>
-            )}
-            {agency.license && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                License: {agency.license}
-              </div>
-            )}
-            <div className="flex items-center gap-2 text-gray-600">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {new Date(agency.createdAt).toLocaleDateString()}
             </div>
           </div>
 
-          {/* KYC Documents Section */}
-          {(agency.ownerName || agency.cnic || agency.cnicImageUrl || agency.ownerPhotoUrl) && (
+          {(agency.address || agency.fieldOfOperations.length > 0) && (
             <div className="mt-4 pt-4 border-t border-gray-100">
-              <h4 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                KYC Verification
-              </h4>
-              <div className="space-y-2 text-sm mb-3">
-                {agency.ownerName && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500">Owner Name</span>
-                    <span className="font-medium text-gray-800">{agency.ownerName}</span>
-                  </div>
-                )}
-                {agency.cnic && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500">CNIC</span>
-                    <span className="font-mono text-gray-800 tracking-wider">{agency.cnic}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Document Images */}
-              {(agency.cnicImageUrl || agency.ownerPhotoUrl) && (
-                <div className="flex gap-3">
-                  {agency.cnicImageUrl && (
-                    <a
-                      href={agency.cnicImageUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative block"
-                    >
-                      <img
-                        src={agency.cnicImageUrl}
-                        alt="CNIC Document"
-                        className="w-20 h-20 object-cover rounded-lg border-2 border-gray-200 group-hover:border-indigo-400 transition-colors shadow-sm"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-all flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                        </svg>
-                      </div>
-                      <span className="block text-xs text-gray-500 text-center mt-1">CNIC</span>
-                    </a>
-                  )}
-                  {agency.ownerPhotoUrl && (
-                    <a
-                      href={agency.ownerPhotoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative block"
-                    >
-                      <img
-                        src={agency.ownerPhotoUrl}
-                        alt="Owner Photo"
-                        className="w-20 h-20 object-cover rounded-lg border-2 border-gray-200 group-hover:border-indigo-400 transition-colors shadow-sm"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-all flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                        </svg>
-                      </div>
-                      <span className="block text-xs text-gray-500 text-center mt-1">Photo</span>
-                    </a>
-                  )}
+              <h4 className="text-sm font-semibold text-gray-800 mb-3">Operational Details</h4>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="text-gray-500 mb-1">Office Address</div>
+                  <div className="text-gray-800 font-medium">{agency.address || 'Not provided'}</div>
                 </div>
-              )}
+                <div>
+                  <div className="text-gray-500 mb-1">Field of Operations</div>
+                  <div className="flex flex-wrap gap-2">
+                    {agency.fieldOfOperations.length > 0 ? agency.fieldOfOperations.map((item) => (
+                      <span key={item} className="px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-medium">
+                        {item}
+                      </span>
+                    )) : <span className="text-gray-800 font-medium">Not provided</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {documentEntries.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <h4 className="text-sm font-semibold text-gray-800 mb-3">Application Documents</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {documentEntries.map((document) => (
+                  <DocumentCard key={document.label} label={document.label} url={document.url} />
+                ))}
+              </div>
             </div>
           )}
 

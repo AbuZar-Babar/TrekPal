@@ -12,7 +12,7 @@ export interface IAdminRepository extends IRepository<Admin> {
     findByEmail(email: string): Promise<Admin | null>;
 
     /**
-     * Find admin by Firebase UID
+     * Find admin by Auth UID
      */
-    findByFirebaseUid(firebaseUid: string): Promise<Admin | null>;
+    findByAuthUid(authUid: string): Promise<Admin | null>;
 }

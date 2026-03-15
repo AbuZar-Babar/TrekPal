@@ -22,9 +22,9 @@ export class PrismaAdminRepository implements IAdminRepository {
         });
     }
 
-    async findByFirebaseUid(firebaseUid: string): Promise<Admin | null> {
+    async findByAuthUid(authUid: string): Promise<Admin | null> {
         return await prisma.admin.findUnique({
-            where: { firebaseUid },
+            where: { authUid },
         });
     }
 

@@ -7,12 +7,12 @@ http://localhost:3000/api
 
 ## Authentication
 
-All protected endpoints require a Firebase ID token in the Authorization header:
+All protected endpoints require a Supabase access token in the Authorization header:
 ```
-Authorization: Bearer <firebase_id_token>
+Authorization: Bearer <supabase_access_token>
 ```
 
-The backend will verify the Firebase token and return a JWT token in the `X-Auth-Token` response header for subsequent requests.
+The backend will verify the Supabase token and return a JWT token in the `X-Auth-Token` response header for subsequent requests.
 
 ---
 
@@ -43,7 +43,7 @@ Register a new traveler account.
   "data": {
     "user": {
       "id": "clx1234567890",
-      "firebaseUid": "firebase_uid_here",
+      "authUid": "auth_uid_here",
       "email": "user@example.com",
       "name": "John Doe",
       "role": "TRAVELER"
@@ -81,7 +81,7 @@ Register a new travel agency account. Agency will be in PENDING status until adm
   "data": {
     "user": {
       "id": "clx1234567890",
-      "firebaseUid": "firebase_uid_here",
+      "authUid": "auth_uid_here",
       "email": "agency@example.com",
       "name": "Travel Agency Inc",
       "role": "AGENCY"
@@ -99,13 +99,13 @@ Register a new travel agency account. Agency will be in PENDING status until adm
 
 Login user, agency, or admin. Supports two methods:
 
-#### Method 1: Firebase Token (Recommended)
-Client authenticates with Firebase first, then sends the Firebase ID token.
+#### Method 1: Supabase Token (Recommended)
+Client authenticates with Supabase first, then sends the Supabase access token.
 
 **Request Body:**
 ```json
 {
-  "firebaseToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "supabaseToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
 
@@ -128,7 +128,7 @@ For development and testing purposes.
   "data": {
     "user": {
       "id": "clx1234567890",
-      "firebaseUid": "firebase_uid_here",
+      "authUid": "auth_uid_here",
       "email": "user@example.com",
       "name": "John Doe",
       "role": "TRAVELER"
@@ -156,7 +156,7 @@ Verify CNIC for a traveler. Requires authentication.
 
 **Headers:**
 ```
-Authorization: Bearer <firebase_id_token>
+Authorization: Bearer <supabase_access_token>
 ```
 
 **Request Body:**
@@ -188,7 +188,7 @@ Get current authenticated user's profile.
 
 **Headers:**
 ```
-Authorization: Bearer <firebase_id_token>
+Authorization: Bearer <supabase_access_token>
 ```
 
 **Response (200):**
@@ -198,7 +198,7 @@ Authorization: Bearer <firebase_id_token>
   "message": "Profile retrieved successfully",
   "data": {
     "id": "clx1234567890",
-    "firebaseUid": "firebase_uid_here",
+    "authUid": "auth_uid_here",
     "email": "user@example.com",
     "name": "John Doe",
     "role": "TRAVELER"

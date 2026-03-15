@@ -64,9 +64,24 @@ export class AdminService {
   }
 
   private async mapAgencyResponse(agency: any): Promise<AgencyResponse> {
-    const [cnicImageUrl, ownerPhotoUrl] = await Promise.all([
+    const [
+      cnicImageUrl,
+      ownerPhotoUrl,
+      licenseCertificateUrl,
+      ntnCertificateUrl,
+      businessRegistrationProofUrl,
+      officeProofUrl,
+      bankCertificateUrl,
+      additionalSupportingDocumentUrl,
+    ] = await Promise.all([
       this.resolveKycUrl(agency.cnicImageUrl),
       this.resolveKycUrl(agency.ownerPhotoUrl),
+      this.resolveKycUrl(agency.licenseCertificateUrl),
+      this.resolveKycUrl(agency.ntnCertificateUrl),
+      this.resolveKycUrl(agency.businessRegistrationProofUrl),
+      this.resolveKycUrl(agency.officeProofUrl),
+      this.resolveKycUrl(agency.bankCertificateUrl),
+      this.resolveKycUrl(agency.additionalSupportingDocumentUrl),
     ]);
 
     return {
@@ -75,12 +90,27 @@ export class AdminService {
       name: agency.name,
       phone: agency.phone,
       address: agency.address,
+      officeCity: agency.officeCity,
+      jurisdiction: agency.jurisdiction,
+      legalEntityType: agency.legalEntityType,
       license: agency.license,
+      ntn: agency.ntn,
+      secpRegistrationNumber: agency.secpRegistrationNumber,
+      partnershipRegistrationNumber: agency.partnershipRegistrationNumber,
+      fieldOfOperations: agency.fieldOfOperations || [],
+      capitalAvailablePkr: agency.capitalAvailablePkr,
       status: agency.status,
       ownerName: agency.ownerName,
       cnic: agency.cnic,
       cnicImageUrl,
       ownerPhotoUrl,
+      licenseCertificateUrl,
+      ntnCertificateUrl,
+      businessRegistrationProofUrl,
+      officeProofUrl,
+      bankCertificateUrl,
+      additionalSupportingDocumentUrl,
+      applicationSubmittedAt: agency.applicationSubmittedAt,
       createdAt: agency.createdAt,
       updatedAt: agency.updatedAt,
       hotelsCount: agency.hotelsCount || 0,
@@ -162,7 +192,16 @@ export class AdminService {
       throw new Error('Agency not found');
     }
 
-    const objectPaths = [agency.cnicImageUrl, agency.ownerPhotoUrl]
+    const objectPaths = [
+      agency.cnicImageUrl,
+      agency.ownerPhotoUrl,
+      agency.licenseCertificateUrl,
+      agency.ntnCertificateUrl,
+      agency.businessRegistrationProofUrl,
+      agency.officeProofUrl,
+      agency.bankCertificateUrl,
+      agency.additionalSupportingDocumentUrl,
+    ]
       .filter((value): value is string => !!value)
       .filter((value) => !isHttpUrl(value));
 

@@ -245,7 +245,7 @@ export class AdminController {
    * Get dashboard statistics
    * GET /api/admin/reports/dashboard
    */
-  async getDashboardStats(req: AuthRequest, res: Response): Promise<void> {
+  async getDashboardStats(_req: AuthRequest, res: Response): Promise<void> {
     try {
       const stats = await adminService.getDashboardStats();
       sendSuccess(res, stats, 'Dashboard stats retrieved successfully');

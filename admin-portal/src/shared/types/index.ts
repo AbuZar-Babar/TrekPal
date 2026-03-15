@@ -4,7 +4,7 @@
 
 export interface User {
   id: string;
-  firebaseUid: string;
+  authUid: string;
   email: string;
   name: string;
   role: 'TRAVELER' | 'AGENCY' | 'ADMIN';
@@ -16,12 +16,27 @@ export interface Agency {
   name: string;
   phone: string | null;
   address: string | null;
+  officeCity: string | null;
+  jurisdiction: string | null;
+  legalEntityType: 'SOLE_PROPRIETOR' | 'PARTNERSHIP' | 'COMPANY' | null;
   license: string | null;
+  ntn: string | null;
+  secpRegistrationNumber: string | null;
+  partnershipRegistrationNumber: string | null;
+  fieldOfOperations: string[];
+  capitalAvailablePkr: number | null;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   ownerName: string | null;
   cnic: string | null;
   cnicImageUrl: string | null;
   ownerPhotoUrl: string | null;
+  licenseCertificateUrl: string | null;
+  ntnCertificateUrl: string | null;
+  businessRegistrationProofUrl: string | null;
+  officeProofUrl: string | null;
+  bankCertificateUrl: string | null;
+  additionalSupportingDocumentUrl: string | null;
+  applicationSubmittedAt: string | null;
   createdAt: string;
   updatedAt: string;
   hotelsCount?: number;

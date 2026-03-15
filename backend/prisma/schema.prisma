@@ -8,13 +8,12 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 // User model (Traveler)
 model User {
   id        String   @id @default(cuid())
-  firebaseUid String @unique
+  authUid String @unique
   email     String   @unique
   name      String?
   phone     String?
@@ -37,17 +36,32 @@ model User {
 // Agency model
 model Agency {
   id            String   @id @default(cuid())
-  firebaseUid   String   @unique
+  authUid   String   @unique
   email         String   @unique
   name          String
   phone         String?
   address       String?
+  officeCity    String?
+  jurisdiction  String?
+  legalEntityType String?
   license       String?  @unique
+  ntn           String?  @unique
+  secpRegistrationNumber String?
+  partnershipRegistrationNumber String?
+  fieldOfOperations String[] @default([])
+  capitalAvailablePkr Int?
   status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
   ownerName     String?
   cnic          String?  @unique
   cnicImageUrl  String?
   ownerPhotoUrl String?
+  licenseCertificateUrl String?
+  ntnCertificateUrl String?
+  businessRegistrationProofUrl String?
+  officeProofUrl String?
+  bankCertificateUrl String?
+  additionalSupportingDocumentUrl String?
+  applicationSubmittedAt DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -64,7 +78,7 @@ model Agency {
 // Admin model
 model Admin {
   id        String   @id @default(cuid())
-  firebaseUid String @unique
+  authUid String @unique
   email     String   @unique
   name      String
   createdAt DateTime @default(now())

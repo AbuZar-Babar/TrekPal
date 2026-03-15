@@ -14,7 +14,7 @@ async function main() {
     where: { email: 'admin@trekpal.com' },
     update: {},
     create: {
-      firebaseUid: 'admin-firebase-uid-123',
+      authUid: 'admin-auth-uid-123',
       email: 'admin@trekpal.com',
       name: 'Admin User',
     },
@@ -39,7 +39,7 @@ async function main() {
       where: { email: `user${i + 1}@example.com` },
       update: {},
       create: {
-        firebaseUid: `user-firebase-uid-${i + 1}`,
+        authUid: `user-auth-uid-${i + 1}`,
         email: `user${i + 1}@example.com`,
         name: userNames[i],
         phone: `+92300${1000000 + i}`,
@@ -101,7 +101,7 @@ async function main() {
       where: { email: agencyData[i].email },
       update: {},
       create: {
-        firebaseUid: `agency-firebase-uid-${i + 1}`,
+        authUid: `agency-auth-uid-${i + 1}`,
         ...agencyData[i],
       },
     });

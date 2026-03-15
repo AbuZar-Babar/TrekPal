@@ -45,7 +45,7 @@ export interface IAgencyRepository extends IRepository<Agency> {
     findByEmail(email: string): Promise<Agency | null>;
 
     /**
-     * Find agency by Firebase UID (for authentication)
+     * Find agency by Auth UID (for authentication)
      */
-    findByFirebaseUid(firebaseUid: string): Promise<Agency | null>;
+    findByAuthUid(authUid: string): Promise<Agency | null>;
 }

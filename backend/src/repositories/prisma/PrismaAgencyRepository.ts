@@ -5,7 +5,6 @@ import {
     AgencyWithCounts,
 } from '../interfaces/IAgencyRepository';
 import { prisma } from '../../config/database';
-import { APPROVAL_STATUS } from '../../config/constants';
 
 /**
  * Prisma implementation of IAgencyRepository
@@ -25,6 +24,7 @@ export class PrismaAgencyRepository implements IAgencyRepository {
                 { name: { contains: search, mode: 'insensitive' } },
                 { email: { contains: search, mode: 'insensitive' } },
                 { license: { contains: search, mode: 'insensitive' } },
+                { ntn: { contains: search, mode: 'insensitive' } },
             ];
         }
 
@@ -85,6 +85,7 @@ export class PrismaAgencyRepository implements IAgencyRepository {
                 { name: { contains: filters.search, mode: 'insensitive' } },
                 { email: { contains: filters.search, mode: 'insensitive' } },
                 { license: { contains: filters.search, mode: 'insensitive' } },
+                { ntn: { contains: filters.search, mode: 'insensitive' } },
             ];
         }
 
@@ -104,9 +105,9 @@ export class PrismaAgencyRepository implements IAgencyRepository {
         });
     }
 
-    async findByFirebaseUid(firebaseUid: string): Promise<Agency | null> {
+    async findByAuthUid(authUid: string): Promise<Agency | null> {
         return await prisma.agency.findUnique({
-            where: { firebaseUid },
+            where: { authUid },
         });
     }
 }

@@ -3,7 +3,6 @@ import cors from 'cors';
 import path from 'path';
 import { createServer } from 'http';
 import { env } from './config/env';
-import { initializeFirebase } from './config/firebase';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 import { initializeSocketServer } from './ws/socket.server';
 
@@ -24,16 +23,6 @@ import adminRoutes from './modules/admin/admin.routes';
 const app: Express = express();
 const httpServer = createServer(app);
 
-// Initialize Firebase (optional in development)
-try {
-  initializeFirebase();
-} catch (error) {
-  if (process.env.NODE_ENV === 'production') {
-    throw error;
-  }
-  console.warn('⚠️  Firebase initialization skipped in development mode');
-}
-
 // Initialize Socket.IO
 const io = initializeSocketServer(httpServer);
 
@@ -46,7 +35,11 @@ const allowedOrigins = env.NODE_ENV === 'development'
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -62,7 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -87,10 +80,9 @@ app.use(errorHandler);
 const PORT = parseInt(env.PORT, 10);
 
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${env.NODE_ENV}`);
-  console.log(`🔗 API: http://localhost:${PORT}/api`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${env.NODE_ENV}`);
+  console.log(`API: http://localhost:${PORT}/api`);
 });
 
 export { app, io };
-

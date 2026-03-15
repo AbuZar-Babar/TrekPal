@@ -22,16 +22,16 @@ export class TransportController {
 
       // Get agency ID from user
       let agency = await prisma.agency.findUnique({
-        where: { firebaseUid: req.user.uid },
+        where: { authUid: req.user.uid },
       });
 
       // In development mode, create a dummy agency if it doesn't exist
       if (!agency && process.env.NODE_ENV === 'development') {
         agency = await prisma.agency.upsert({
-          where: { firebaseUid: req.user.uid },
+          where: { authUid: req.user.uid },
           update: {},
           create: {
-            firebaseUid: req.user.uid,
+            authUid: req.user.uid,
             email: req.user.email || 'agency@trekpal.com',
             name: 'Development Agency',
             phone: '+1234567890',
@@ -65,16 +65,16 @@ export class TransportController {
 
       // Get agency ID from user
       let agency = await prisma.agency.findUnique({
-        where: { firebaseUid: req.user.uid },
+        where: { authUid: req.user.uid },
       });
 
       // In development mode, create a dummy agency if it doesn't exist
       if (!agency && process.env.NODE_ENV === 'development') {
         agency = await prisma.agency.upsert({
-          where: { firebaseUid: req.user.uid },
+          where: { authUid: req.user.uid },
           update: {},
           create: {
-            firebaseUid: req.user.uid,
+            authUid: req.user.uid,
             email: req.user.email || 'agency@trekpal.com',
             name: 'Development Agency',
             phone: '+1234567890',
@@ -122,7 +122,7 @@ export class TransportController {
       // Get agency ID if user is agency
       let agencyId: string | undefined;
       const agency = await prisma.agency.findUnique({
-        where: { firebaseUid: req.user.uid },
+        where: { authUid: req.user.uid },
       });
       if (agency) {
         agencyId = agency.id;
@@ -150,16 +150,16 @@ export class TransportController {
 
       // Get agency ID from user
       let agency = await prisma.agency.findUnique({
-        where: { firebaseUid: req.user.uid },
+        where: { authUid: req.user.uid },
       });
 
       // In development mode, create a dummy agency if it doesn't exist
       if (!agency && process.env.NODE_ENV === 'development') {
         agency = await prisma.agency.upsert({
-          where: { firebaseUid: req.user.uid },
+          where: { authUid: req.user.uid },
           update: {},
           create: {
-            firebaseUid: req.user.uid,
+            authUid: req.user.uid,
             email: req.user.email || 'agency@trekpal.com',
             name: 'Development Agency',
             phone: '+1234567890',
@@ -195,16 +195,16 @@ export class TransportController {
 
       // Get agency ID from user
       let agency = await prisma.agency.findUnique({
-        where: { firebaseUid: req.user.uid },
+        where: { authUid: req.user.uid },
       });
 
       // In development mode, create a dummy agency if it doesn't exist
       if (!agency && process.env.NODE_ENV === 'development') {
         agency = await prisma.agency.upsert({
-          where: { firebaseUid: req.user.uid },
+          where: { authUid: req.user.uid },
           update: {},
           create: {
-            firebaseUid: req.user.uid,
+            authUid: req.user.uid,
             email: req.user.email || 'agency@trekpal.com',
             name: 'Development Agency',
             phone: '+1234567890',

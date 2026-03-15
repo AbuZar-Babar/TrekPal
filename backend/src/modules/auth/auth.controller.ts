@@ -5,6 +5,56 @@ import { authService } from './auth.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
 import { getErrorMessage } from '../../utils/error.util';
 import { deleteKycFile, uploadKycFile } from '../../services/kyc-storage.service';
+import { AgencyRegisterInput } from './auth.types';
+
+type AgencyApplicationFileField =
+  | 'cnicImage'
+  | 'ownerPhoto'
+  | 'licenseCertificate'
+  | 'ntnCertificate'
+  | 'businessRegistrationProof'
+  | 'officeProof'
+  | 'bankCertificate'
+  | 'additionalSupportingDocument';
+
+const agencyDocumentLabels: Record<AgencyApplicationFileField, string> = {
+  cnicImage: 'CNIC image',
+  ownerPhoto: 'owner photo',
+  licenseCertificate: 'tourism license certificate',
+  ntnCertificate: 'NTN certificate',
+  businessRegistrationProof: 'business registration proof',
+  officeProof: 'office ownership or rent proof',
+  bankCertificate: 'bank certificate',
+  additionalSupportingDocument: 'additional supporting document',
+};
+
+const agencyApplicationFileFields: AgencyApplicationFileField[] = [
+  'cnicImage',
+  'ownerPhoto',
+  'licenseCertificate',
+  'ntnCertificate',
+  'businessRegistrationProof',
+  'officeProof',
+  'bankCertificate',
+  'additionalSupportingDocument',
+];
+
+const requiredAgencyFileFields = (input: AgencyRegisterInput): AgencyApplicationFileField[] => {
+  const required: AgencyApplicationFileField[] = [
+    'cnicImage',
+    'ownerPhoto',
+    'licenseCertificate',
+    'ntnCertificate',
+    'officeProof',
+    'bankCertificate',
+  ];
+
+  if (input.legalEntityType === 'COMPANY' || input.legalEntityType === 'PARTNERSHIP') {
+    required.push('businessRegistrationProof');
+  }
+
+  return required;
+};
 
 const inferExtensionFromMimeType = (mimeType: string): string => {
   const map: Record<string, string> = {
@@ -12,6 +62,7 @@ const inferExtensionFromMimeType = (mimeType: string): string => {
     'image/jpg': '.jpg',
     'image/png': '.png',
     'image/webp': '.webp',
+    'application/pdf': '.pdf',
   };
   return map[mimeType] || '.bin';
 };
@@ -65,38 +116,57 @@ export class AuthController {
    * 
    * @example
    * Form fields:
-   *   email, password, name, phone, address, license, ownerName, cnic
+   *   email, password, name, phone, address, officeCity, jurisdiction,
+   *   legalEntityType, license, ntn, fieldOfOperations, capitalAvailablePkr,
+   *   ownerName, cnic, secpRegistrationNumber?, partnershipRegistrationNumber?
    * Files:
-   *   cnicImage (JPEG/PNG), ownerPhoto (JPEG/PNG)
+   *   cnicImage, ownerPhoto, licenseCertificate, ntnCertificate,
+   *   businessRegistrationProof?, officeProof, bankCertificate,
+   *   additionalSupportingDocument?
    */
   async registerAgency(req: AuthRequest, res: Response): Promise<void> {
     const uploadedObjectPaths: string[] = [];
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const uploadBatchId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const input = req.body as AgencyRegisterInput;
+      const missingRequiredFiles = requiredAgencyFileFields(input).filter(
+        (fieldName) => !files?.[fieldName]?.[0]
+      );
 
-      let cnicImageUrl: string | undefined;
-      let ownerPhotoUrl: string | undefined;
-
-      if (files?.cnicImage?.[0]) {
-        const cnicImage = files.cnicImage[0];
-        const objectPath = buildKycObjectPath(uploadBatchId, 'cnicImage', cnicImage);
-        await uploadKycFile(cnicImage.buffer, cnicImage.mimetype, objectPath);
-        uploadedObjectPaths.push(objectPath);
-        cnicImageUrl = objectPath;
+      if (missingRequiredFiles.length > 0) {
+        sendError(
+          res,
+          `Missing required documents: ${missingRequiredFiles.map((field) => agencyDocumentLabels[field]).join(', ')}`,
+          400
+        );
+        return;
       }
-      if (files?.ownerPhoto?.[0]) {
-        const ownerPhoto = files.ownerPhoto[0];
-        const objectPath = buildKycObjectPath(uploadBatchId, 'ownerPhoto', ownerPhoto);
-        await uploadKycFile(ownerPhoto.buffer, ownerPhoto.mimetype, objectPath);
+
+      const uploadBatchId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const uploadedDocuments: Partial<Record<AgencyApplicationFileField, string>> = {};
+
+      for (const fieldName of agencyApplicationFileFields) {
+        const file = files?.[fieldName]?.[0];
+        if (!file) {
+          continue;
+        }
+
+        const objectPath = buildKycObjectPath(uploadBatchId, fieldName, file);
+        await uploadKycFile(file.buffer, file.mimetype, objectPath);
         uploadedObjectPaths.push(objectPath);
-        ownerPhotoUrl = objectPath;
+        uploadedDocuments[fieldName] = objectPath;
       }
 
       const result = await authService.registerAgency({
-        ...req.body,
-        cnicImageUrl,
-        ownerPhotoUrl,
+        ...input,
+        cnicImageUrl: uploadedDocuments.cnicImage,
+        ownerPhotoUrl: uploadedDocuments.ownerPhoto,
+        licenseCertificateUrl: uploadedDocuments.licenseCertificate,
+        ntnCertificateUrl: uploadedDocuments.ntnCertificate,
+        businessRegistrationProofUrl: uploadedDocuments.businessRegistrationProof,
+        officeProofUrl: uploadedDocuments.officeProof,
+        bankCertificateUrl: uploadedDocuments.bankCertificate,
+        additionalSupportingDocumentUrl: uploadedDocuments.additionalSupportingDocument,
       });
 
       sendSuccess(
@@ -133,23 +203,23 @@ export class AuthController {
    * Login user, agency, or admin
    * POST /api/auth/login
    * 
-   * Option 1: Send Firebase token (recommended)
-   * Request body: { "firebaseToken": "firebase_id_token" }
+   * Option 1: Send Supabase token
+   * Request body: { "supabaseToken": "supabase_access_token" }
    * 
-   * Option 2: Send email/password (legacy, for testing)
+   * Option 2: Send email/password
    * Request body: { "email": "user@example.com", "password": "password123" }
    * 
    * @example
-   * Request body (with Firebase token):
+   * Request body (with Supabase token):
    * {
-   *   "firebaseToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+   *   "supabaseToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
    * }
    */
   async login(req: AuthRequest, res: Response): Promise<void> {
     try {
-      // If Firebase token is provided, verify it
-      if (req.body.firebaseToken) {
-        const result = await authService.verifyFirebaseToken(req.body.firebaseToken);
+      // If Supabase token is provided, verify it
+      if (req.body.supabaseToken) {
+        const result = await authService.verifySupabaseToken(req.body.supabaseToken);
         sendSuccess(res, result, 'Login successful');
         return;
       }
@@ -181,7 +251,7 @@ export class AuthController {
         return;
       }
 
-      // Get user ID from database using Firebase UID
+      // Get user ID from database using Auth UID
       const profile = await authService.getProfile(req.user.uid);
       const result = await authService.verifyCnic(profile.id, req.body);
       sendSuccess(res, result, 'CNIC verification submitted');
@@ -219,7 +289,7 @@ export class AuthController {
    *   "refreshToken": "refresh_token_here"
    * }
    */
-  async refreshToken(req: AuthRequest, res: Response): Promise<void> {
+  async refreshToken(_req: AuthRequest, res: Response): Promise<void> {
     try {
       // TODO: Implement refresh token logic
       // For now, return error

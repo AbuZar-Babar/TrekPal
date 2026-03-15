@@ -8,11 +8,14 @@ import { ZodSchema, ZodError } from 'zod';
 export const validate = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
-      schema.parse({
+      const parsed = schema.parse({
         body: req.body,
         query: req.query,
         params: req.params,
       });
+      req.body = parsed.body;
+      req.query = parsed.query;
+      req.params = parsed.params;
       next();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -36,7 +39,7 @@ export const validate = (schema: ZodSchema) => {
 export const validateBody = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
-      schema.parse(req.body);
+      req.body = schema.parse(req.body);
       next();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -60,7 +63,7 @@ export const validateBody = (schema: ZodSchema) => {
 export const validateQuery = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
-      schema.parse(req.query);
+      req.query = schema.parse(req.query);
       next();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -84,7 +87,7 @@ export const validateQuery = (schema: ZodSchema) => {
 export const validateParams = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
-      schema.parse(req.params);
+      req.params = schema.parse(req.params);
       next();
     } catch (error) {
       if (error instanceof ZodError) {

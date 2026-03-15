@@ -101,9 +101,9 @@ export class PrismaUserRepository implements IUserRepository {
         });
     }
 
-    async findByFirebaseUid(firebaseUid: string): Promise<User | null> {
+    async findByAuthUid(authUid: string): Promise<User | null> {
         return await prisma.user.findUnique({
-            where: { firebaseUid },
+            where: { authUid },
         });
     }
 }

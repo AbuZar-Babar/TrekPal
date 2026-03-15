@@ -95,7 +95,7 @@ const AdminLoginForm = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="admin@example.com"
+                  placeholder="admin@trekpal.com"
                 />
               </div>
             </div>
@@ -125,7 +125,7 @@ const AdminLoginForm = () => {
                 <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Use: hashim@gmail.com / 1q2w3e
+                Use: admin@trekpal.com / admin123
               </p>
             </div>
 

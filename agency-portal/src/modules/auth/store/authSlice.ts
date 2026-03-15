@@ -38,13 +38,27 @@ export const signup = createAsyncThunk(
     email: string;
     password: string;
     name: string;
+    phone: string;
+    address: string;
+    officeCity: string;
+    jurisdiction: 'ICT' | 'Punjab' | 'Sindh' | 'KPK' | 'Balochistan' | 'AJK' | 'Gilgit-Baltistan';
+    legalEntityType: 'SOLE_PROPRIETOR' | 'PARTNERSHIP' | 'COMPANY';
+    license: string;
+    ntn: string;
     ownerName: string;
     cnic: string;
+    fieldOfOperations: string[];
+    capitalAvailablePkr: number;
     cnicImage: File;
     ownerPhoto: File;
-    phone?: string;
-    address?: string;
-    license?: string;
+    licenseCertificate: File;
+    ntnCertificate: File;
+    officeProof: File;
+    bankCertificate: File;
+    businessRegistrationProof?: File;
+    additionalSupportingDocument?: File;
+    secpRegistrationNumber?: string;
+    partnershipRegistrationNumber?: string;
   }) => {
     const response = await authService.signup(data);
     // Don't store token/user if status is PENDING - they need approval first

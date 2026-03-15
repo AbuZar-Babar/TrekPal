@@ -48,13 +48,27 @@ export const authService = {
     email: string;
     password: string;
     name: string;
+    phone: string;
+    address: string;
+    officeCity: string;
+    jurisdiction: 'ICT' | 'Punjab' | 'Sindh' | 'KPK' | 'Balochistan' | 'AJK' | 'Gilgit-Baltistan';
+    legalEntityType: 'SOLE_PROPRIETOR' | 'PARTNERSHIP' | 'COMPANY';
+    license: string;
+    ntn: string;
     ownerName: string;
     cnic: string;
+    fieldOfOperations: string[];
+    capitalAvailablePkr: number;
     cnicImage: File;
     ownerPhoto: File;
-    phone?: string;
-    address?: string;
-    license?: string;
+    licenseCertificate: File;
+    ntnCertificate: File;
+    officeProof: File;
+    bankCertificate: File;
+    businessRegistrationProof?: File;
+    additionalSupportingDocument?: File;
+    secpRegistrationNumber?: string;
+    partnershipRegistrationNumber?: string;
   }): Promise<{ user: User; token: string; status: string }> {
     if (!data.email || !data.password || !data.name) {
       throw new Error('All fields are required');
@@ -65,13 +79,35 @@ export const authService = {
       formData.append('email', data.email);
       formData.append('password', data.password);
       formData.append('name', data.name);
+      formData.append('phone', data.phone);
+      formData.append('address', data.address);
+      formData.append('officeCity', data.officeCity);
+      formData.append('jurisdiction', data.jurisdiction);
+      formData.append('legalEntityType', data.legalEntityType);
+      formData.append('license', data.license);
+      formData.append('ntn', data.ntn);
       formData.append('ownerName', data.ownerName);
       formData.append('cnic', data.cnic);
+      formData.append('fieldOfOperations', JSON.stringify(data.fieldOfOperations));
+      formData.append('capitalAvailablePkr', String(data.capitalAvailablePkr));
       formData.append('cnicImage', data.cnicImage);
       formData.append('ownerPhoto', data.ownerPhoto);
-      if (data.phone) formData.append('phone', data.phone);
-      if (data.address) formData.append('address', data.address);
-      if (data.license) formData.append('license', data.license);
+      formData.append('licenseCertificate', data.licenseCertificate);
+      formData.append('ntnCertificate', data.ntnCertificate);
+      formData.append('officeProof', data.officeProof);
+      formData.append('bankCertificate', data.bankCertificate);
+      if (data.businessRegistrationProof) {
+        formData.append('businessRegistrationProof', data.businessRegistrationProof);
+      }
+      if (data.additionalSupportingDocument) {
+        formData.append('additionalSupportingDocument', data.additionalSupportingDocument);
+      }
+      if (data.secpRegistrationNumber) {
+        formData.append('secpRegistrationNumber', data.secpRegistrationNumber);
+      }
+      if (data.partnershipRegistrationNumber) {
+        formData.append('partnershipRegistrationNumber', data.partnershipRegistrationNumber);
+      }
 
       const response = await apiClient.post('/auth/register/agency', formData, {
         headers: {

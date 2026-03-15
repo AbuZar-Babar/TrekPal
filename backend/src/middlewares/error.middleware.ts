@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 import { Prisma } from '@prisma/client';
+import multer from 'multer';
 
 /**
  * Global error handler middleware
@@ -8,9 +9,9 @@ import { Prisma } from '@prisma/client';
  */
 export const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   console.error('Error:', err);
 
@@ -42,6 +43,26 @@ export const errorHandler = (
       });
       return;
     }
+  }
+
+  if (err instanceof multer.MulterError) {
+    const message = err.code === 'LIMIT_FILE_SIZE'
+      ? 'Each uploaded file must be 10MB or smaller'
+      : err.message;
+
+    res.status(400).json({
+      error: 'Upload error',
+      message,
+    });
+    return;
+  }
+
+  if (err.message.includes('Only PDF, JPEG, PNG, and WebP files are allowed')) {
+    res.status(400).json({
+      error: 'Upload error',
+      message: err.message,
+    });
+    return;
   }
 
   // Default error response

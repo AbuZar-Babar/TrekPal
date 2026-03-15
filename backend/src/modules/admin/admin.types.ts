@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { APPROVAL_STATUS } from '../../config/constants';
 
 /**
  * Admin request/response types
@@ -32,12 +31,27 @@ export interface AgencyResponse {
   name: string;
   phone: string | null;
   address: string | null;
+  officeCity: string | null;
+  jurisdiction: string | null;
+  legalEntityType: string | null;
   license: string | null;
+  ntn: string | null;
+  secpRegistrationNumber: string | null;
+  partnershipRegistrationNumber: string | null;
+  fieldOfOperations: string[];
+  capitalAvailablePkr: number | null;
   status: string;
   ownerName: string | null;
   cnic: string | null;
   cnicImageUrl: string | null;
   ownerPhotoUrl: string | null;
+  licenseCertificateUrl: string | null;
+  ntnCertificateUrl: string | null;
+  businessRegistrationProofUrl: string | null;
+  officeProofUrl: string | null;
+  bankCertificateUrl: string | null;
+  additionalSupportingDocumentUrl: string | null;
+  applicationSubmittedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   hotelsCount?: number;

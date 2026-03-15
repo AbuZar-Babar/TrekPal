@@ -76,8 +76,8 @@ graph TB
     end
     
     subgraph "External Services"
-        N[Firebase Auth]
-        O[Firebase Storage]
+        N[Supabase Auth]
+        O[Supabase Storage]
     end
     
     A -->|HTTP/HTTPS| D
@@ -146,7 +146,7 @@ graph LR
 - Clean Architecture + MVVM pattern
 - State management with Riverpod/Bloc
 - Offline-first capabilities
-- Firebase integration
+- Supabase integration
 - Real-time chat
 
 #### Agency Portal (React)
@@ -224,7 +224,7 @@ graph TB
 backend/src/
 ├── config/              # Configuration files
 │   ├── env.ts          # Environment variables
-│   └── firebase.ts     # Firebase setup
+│   └── supabase.ts     # Supabase setup
 ├── middlewares/         # Express middlewares
 │   ├── auth.middleware.ts
 │   └── error.middleware.ts
@@ -271,7 +271,7 @@ backend/src/
 | **ORM** | Prisma 5.7 | Database toolkit |
 | **Database** | PostgreSQL 14+ | Relational database |
 | **WebSocket** | Socket.IO 4.6 | Real-time communication |
-| **Auth** | JWT + Firebase | Authentication |
+| **Auth** | JWT + Supabase | Authentication |
 | **Validation** | Zod 3.22 | Schema validation |
 
 ---
@@ -373,7 +373,7 @@ erDiagram
     
     User {
         string id PK
-        string firebaseUid UK
+        string authUid UK
         string email UK
         string name
         string phone
@@ -429,7 +429,7 @@ erDiagram
 
 #### Users
 - Stores all user accounts (travelers, agency owners, admins)
-- Linked to Firebase authentication
+- Linked to Supabase authentication
 - Role-based access control
 
 #### Agencies
@@ -520,12 +520,12 @@ erDiagram
 sequenceDiagram
     participant C as Client
     participant API as Backend API
-    participant FB as Firebase Auth
+    participant FB as Supabase Auth
     participant DB as Database
     
     Note over C,DB: Registration Flow
     C->>FB: Create Account
-    FB-->>C: Firebase UID
+    FB-->>C: Auth UID
     C->>API: Register with UID
     API->>DB: Create User Record
     DB-->>API: User Created
@@ -534,7 +534,7 @@ sequenceDiagram
     
     Note over C,DB: Login Flow
     C->>FB: Sign In
-    FB-->>C: Firebase Token
+    FB-->>C: Supabase Token
     C->>API: Login with Token
     API->>FB: Verify Token
     FB-->>API: Token Valid
@@ -560,7 +560,7 @@ sequenceDiagram
     "typ": "JWT"
   },
   "payload": {
-    "uid": "firebase-uid",
+    "uid": "auth-uid",
     "email": "user@example.com",
     "role": "TRAVELER",
     "iat": 1234567890,
@@ -652,7 +652,7 @@ graph TB
     end
     
     subgraph "File Storage"
-        F[AWS S3/Firebase Storage]
+        F[Supabase Storage]
     end
     
     A --> B

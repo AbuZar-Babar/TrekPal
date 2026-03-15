@@ -49,7 +49,7 @@ graph TB
     end
     
     subgraph "External Services"
-        H[Firebase Auth]
+        H[Supabase Auth]
         I[Supabase Storage]
     end
     
@@ -336,12 +336,12 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 | Component | Technologies |
 |-----------|-------------|
-| **Mobile** | Flutter 3.0+, Riverpod/Bloc, Firebase |
+| **Mobile** | Flutter 3.0+, Riverpod/Bloc, Supabase |
 | **Web** | React 18.2, TypeScript, Vite, Redux Toolkit, Tailwind CSS |
 | **Backend** | Node.js 18+, Express, TypeScript, Prisma, Supabase (PostgreSQL) |
 | **Storage** | Supabase Storage (KYC documents) |
 | **Real-time** | Socket.IO |
-| **Auth** | JWT, Firebase Auth |
+| **Auth** | JWT, Supabase Auth |
 
 ---
 
@@ -377,7 +377,7 @@ TrekPal/
 ## ✨ Features
 
 ### For Travelers 👤
-- 🔐 Secure authentication with Firebase
+- 🔐 Secure authentication with Supabase
 - 🔍 Browse and search travel packages
 - 🏨 Book hotels and transportation
 - 💬 Real-time chat with agencies

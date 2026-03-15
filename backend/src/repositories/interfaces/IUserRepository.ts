@@ -44,7 +44,7 @@ export interface IUserRepository extends IRepository<User> {
     findByEmail(email: string): Promise<User | null>;
 
     /**
-     * Find user by Firebase UID (for authentication)
+     * Find user by Auth UID (for authentication)
      */
-    findByFirebaseUid(firebaseUid: string): Promise<User | null>;
+    findByAuthUid(authUid: string): Promise<User | null>;
 }

@@ -1,18 +1,17 @@
 import multer from 'multer';
-import { Request } from 'express';
 
 /**
  * Upload Middleware
- * Configures multer for KYC document uploads (CNIC image + owner photo)
+ * Configures multer for agency application uploads
  */
 
-// File filter - only allow images
-const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+// File filter - allow images and PDFs for agency application documents
+const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'application/pdf'];
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Only JPEG, PNG, and WebP images are allowed'));
+        cb(new Error('Only PDF, JPEG, PNG, and WebP files are allowed'));
     }
 };
 
@@ -21,15 +20,20 @@ const upload = multer({
     storage: multer.memoryStorage(),
     fileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB max per file
+        fileSize: 10 * 1024 * 1024, // 10MB max per file
     },
 });
 
 /**
- * Middleware for KYC document upload
- * Expects two files: 'cnicImage' and 'ownerPhoto'
+ * Middleware for agency application upload
  */
 export const uploadKycDocuments = upload.fields([
     { name: 'cnicImage', maxCount: 1 },
     { name: 'ownerPhoto', maxCount: 1 },
+    { name: 'licenseCertificate', maxCount: 1 },
+    { name: 'ntnCertificate', maxCount: 1 },
+    { name: 'businessRegistrationProof', maxCount: 1 },
+    { name: 'officeProof', maxCount: 1 },
+    { name: 'bankCertificate', maxCount: 1 },
+    { name: 'additionalSupportingDocument', maxCount: 1 },
 ]);

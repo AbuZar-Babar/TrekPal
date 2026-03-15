@@ -193,11 +193,11 @@ DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/trekpal?schema=
 JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters-long
 JWT_EXPIRES_IN=7d
 
-# Firebase (optional for development)
-FIREBASE_PROJECT_ID=
-FIREBASE_PRIVATE_KEY=
-FIREBASE_CLIENT_EMAIL=
-FIREBASE_STORAGE_BUCKET=
+# Supabase (optional for development)
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_STORAGE_BUCKET_KYC=kyc-private
+SUPABASE_SIGNED_URL_TTL_SECONDS=3600
 
 # CORS (allow admin portal)
 CORS_ORIGIN=http://localhost:5174
@@ -279,13 +279,13 @@ For testing purposes, you can use **any token string** in the login form. The ba
 - Token: `admin` or `test-admin-token`
 
 > [!WARNING]
-> In production, this should be replaced with proper Firebase Authentication!
+> In production, this should be replaced with proper Supabase Authentication!
 
 ### Production Mode
 
 In production, implement proper authentication:
-1. Configure Firebase credentials in backend `.env`
-2. Update frontend to use Firebase Auth
+1. Configure Supabase credentials in backend `.env`
+2. Update frontend to use Supabase Auth
 3. Remove dummy authentication logic
 
 ---
@@ -461,14 +461,14 @@ admin-portal/src/
 
 ---
 
-### 🔴 Firebase Authentication Issues
+### 🔴 Supabase Authentication Issues
 
-**Problem:** Firebase errors in development
+**Problem:** Supabase auth errors in development
 
 **Solution:**
 - In development, simple tokens work for testing
-- Firebase credentials are optional
-- For production, configure proper Firebase credentials
+- Supabase credentials are optional
+- For production, configure proper Supabase credentials
 
 ---
 
@@ -503,7 +503,7 @@ To enhance the admin portal further:
 2. **Implement User Management** with search and filters
 3. **Create Dashboard** with charts and statistics
 4. **Add Reports Page** with analytics
-5. **Integrate Firebase Authentication** for production
+5. **Integrate Supabase Authentication** for production
 6. **Add Image Upload** for CNIC verification
 7. **Implement Email Notifications** for approvals/rejections
 8. **Add Audit Logs** for admin actions
@@ -528,7 +528,7 @@ gantt
     Dashboard & Analytics         :2024-02-05, 10d
     section Phase 3
     Reports & Export              :2024-02-15, 7d
-    Firebase Integration          :2024-02-22, 7d
+    Supabase Integration          :2024-02-22, 7d
     Email Notifications           :2024-03-01, 5d
 ```
 

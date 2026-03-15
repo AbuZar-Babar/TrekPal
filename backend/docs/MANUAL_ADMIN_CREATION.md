@@ -18,10 +18,10 @@
 3. Click "Add record"
 
 4. Fill in the admin details:
-   - **firebaseUid**: `admin-001` (or any unique identifier)
+   - **authUid**: `admin-001` (or any unique identifier)
    - **email**: `admin@trekpal.com`
    - **name**: `Admin User`
-   - **password**: Leave blank (handled by Firebase)
+   - **password**: Leave blank (handled by Supabase Auth)
 
 5. Click "Save 1 change"
 
@@ -34,7 +34,7 @@
 
 2. Insert admin record:
    ```sql
-   INSERT INTO "Admin" ("id", "firebaseUid", "email", "name", "createdAt", "updatedAt")
+   INSERT INTO "Admin" ("id", "authUid", "email", "name", "createdAt", "updatedAt")
    VALUES (
      gen_random_uuid(),
      'admin-001',
@@ -59,8 +59,8 @@ npm run db:setup
 
 Default admin credentials from seed:
 - **Email**: `admin@trekpal.com`
-- **Password**: `admin123` (for Firebase authentication)
-- **Firebase UID**: Auto-generated during seed
+- **Password**: `admin123` (for Supabase authentication)
+- **Auth UID**: Auto-generated during seed
 
 ##  Important Notes
 
@@ -69,14 +69,14 @@ Default admin credentials from seed:
    - Multiple admins can exist in the database, but it's not recommended
    - No self-registration UI exists for admins
 
-2. **Firebase UID**:
-   - Must match the Firebase user UID if using Firebase authentication
+2. **Auth UID**:
+   - Must match the Supabase user UID if using Supabase authentication
    - In development mode, you can use any string (e.g., `admin-001`)
 
 3. **Password**:
    - Passwords are NOT stored in the PostgreSQL database
-   - Authentication is handled by Firebase
-   - The `Admin` table only stores the reference to the Firebase user
+   - Authentication is handled by Supabase Auth
+   - The `Admin` table only stores the reference to the Supabase auth user
 
 ## Removing the Seeded Admin
 

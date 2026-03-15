@@ -1,6 +1,11 @@
-import { getFirebaseAuth } from '../../config/firebase';
-import { setCustomClaims } from '../../utils/firebase.util';
+import { type User as SupabaseUser } from '@supabase/supabase-js';
 import { ROLES, APPROVAL_STATUS } from '../../config/constants';
+import {
+  createSupabaseAuthUser,
+  isSupabaseConfigured,
+  signInWithSupabasePassword,
+  verifySupabaseAccessToken,
+} from '../../config/supabase';
 import { generateJWT } from '../../utils/jwt.util';
 import {
   UserRegisterInput,
@@ -21,9 +26,6 @@ import {
 /**
  * Auth Service
  * Handles authentication business logic using repository pattern
- * 
- * NOTE: Refactored to use repository pattern for database decoupling
- * User, Agency, and Admin operations now go through repository interfaces
  */
 export class AuthService {
   private userRepo: IUserRepository;
@@ -35,243 +37,276 @@ export class AuthService {
     agencyRepo?: IAgencyRepository,
     adminRepo?: IAdminRepository
   ) {
-    // Use dependency injection with defaults
     this.userRepo = userRepo || new PrismaUserRepository();
     this.agencyRepo = agencyRepo || new PrismaAgencyRepository();
     this.adminRepo = adminRepo || new PrismaAdminRepository();
   }
 
-  /**
-   * Register a new traveler (user)
-   * @param input - User registration data
-   * @returns Auth response with user and token
-   */
-  async registerUser(input: UserRegisterInput): Promise<AuthResponse> {
-    let firebaseUid: string;
-
-    try {
-      const firebaseAuth = getFirebaseAuth();
-      // Create user in Firebase
-      const firebaseUser = await firebaseAuth.createUser({
-        email: input.email,
-        password: input.password,
-        displayName: input.name,
-      });
-      firebaseUid = firebaseUser.uid;
-      // Set custom claims (role)
-      await setCustomClaims(firebaseUser.uid, { role: ROLES.TRAVELER });
-    } catch (error) {
-      // In development, if Firebase is not configured, generate a fake UID
-      if (process.env.NODE_ENV === 'development') {
-        firebaseUid = `dev-firebase-uid-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-        console.warn('⚠️  Firebase not configured, using development mode UID');
-      } else {
-        throw error;
-      }
+  private normalizeRole(role: unknown): string {
+    if (typeof role !== 'string') {
+      return ROLES.TRAVELER;
     }
 
-    // Create user in database via repository
+    const normalizedRole = role.toUpperCase();
+    if (normalizedRole === ROLES.TRAVELER || normalizedRole === ROLES.AGENCY || normalizedRole === ROLES.ADMIN) {
+      return normalizedRole;
+    }
+
+    return ROLES.TRAVELER;
+  }
+
+  private getRoleFromSupabaseUser(user: SupabaseUser): string {
+    return this.normalizeRole(user.app_metadata?.role ?? user.user_metadata?.role);
+  }
+
+  private buildToken(user: AuthResponse['user']): string {
+    return generateJWT({
+      uid: user.authUid,
+      email: user.email,
+      role: user.role,
+    });
+  }
+
+  private mapTraveler(user: { id: string; authUid: string; email: string; name: string | null }): AuthResponse['user'] {
+    return {
+      id: user.id,
+      authUid: user.authUid,
+      email: user.email,
+      name: user.name,
+      role: ROLES.TRAVELER,
+    };
+  }
+
+  private mapAgency(agency: { id: string; authUid: string; email: string; name: string }): AuthResponse['user'] {
+    return {
+      id: agency.id,
+      authUid: agency.authUid,
+      email: agency.email,
+      name: agency.name,
+      role: ROLES.AGENCY,
+    };
+  }
+
+  private mapAdmin(admin: { id: string; authUid: string; email: string; name: string }): AuthResponse['user'] {
+    return {
+      id: admin.id,
+      authUid: admin.authUid,
+      email: admin.email,
+      name: admin.name,
+      role: ROLES.ADMIN,
+    };
+  }
+
+  private async findProfileByEmail(email: string, enforceAgencyApproval: boolean): Promise<AuthResponse['user'] | null> {
+    const traveler = await this.userRepo.findByEmail(email);
+    if (traveler) {
+      return this.mapTraveler(traveler);
+    }
+
+    const agency = await this.agencyRepo.findByEmail(email);
+    if (agency) {
+      if (enforceAgencyApproval && agency.status !== APPROVAL_STATUS.APPROVED) {
+        throw new Error('Agency account is pending approval');
+      }
+      return this.mapAgency(agency);
+    }
+
+    const admin = await this.adminRepo.findByEmail(email);
+    if (admin) {
+      return this.mapAdmin(admin);
+    }
+
+    return null;
+  }
+
+  private async syncAuthUidForEmail(email: string, authUid: string): Promise<AuthResponse['user'] | null> {
+    const traveler = await this.userRepo.findByEmail(email);
+    if (traveler) {
+      const updatedTraveler = traveler.authUid === authUid
+        ? traveler
+        : await this.userRepo.update(traveler.id, { authUid });
+      return this.mapTraveler(updatedTraveler);
+    }
+
+    const agency = await this.agencyRepo.findByEmail(email);
+    if (agency) {
+      const updatedAgency = agency.authUid === authUid
+        ? agency
+        : await this.agencyRepo.update(agency.id, { authUid });
+      if (updatedAgency.status !== APPROVAL_STATUS.APPROVED) {
+        throw new Error('Agency account is pending approval');
+      }
+      return this.mapAgency(updatedAgency);
+    }
+
+    const admin = await this.adminRepo.findByEmail(email);
+    if (admin) {
+      const updatedAdmin = admin.authUid === authUid
+        ? admin
+        : await this.adminRepo.update(admin.id, { authUid });
+      return this.mapAdmin(updatedAdmin);
+    }
+
+    return null;
+  }
+
+  private buildDevelopmentAuthUid(): string {
+    return `dev-auth-uid-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+  }
+
+  /**
+   * Register a new traveler (user)
+   */
+  async registerUser(input: UserRegisterInput): Promise<AuthResponse> {
+    let authUid: string;
+
+    if (isSupabaseConfigured()) {
+      const supabaseUser = await createSupabaseAuthUser({
+        email: input.email,
+        password: input.password,
+        name: input.name,
+        role: ROLES.TRAVELER,
+      });
+      authUid = supabaseUser.id;
+    } else if (process.env.NODE_ENV === 'development') {
+      authUid = this.buildDevelopmentAuthUid();
+      console.warn('Supabase auth is not configured, using development mode UID');
+    } else {
+      throw new Error('Supabase auth is not configured');
+    }
+
     const user = await this.userRepo.create({
-      firebaseUid: firebaseUid,
+      authUid,
       email: input.email,
       name: input.name,
       phone: input.phone,
       cnic: input.cnic,
       cnicVerified: false,
     });
-
-    // Generate JWT token
-    const token = generateJWT({
-      uid: firebaseUid,
-      email: input.email,
-      role: ROLES.TRAVELER,
-    });
+    const profile = this.mapTraveler(user);
 
     return {
-      user: {
-        id: user.id,
-        firebaseUid: user.firebaseUid,
-        email: user.email,
-        name: user.name,
-        role: ROLES.TRAVELER,
-      },
-      token,
+      user: profile,
+      token: this.buildToken(profile),
     };
   }
 
   /**
    * Register a new travel agency
-   * @param input - Agency registration data
-   * @returns Auth response with agency and token
    */
   async registerAgency(input: AgencyRegisterInput): Promise<AuthResponse> {
-    let firebaseUid: string;
+    let authUid: string;
 
-    try {
-      const firebaseAuth = getFirebaseAuth();
-      // Create user in Firebase
-      const firebaseUser = await firebaseAuth.createUser({
+    if (isSupabaseConfigured()) {
+      const supabaseUser = await createSupabaseAuthUser({
         email: input.email,
         password: input.password,
-        displayName: input.name,
+        name: input.name,
+        role: ROLES.AGENCY,
       });
-      firebaseUid = firebaseUser.uid;
-      // Set custom claims (role)
-      await setCustomClaims(firebaseUser.uid, { role: ROLES.AGENCY });
-    } catch (error) {
-      // In development, if Firebase is not configured, generate a fake UID
-      if (process.env.NODE_ENV === 'development') {
-        firebaseUid = `dev-firebase-uid-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-        console.warn('⚠️  Firebase not configured, using development mode UID');
-      } else {
-        throw error;
-      }
+      authUid = supabaseUser.id;
+    } else if (process.env.NODE_ENV === 'development') {
+      authUid = this.buildDevelopmentAuthUid();
+      console.warn('Supabase auth is not configured, using development mode UID');
+    } else {
+      throw new Error('Supabase auth is not configured');
     }
 
-    // Create agency in database via repository (status: PENDING - needs admin approval)
-    console.log('[Auth Service] Creating agency via repository:', {
-      email: input.email,
-      name: input.name,
-      firebaseUid: firebaseUid,
-    });
-
     const agency = await this.agencyRepo.create({
-      firebaseUid: firebaseUid,
+      authUid,
       email: input.email,
       name: input.name,
       phone: input.phone,
       address: input.address,
+      officeCity: input.officeCity,
+      jurisdiction: input.jurisdiction,
+      legalEntityType: input.legalEntityType,
       license: input.license,
+      ntn: input.ntn,
+      secpRegistrationNumber: input.secpRegistrationNumber,
+      partnershipRegistrationNumber: input.partnershipRegistrationNumber,
+      fieldOfOperations: input.fieldOfOperations,
+      capitalAvailablePkr: input.capitalAvailablePkr,
       ownerName: input.ownerName,
       cnic: input.cnic,
       cnicImageUrl: input.cnicImageUrl,
       ownerPhotoUrl: input.ownerPhotoUrl,
+      licenseCertificateUrl: input.licenseCertificateUrl,
+      ntnCertificateUrl: input.ntnCertificateUrl,
+      businessRegistrationProofUrl: input.businessRegistrationProofUrl,
+      officeProofUrl: input.officeProofUrl,
+      bankCertificateUrl: input.bankCertificateUrl,
+      additionalSupportingDocumentUrl: input.additionalSupportingDocumentUrl,
+      applicationSubmittedAt: new Date(),
       status: APPROVAL_STATUS.PENDING,
     });
-
-    console.log('[Auth Service] Agency created successfully:', {
-      id: agency.id,
-      email: agency.email,
-      name: agency.name,
-      status: agency.status,
-    });
-
-    // Generate JWT token
-    const token = generateJWT({
-      uid: firebaseUid,
-      email: input.email,
-      role: ROLES.AGENCY,
-    });
+    const profile = this.mapAgency(agency);
 
     return {
-      user: {
-        id: agency.id,
-        firebaseUid: agency.firebaseUid,
-        email: agency.email,
-        name: agency.name,
-        role: ROLES.AGENCY,
-      },
-      token,
+      user: profile,
+      token: this.buildToken(profile),
     };
   }
 
   /**
-   * Login user or agency
-   * Note: Firebase handles password verification on client side
-   * This endpoint verifies the Firebase token and returns user data
-   * @param input - Login credentials
-   * @returns Auth response with user and token
+   * Login user, agency, or admin using Supabase email/password
    */
   async login(input: LoginInput): Promise<AuthResponse> {
-    // Find user by email via repository
-    const user = await this.userRepo.findByEmail(input.email);
-
-    if (user) {
-      // User found - traveler
-      const token = generateJWT({
-        uid: user.firebaseUid,
-        email: user.email,
-        role: ROLES.TRAVELER,
-      });
-
-      return {
-        user: {
-          id: user.id,
-          firebaseUid: user.firebaseUid,
-          email: user.email,
-          name: user.name,
-          role: ROLES.TRAVELER,
-        },
-        token,
-      };
+    if (!input.email || !input.password) {
+      throw new Error('Email and password are required');
     }
 
-    // Check if it's an agency via repository
-    const agency = await this.agencyRepo.findByEmail(input.email);
-
-    if (agency) {
-      // Check if agency is approved
-      if (agency.status !== APPROVAL_STATUS.APPROVED) {
-        throw new Error('Agency account is pending approval');
+    if (!isSupabaseConfigured()) {
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error('Supabase auth is not configured');
       }
 
-      const token = generateJWT({
-        uid: agency.firebaseUid,
-        email: agency.email,
-        role: ROLES.AGENCY,
-      });
+      const developmentProfile = await this.findProfileByEmail(input.email, true);
+      if (!developmentProfile) {
+        throw new Error('Invalid credentials');
+      }
 
       return {
-        user: {
-          id: agency.id,
-          firebaseUid: agency.firebaseUid,
-          email: agency.email,
-          name: agency.name,
-          role: ROLES.AGENCY,
-        },
-        token,
+        user: developmentProfile,
+        token: this.buildToken(developmentProfile),
       };
     }
 
-    // Check if it's an admin via repository
-    const admin = await this.adminRepo.findByEmail(input.email);
-
-    if (admin) {
-      const token = generateJWT({
-        uid: admin.firebaseUid,
-        email: admin.email,
-        role: ROLES.ADMIN,
-      });
-
-      return {
-        user: {
-          id: admin.id,
-          firebaseUid: admin.firebaseUid,
-          email: admin.email,
-          name: admin.name,
-          role: ROLES.ADMIN,
-        },
-        token,
-      };
+    let supabaseUser: SupabaseUser;
+    try {
+      const result = await signInWithSupabasePassword(input.email, input.password);
+      supabaseUser = result.user;
+    } catch {
+      throw new Error('Invalid credentials');
     }
 
-    throw new Error('Invalid credentials');
+    let profile: AuthResponse['user'] | null = null;
+    try {
+      profile = await this.getProfile(supabaseUser.id);
+    } catch {
+      profile = null;
+    }
+
+    const profileEmail = supabaseUser.email || input.email;
+    if (!profile) {
+      profile = await this.syncAuthUidForEmail(profileEmail, supabaseUser.id);
+    }
+    if (!profile) {
+      throw new Error('User not found');
+    }
+
+    profile.role = this.normalizeRole(profile.role || this.getRoleFromSupabaseUser(supabaseUser));
+
+    return {
+      user: profile,
+      token: this.buildToken(profile),
+    };
   }
 
   /**
    * Verify CNIC for a traveler
-   * @param userId - User ID
-   * @param input - CNIC verification data
-   * @returns Updated user with verified CNIC
    */
   async verifyCnic(userId: string, input: VerifyCnicInput): Promise<{ cnicVerified: boolean }> {
-    // TODO: Implement actual CNIC verification logic
-    // This could involve:
-    // 1. Image processing/OCR
-    // 2. Third-party verification service
-    // 3. Manual admin review
-
-    // For now, just update the CNIC and mark as verified via repository
     const user = await this.userRepo.update(userId, {
       cnic: input.cnic,
       cnicVerified: true,
@@ -284,90 +319,65 @@ export class AuthService {
 
   /**
    * Get current user profile
-   * @param firebaseUid - Firebase UID
-   * @returns User profile
    */
-  async getProfile(firebaseUid: string): Promise<AuthResponse['user']> {
-    // Try to find as user via repository
-    const user = await this.userRepo.findByFirebaseUid(firebaseUid);
-
+  async getProfile(authUid: string): Promise<AuthResponse['user']> {
+    const user = await this.userRepo.findByAuthUid(authUid);
     if (user) {
-      return {
-        id: user.id,
-        firebaseUid: user.firebaseUid,
-        email: user.email,
-        name: user.name,
-        role: ROLES.TRAVELER,
-      };
+      return this.mapTraveler(user);
     }
 
-    // Try to find as agency via repository
-    const agency = await this.agencyRepo.findByFirebaseUid(firebaseUid);
-
+    const agency = await this.agencyRepo.findByAuthUid(authUid);
     if (agency) {
-      return {
-        id: agency.id,
-        firebaseUid: agency.firebaseUid,
-        email: agency.email,
-        name: agency.name,
-        role: ROLES.AGENCY,
-      };
+      return this.mapAgency(agency);
     }
 
-    // Try to find as admin via repository
-    const admin = await this.adminRepo.findByFirebaseUid(firebaseUid);
-
+    const admin = await this.adminRepo.findByAuthUid(authUid);
     if (admin) {
-      return {
-        id: admin.id,
-        firebaseUid: admin.firebaseUid,
-        email: admin.email,
-        name: admin.name,
-        role: ROLES.ADMIN,
-      };
+      return this.mapAdmin(admin);
     }
 
     throw new Error('User not found');
   }
 
   /**
-   * Verify Firebase token and get user
-   * Used for login flow where client authenticates with Firebase first
-   * @param firebaseToken - Firebase ID token
-   * @returns Auth response with user and token
+   * Verify Supabase token and return app JWT + profile
    */
-  async verifyFirebaseToken(firebaseToken: string): Promise<AuthResponse> {
-    let decodedToken: any;
+  async verifySupabaseToken(supabaseToken: string): Promise<AuthResponse> {
+    let supabaseUser: SupabaseUser;
 
-    try {
-      const firebaseAuth = getFirebaseAuth();
-      decodedToken = await firebaseAuth.verifyIdToken(firebaseToken);
-    } catch (error) {
-      // In development, if Firebase is not configured, use development mode
-      if (process.env.NODE_ENV === 'development') {
-        decodedToken = {
-          uid: `dev-uid-${firebaseToken.substring(0, 10)}`,
-          email: 'dev@example.com',
-          role: ROLES.TRAVELER,
-        };
-      } else {
-        throw error;
-      }
+    if (isSupabaseConfigured()) {
+      supabaseUser = await verifySupabaseAccessToken(supabaseToken);
+    } else if (process.env.NODE_ENV === 'development') {
+      supabaseUser = {
+        id: `dev-uid-${supabaseToken.substring(0, 10)}`,
+        email: 'dev@example.com',
+        app_metadata: { role: ROLES.TRAVELER },
+        user_metadata: {},
+      } as unknown as SupabaseUser;
+    } else {
+      throw new Error('Supabase auth is not configured');
     }
 
-    // Get user profile via repositories
-    const profile = await this.getProfile(decodedToken.uid);
+    let profile: AuthResponse['user'] | null = null;
+    try {
+      profile = await this.getProfile(supabaseUser.id);
+    } catch {
+      profile = null;
+    }
 
-    // Generate JWT token
-    const token = generateJWT({
-      uid: decodedToken.uid,
-      email: decodedToken.email || profile.email,
-      role: profile.role,
-    });
+    if (!profile && supabaseUser.email) {
+      profile = await this.syncAuthUidForEmail(supabaseUser.email, supabaseUser.id);
+    }
+
+    if (!profile) {
+      throw new Error('User not found');
+    }
+
+    profile.role = this.normalizeRole(profile.role || this.getRoleFromSupabaseUser(supabaseUser));
 
     return {
       user: profile,
-      token,
+      token: this.buildToken(profile),
     };
   }
 }
