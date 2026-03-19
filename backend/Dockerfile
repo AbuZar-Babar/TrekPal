@@ -13,4 +13,4 @@ ENV NODE_ENV=production
 
 EXPOSE 10000
 
-CMD ["npm", "run", "start"]
+CMD ["sh", "-c", "npm run prisma:migrate:deploy && npm run start"]
