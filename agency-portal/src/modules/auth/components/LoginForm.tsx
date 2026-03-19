@@ -26,7 +26,7 @@ const LoginForm = () => {
         setLoading(false);
         return;
       }
-      await dispatch(login({ email, password }) as any);
+      await dispatch(login({ email, password }) as any).unwrap();
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Login failed');
