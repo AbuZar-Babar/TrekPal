@@ -32,8 +32,8 @@ This is the lowest-risk path because the current backend already depends on Pris
 Set these in Render before the first successful deploy:
 
 ```env
-DATABASE_URL=postgresql://...
-DIRECT_URL=postgresql://...
+DATABASE_URL=postgresql://... # runtime/pooled connection string
+DIRECT_URL=postgresql://... # direct connection string for Prisma migrations
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 CORS_ORIGIN=https://your-admin-site.onrender.com,https://your-agency-site.onrender.com

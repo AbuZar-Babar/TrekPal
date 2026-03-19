@@ -13,8 +13,8 @@ PORT=3000
 # Database URLs
 # Runtime DB URL (local PostgreSQL in development)
 DATABASE_URL="postgresql://postgres:your_password_here@localhost:5432/trekpal?schema=public"
-# Direct DB URL (used by prisma migrate deploy against Supabase)
-DIRECT_URL=""
+# Direct DB URL (used by prisma migrate deploy; in local dev it can match DATABASE_URL)
+DIRECT_URL="postgresql://postgres:your_password_here@localhost:5432/trekpal?schema=public"
 
 # JWT Secret - Must be at least 32 characters long
 JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters-long-for-security
