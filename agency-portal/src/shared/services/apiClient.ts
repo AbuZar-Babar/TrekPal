@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || '/api';
 
 /**
  * API Client with interceptors
@@ -32,7 +32,7 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     // Handle network errors (backend not running)
     if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
-      const networkError = new Error('Backend server is not running. Please start the backend server on port 3000.');
+      const networkError = new Error(`Backend server is not reachable at ${API_BASE_URL}.`);
       (networkError as any).isNetworkError = true;
       return Promise.reject(networkError);
     }

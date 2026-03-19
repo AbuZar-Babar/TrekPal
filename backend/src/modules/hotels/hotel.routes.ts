@@ -1,15 +1,18 @@
 import { Router } from 'express';
-// TODO: Import hotel controller and middlewares
+import { hotelsController } from './hotels.controller';
+import { authenticate } from '../../middlewares/auth.middleware';
+import { requireAgencyOrAdmin } from '../../middlewares/roleGuard.middleware';
 
 const router = Router();
 
-// TODO: Implement hotel routes
-// GET /api/hotels - Get all hotels
-// GET /api/hotels/search - Search hotels
-// GET /api/hotels/:id - Get hotel by ID
-// POST /api/hotels - Create hotel (agency)
-// PUT /api/hotels/:id - Update hotel (agency)
-// POST /api/hotels/:id/approve - Approve hotel (admin)
+router.use(authenticate);
+router.use(requireAgencyOrAdmin);
+
+router.get('/', hotelsController.getHotels.bind(hotelsController));
+router.get('/:id', hotelsController.getHotelById.bind(hotelsController));
+router.post('/', hotelsController.createHotel.bind(hotelsController));
+router.put('/:id', hotelsController.updateHotel.bind(hotelsController));
+router.delete('/:id', hotelsController.deleteHotel.bind(hotelsController));
 
 export default router;
 

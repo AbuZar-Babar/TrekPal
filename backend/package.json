@@ -20,6 +20,7 @@
     "migrate:kyc:execute": "tsx scripts/migrate-kyc-local-to-supabase.ts --execute",
     "storage:kyc:ensure": "tsx scripts/ensure-kyc-bucket.ts",
     "seed": "npm run prisma:seed",
+    "provision:frontend-auth": "tsx scripts/provision-frontend-auth.ts",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "type-check": "tsc --noEmit"
