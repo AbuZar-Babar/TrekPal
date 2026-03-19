@@ -5,8 +5,7 @@ services:
     rootDir: backend
     plan: free
     buildCommand: npm ci --include=dev && npm run render:build
-    preDeployCommand: npm run render:predeploy
-    startCommand: npm run render:start
+    startCommand: npm run prisma:migrate:deploy && npm run render:start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV

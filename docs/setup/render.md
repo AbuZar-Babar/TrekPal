@@ -17,7 +17,7 @@ This is the lowest-risk path because the current backend already depends on Pris
 - Render web service: `backend/`
 - Health check: `/health`
 - Production start: `npm run render:start`
-- Pre-deploy migration step: `npm run render:predeploy`
+- Startup migration step: `npm run prisma:migrate:deploy && npm run render:start`
 
 ## Create the service
 
@@ -67,19 +67,13 @@ Possible, but less attractive for this repo if you also need Supabase storage.
 Render runs:
 
 ```bash
-npm ci && npm run render:build
-```
-
-Before switching traffic, Render runs:
-
-```bash
-npm run render:predeploy
+npm ci --include=dev && npm run render:build
 ```
 
 Then it starts the backend with:
 
 ```bash
-npm run render:start
+npm run prisma:migrate:deploy && npm run render:start
 ```
 
 ## After deploy
