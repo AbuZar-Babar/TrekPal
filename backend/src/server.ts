@@ -61,6 +61,11 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded files (KYC documents, etc.)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Render direct-created services probe the root path by default.
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', service: 'trekpal-backend', timestamp: new Date().toISOString() });
+});
+
 // Health check endpoint
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
