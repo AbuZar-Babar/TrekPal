@@ -16,14 +16,14 @@ Per the SRS constraint `CO-4`, payment integration is not part of the core proje
 ## Scope From SRS
 
 ### Traveler Functionalities
-- [ ] FR-USER-01 User Registration
-- [ ] FR-USER-02 Traveler Login
+- [x] FR-USER-01 User Registration
+- [x] FR-USER-02 Traveler Login
 - [ ] FR-USER-03 Identity Verification
 - [ ] FR-USER-04 Search Hotels
 - [ ] FR-USER-05 Search Transport
-- [ ] FR-USER-06 Create Trip Request
-- [ ] FR-USER-07 View Bids
-- [ ] FR-USER-08 Accept Bid
+- [x] FR-USER-06 Create Trip Request
+- [x] FR-USER-07 View Bids
+- [x] FR-USER-08 Accept Bid
 - [ ] FR-USER-09 Join Group Trip
 - [ ] FR-USER-10 Submit Review
 
@@ -58,6 +58,10 @@ Completed
 - [x] Admin dashboard and reports endpoints
 - [x] Agency registration with Pakistan-specific application fields and document uploads
 - [x] Transport module for agency-side vehicle management
+- [x] Trip requests backend module (CRUD, role-based filtering, pagination)
+- [x] Bids backend module (create, list, transactional bid acceptance)
+- [x] Bookings backend module (role-scoped listings, status transitions)
+- [x] Users profile backend module (GET/PUT profile)
 
 Partially implemented
 - [x] Agency and hotel API surface is present in routing, but not all modules are implemented behind the mounted routes
@@ -65,12 +69,8 @@ Partially implemented
 - [x] Admin hotel review UI and route structure exist, but the hotel backend flow is not complete end-to-end
 
 Missing / placeholder
-- [ ] Users backend module implementation
 - [ ] Agency backend module implementation
 - [ ] Hotels backend module implementation
-- [ ] Trip requests backend module implementation
-- [ ] Bids backend module implementation
-- [ ] Bookings backend module implementation
 - [ ] Review APIs
 - [ ] Persistent chat history and complete websocket message flow
 - [ ] Traveler verification review workflow for admins
@@ -89,13 +89,13 @@ Partially implemented
 - [x] Hotel list/form pages exist, but hotel management is not complete end-to-end because backend support is incomplete
 
 Missing / placeholder
-- [ ] Trip request marketplace
-- [ ] Bid submission flow
-- [ ] Accepted booking management
+- [x] Trip request marketplace
+- [x] Bid submission flow
+- [x] Accepted booking management
 - [ ] Rooms management
 - [ ] Tour packages management
 - [ ] Several agency hooks, slices, and components still marked `TODO`
-- [ ] Bookings page is still a placeholder
+- [x] Bookings page is no longer a placeholder
 
 ### Admin Portal
 Completed
@@ -120,25 +120,25 @@ Missing / placeholder
 Completed
 - [x] Basic Flutter app shell
 - [x] Feature folder structure and route/API constants scaffolding
+- [x] Traveler login and traveler registration UI wired to backend auth endpoints
+- [x] Persisted traveler session handling and authenticated app shell
+- [x] Trip request creation and listing flow against live backend APIs
+- [x] Bid viewing and bid acceptance flow that creates bookings
+- [x] Bookings list and booking details flow
 
 Partially implemented
 - [x] Domain/data/presentation folders exist for auth, hotels, transport, trip requests, bookings, profile, chat, reviews, and trip groups
 - [x] API endpoint constants and route constants are scaffolded for many planned flows
+- [x] CNIC verification submission page exists, but document upload/review is still not production-complete
 
 Missing / placeholder
-- [ ] Traveler registration UI and flow
-- [ ] Traveler login UI and flow
-- [ ] CNIC verification flow
 - [ ] Hotel search and booking flow
 - [ ] Transport search and booking flow
-- [ ] Trip request creation and listing flow
-- [ ] Bids viewing and acceptance flow
-- [ ] Bookings list and booking details flow
 - [ ] Profile management
 - [ ] Chat flow
 - [ ] Reviews flow
 - [ ] Group trip flow
-- [ ] Most providers, repositories, datasources, pages, and widgets are still marked `TODO`
+- [ ] Many providers, repositories, datasources, pages, and widgets outside auth/trip requests/bookings are still marked `TODO`
 
 ## Recently Completed Work
 - [x] Admin users module
@@ -146,28 +146,34 @@ Missing / placeholder
 - [x] Agency registration with Pakistan-specific application fields and documents
 - [x] Agency approval and rejection flow
 - [x] Vehicle approval flow
+- [x] Agency trip request marketplace with inline bid submission
+- [x] Agency accepted bookings management page and status actions
 - [x] Current authentication foundation across backend and portals
+- [x] Trip requests, bids, bookings, and user profile backend modules
+- [x] Transactional bid acceptance (atomically accepts bid, rejects others, creates booking)
+- [x] Traveler Flutter auth flow plus trip request, bids, and bookings frontend
+- [x] Render deployment blueprint and backend production startup path
 
 ## Active Priority Backlog
 
 ### P0 - Core Trip Lifecycle
-- [ ] Implement trip requests backend routes, service, controller, and validation
-- [ ] Implement bids backend routes, service, controller, and validation
-- [ ] Implement bookings backend routes, service, controller, and validation
+- [x] Implement trip requests backend routes, service, controller, and validation
+- [x] Implement bids backend routes, service, controller, and validation
+- [x] Implement bookings backend routes, service, controller, and validation
 - [ ] Implement traveler-side hotel search end-to-end
 - [ ] Implement traveler-side transport search end-to-end
-- [ ] Implement traveler trip request creation end-to-end
-- [ ] Implement traveler bid viewing end-to-end
-- [ ] Implement accepted bid to booking creation flow
-- [ ] Add transactional handling so only one bid can be accepted safely
-- [ ] Implement usable `/api/users` traveler profile flow
+- [x] Implement traveler trip request creation end-to-end (frontend)
+- [x] Implement traveler bid viewing end-to-end (frontend)
+- [x] Implement accepted bid to booking creation flow
+- [x] Add transactional handling so only one bid can be accepted safely
+- [x] Implement usable `/api/users` traveler profile flow
 
 ### P1 - Business Operations
 - [ ] Implement hotels backend module so agency hotel pages work end-to-end
 - [ ] Implement rooms and menus management
-- [ ] Implement agency booking management
-- [ ] Implement agency trip request viewing flow
-- [ ] Implement agency bid submission flow
+- [x] Implement agency booking management
+- [x] Implement agency trip request viewing flow
+- [x] Implement agency bid submission flow
 - [ ] Implement agency tour packages flow
 - [ ] Implement traveler identity verification review for admins
 - [ ] Implement hotel approval pipeline end-to-end

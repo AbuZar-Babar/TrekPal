@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: trekpal-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci --include=dev && npm run render:build
+    preDeployCommand: npm run render:predeploy
+    startCommand: npm run render:start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET_KYC
+        value: kyc-private
+      - key: SUPABASE_SIGNED_URL_TTL_SECONDS
+        value: "3600"
+      - key: CORS_ORIGIN
+        sync: false

@@ -80,6 +80,58 @@ export interface Hotel {
   updatedAt: string;
 }
 
+export interface TripRequest {
+  id: string;
+  userId: string;
+  userName?: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  budget: number | null;
+  travelers: number;
+  description: string | null;
+  status: 'PENDING' | 'ACCEPTED' | 'CANCELLED';
+  bidsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Bid {
+  id: string;
+  tripRequestId: string;
+  agencyId: string;
+  agencyName: string;
+  price: number;
+  description: string | null;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string;
+  tripDestination?: string;
+  tripStartDate?: string;
+  tripEndDate?: string;
+}
+
+export interface Booking {
+  id: string;
+  userId: string;
+  userName?: string;
+  agencyId: string | null;
+  agencyName?: string;
+  tripRequestId: string | null;
+  bidId: string | null;
+  hotelId: string | null;
+  roomId: string | null;
+  vehicleId: string | null;
+  packageId: string | null;
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  totalAmount: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  updatedAt: string;
+  destination?: string;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;

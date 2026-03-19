@@ -318,6 +318,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 ### Setup Guides
 - **[Database Setup](docs/setup/database.md)** - PostgreSQL configuration and setup
 - **[Admin Portal Setup](docs/setup/admin-portal.md)** - Admin portal installation and configuration
+- **[Render Deploy](docs/setup/render.md)** - Deploy the backend to Render
 
 ### API Documentation
 - **[API Endpoints](docs/api/endpoints.md)** - Complete API reference

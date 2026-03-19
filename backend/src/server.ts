@@ -27,10 +27,17 @@ const httpServer = createServer(app);
 const io = initializeSocketServer(httpServer);
 
 // Middleware
-// Allow both admin portal (5174) and agency portal (5173) in development
-const allowedOrigins = env.NODE_ENV === 'development'
-  ? ['http://localhost:5173', 'http://localhost:5174', env.CORS_ORIGIN]
-  : [env.CORS_ORIGIN];
+const configuredOrigins = env.CORS_ORIGIN
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+// Allow both admin portal (5174) and agency portal (5173) in development.
+const allowedOrigins = Array.from(new Set(
+  env.NODE_ENV === 'development'
+    ? ['http://localhost:5173', 'http://localhost:5174', ...configuredOrigins]
+    : configuredOrigins
+));
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -78,11 +85,13 @@ app.use(errorHandler);
  * Start server
  */
 const PORT = parseInt(env.PORT, 10);
+const HOST = '0.0.0.0';
 
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+httpServer.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
   console.log(`Environment: ${env.NODE_ENV}`);
-  console.log(`API: http://localhost:${PORT}/api`);
+  console.log(`Health: /health`);
+  console.log(`API base path: /api`);
 });
 
 export { app, io };
