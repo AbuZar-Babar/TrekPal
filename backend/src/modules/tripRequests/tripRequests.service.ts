@@ -1,3 +1,5 @@
+import type { Prisma } from '@prisma/client';
+
 import { prisma } from '../../config/database';
 import {
   CreateTripRequestInput,
@@ -183,15 +185,7 @@ export class TripRequestsService {
       throw new Error('End date must be on or after start date');
     }
 
-    const updateData: {
-      destination?: string;
-      startDate?: Date;
-      endDate?: Date;
-      budget?: number | null;
-      travelers?: number;
-      description?: string | null;
-      tripSpecs?: unknown;
-    } = {};
+    const updateData: Prisma.TripRequestUpdateInput = {};
 
     if (input.destination !== undefined) {
       updateData.destination = input.destination;

@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { BID_AWAITING_ACTION, ROLES, type BidAwaitingAction } from '../../config/constants';
@@ -140,6 +141,6 @@ export function normalizeAwaitingAction(input: unknown): BidAwaitingAction {
 
 export function offerDetailsToJson(
   offerDetails: OfferDetails,
-): Record<string, unknown> {
-  return offerDetails as unknown as Record<string, unknown>;
+): Prisma.InputJsonObject {
+  return offerDetails as unknown as Prisma.InputJsonObject;
 }

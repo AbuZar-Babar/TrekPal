@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 const booleanSchema = z.preprocess((value) => {
@@ -186,6 +187,6 @@ export function normalizeTripSpecs(input: unknown): TripSpecs {
   return tripSpecsSchema.parse({});
 }
 
-export function tripSpecsToJson(tripSpecs: TripSpecs): Record<string, unknown> {
-  return tripSpecs as unknown as Record<string, unknown>;
+export function tripSpecsToJson(tripSpecs: TripSpecs): Prisma.InputJsonObject {
+  return tripSpecs as unknown as Prisma.InputJsonObject;
 }
