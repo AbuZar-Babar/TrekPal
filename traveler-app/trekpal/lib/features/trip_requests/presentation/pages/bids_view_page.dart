@@ -5,15 +5,14 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
-import '../../../bookings/presentation/pages/booking_details_page.dart';
-import '../../../bookings/presentation/providers/bookings_provider.dart';
 import '../../domain/entities/trip_request_entities.dart';
 import '../providers/trip_requests_provider.dart';
+import 'bid_thread_page.dart';
 
 class BidsViewPage extends StatefulWidget {
-  const BidsViewPage({super.key, required this.tripRequest});
+  const BidsViewPage({super.key, required this.tripRequestId});
 
-  final TripRequestEntity tripRequest;
+  final String tripRequestId;
 
   @override
   State<BidsViewPage> createState() => _BidsViewPageState();
@@ -26,99 +25,130 @@ class _BidsViewPageState extends State<BidsViewPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         await context.read<TripRequestsProvider>().fetchBids(
-          widget.tripRequest.id,
+          widget.tripRequestId,
         );
       } catch (_) {}
     });
   }
 
-  Future<void> _acceptBid(BidEntity bid) async {
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final String bookingId = await context.read<BookingsProvider>().acceptBid(
-        bid.id,
-      );
-      if (!mounted) {
-        return;
-      }
+  Widget _summaryPill(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3E9D9),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(icon, size: 16, color: AppColors.clay),
+          const SizedBox(width: 8),
+          Text(label),
+        ],
+      ),
+    );
+  }
 
-      context.read<TripRequestsProvider>().syncTripRequestStatus(
-        widget.tripRequest.id,
-        'ACCEPTED',
-      );
-
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Bid accepted and booking created')),
-      );
-
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-          builder: (_) => BookingDetailsPage(bookingId: bookingId),
-        ),
-      );
-    } catch (_) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            context.read<BookingsProvider>().errorMessage ??
-                'Unable to accept bid',
-          ),
-        ),
-      );
+  String _nextActionLabel(BidEntity bid) {
+    if (bid.status == 'ACCEPTED') {
+      return 'Booked';
     }
+
+    if (bid.status == 'REJECTED') {
+      return 'Closed';
+    }
+
+    if (bid.awaitingActionBy == 'TRAVELER') {
+      return 'Awaiting your response';
+    }
+
+    if (bid.awaitingActionBy == 'AGENCY') {
+      return 'Awaiting agency';
+    }
+
+    return 'Open';
   }
 
   @override
   Widget build(BuildContext context) {
     final TripRequestsProvider provider = context.watch<TripRequestsProvider>();
-    final BookingsProvider bookingsProvider = context.watch<BookingsProvider>();
+    final TripRequestEntity? request = provider.findTripRequestById(
+      widget.tripRequestId,
+    );
     final List<BidEntity> bids = provider.currentBids;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Agency bids')),
+      appBar: AppBar(title: const Text('Agency offers')),
       body: RefreshIndicator(
-        onRefresh: () => provider.fetchBids(widget.tripRequest.id),
+        onRefresh: () => provider.fetchBids(widget.tripRequestId),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
           children: <Widget>[
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
+            if (request != null)
+              Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: <Color>[AppColors.pine, AppColors.forest],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(28),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      widget.tripRequest.destination,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                      request.destination,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
                       AppFormatters.dateRange(
-                        widget.tripRequest.startDate,
-                        widget.tripRequest.endDate,
+                        request.startDate,
+                        request.endDate,
                       ),
+                      style: const TextStyle(color: Color(0xFFE6F3EC)),
                     ),
-                    const SizedBox(height: 8),
-                    Text('${widget.tripRequest.travelers} travelers'),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: <Widget>[
+                        _summaryPill(
+                          Icons.people_alt_outlined,
+                          '${request.travelers} travelers',
+                        ),
+                        _summaryPill(
+                          Icons.payments_outlined,
+                          AppFormatters.currency(request.budget),
+                        ),
+                        _summaryPill(
+                          Icons.handshake_outlined,
+                          '${request.bidsCount} offer threads',
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             if (provider.isBidsLoading && bids.isEmpty)
               const TrekpalLoadingWidget(message: 'Loading agency offers...')
             else if (provider.errorMessage != null && bids.isEmpty)
               TrekpalErrorState(
                 message: provider.errorMessage!,
-                onRetry: () => provider.fetchBids(widget.tripRequest.id),
+                onRetry: () => provider.fetchBids(widget.tripRequestId),
               )
             else if (bids.isEmpty)
               const TrekpalErrorState(
                 message:
-                    'No bids yet. Approved agencies will appear here when they respond.',
+                    'No offers yet. Approved agencies will appear here when they respond.',
               )
             else
               ...bids.map(
@@ -135,7 +165,7 @@ class _BidsViewPageState extends State<BidsViewPage> {
                               Expanded(
                                 child: Text(
                                   bid.agencyName,
-                                  style: Theme.of(context).textTheme.titleMedium
+                                  style: Theme.of(context).textTheme.titleLarge
                                       ?.copyWith(fontWeight: FontWeight.w800),
                                 ),
                               ),
@@ -143,28 +173,70 @@ class _BidsViewPageState extends State<BidsViewPage> {
                                 AppFormatters.currency(bid.price),
                                 style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w900,
                                       color: AppColors.forest,
                                     ),
                               ),
                             ],
                           ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: <Widget>[
+                              _summaryPill(
+                                Icons.hotel_outlined,
+                                bid.offerDetails.stayIncluded
+                                    ? 'Stay included'
+                                    : 'No stay',
+                              ),
+                              _summaryPill(
+                                Icons.directions_car_outlined,
+                                bid.offerDetails.transportIncluded
+                                    ? 'Transport included'
+                                    : 'No transport',
+                              ),
+                              _summaryPill(
+                                Icons.restaurant_outlined,
+                                bid.offerDetails.mealsIncluded
+                                    ? 'Meals included'
+                                    : 'No meals',
+                              ),
+                              _summaryPill(
+                                Icons.timeline_outlined,
+                                _nextActionLabel(bid),
+                              ),
+                            ],
+                          ),
                           if (bid.description != null &&
                               bid.description!.trim().isNotEmpty) ...<Widget>[
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 12),
                             Text(bid.description!),
                           ],
                           const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed:
-                                  widget.tripRequest.status == 'PENDING' &&
-                                      !bookingsProvider.isLoading
-                                  ? () => _acceptBid(bid)
-                                  : null,
-                              child: const Text('Accept bid'),
-                            ),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  'Updated ${AppFormatters.dateTime(bid.updatedAt)}',
+                                  style: const TextStyle(color: AppColors.clay),
+                                ),
+                              ),
+                              FilledButton.tonalIcon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => BidThreadPage(
+                                        tripRequestId: widget.tripRequestId,
+                                        bidId: bid.id,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.forum_outlined),
+                                label: const Text('Open thread'),
+                              ),
+                            ],
                           ),
                         ],
                       ),

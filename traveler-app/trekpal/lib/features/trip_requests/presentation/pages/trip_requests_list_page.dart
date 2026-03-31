@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../domain/entities/trip_request_entities.dart';
 import '../providers/trip_requests_provider.dart';
 import '../widgets/trip_request_card.dart';
-import 'bids_view_page.dart';
 import 'create_trip_request_page.dart';
+import 'trip_request_details_page.dart';
 
 class TripRequestsListPage extends StatefulWidget {
   const TripRequestsListPage({super.key});
@@ -33,9 +34,9 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
     );
 
     if (created == true && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Trip request created')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trip brief published to agencies')),
+      );
     }
   }
 
@@ -45,11 +46,11 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
     final List<TripRequestEntity> requests = provider.tripRequests;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip requests')),
+      appBar: AppBar(title: const Text('Trips marketplace')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreatePage,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('New request'),
+        label: const Text('New trip brief'),
       ),
       body: RefreshIndicator(
         onRefresh: () => provider.fetchTripRequests(force: true),
@@ -57,7 +58,7 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
           builder: (BuildContext context) {
             if (provider.isLoading && requests.isEmpty) {
               return const TrekpalLoadingWidget(
-                message: 'Loading your trip requests...',
+                message: 'Loading your traveler marketplace...',
               );
             }
 
@@ -72,55 +73,127 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(24),
-                children: const <Widget>[
-                  SizedBox(height: 160),
-                  TrekpalErrorState(
-                    message:
-                        'No trip requests yet. Create your first request to start collecting bids.',
+                children: <Widget>[
+                  const SizedBox(height: 130),
+                  Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                          color: Color(0x14000000),
+                          blurRadius: 24,
+                          offset: Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: const Column(
+                      children: <Widget>[
+                        Icon(
+                          Icons.explore_outlined,
+                          size: 56,
+                          color: AppColors.forest,
+                        ),
+                        SizedBox(height: 18),
+                        Text(
+                          'Create your first trip brief',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.ink,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Tell agencies where you want to go, how many people are traveling, what services you need, and the budget you want them to negotiate around.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               );
             }
 
-            final int pendingCount = requests
+            final int publishedCount = requests
                 .where((TripRequestEntity item) => item.status == 'PENDING')
+                .length;
+            final int bookedCount = requests
+                .where((TripRequestEntity item) => item.status == 'ACCEPTED')
                 .length;
 
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
               children: <Widget>[
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: _StatItem(
-                            value: '${requests.length}',
-                            label: 'Total requests',
-                          ),
-                        ),
-                        Expanded(
-                          child: _StatItem(
-                            value: '$pendingCount',
-                            label: 'Pending bids',
-                          ),
-                        ),
-                      ],
+                Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: <Color>[AppColors.pine, AppColors.forest],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Traveler marketplace',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Publish structured trip briefs, compare agency offers, negotiate details, and lock the right trip.',
+                        style: TextStyle(color: Color(0xFFE6F3EC)),
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: _StatTile(
+                              value: '${requests.length}',
+                              label: 'Total briefs',
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _StatTile(
+                              value: '$publishedCount',
+                              label: 'Open briefs',
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _StatTile(
+                              value: '$bookedCount',
+                              label: 'Booked',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 ...requests.map(
                   (TripRequestEntity request) => Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: TripRequestCard(
                       tripRequest: request,
-                      onViewBids: () {
+                      onOpen: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
-                            builder: (_) => BidsViewPage(tripRequest: request),
+                            builder: (_) => TripRequestDetailsPage(
+                              tripRequestId: request.id,
+                            ),
                           ),
                         );
                       },
@@ -136,25 +209,37 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
   }
 }
 
-class _StatItem extends StatelessWidget {
-  const _StatItem({required this.value, required this.label});
+class _StatTile extends StatelessWidget {
+  const _StatTile({required this.value, required this.label});
 
   final String value;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Text(
-          value,
-          style: Theme.of(
-            context,
-          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 6),
-        Text(label),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: <Widget>[
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Color(0xFFE6F3EC)),
+          ),
+        ],
+      ),
     );
   }
 }

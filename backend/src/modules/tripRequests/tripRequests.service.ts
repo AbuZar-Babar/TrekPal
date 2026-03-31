@@ -1,9 +1,36 @@
 import { prisma } from '../../config/database';
 import {
   CreateTripRequestInput,
-  UpdateTripRequestInput,
+  TripRequestFiltersInput,
   TripRequestResponse,
+  UpdateTripRequestInput,
+  normalizeTripSpecs,
+  tripSpecsToJson,
 } from './tripRequests.types';
+
+const tripRequestInclude = {
+  user: { select: { name: true } },
+  _count: { select: { bids: true } },
+};
+
+function mapTripRequest(tripRequest: any): TripRequestResponse {
+  return {
+    id: tripRequest.id,
+    userId: tripRequest.userId,
+    userName: tripRequest.user.name ?? undefined,
+    destination: tripRequest.destination,
+    startDate: tripRequest.startDate,
+    endDate: tripRequest.endDate,
+    budget: tripRequest.budget,
+    travelers: tripRequest.travelers,
+    description: tripRequest.description,
+    tripSpecs: normalizeTripSpecs(tripRequest.tripSpecs),
+    status: tripRequest.status,
+    bidsCount: tripRequest._count.bids,
+    createdAt: tripRequest.createdAt,
+    updatedAt: tripRequest.updatedAt,
+  };
+}
 
 /**
  * Trip Requests Service
@@ -15,8 +42,12 @@ export class TripRequestsService {
    */
   async createTripRequest(
     userId: string,
-    input: CreateTripRequestInput
+    input: CreateTripRequestInput,
   ): Promise<TripRequestResponse> {
+    if (new Date(input.endDate) < new Date(input.startDate)) {
+      throw new Error('End date must be on or after start date');
+    }
+
     const tripRequest = await prisma.tripRequest.create({
       data: {
         userId,
@@ -26,29 +57,13 @@ export class TripRequestsService {
         budget: input.budget ?? null,
         travelers: input.travelers ?? 1,
         description: input.description ?? null,
+        tripSpecs: tripSpecsToJson(input.tripSpecs),
         status: 'PENDING',
       },
-      include: {
-        user: { select: { name: true } },
-        _count: { select: { bids: true } },
-      },
+      include: tripRequestInclude,
     });
 
-    return {
-      id: tripRequest.id,
-      userId: tripRequest.userId,
-      userName: tripRequest.user.name ?? undefined,
-      destination: tripRequest.destination,
-      startDate: tripRequest.startDate,
-      endDate: tripRequest.endDate,
-      budget: tripRequest.budget,
-      travelers: tripRequest.travelers,
-      description: tripRequest.description,
-      status: tripRequest.status,
-      bidsCount: tripRequest._count.bids,
-      createdAt: tripRequest.createdAt,
-      updatedAt: tripRequest.updatedAt,
-    };
+    return mapTripRequest(tripRequest);
   }
 
   /**
@@ -58,20 +73,32 @@ export class TripRequestsService {
    * - Admins see all requests
    */
   async getTripRequests(
-    filters: {
+    filters: TripRequestFiltersInput & {
       userId?: string;
-      status?: string;
-      search?: string;
-      page?: number;
-      limit?: number;
-    }
-  ): Promise<{ tripRequests: TripRequestResponse[]; total: number; page: number; limit: number }> {
+    },
+  ): Promise<{
+    tripRequests: TripRequestResponse[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const { userId, status, search, page = 1, limit = 20 } = filters;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
-    if (userId) where.userId = userId;
-    if (status) where.status = status;
+    const where: {
+      userId?: string;
+      status?: string;
+      OR?: Array<Record<string, unknown>>;
+    } = {};
+
+    if (userId) {
+      where.userId = userId;
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
     if (search) {
       where.OR = [
         { destination: { contains: search, mode: 'insensitive' } },
@@ -85,30 +112,13 @@ export class TripRequestsService {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: {
-          user: { select: { name: true } },
-          _count: { select: { bids: true } },
-        },
+        include: tripRequestInclude,
       }),
       prisma.tripRequest.count({ where }),
     ]);
 
     return {
-      tripRequests: tripRequests.map((tr) => ({
-        id: tr.id,
-        userId: tr.userId,
-        userName: tr.user.name ?? undefined,
-        destination: tr.destination,
-        startDate: tr.startDate,
-        endDate: tr.endDate,
-        budget: tr.budget,
-        travelers: tr.travelers,
-        description: tr.description,
-        status: tr.status,
-        bidsCount: tr._count.bids,
-        createdAt: tr.createdAt,
-        updatedAt: tr.updatedAt,
-      })),
+      tripRequests: tripRequests.map(mapTripRequest),
       total,
       page,
       limit,
@@ -121,79 +131,103 @@ export class TripRequestsService {
   async getTripRequestById(id: string): Promise<TripRequestResponse> {
     const tripRequest = await prisma.tripRequest.findUnique({
       where: { id },
-      include: {
-        user: { select: { name: true } },
-        _count: { select: { bids: true } },
-      },
+      include: tripRequestInclude,
     });
 
     if (!tripRequest) {
       throw new Error('Trip request not found');
     }
 
-    return {
-      id: tripRequest.id,
-      userId: tripRequest.userId,
-      userName: tripRequest.user.name ?? undefined,
-      destination: tripRequest.destination,
-      startDate: tripRequest.startDate,
-      endDate: tripRequest.endDate,
-      budget: tripRequest.budget,
-      travelers: tripRequest.travelers,
-      description: tripRequest.description,
-      status: tripRequest.status,
-      bidsCount: tripRequest._count.bids,
-      createdAt: tripRequest.createdAt,
-      updatedAt: tripRequest.updatedAt,
-    };
+    return mapTripRequest(tripRequest);
   }
 
   /**
-   * Update own trip request (traveler only, only if PENDING)
+   * Update own trip request (traveler only, only if no bids exist)
    */
   async updateTripRequest(
     id: string,
     userId: string,
-    input: UpdateTripRequestInput
+    input: UpdateTripRequestInput,
   ): Promise<TripRequestResponse> {
-    const existing = await prisma.tripRequest.findUnique({ where: { id } });
-
-    if (!existing) throw new Error('Trip request not found');
-    if (existing.userId !== userId) throw new Error('Unauthorized: not your trip request');
-    if (existing.status !== 'PENDING') throw new Error('Cannot update a non-pending trip request');
-
-    const updateData: any = {};
-    if (input.destination !== undefined) updateData.destination = input.destination;
-    if (input.startDate !== undefined) updateData.startDate = new Date(input.startDate);
-    if (input.endDate !== undefined) updateData.endDate = new Date(input.endDate);
-    if (input.budget !== undefined) updateData.budget = input.budget;
-    if (input.travelers !== undefined) updateData.travelers = input.travelers;
-    if (input.description !== undefined) updateData.description = input.description;
-
-    const tripRequest = await prisma.tripRequest.update({
+    const existing = await prisma.tripRequest.findUnique({
       where: { id },
-      data: updateData,
       include: {
-        user: { select: { name: true } },
         _count: { select: { bids: true } },
       },
     });
 
-    return {
-      id: tripRequest.id,
-      userId: tripRequest.userId,
-      userName: tripRequest.user.name ?? undefined,
-      destination: tripRequest.destination,
-      startDate: tripRequest.startDate,
-      endDate: tripRequest.endDate,
-      budget: tripRequest.budget,
-      travelers: tripRequest.travelers,
-      description: tripRequest.description,
-      status: tripRequest.status,
-      bidsCount: tripRequest._count.bids,
-      createdAt: tripRequest.createdAt,
-      updatedAt: tripRequest.updatedAt,
-    };
+    if (!existing) {
+      throw new Error('Trip request not found');
+    }
+
+    if (existing.userId !== userId) {
+      throw new Error('Unauthorized: not your trip request');
+    }
+
+    if (existing.status !== 'PENDING') {
+      throw new Error('Cannot update a non-pending trip request');
+    }
+
+    if (existing._count.bids > 0) {
+      throw new Error('Cannot update a trip request after agencies have started bidding');
+    }
+
+    const nextStartDate = input.startDate
+      ? new Date(input.startDate)
+      : existing.startDate;
+    const nextEndDate = input.endDate
+      ? new Date(input.endDate)
+      : existing.endDate;
+
+    if (nextEndDate < nextStartDate) {
+      throw new Error('End date must be on or after start date');
+    }
+
+    const updateData: {
+      destination?: string;
+      startDate?: Date;
+      endDate?: Date;
+      budget?: number | null;
+      travelers?: number;
+      description?: string | null;
+      tripSpecs?: unknown;
+    } = {};
+
+    if (input.destination !== undefined) {
+      updateData.destination = input.destination;
+    }
+
+    if (input.startDate !== undefined) {
+      updateData.startDate = new Date(input.startDate);
+    }
+
+    if (input.endDate !== undefined) {
+      updateData.endDate = new Date(input.endDate);
+    }
+
+    if (input.budget !== undefined) {
+      updateData.budget = input.budget;
+    }
+
+    if (input.travelers !== undefined) {
+      updateData.travelers = input.travelers;
+    }
+
+    if (input.description !== undefined) {
+      updateData.description = input.description ?? null;
+    }
+
+    if (input.tripSpecs !== undefined) {
+      updateData.tripSpecs = tripSpecsToJson(input.tripSpecs);
+    }
+
+    const tripRequest = await prisma.tripRequest.update({
+      where: { id },
+      data: updateData,
+      include: tripRequestInclude,
+    });
+
+    return mapTripRequest(tripRequest);
   }
 
   /**
@@ -202,9 +236,17 @@ export class TripRequestsService {
   async cancelTripRequest(id: string, userId: string): Promise<void> {
     const existing = await prisma.tripRequest.findUnique({ where: { id } });
 
-    if (!existing) throw new Error('Trip request not found');
-    if (existing.userId !== userId) throw new Error('Unauthorized: not your trip request');
-    if (existing.status === 'CANCELLED') throw new Error('Trip request is already cancelled');
+    if (!existing) {
+      throw new Error('Trip request not found');
+    }
+
+    if (existing.userId !== userId) {
+      throw new Error('Unauthorized: not your trip request');
+    }
+
+    if (existing.status === 'CANCELLED') {
+      throw new Error('Trip request is already cancelled');
+    }
 
     await prisma.tripRequest.update({
       where: { id },

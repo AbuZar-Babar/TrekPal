@@ -33,6 +33,20 @@ router.get(
 );
 
 /**
+ * @route   GET /api/bids/:id
+ * @desc    Get a single bid thread with revision history
+ * @access  Private (Traveler owner, agency owner, admin)
+ */
+router.get('/:id', bidsController.getBidById.bind(bidsController));
+
+/**
+ * @route   POST /api/bids/:id/counteroffer
+ * @desc    Submit a counteroffer on an existing bid thread
+ * @access  Private (Traveler owner or agency owner)
+ */
+router.post('/:id/counteroffer', bidsController.createCounterOffer.bind(bidsController));
+
+/**
  * @route   POST /api/bids/:id/accept
  * @desc    Accept a bid (creates booking transactionally)
  * @access  Private (Traveler only, must own the trip request)

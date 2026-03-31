@@ -189,6 +189,7 @@ model TripRequest {
   budget      Float?
   travelers   Int      @default(1)
   description String?
+  tripSpecs   Json?
   status      String   @default("PENDING") // PENDING, ACCEPTED, CANCELLED
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -208,6 +209,8 @@ model Bid {
   agencyId      String
   price         Float
   description   String?
+  offerDetails  Json?
+  awaitingActionBy String @default("NONE")
   status        String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -216,8 +219,25 @@ model Bid {
   tripRequest   TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
   agency        Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   booking       Booking?
+  revisions     BidRevision[]
 
   @@map("bids")
+}
+
+model BidRevision {
+  id           String   @id @default(cuid())
+  bidId        String
+  actorRole    String
+  actorId      String
+  price        Float
+  description  String?
+  offerDetails Json?
+  createdAt    DateTime @default(now())
+
+  bid          Bid      @relation(fields: [bidId], references: [id], onDelete: Cascade)
+
+  @@index([bidId, createdAt])
+  @@map("bid_revisions")
 }
 
 // Booking model

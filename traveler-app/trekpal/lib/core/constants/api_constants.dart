@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 class ApiConstants {
+  static const String _defaultBaseUrl =
+      'https://trekpal-backend-api.onrender.com/api';
+
   static String get baseUrl {
     const String override = String.fromEnvironment(
       'API_BASE_URL',
@@ -12,15 +15,7 @@ class ApiConstants {
       return override;
     }
 
-    if (kIsWeb) {
-      return 'http://localhost:3000/api';
-    }
-
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3000/api';
-    }
-
-    return 'http://localhost:3000/api';
+    return _defaultBaseUrl;
   }
 
   static const String login = '/auth/login';
@@ -35,18 +30,20 @@ class ApiConstants {
   static String tripRequestById(String id) => '$tripRequests/$id';
   static String tripRequestBids(String tripRequestId) =>
       '$bids/trip-request/$tripRequestId';
+  static String bidById(String bidId) => '$bids/$bidId';
+  static String counterOffer(String bidId) => '$bids/$bidId/counteroffer';
   static String acceptBid(String bidId) => '$bids/$bidId/accept';
   static String bookingById(String bookingId) => '$bookings/$bookingId';
 
   static String get connectionHint {
     if (kIsWeb) {
-      return 'Web builds use localhost by default. Start the backend on this same machine or override API_BASE_URL.';
+      return 'Web builds use the live Render backend by default. Override API_BASE_URL if you want to target a local or alternate backend.';
     }
 
     if (Platform.isAndroid) {
-      return 'Android emulators use 10.0.2.2. If you are testing on a physical phone, override API_BASE_URL to your PC IP address.';
+      return 'Android builds use the live Render backend by default. Override API_BASE_URL if you want to target a local emulator host or another backend.';
     }
 
-    return 'Desktop builds use localhost by default. Make sure the backend is running on this machine or override API_BASE_URL.';
+    return 'Desktop builds use the live Render backend by default. Override API_BASE_URL if you want to target a local or alternate backend.';
   }
 }

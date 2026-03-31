@@ -80,6 +80,37 @@ export interface Hotel {
   updatedAt: string;
 }
 
+export interface TripSpecs {
+  stayType: 'ANY' | 'HOTEL' | 'RESORT' | 'GUEST_HOUSE';
+  roomCount: number;
+  roomPreference: 'ANY' | 'SINGLE' | 'DOUBLE' | 'FAMILY';
+  transportRequired: boolean;
+  transportType: 'ANY' | 'CAR' | 'SUV' | 'VAN' | 'BUS';
+  mealPlan: 'ANY' | 'BREAKFAST_ONLY' | 'HALF_BOARD' | 'FULL_BOARD';
+  specialRequirements: string;
+}
+
+export interface OfferDetails {
+  stayIncluded: boolean;
+  stayDetails: string;
+  transportIncluded: boolean;
+  transportDetails: string;
+  mealsIncluded: boolean;
+  mealDetails: string;
+  extras: string;
+}
+
+export interface BidRevision {
+  id: string;
+  bidId: string;
+  actorRole: 'TRAVELER' | 'AGENCY';
+  actorId: string;
+  price: number;
+  description: string | null;
+  offerDetails: OfferDetails;
+  createdAt: string;
+}
+
 export interface TripRequest {
   id: string;
   userId: string;
@@ -90,6 +121,7 @@ export interface TripRequest {
   budget: number | null;
   travelers: number;
   description: string | null;
+  tripSpecs: TripSpecs;
   status: 'PENDING' | 'ACCEPTED' | 'CANCELLED';
   bidsCount: number;
   createdAt: string;
@@ -103,12 +135,16 @@ export interface Bid {
   agencyName: string;
   price: number;
   description: string | null;
+  offerDetails: OfferDetails;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  awaitingActionBy: 'TRAVELER' | 'AGENCY' | 'NONE';
+  revisionCount: number;
   createdAt: string;
   updatedAt: string;
   tripDestination?: string;
   tripStartDate?: string;
   tripEndDate?: string;
+  revisions?: BidRevision[];
 }
 
 export interface Booking {

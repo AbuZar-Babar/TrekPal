@@ -26,6 +26,15 @@ export const BID_STATUS = {
 
 export type BidStatus = typeof BID_STATUS[keyof typeof BID_STATUS];
 
+export const BID_AWAITING_ACTION = {
+  TRAVELER: 'TRAVELER',
+  AGENCY: 'AGENCY',
+  NONE: 'NONE',
+} as const;
+
+export type BidAwaitingAction =
+  typeof BID_AWAITING_ACTION[keyof typeof BID_AWAITING_ACTION];
+
 export const APPROVAL_STATUS = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',

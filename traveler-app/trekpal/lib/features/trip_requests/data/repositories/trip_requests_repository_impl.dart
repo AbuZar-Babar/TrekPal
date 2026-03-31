@@ -18,6 +18,7 @@ class TripRequestsRepositoryImpl implements TripRequestsRepository {
     required DateTime startDate,
     required DateTime endDate,
     required int travelers,
+    required TripSpecsEntity tripSpecs,
     num? budget,
     String? description,
   }) {
@@ -26,6 +27,7 @@ class TripRequestsRepositoryImpl implements TripRequestsRepository {
       startDate: startDate,
       endDate: endDate,
       travelers: travelers,
+      tripSpecs: tripSpecs,
       budget: budget,
       description: description,
     );
@@ -34,5 +36,25 @@ class TripRequestsRepositoryImpl implements TripRequestsRepository {
   @override
   Future<List<BidEntity>> getBids(String tripRequestId) {
     return _remoteDataSource.getBids(tripRequestId);
+  }
+
+  @override
+  Future<BidEntity> getBidThread(String bidId) {
+    return _remoteDataSource.getBidThread(bidId);
+  }
+
+  @override
+  Future<BidEntity> submitCounterOffer({
+    required String bidId,
+    required num price,
+    required OfferDetailsEntity offerDetails,
+    String? description,
+  }) {
+    return _remoteDataSource.submitCounterOffer(
+      bidId: bidId,
+      price: price,
+      offerDetails: offerDetails,
+      description: description,
+    );
   }
 }

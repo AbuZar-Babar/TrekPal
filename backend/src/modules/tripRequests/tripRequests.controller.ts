@@ -4,6 +4,11 @@ import { tripRequestsService } from './tripRequests.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
 import { prisma } from '../../config/database';
 import { ROLES } from '../../config/constants';
+import {
+  createTripRequestSchema,
+  tripRequestFiltersSchema,
+  updateTripRequestSchema,
+} from './tripRequests.types';
 
 /**
  * Trip Requests Controller
@@ -31,7 +36,8 @@ export class TripRequestsController {
         return;
       }
 
-      const result = await tripRequestsService.createTripRequest(user.id, req.body);
+      const input = createTripRequestSchema.parse(req.body);
+      const result = await tripRequestsService.createTripRequest(user.id, input);
       sendSuccess(res, result, 'Trip request created successfully', 201);
     } catch (error: any) {
       sendError(res, error.message || 'Failed to create trip request', 400);
@@ -51,12 +57,12 @@ export class TripRequestsController {
         return;
       }
 
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
-      const status = req.query.status as string | undefined;
-      const search = req.query.search as string | undefined;
-
-      const filters: any = { page, limit, status, search };
+      const filters = tripRequestFiltersSchema.parse({
+        page: req.query.page,
+        limit: req.query.limit,
+        status: req.query.status,
+        search: req.query.search,
+      }) as Record<string, unknown>;
 
       if (req.user.role === ROLES.TRAVELER) {
         // Travelers see only their own
@@ -76,7 +82,9 @@ export class TripRequestsController {
       }
       // Admins see all (no additional filter)
 
-      const result = await tripRequestsService.getTripRequests(filters);
+      const result = await tripRequestsService.getTripRequests(
+        filters as Parameters<typeof tripRequestsService.getTripRequests>[0],
+      );
       sendSuccess(res, result, 'Trip requests retrieved successfully');
     } catch (error: any) {
       sendError(res, error.message || 'Failed to get trip requests', 500);
@@ -123,7 +131,8 @@ export class TripRequestsController {
       }
 
       const { id } = req.params;
-      const result = await tripRequestsService.updateTripRequest(id, user.id, req.body);
+      const input = updateTripRequestSchema.parse(req.body);
+      const result = await tripRequestsService.updateTripRequest(id, user.id, input);
       sendSuccess(res, result, 'Trip request updated successfully');
     } catch (error: any) {
       if (error.message.includes('Unauthorized')) {

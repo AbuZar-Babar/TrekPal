@@ -10,7 +10,7 @@ Agencies can also manage hotels and vehicles, while admins review and approve ag
 The backend already has a shared data model for users, agencies, trip requests, bids, bookings, reviews, and chat-related entities.
 The admin portal already supports agency review, vehicle review, user listing, and analytics/reporting.
 The agency portal now includes a Pakistan-specific registration and document application flow.
-The traveler mobile app is still mostly a scaffold and does not yet provide the full traveler journey end-to-end.
+The traveler mobile app now supports a structured trip marketplace flow, but broader traveler features like hotels, transport inventory search, chat, reviews, and groups are still incomplete.
 Per the SRS constraint `CO-4`, payment integration is not part of the core project scope.
 
 ## Scope From SRS
@@ -59,7 +59,7 @@ Completed
 - [x] Agency registration with Pakistan-specific application fields and document uploads
 - [x] Transport module for agency-side vehicle management
 - [x] Trip requests backend module (CRUD, role-based filtering, pagination)
-- [x] Bids backend module (create, list, transactional bid acceptance)
+- [x] Bids backend module (structured offers, revision history, counteroffers, transactional bid acceptance)
 - [x] Bookings backend module (role-scoped listings, status transitions)
 - [x] Users profile backend module (GET/PUT profile)
 
@@ -90,7 +90,7 @@ Partially implemented
 
 Missing / placeholder
 - [x] Trip request marketplace
-- [x] Bid submission flow
+- [x] Structured bid submission and counteroffer flow
 - [x] Accepted booking management
 - [ ] Rooms management
 - [ ] Tour packages management
@@ -122,8 +122,8 @@ Completed
 - [x] Feature folder structure and route/API constants scaffolding
 - [x] Traveler login and traveler registration UI wired to backend auth endpoints
 - [x] Persisted traveler session handling and authenticated app shell
-- [x] Trip request creation and listing flow against live backend APIs
-- [x] Bid viewing and bid acceptance flow that creates bookings
+- [x] Guided trip brief creation and traveler marketplace list against live backend APIs
+- [x] Structured offer comparison, negotiation thread, and bid acceptance flow that creates bookings
 - [x] Bookings list and booking details flow
 
 Partially implemented
@@ -147,6 +147,7 @@ Missing / placeholder
 - [x] Agency approval and rejection flow
 - [x] Vehicle approval flow
 - [x] Agency trip request marketplace with inline bid submission
+- [x] Structured marketplace negotiation flow across backend, traveler app, and agency portal
 - [x] Agency accepted bookings management page and status actions
 - [x] Current authentication foundation across backend and portals
 - [x] Trip requests, bids, bookings, and user profile backend modules
@@ -164,6 +165,7 @@ Missing / placeholder
 - [ ] Implement traveler-side transport search end-to-end
 - [x] Implement traveler trip request creation end-to-end (frontend)
 - [x] Implement traveler bid viewing end-to-end (frontend)
+- [x] Add structured trip brief fields and counteroffer negotiation flow
 - [x] Implement accepted bid to booking creation flow
 - [x] Add transactional handling so only one bid can be accepted safely
 - [x] Implement usable `/api/users` traveler profile flow

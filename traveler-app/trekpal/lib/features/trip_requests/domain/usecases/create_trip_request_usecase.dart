@@ -11,6 +11,7 @@ class CreateTripRequestUseCase {
     required DateTime startDate,
     required DateTime endDate,
     required int travelers,
+    required TripSpecsEntity tripSpecs,
     num? budget,
     String? description,
   }) {
@@ -19,6 +20,7 @@ class CreateTripRequestUseCase {
       startDate: startDate,
       endDate: endDate,
       travelers: travelers,
+      tripSpecs: tripSpecs,
       budget: budget,
       description: description,
     );

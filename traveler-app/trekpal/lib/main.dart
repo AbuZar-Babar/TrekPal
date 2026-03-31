@@ -22,7 +22,9 @@ import 'features/home/presentation/pages/home_page.dart';
 import 'features/trip_requests/data/datasources/trip_requests_remote_datasource.dart';
 import 'features/trip_requests/data/repositories/trip_requests_repository_impl.dart';
 import 'features/trip_requests/domain/usecases/create_trip_request_usecase.dart';
+import 'features/trip_requests/domain/usecases/get_bid_thread_usecase.dart';
 import 'features/trip_requests/domain/usecases/get_trip_requests_usecase.dart';
+import 'features/trip_requests/domain/usecases/submit_counter_offer_usecase.dart';
 import 'features/trip_requests/domain/usecases/view_bids_usecase.dart';
 import 'features/trip_requests/presentation/providers/trip_requests_provider.dart';
 
@@ -57,6 +59,10 @@ void main() {
           tripRequestsRepository,
         ),
         viewBidsUseCase: ViewBidsUseCase(tripRequestsRepository),
+        getBidThreadUseCase: GetBidThreadUseCase(tripRequestsRepository),
+        submitCounterOfferUseCase: SubmitCounterOfferUseCase(
+          tripRequestsRepository,
+        ),
       ),
       bookingsProvider: BookingsProvider(
         getBookingsUseCase: GetBookingsUseCase(bookingsRepository),

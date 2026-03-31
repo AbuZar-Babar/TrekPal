@@ -18,6 +18,9 @@ class AppFormatters {
 
   static String date(DateTime value) => DateFormat('dd MMM yyyy').format(value);
 
+  static String dateTime(DateTime value) =>
+      DateFormat('dd MMM yyyy, hh:mm a').format(value);
+
   static String dateRange(DateTime start, DateTime end) {
     return '${date(start)} - ${date(end)}';
   }

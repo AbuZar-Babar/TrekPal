@@ -1,19 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { RootState } from '../../../store';
-import { TripRequest } from '../../../shared/types';
+import { Bid, OfferDetails, TripRequest } from '../../../shared/types';
 import BidForm from '../../bids/components/BidForm';
-import { createBid, fetchAgencyBids } from '../../bids/store/bidsSlice';
+import {
+  clearSelectedBid,
+  createBid,
+  createCounterOffer,
+  fetchAgencyBids,
+  fetchBidThread,
+} from '../../bids/store/bidsSlice';
 import { fetchTripRequests } from '../store/tripRequestsSlice';
 import TripRequestCard from './TripRequestCard';
 
 const TripRequestList = () => {
   const dispatch = useDispatch();
   const { tripRequests, loading, error, pagination } = useSelector(
-    (state: RootState) => state.tripRequests
+    (state: RootState) => state.tripRequests,
   );
   const {
     bids,
+    selectedBid,
     loading: bidsLoading,
     error: bidsError,
   } = useSelector((state: RootState) => state.bids);
@@ -27,7 +35,7 @@ const TripRequestList = () => {
         page,
         limit: 20,
         search: search || undefined,
-      }) as any
+      }) as any,
     );
   }, [dispatch, page, search]);
 
@@ -36,35 +44,88 @@ const TripRequestList = () => {
   }, [dispatch]);
 
   const bidsByTripRequestId = useMemo(() => {
-    return bids.reduce<Record<string, typeof bids[number]>>((accumulator, bid) => {
+    return bids.reduce<Record<string, Bid>>((accumulator, bid) => {
       accumulator[bid.tripRequestId] = bid;
       return accumulator;
     }, {});
   }, [bids]);
 
-  const handleBidSubmit = async ({ price, description }: { price: number; description?: string }) => {
+  const modalBid = useMemo(() => {
+    if (!selectedTripRequest) {
+      return null;
+    }
+
+    if (selectedBid && selectedBid.tripRequestId === selectedTripRequest.id) {
+      return selectedBid;
+    }
+
+    return bidsByTripRequestId[selectedTripRequest.id] ?? null;
+  }, [bidsByTripRequestId, selectedBid, selectedTripRequest]);
+
+  const refreshMarketplace = () => {
+    dispatch(fetchAgencyBids({ limit: 100 }) as any);
+    dispatch(
+      fetchTripRequests({
+        page,
+        limit: 20,
+        search: search || undefined,
+      }) as any,
+    );
+  };
+
+  const handleOpenOffer = async (tripRequest: TripRequest) => {
+    setSelectedTripRequest(tripRequest);
+    const existingBid = bidsByTripRequestId[tripRequest.id];
+
+    if (!existingBid) {
+      dispatch(clearSelectedBid());
+      return;
+    }
+
+    try {
+      await dispatch(fetchBidThread(existingBid.id) as any).unwrap();
+    } catch {
+      return;
+    }
+  };
+
+  const handleBidSubmit = async ({
+    price,
+    description,
+    offerDetails,
+  }: {
+    price: number;
+    description?: string;
+    offerDetails: OfferDetails;
+  }) => {
     if (!selectedTripRequest) {
       return;
     }
 
     try {
-      await dispatch(
-        createBid({
-          tripRequestId: selectedTripRequest.id,
-          price,
-          description,
-        }) as any
-      ).unwrap();
+      if (modalBid) {
+        await dispatch(
+          createCounterOffer({
+            bidId: modalBid.id,
+            price,
+            description,
+            offerDetails,
+          }) as any,
+        ).unwrap();
+      } else {
+        await dispatch(
+          createBid({
+            tripRequestId: selectedTripRequest.id,
+            price,
+            description,
+            offerDetails,
+          }) as any,
+        ).unwrap();
+      }
 
       setSelectedTripRequest(null);
-      dispatch(fetchAgencyBids({ limit: 100 }) as any);
-      dispatch(
-        fetchTripRequests({
-          page,
-          limit: 20,
-          search: search || undefined,
-        }) as any
-      );
+      dispatch(clearSelectedBid());
+      refreshMarketplace();
     } catch {
       return;
     }
@@ -76,11 +137,11 @@ const TripRequestList = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Trip Request Marketplace</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Browse pending traveler requests and submit bids directly from the portal.
+            Review structured traveler briefs, quote commercially, and revise offers when negotiations come back to your agency.
           </p>
         </div>
         <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-800">
-          {bids.length} bid{bids.length === 1 ? '' : 's'} submitted by your agency
+          {bids.length} active offer thread{bids.length === 1 ? '' : 's'} for your agency
         </div>
       </div>
 
@@ -137,7 +198,7 @@ const TripRequestList = () => {
               key={tripRequest.id}
               tripRequest={tripRequest}
               existingBid={bidsByTripRequestId[tripRequest.id]}
-              onBid={setSelectedTripRequest}
+              onOpenOffer={handleOpenOffer}
             />
           ))}
         </div>
@@ -170,8 +231,12 @@ const TripRequestList = () => {
       {selectedTripRequest && (
         <BidForm
           tripRequest={selectedTripRequest}
+          existingBid={modalBid ?? undefined}
           loading={bidsLoading}
-          onCancel={() => setSelectedTripRequest(null)}
+          onCancel={() => {
+            setSelectedTripRequest(null);
+            dispatch(clearSelectedBid());
+          }}
           onSubmit={handleBidSubmit}
         />
       )}
