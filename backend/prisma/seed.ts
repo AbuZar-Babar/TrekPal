@@ -76,7 +76,7 @@ async function main() {
       phone: '+923001234569',
       address: '789 Beach Road, Islamabad',
       license: 'TA-003',
-      status: APPROVAL_STATUS.PENDING,
+      status: APPROVAL_STATUS.APPROVED,
     },
     {
       name: 'Desert Safari Tours',
@@ -84,7 +84,7 @@ async function main() {
       phone: '+923001234570',
       address: '321 Desert Lane, Quetta',
       license: 'TA-004',
-      status: APPROVAL_STATUS.PENDING,
+      status: APPROVAL_STATUS.APPROVED,
     },
     {
       name: 'City Explorer',
@@ -152,7 +152,7 @@ async function main() {
       latitude: 25.1214,
       longitude: 62.3254,
       rating: 3.8,
-      status: APPROVAL_STATUS.PENDING,
+      status: APPROVAL_STATUS.APPROVED,
       images: [
         'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
       ],
@@ -167,7 +167,7 @@ async function main() {
       latitude: 31.5204,
       longitude: 74.3587,
       rating: 4.0,
-      status: APPROVAL_STATUS.PENDING,
+      status: APPROVAL_STATUS.APPROVED,
       images: [
         'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
       ],
@@ -255,7 +255,7 @@ async function main() {
       year: 2020,
       capacity: 45,
       pricePerDay: 25000,
-      status: APPROVAL_STATUS.PENDING,
+      status: APPROVAL_STATUS.APPROVED,
       images: [
         'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800',
       ],
@@ -268,7 +268,7 @@ async function main() {
       year: 2023,
       capacity: 4,
       pricePerDay: 6000,
-      status: APPROVAL_STATUS.PENDING,
+      status: APPROVAL_STATUS.APPROVED,
       images: [
         'https://images.unsplash.com/photo-1606664515528-95258e9a0c1a?w=800',
       ],

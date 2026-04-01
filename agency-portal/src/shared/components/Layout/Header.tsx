@@ -21,9 +21,9 @@ const Header = () => {
     { match: '/trip-requests', title: 'Marketplace', description: 'Review traveler briefs and respond with structured commercial offers.' },
     { match: '/bookings', title: 'Accepted Bookings', description: 'Manage confirmed traveler work and milestone execution.' },
     { match: '/hotels', title: 'Hotels', description: 'Maintain stay inventory for quote packaging and booking delivery.' },
-    { match: '/transport', title: 'Vehicles', description: 'Manage approved fleet capacity, pricing, and transport readiness.' },
+    { match: '/transport', title: 'Vehicles', description: 'Manage fleet capacity, pricing, and transport readiness.' },
     { match: '/profile', title: 'Agency Profile', description: 'View current access, identity anchors, and operational snapshot.' },
-    { match: '/status', title: 'Business Status', description: 'Review approval posture and readiness checks across the portal.' },
+    { match: '/status', title: 'Business Status', description: 'Review operational readiness, inventory depth, and marketplace activity.' },
   ].find((item) => location.pathname.startsWith(item.match));
 
   return (

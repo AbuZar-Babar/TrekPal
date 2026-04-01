@@ -10,7 +10,6 @@ const VehicleList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { vehicles, loading, error, pagination } = useSelector((state: RootState) => state.transport);
-  const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 
@@ -19,24 +18,23 @@ const VehicleList = () => {
       fetchVehicles({
         page,
         limit: 20,
-        status: statusFilter || undefined,
         search: search || undefined,
       }) as any,
     );
-  }, [dispatch, page, statusFilter, search]);
+  }, [dispatch, page, search]);
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this vehicle?')) {
       await dispatch(deleteVehicle(id) as any);
-      dispatch(fetchVehicles({ page, limit: 20, status: statusFilter || undefined, search: search || undefined }) as any);
+      dispatch(fetchVehicles({ page, limit: 20, search: search || undefined }) as any);
     }
   };
 
   const stats = [
     { label: 'Fleet total', value: vehicles.length },
-    { label: 'Approved', value: vehicles.filter((vehicle) => vehicle.status === 'APPROVED').length },
-    { label: 'Pending', value: vehicles.filter((vehicle) => vehicle.status === 'PENDING').length },
     { label: 'Available', value: vehicles.filter((vehicle) => vehicle.isAvailable).length },
+    { label: 'Unavailable', value: vehicles.filter((vehicle) => !vehicle.isAvailable).length },
+    { label: 'With images', value: vehicles.filter((vehicle) => vehicle.images.length > 0).length },
   ];
 
   return (
@@ -46,13 +44,13 @@ const VehicleList = () => {
           <div className="app-section-label">Vehicles</div>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">Transport inventory for marketplace packaging</h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
-            Keep the fleet structured, approved, and available so traveler briefs can be quoted with credible vehicle coverage and transport pricing.
+            Keep the fleet structured and available so traveler briefs can be quoted with credible vehicle coverage and transport pricing without waiting on admin verification.
           </p>
         </div>
 
         <div className="app-panel-dark px-6 py-6">
           <div className="app-section-label text-white/55">Fleet pulse</div>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Vehicle status breakdown</h2>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Vehicle inventory overview</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {stats.map((stat) => (
               <div key={stat.label} className="rounded-[22px] border border-white/8 bg-white/6 px-4 py-4">
@@ -65,7 +63,7 @@ const VehicleList = () => {
       </section>
 
       <div className="app-card px-5 py-5">
-        <div className="grid gap-3 lg:grid-cols-[1fr,auto,auto] lg:items-center">
+        <div className="grid gap-3 lg:grid-cols-[1fr,auto] lg:items-center">
           <div className="relative">
             <input
               type="text"
@@ -81,20 +79,6 @@ const VehicleList = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-
-          <select
-            value={statusFilter}
-            onChange={(event) => {
-              setStatusFilter(event.target.value);
-              setPage(1);
-            }}
-            className="app-field"
-          >
-            <option value="">All statuses</option>
-            <option value="PENDING">Pending</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
-          </select>
 
           <button
             type="button"
@@ -119,9 +103,13 @@ const VehicleList = () => {
         </div>
       ) : vehicles.length === 0 ? (
         <div className="app-table-shell px-6 py-14 text-center">
-          <div className="text-lg font-semibold tracking-tight text-[var(--text)]">No vehicles in the fleet yet</div>
+          <div className="text-lg font-semibold tracking-tight text-[var(--text)]">
+            {search ? 'No vehicles match the current search' : 'No vehicles in the fleet yet'}
+          </div>
           <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
-            Create your first vehicle listing to support transport-inclusive traveler offers.
+            {search
+              ? 'Adjust the search query to widen the result set.'
+              : 'Create your first vehicle listing to support transport-inclusive traveler offers.'}
           </p>
         </div>
       ) : (
@@ -133,7 +121,6 @@ const VehicleList = () => {
                 <th>Registration</th>
                 <th>Capacity and price</th>
                 <th>Availability</th>
-                <th>Status</th>
                 <th>Updated</th>
                 <th>Actions</th>
               </tr>
@@ -162,17 +149,6 @@ const VehicleList = () => {
                   <td>
                     <span className={`app-pill ${vehicle.isAvailable ? 'app-pill-success' : 'app-pill-danger'}`}>
                       {vehicle.isAvailable ? 'Available' : 'Unavailable'}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`app-pill ${
-                      vehicle.status === 'APPROVED'
-                        ? 'app-pill-success'
-                        : vehicle.status === 'REJECTED'
-                          ? 'app-pill-danger'
-                          : 'app-pill-warning'
-                    }`}>
-                      {formatStatusLabel(vehicle.status)}
                     </span>
                   </td>
                   <td>{formatDate(vehicle.updatedAt)}</td>

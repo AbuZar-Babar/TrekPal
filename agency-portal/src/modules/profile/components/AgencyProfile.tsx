@@ -39,8 +39,8 @@ const AgencyProfile = () => {
   ];
 
   const operationalNotes = [
-    `${vehicles.filter((vehicle) => vehicle.status === 'APPROVED').length} approved vehicle listings ready for transport packaging.`,
-    `${hotels.filter((hotel) => hotel.status === 'APPROVED').length} approved hotel properties available for bundling into offers.`,
+    `${vehicles.length} vehicle listings are currently available for transport packaging.`,
+    `${hotels.length} hotel properties are currently available for bundling into offers.`,
     `${bids.filter((bid) => bid.awaitingActionBy === 'AGENCY' && bid.status === 'PENDING').length} negotiations are waiting on an agency response.`,
   ];
 
@@ -131,9 +131,9 @@ const AgencyProfile = () => {
                   <span className="font-semibold text-[var(--text)]">{hotels.length}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-[var(--text-muted)]">Approved inventory</span>
+                  <span className="text-[var(--text-muted)]">Active inventory</span>
                   <span className="font-semibold text-[var(--text)]">
-                    {vehicles.filter((vehicle) => vehicle.status === 'APPROVED').length + hotels.filter((hotel) => hotel.status === 'APPROVED').length}
+                    {vehicles.length + hotels.length}
                   </span>
                 </div>
               </div>
@@ -163,7 +163,7 @@ const AgencyProfile = () => {
           <h2 className="mt-2 text-xl font-semibold tracking-tight text-[var(--text)]">Portal status guidance</h2>
           <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--text-muted)]">
             <p>
-              Logged-in agency sessions are already admin-approved. If business documentation changes outside this portal, update the backend-admin workflow before relying on the current approval state for compliance checks.
+              Logged-in agency sessions already have marketplace access. Hotels and vehicles added in this portal are now available in the workspace without a separate admin verification step.
             </p>
             <p>
               The profile surface focuses on operations data available to the portal today. Deep business-document editing can be added later once the backend exposes a full agency profile endpoint.

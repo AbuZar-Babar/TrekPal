@@ -110,7 +110,7 @@ model Hotel {
   latitude    Float?
   longitude   Float?
   rating      Float?   @default(0)
-  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  status      String   @default("APPROVED") // PENDING, APPROVED, REJECTED
   images      String[] // Array of image URLs
   amenities   String[] // Array of amenities
   createdAt   DateTime @default(now())
@@ -156,7 +156,7 @@ model Vehicle {
   capacity    Int
   pricePerDay Float
   images      String[]
-  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  status      String   @default("APPROVED") // PENDING, APPROVED, REJECTED
   isAvailable Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

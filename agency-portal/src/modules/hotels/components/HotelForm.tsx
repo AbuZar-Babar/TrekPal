@@ -346,9 +346,9 @@ const HotelForm = () => {
 
           <div className="app-card px-6 py-6">
             <div className="app-section-label">Publishing note</div>
-            <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Admin review still applies</h3>
+            <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Instant publishing</h3>
             <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
-              New or edited hotel records still go through the approval workflow before they become fully usable in marketplace packaging.
+              New or edited hotel records are available in the agency workspace immediately. No additional admin verification is required for hotel inventory.
             </p>
           </div>
         </div>

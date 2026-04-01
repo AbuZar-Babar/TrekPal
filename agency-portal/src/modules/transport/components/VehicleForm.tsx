@@ -403,9 +403,9 @@ const VehicleForm = () => {
 
           <div className="app-card px-6 py-6">
             <div className="app-section-label">Publishing note</div>
-            <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Inventory review still applies</h3>
+            <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Instant publishing</h3>
             <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
-              Newly created or updated vehicle records remain subject to platform approval before they can confidently support traveler offers.
+              Newly created or updated vehicle records are available in the agency workspace immediately. No additional admin verification is required for vehicle inventory.
             </p>
           </div>
         </div>

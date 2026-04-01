@@ -1,0 +1,13 @@
+ALTER TABLE "hotels"
+ALTER COLUMN "status" SET DEFAULT 'APPROVED';
+
+ALTER TABLE "vehicles"
+ALTER COLUMN "status" SET DEFAULT 'APPROVED';
+
+UPDATE "hotels"
+SET "status" = 'APPROVED'
+WHERE "status" IN ('PENDING', 'REJECTED');
+
+UPDATE "vehicles"
+SET "status" = 'APPROVED'
+WHERE "status" IN ('PENDING', 'REJECTED');

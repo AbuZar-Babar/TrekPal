@@ -122,7 +122,7 @@ export class HotelsService {
         longitude: input.longitude ?? null,
         images: input.images ?? [],
         amenities: input.amenities ?? [],
-        status: APPROVAL_STATUS.PENDING,
+        status: APPROVAL_STATUS.APPROVED,
       },
       select: hotelSelect,
     });
@@ -152,6 +152,7 @@ export class HotelsService {
         ...(input.longitude !== undefined ? { longitude: input.longitude ?? null } : {}),
         ...(input.images !== undefined ? { images: input.images } : {}),
         ...(input.amenities !== undefined ? { amenities: input.amenities } : {}),
+        status: APPROVAL_STATUS.APPROVED,
       },
       select: hotelSelect,
     });

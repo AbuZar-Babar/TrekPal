@@ -58,9 +58,9 @@ const BusinessStatus = () => {
       <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
         <div className="app-card px-6 py-6 md:px-8 md:py-8">
           <div className="app-section-label">Business status</div>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">Operational readiness and approval posture</h1>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">Operational readiness and business posture</h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
-            This status board mirrors the Stitch business-status surface: one place to verify that approval, inventory, negotiation, and booking operations are all in a healthy state.
+            This status board mirrors the Stitch business-status surface: one place to verify that access, inventory, negotiation, and booking operations are all in a healthy state.
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -88,17 +88,17 @@ const BusinessStatus = () => {
 
         <div className="app-panel-dark px-6 py-6">
           <div className="app-section-label text-white/55">Agency access</div>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Approved session</h2>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Active session</h2>
           <p className="mt-4 text-sm leading-7 text-white/70">
-            The portal only allows agency sign-in after admin approval. If this session is active, commercial quoting and booking execution are already enabled from an access-control standpoint.
+            This workspace has active marketplace access, so quoting, booking execution, and inventory management are available from the same session.
           </p>
 
           <div className="mt-6 space-y-3">
             <div className="rounded-[22px] border border-white/8 bg-white/6 px-4 py-4 text-sm leading-7 text-white/76">
-              Hotels approved: {hotels.filter((hotel) => hotel.status === 'APPROVED').length}
+              Hotels listed: {hotels.length}
             </div>
             <div className="rounded-[22px] border border-white/8 bg-white/6 px-4 py-4 text-sm leading-7 text-white/76">
-              Vehicles approved: {vehicles.filter((vehicle) => vehicle.status === 'APPROVED').length}
+              Vehicles listed: {vehicles.length}
             </div>
             <div className="rounded-[22px] border border-white/8 bg-white/6 px-4 py-4 text-sm leading-7 text-white/76">
               Confirmed bookings: {bookings.filter((booking) => booking.status === 'CONFIRMED').length}

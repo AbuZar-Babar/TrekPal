@@ -25,7 +25,7 @@ export class TransportService {
         capacity: input.capacity,
         pricePerDay: input.pricePerDay,
         images: input.images || [],
-        status: APPROVAL_STATUS.PENDING,
+        status: APPROVAL_STATUS.APPROVED,
         isAvailable: input.isAvailable ?? true,
       },
       include: {
@@ -185,7 +185,6 @@ export class TransportService {
       throw new Error('Unauthorized: Vehicle does not belong to your agency');
     }
 
-    // If status is APPROVED, don't allow updates that would change status back to PENDING
     const updateData: any = {};
     if (input.type !== undefined) updateData.type = input.type;
     if (input.make !== undefined) updateData.make = input.make;
@@ -195,6 +194,7 @@ export class TransportService {
     if (input.pricePerDay !== undefined) updateData.pricePerDay = input.pricePerDay;
     if (input.images !== undefined) updateData.images = input.images;
     if (input.isAvailable !== undefined) updateData.isAvailable = input.isAvailable;
+    updateData.status = APPROVAL_STATUS.APPROVED;
 
     const vehicle = await prisma.vehicle.update({
       where: { id: vehicleId },

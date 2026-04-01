@@ -52,12 +52,9 @@ const Dashboard = () => {
       detail: `${bookings.filter((booking) => booking.status === 'COMPLETED').length} completed trips`,
     },
     {
-      label: 'Approved inventory',
-      value: formatCompactNumber(
-        vehicles.filter((vehicle) => vehicle.status === 'APPROVED').length +
-          hotels.filter((hotel) => hotel.status === 'APPROVED').length,
-      ),
-      detail: `${vehicles.length + hotels.length} total hotel and vehicle records`,
+      label: 'Managed inventory',
+      value: formatCompactNumber(vehicles.length + hotels.length),
+      detail: `${vehicles.length} vehicles and ${hotels.length} hotels currently in the workspace`,
     },
   ];
 
@@ -194,7 +191,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-sm font-semibold text-[var(--text)]">Vehicles</span>
                   <span className="text-sm text-[var(--text-muted)]">
-                    {vehiclesLoading ? 'Loading...' : `${vehicles.filter((vehicle) => vehicle.status === 'APPROVED').length} approved / ${vehicles.length} total`}
+                    {vehiclesLoading ? 'Loading...' : `${vehicles.filter((vehicle) => vehicle.isAvailable).length} available / ${vehicles.length} total`}
                   </span>
                 </div>
               </div>
@@ -202,7 +199,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-sm font-semibold text-[var(--text)]">Hotels</span>
                   <span className="text-sm text-[var(--text-muted)]">
-                    {hotelsLoading ? 'Loading...' : `${hotels.filter((hotel) => hotel.status === 'APPROVED').length} approved / ${hotels.length} total`}
+                    {hotelsLoading ? 'Loading...' : `${hotels.length} listed properties in the workspace`}
                   </span>
                 </div>
               </div>
