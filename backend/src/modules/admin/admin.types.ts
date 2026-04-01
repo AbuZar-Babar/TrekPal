@@ -101,6 +101,9 @@ export interface UserResponse {
   phone: string | null;
   cnic: string | null;
   cnicVerified: boolean;
+  travelerKycStatus: string;
+  kycSubmittedAt: Date | null;
+  kycVerifiedAt: Date | null;
   createdAt: Date;
   bookingsCount?: number;
   tripRequestsCount?: number;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/destination_artwork.dart';
 import '../../domain/entities/trip_request_entities.dart';
 import '../providers/trip_requests_provider.dart';
 import 'bids_view_page.dart';
@@ -20,51 +20,6 @@ class TripRequestDetailsPage extends StatelessWidget {
         .join(' ');
   }
 
-  Widget _detailCard({
-    required BuildContext context,
-    required String title,
-    required String value,
-    IconData? icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.mist,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: <Widget>[
-          if (icon != null) ...<Widget>[
-            Icon(icon, color: AppColors.clay),
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppColors.clay,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.ink,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   String _tripState(TripRequestEntity request) {
     if (request.status == 'ACCEPTED') {
       return 'Booked';
@@ -77,8 +32,59 @@ class TripRequestDetailsPage extends StatelessWidget {
     return 'Published';
   }
 
+  Widget _detailCard(
+    BuildContext context, {
+    required String title,
+    required String value,
+    required IconData icon,
+  }) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.42 : 0.52,
+        ),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: colorScheme.primary),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  title,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(value, style: theme.textTheme.titleMedium),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     final TripRequestsProvider provider = context.watch<TripRequestsProvider>();
     final TripRequestEntity? request = provider.findTripRequestById(
       tripRequestId,
@@ -92,79 +98,46 @@ class TripRequestDetailsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip brief')),
+      appBar: AppBar(),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: <Color>[AppColors.pine, AppColors.forest],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(28),
+          TrekpalDestinationArtwork(
+            destination: request.destination,
+            caption: AppFormatters.dateRange(
+              request.startDate,
+              request.endDate,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    _tripState(request),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  request.destination,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  AppFormatters.dateRange(request.startDate, request.endDate),
-                  style: const TextStyle(color: Color(0xFFE6F3EC)),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${request.travelers} travelers',
-                  style: const TextStyle(color: Color(0xFFE6F3EC)),
-                ),
-              ],
+            badge: _tripState(request),
+            height: 220,
+          ),
+          const SizedBox(height: 20),
+          Text(request.destination, style: theme.textTheme.displayMedium),
+          const SizedBox(height: 10),
+          Text(
+            '${request.travelers} travelers / ${request.bidsCount} offer threads',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           _detailCard(
-            context: context,
+            context,
             title: 'Budget',
             value: AppFormatters.currency(request.budget),
             icon: Icons.payments_outlined,
           ),
           const SizedBox(height: 12),
           _detailCard(
-            context: context,
+            context,
             title: 'Stay preference',
             value:
-                '${_prettyLabel(request.tripSpecs.stayType)} • ${request.tripSpecs.roomCount} rooms • ${_prettyLabel(request.tripSpecs.roomPreference)}',
+                '${_prettyLabel(request.tripSpecs.stayType)} / ${request.tripSpecs.roomCount} rooms / ${_prettyLabel(request.tripSpecs.roomPreference)}',
             icon: Icons.bed_outlined,
           ),
           const SizedBox(height: 12),
           _detailCard(
-            context: context,
+            context,
             title: 'Transport',
             value: request.tripSpecs.transportRequired
                 ? _prettyLabel(request.tripSpecs.transportType)
@@ -173,7 +146,7 @@ class TripRequestDetailsPage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _detailCard(
-            context: context,
+            context,
             title: 'Meal plan',
             value: _prettyLabel(request.tripSpecs.mealPlan),
             icon: Icons.restaurant_outlined,
@@ -183,29 +156,22 @@ class TripRequestDetailsPage extends StatelessWidget {
               .isNotEmpty) ...<Widget>[
             const SizedBox(height: 12),
             _detailCard(
-              context: context,
+              context,
               title: 'Special requirements',
               value: request.tripSpecs.specialRequirements,
-              icon: Icons.star_border_rounded,
+              icon: Icons.star_outline_rounded,
             ),
           ],
           if (request.description != null &&
               request.description!.trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: 12),
             _detailCard(
-              context: context,
+              context,
               title: 'Traveler notes',
               value: request.description!,
               icon: Icons.notes_outlined,
             ),
           ],
-          const SizedBox(height: 12),
-          _detailCard(
-            context: context,
-            title: 'Marketplace activity',
-            value: '${request.bidsCount} active offer threads',
-            icon: Icons.handshake_outlined,
-          ),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -222,7 +188,7 @@ class TripRequestDetailsPage extends StatelessWidget {
             },
             icon: const Icon(Icons.local_offer_outlined),
             label: Text(
-              request.bidsCount == 0 ? 'Check for offers' : 'View offers',
+              request.bidsCount == 0 ? 'Check for offers' : 'Compare offers',
             ),
           ),
         ),

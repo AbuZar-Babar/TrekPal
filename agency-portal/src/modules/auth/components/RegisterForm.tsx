@@ -2,6 +2,7 @@ import { DragEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../store/authSlice';
+import AuthShell from './AuthShell';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 import ErrorPopup from '../../../shared/components/ErrorPopup';
 
@@ -307,28 +308,28 @@ const RegisterForm = () => {
   };
 
   const ProgressBar = () => (
-    <div className="flex items-center justify-between gap-2 mb-8">
+    <div className="mb-8 flex items-center justify-between gap-2">
       {STEPS.map((label, index) => (
-        <div key={label} className="flex items-center flex-1">
-          <div className="flex flex-col items-center min-w-0">
+        <div key={label} className="flex flex-1 items-center">
+          <div className="flex min-w-0 flex-col items-center">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+              className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
                 index < step
-                  ? 'bg-emerald-500 text-white'
+                  ? 'bg-[var(--success-text)] text-white'
                   : index === step
-                    ? 'bg-gradient-to-r from-indigo-600 to-sky-600 text-white scale-105 shadow-lg'
-                    : 'bg-gray-200 text-gray-400'
+                    ? 'scale-105 bg-[var(--primary)] text-white shadow-lg'
+                    : 'bg-[var(--panel-strong)] text-[var(--text-soft)]'
               }`}
             >
               {index < step ? 'OK' : index + 1}
             </div>
-            <span className={`text-[11px] mt-2 font-medium ${index <= step ? 'text-gray-700' : 'text-gray-400'}`}>
+            <span className={`mt-2 text-[11px] font-medium ${index <= step ? 'text-[var(--text)]' : 'text-[var(--text-soft)]'}`}>
               {label}
             </span>
           </div>
           {index < STEPS.length - 1 && (
-            <div className="flex-1 h-1 rounded-full bg-gray-200 mx-2 overflow-hidden">
-              <div className="h-full bg-emerald-400 transition-all duration-300" style={{ width: index < step ? '100%' : '0%' }} />
+            <div className="mx-2 h-1 flex-1 overflow-hidden rounded-full bg-[var(--panel-strong)]">
+              <div className="h-full bg-[var(--success-text)] transition-all duration-300" style={{ width: index < step ? '100%' : '0%' }} />
             </div>
           )}
         </div>
@@ -352,13 +353,13 @@ const RegisterForm = () => {
     onChange: (value: string) => void;
   }) => (
     <div>
-      <label htmlFor={id} className="block text-sm font-semibold text-gray-700 mb-2">{label}</label>
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-[var(--text)]">{label}</label>
       <input
         id={id}
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="block w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+        className="app-field"
         placeholder={placeholder}
       />
     </div>
@@ -378,12 +379,12 @@ const RegisterForm = () => {
     onChange: (value: string) => void;
   }) => (
     <div>
-      <label htmlFor={id} className="block text-sm font-semibold text-gray-700 mb-2">{label}</label>
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-[var(--text)]">{label}</label>
       <select
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="block w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white"
+        className="app-field"
       >
         <option value="">Select {label.toLowerCase()}</option>
         {options.map((option) => (
@@ -416,7 +417,7 @@ const RegisterForm = () => {
       htmlFor={id}
       onDrop={handleDrop(id)}
       onDragOver={(event) => event.preventDefault()}
-      className="block border-2 border-dashed border-gray-300 rounded-2xl p-5 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/40 transition-all duration-200"
+      className="block cursor-pointer rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-5 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--panel)]"
     >
       <input
         id={id}
@@ -432,17 +433,17 @@ const RegisterForm = () => {
       />
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-semibold text-gray-800">{label}</span>
-            {required && <span className="text-[10px] px-2 py-1 rounded-full bg-red-50 text-red-600">Required</span>}
+          <div className="mb-1 flex items-center gap-2">
+            <span className="text-sm font-semibold text-[var(--text)]">{label}</span>
+            {required && <span className="rounded-full bg-[var(--danger-bg)] px-2 py-1 text-[10px] text-[var(--danger-text)]">Required</span>}
           </div>
-          <p className="text-xs text-gray-500">{helperText}</p>
-          <p className="text-xs text-gray-400 mt-2 truncate">{file ? file.name : 'Drag and drop or click to upload'}</p>
+          <p className="text-xs text-[var(--text-muted)]">{helperText}</p>
+          <p className="mt-2 truncate text-xs text-[var(--text-soft)]">{file ? file.name : 'Drag and drop or click to upload'}</p>
         </div>
         {previewUrl && fileLooksLikeImage(file) ? (
-          <img src={previewUrl} alt={label} className="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm" />
+          <img src={previewUrl} alt={label} className="h-16 w-16 rounded-xl border border-[var(--border)] object-cover shadow-sm" />
         ) : (
-          <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 text-xs font-semibold border border-gray-200">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--panel)] text-xs font-semibold text-[var(--text-soft)]">
             {file?.type === 'application/pdf' ? 'PDF' : 'FILE'}
           </div>
         )}
@@ -451,29 +452,27 @@ const RegisterForm = () => {
   );
 
   const ReviewRow = ({ label, value }: { label: string; value: string }) => (
-    <div className="flex items-center justify-between py-2 text-sm gap-4">
-      <span className="text-gray-500">{label}</span>
-      <span className="text-gray-900 font-medium text-right">{value}</span>
+    <div className="flex items-center justify-between gap-4 py-2 text-sm">
+      <span className="text-[var(--text-muted)]">{label}</span>
+      <span className="text-right font-medium text-[var(--text)]">{value}</span>
     </div>
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <AuthShell
+      badge="Agency registration"
+      title="Register your travel business for marketplace access"
+      subtitle="Complete the business application with representative details, operational scope, and verification documents."
+      panelTitle="Built for agencies that need operational clarity."
+      panelText="The registration flow captures enough structure for approval without turning the application into paperwork chaos. Once approved, the same portal opens into quoting, bookings, hotels, and vehicles."
+      panelPoints={[
+        'Submit verified business and representative details.',
+        'Upload regulator, identity, and banking support documents.',
+        'Move into the marketplace after admin approval.',
+      ]}
+    >
       {error && <ErrorPopup message={error} onClose={() => setError(null)} />}
-      <div className="absolute inset-0 z-0" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]" />
-      </div>
-      <div className="max-w-3xl w-full relative z-10 px-4 py-10 animate-slideUp">
-        <div className="text-center mb-6 text-white">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl mb-4 shadow-xl border border-white/20">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-white">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-            </svg>
-          </div>
-          <h2 className="text-3xl font-bold mb-1 drop-shadow-lg">Pakistan Agency Application</h2>
-          <p className="text-gray-200 text-sm drop-shadow-md">Submit your agency registration details and documents for admin approval</p>
-        </div>
-        <div className="bg-white/92 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 p-6 md:p-8">
+      <div className="app-card px-6 py-6 md:px-8 md:py-8">
           <ProgressBar />
           <form onSubmit={handleSubmit}>
             {step === 0 && (
@@ -529,18 +528,18 @@ const RegisterForm = () => {
                     <label className="block text-sm font-semibold text-gray-700">Field of Operations</label>
                     <span className="text-xs text-gray-500">{form.fieldOfOperations.length} selected</span>
                   </div>
-                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {FIELD_OF_OPERATIONS.map((item) => {
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {FIELD_OF_OPERATIONS.map((item) => {
                       const active = form.fieldOfOperations.includes(item);
                       return (
                         <button
                           key={item}
                           type="button"
                           onClick={() => toggleFieldOperation(item)}
-                          className={`px-4 py-3 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                          className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-200 ${
                             active
-                              ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm'
-                              : 'border-gray-200 bg-white text-gray-600 hover:border-indigo-300'
+                              ? 'border-[var(--primary)] bg-[var(--panel)] text-[var(--primary)] shadow-sm'
+                              : 'border-[var(--border)] bg-[var(--panel-subtle)] text-[var(--text-muted)] hover:border-[var(--primary)]'
                           }`}
                         >
                           {item}
@@ -549,7 +548,7 @@ const RegisterForm = () => {
                     })}
                   </div>
                 </div>
-                <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                <div className="rounded-xl border border-[var(--warning-bg)] bg-[var(--warning-bg)] px-4 py-3 text-sm text-[var(--warning-text)]">
                   Minimum capital for this simplified application is set to PKR 400,000 for demo and review purposes.
                 </div>
               </div>
@@ -571,8 +570,8 @@ const RegisterForm = () => {
             {step === 4 && (
               <div className="space-y-6 animate-stepIn">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="rounded-2xl border border-gray-200 p-5">
-                    <h3 className="text-base font-semibold text-gray-900 mb-3">Agency Summary</h3>
+                  <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-subtle)] p-5">
+                    <h3 className="mb-3 text-base font-semibold text-[var(--text)]">Agency Summary</h3>
                     <ReviewRow label="Agency Name" value={form.name} />
                     <ReviewRow label="Business Email" value={form.email} />
                     <ReviewRow label="Phone" value={form.phone} />
@@ -583,8 +582,8 @@ const RegisterForm = () => {
                     <ReviewRow label="NTN" value={form.ntn} />
                     <ReviewRow label="Capital" value={formatCurrency(form.capitalAvailablePkr)} />
                   </div>
-                  <div className="rounded-2xl border border-gray-200 p-5">
-                    <h3 className="text-base font-semibold text-gray-900 mb-3">Representative & Scope</h3>
+                  <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-subtle)] p-5">
+                    <h3 className="mb-3 text-base font-semibold text-[var(--text)]">Representative & Scope</h3>
                     <ReviewRow label="Representative" value={form.ownerName} />
                     <ReviewRow label="CNIC" value={form.cnic} />
                     <ReviewRow label="Field of Operations" value={form.fieldOfOperations.length > 0 ? form.fieldOfOperations.join(', ') : '-'} />
@@ -593,36 +592,35 @@ const RegisterForm = () => {
                     <ReviewRow label="Documents Ready" value={[files.cnicImage, files.ownerPhoto, files.licenseCertificate, files.ntnCertificate, files.officeProof, files.bankCertificate, files.businessRegistrationProof, files.additionalSupportingDocument].filter(Boolean).length.toString()} />
                   </div>
                 </div>
-                <div className="rounded-2xl bg-sky-50 border border-sky-200 p-4 text-sm text-sky-800">
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-subtle)] p-4 text-sm text-[var(--text-muted)]">
                   Your agency account will stay in <strong>PENDING</strong> status until an admin reviews the application and documents.
                 </div>
               </div>
             )}
-            <div className="flex items-center justify-between mt-8 gap-3">
+            <div className="mt-8 flex items-center justify-between gap-3">
               {step > 0 ? (
-                <button type="button" onClick={goToPreviousStep} className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200">
+                <button type="button" onClick={goToPreviousStep} className="app-btn-secondary h-11 px-5 text-sm">
                   Back
                 </button>
               ) : (
                 <div />
               )}
               {step < STEPS.length - 1 ? (
-                <button type="button" onClick={goToNextStep} className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-sky-600 rounded-xl hover:from-indigo-700 hover:to-sky-700 transition-all duration-300 shadow-lg">
+                <button type="button" onClick={goToNextStep} className="app-btn-primary h-11 px-6 text-sm">
                   Next
                 </button>
               ) : (
-                <button type="submit" disabled={loading} className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" disabled={loading} className="app-btn-primary h-11 px-6 text-sm disabled:cursor-not-allowed disabled:opacity-60">
                   {loading ? 'Submitting...' : 'Submit Application'}
                 </button>
               )}
             </div>
-            <div className="text-center pt-6 mt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
-                Already have an account? <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">Sign in</Link>
+            <div className="mt-4 border-t border-[var(--border)] pt-6 text-center">
+              <p className="text-sm text-[var(--text-muted)]">
+                Already have an account? <Link to="/login" className="font-semibold text-[var(--primary)]">Sign in</Link>
               </p>
             </div>
           </form>
-        </div>
       </div>
       <style>{`
         @keyframes slideUp {
@@ -636,7 +634,7 @@ const RegisterForm = () => {
         .animate-slideUp { animation: slideUp 0.5s ease-out; }
         .animate-stepIn { animation: stepIn 0.3s ease-out; }
       `}</style>
-    </div>
+    </AuthShell>
   );
 };
 

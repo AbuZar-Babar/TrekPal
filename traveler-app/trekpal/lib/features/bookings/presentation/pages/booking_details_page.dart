@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/destination_artwork.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../domain/entities/booking_entities.dart';
@@ -35,8 +35,41 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     });
   }
 
+  Widget _detailRow(BuildContext context, String label, String value) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.42 : 0.52,
+        ),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 94,
+            child: Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Expanded(child: Text(value, style: theme.textTheme.titleSmall)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     final BookingsProvider provider = context.watch<BookingsProvider>();
     final BookingEntity? booking =
         provider.selectedBooking?.id == widget.bookingId
@@ -44,7 +77,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         : widget.initialBooking;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Booking details')),
+      appBar: AppBar(),
       body: Builder(
         builder: (BuildContext context) {
           if (provider.isLoading && booking == null) {
@@ -64,95 +97,57 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             return const TrekpalErrorState(message: 'Booking not found');
           }
 
+          final String destination = booking.destination ?? 'Trip booking';
+
           return ListView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: <Widget>[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(22),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        booking.destination ?? 'Trip booking',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.pine,
-                            ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        AppFormatters.dateRange(
-                          booking.startDate,
-                          booking.endDate,
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      _DetailRow(
-                        label: 'Agency',
-                        value: booking.agencyName ?? 'Pending assignment',
-                      ),
-                      _DetailRow(label: 'Status', value: booking.status),
-                      _DetailRow(
-                        label: 'Amount',
-                        value: AppFormatters.currency(booking.totalAmount),
-                      ),
-                      _DetailRow(label: 'Booking ID', value: booking.id),
-                    ],
-                  ),
+              Text('Booking Details', style: theme.textTheme.displayMedium),
+              const SizedBox(height: 10),
+              Text(
+                'A confirmed record of the agency offer you accepted from the marketplace.',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 12),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(22),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'What happens next',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w800),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'The accepted agency can now confirm, manage, and complete this booking from their portal. This traveler app currently focuses on visibility of the booking lifecycle rather than traveler-side status actions.',
-                      ),
-                    ],
+              const SizedBox(height: 20),
+              TrekpalDestinationArtwork(
+                destination: destination,
+                caption: booking.agencyName ?? 'Verified agency',
+                badge: booking.status,
+                height: 220,
+              ),
+              const SizedBox(height: 18),
+              _detailRow(context, 'Agency', booking.agencyName ?? 'Pending'),
+              _detailRow(
+                context,
+                'Dates',
+                AppFormatters.dateRange(booking.startDate, booking.endDate),
+              ),
+              _detailRow(
+                context,
+                'Amount',
+                AppFormatters.currency(booking.totalAmount),
+              ),
+              _detailRow(context, 'Status', booking.status),
+              _detailRow(context, 'Booking ID', booking.id),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: colorScheme.secondaryContainer.withValues(alpha: 0.74),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Text(
+                  'The accepted agency now manages the operational lifecycle of this booking from their portal. TrekPal keeps this traveler view focused on status visibility and confidence.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSecondaryContainer,
                   ),
                 ),
               ),
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            width: 110,
-            child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          Expanded(child: Text(value)),
-        ],
       ),
     );
   }

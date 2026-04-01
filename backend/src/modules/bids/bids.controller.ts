@@ -1,7 +1,7 @@
 import { Response } from 'express';
 
 import { prisma } from '../../config/database';
-import { ROLES } from '../../config/constants';
+import { ROLES, TRAVELER_KYC_STATUS } from '../../config/constants';
 import { AuthRequest } from '../../middlewares/auth.middleware';
 import { sendError, sendSuccess } from '../../utils/response.util';
 import {
@@ -37,6 +37,23 @@ function resolveStatusCode(error: Error): number {
  * Handles HTTP requests for bids
  */
 export class BidsController {
+  private async ensureTravelerKycVerified(travelerId: string): Promise<void> {
+    const traveler = await prisma.user.findUnique({
+      where: { id: travelerId },
+      select: { travelerKycStatus: true },
+    });
+
+    if (!traveler) {
+      throw new Error('User profile not found');
+    }
+
+    if (traveler.travelerKycStatus !== TRAVELER_KYC_STATUS.VERIFIED) {
+      throw new Error(
+        'Complete traveler KYC before negotiating offers or accepting a booking',
+      );
+    }
+  }
+
   private async getActor(req: AuthRequest): Promise<BidActor> {
     if (!req.user) {
       throw new Error('Unauthorized');
@@ -168,6 +185,9 @@ export class BidsController {
   async createCounterOffer(req: AuthRequest, res: Response): Promise<void> {
     try {
       const actor = await this.getActor(req);
+      if (actor.role === ROLES.TRAVELER) {
+        await this.ensureTravelerKycVerified(actor.travelerId);
+      }
       const input = counterOfferSchema.parse(req.body);
       const result = await bidsService.createCounterOffer(req.params.id, actor, input);
       sendSuccess(res, result, 'Counteroffer submitted successfully');
@@ -187,6 +207,8 @@ export class BidsController {
         sendError(res, 'Only travelers can accept bids', 403);
         return;
       }
+
+      await this.ensureTravelerKycVerified(actor.travelerId);
 
       const { id } = req.params;
       const result = await bidsService.acceptBid(id, actor.travelerId);

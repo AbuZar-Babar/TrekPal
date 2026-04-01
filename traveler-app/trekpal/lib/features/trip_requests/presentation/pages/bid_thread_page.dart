@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
+import '../../../auth/presentation/pages/traveler_kyc_page.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bookings/presentation/pages/booking_details_page.dart';
 import '../../../bookings/presentation/providers/bookings_provider.dart';
 import '../../domain/entities/trip_request_entities.dart';
@@ -93,6 +94,15 @@ class _BidThreadPageState extends State<BidThreadPage> {
   }
 
   Future<void> _submitCounterOffer(BidEntity bid) async {
+    if (!context.read<AuthProvider>().canUseTravelerMarketplace) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Complete traveler KYC before negotiating offers'),
+        ),
+      );
+      return;
+    }
+
     final num? price = num.tryParse(_priceController.text.trim());
     if (price == null || price <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -142,6 +152,15 @@ class _BidThreadPageState extends State<BidThreadPage> {
   }
 
   Future<void> _acceptBid(BidEntity bid) async {
+    if (!context.read<AuthProvider>().canUseTravelerMarketplace) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Complete traveler KYC before accepting an offer'),
+        ),
+      );
+      return;
+    }
+
     final BookingsProvider bookingsProvider = context.read<BookingsProvider>();
     final TripRequestsProvider tripRequestsProvider = context
         .read<TripRequestsProvider>();
@@ -187,11 +206,16 @@ class _BidThreadPageState extends State<BidThreadPage> {
     required bool included,
     required String details,
   }) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.mist,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.4 : 0.5,
+        ),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,10 +224,10 @@ class _BidThreadPageState extends State<BidThreadPage> {
             children: <Widget>[
               Icon(
                 included ? Icons.check_circle : Icons.remove_circle_outline,
-                color: included ? AppColors.forest : AppColors.clay,
+                color: included ? colorScheme.tertiary : colorScheme.secondary,
               ),
               const SizedBox(width: 10),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+              Text(title, style: theme.textTheme.titleSmall),
             ],
           ),
           const SizedBox(height: 10),
@@ -221,16 +245,22 @@ class _BidThreadPageState extends State<BidThreadPage> {
 
   Widget _buildRevisionTile(BidRevisionEntity revision) {
     final bool agencyAuthored = revision.actorRole == 'AGENCY';
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: agencyAuthored ? Colors.white : const Color(0xFFF5FBF7),
+        color: agencyAuthored
+            ? colorScheme.surfaceContainerHighest.withValues(
+                alpha: theme.brightness == Brightness.dark ? 0.42 : 0.48,
+              )
+            : colorScheme.tertiaryContainer.withValues(alpha: 0.45),
         border: Border.all(
           color: agencyAuthored
-              ? const Color(0xFFE5DED2)
-              : const Color(0xFFD6EBDD),
+              ? colorScheme.outlineVariant
+              : colorScheme.tertiary.withValues(alpha: 0.22),
         ),
         borderRadius: BorderRadius.circular(22),
       ),
@@ -246,32 +276,31 @@ class _BidThreadPageState extends State<BidThreadPage> {
                 ),
                 decoration: BoxDecoration(
                   color: agencyAuthored
-                      ? const Color(0xFFFFF1DA)
-                      : const Color(0xFFEAF3EE),
+                      ? colorScheme.secondaryContainer.withValues(alpha: 0.85)
+                      : colorScheme.tertiaryContainer.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   agencyAuthored ? 'Agency update' : 'Your counteroffer',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.ink,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
               const Spacer(),
               Text(
                 AppFormatters.dateTime(revision.createdAt),
-                style: const TextStyle(color: AppColors.clay),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 14),
           Text(
             AppFormatters.currency(revision.price),
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: AppColors.forest,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              color: colorScheme.primary,
             ),
           ),
           if (revision.description != null &&
@@ -310,6 +339,7 @@ class _BidThreadPageState extends State<BidThreadPage> {
   Widget build(BuildContext context) {
     final TripRequestsProvider provider = context.watch<TripRequestsProvider>();
     final BookingsProvider bookingsProvider = context.watch<BookingsProvider>();
+    final AuthProvider authProvider = context.watch<AuthProvider>();
     final BidEntity? bid = _findKnownBid(provider);
 
     if (bid != null) {
@@ -321,9 +351,11 @@ class _BidThreadPageState extends State<BidThreadPage> {
         bid?.awaitingActionBy == 'TRAVELER' && bid?.status == 'PENDING';
     final bool agencyTurn =
         bid?.awaitingActionBy == 'AGENCY' && bid?.status == 'PENDING';
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Offer thread')),
+      appBar: AppBar(),
       body: Builder(
         builder: (BuildContext context) {
           if (showLoading) {
@@ -344,13 +376,28 @@ class _BidThreadPageState extends State<BidThreadPage> {
           }
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
             children: <Widget>[
+              Text(
+                'Offer and Negotiation',
+                style: theme.textTheme.displayMedium,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Follow the full revision history, counter with structure, or accept the latest agency proposal.',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 18),
               Container(
                 padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: <Color>[AppColors.forest, AppColors.moss],
+                  gradient: LinearGradient(
+                    colors: <Color>[
+                      colorScheme.primary,
+                      colorScheme.primaryContainer,
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -404,8 +451,9 @@ class _BidThreadPageState extends State<BidThreadPage> {
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFFE5DED2)),
+                    color: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: theme.brightness == Brightness.dark ? 0.42 : 0.48,
+                    ),
                     borderRadius: BorderRadius.circular(22),
                   ),
                   child: Text(bid.description!),
@@ -456,41 +504,55 @@ class _BidThreadPageState extends State<BidThreadPage> {
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF4DF),
+                    color: colorScheme.secondaryContainer.withValues(
+                      alpha: 0.74,
+                    ),
                     borderRadius: BorderRadius.circular(22),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Your latest counteroffer is with the agency. They need to respond before you can revise or accept again.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSecondaryContainer,
+                    ),
                   ),
                 )
               else if (bid.status == 'ACCEPTED')
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF3EE),
+                    color: colorScheme.tertiaryContainer.withValues(
+                      alpha: 0.72,
+                    ),
                     borderRadius: BorderRadius.circular(22),
                   ),
-                  child: const Text(
+                  child: Text(
                     'This offer has already been accepted and converted into a booking.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onTertiaryContainer,
+                    ),
                   ),
                 )
               else if (bid.status == 'REJECTED')
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFECE7),
+                    color: colorScheme.errorContainer.withValues(alpha: 0.78),
                     borderRadius: BorderRadius.circular(22),
                   ),
-                  child: const Text(
+                  child: Text(
                     'This negotiation thread is closed because another offer was chosen.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onErrorContainer,
+                    ),
                   ),
                 )
               else
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFFE5DED2)),
+                    color: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: theme.brightness == Brightness.dark ? 0.42 : 0.48,
+                    ),
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: Column(
@@ -588,7 +650,8 @@ class _BidThreadPageState extends State<BidThreadPage> {
                               onPressed:
                                   provider.isNegotiating ||
                                       bookingsProvider.isLoading ||
-                                      !travelerTurn
+                                      !travelerTurn ||
+                                      !authProvider.canUseTravelerMarketplace
                                   ? null
                                   : () => _submitCounterOffer(bid),
                               child: Text(
@@ -604,7 +667,8 @@ class _BidThreadPageState extends State<BidThreadPage> {
                               onPressed:
                                   provider.isNegotiating ||
                                       bookingsProvider.isLoading ||
-                                      !travelerTurn
+                                      !travelerTurn ||
+                                      !authProvider.canUseTravelerMarketplace
                                   ? null
                                   : () => _acceptBid(bid),
                               child: Text(
@@ -616,6 +680,43 @@ class _BidThreadPageState extends State<BidThreadPage> {
                           ),
                         ],
                       ),
+                      if (!authProvider.canUseTravelerMarketplace) ...<Widget>[
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondaryContainer.withValues(
+                              alpha: 0.74,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                'Traveler KYC required',
+                                style: TextStyle(fontWeight: FontWeight.w800),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Complete traveler verification before you send counteroffers or accept this agency offer.',
+                              ),
+                              const SizedBox(height: 12),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<bool>(
+                                      builder: (_) => const TravelerKycPage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.badge_outlined),
+                                label: const Text('Complete traveler KYC'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -635,19 +736,23 @@ class _OfferChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: dark
             ? Colors.white.withValues(alpha: 0.16)
-            : const Color(0xFFF3E9D9),
+            : colorScheme.surfaceContainerHighest.withValues(
+                alpha: theme.brightness == Brightness.dark ? 0.36 : 0.54,
+              ),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        dark ? label : label,
-        style: TextStyle(
-          color: dark ? Colors.white : AppColors.ink,
-          fontWeight: FontWeight.w700,
+        label,
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: dark ? Colors.white : colorScheme.onSurface,
         ),
       ),
     );

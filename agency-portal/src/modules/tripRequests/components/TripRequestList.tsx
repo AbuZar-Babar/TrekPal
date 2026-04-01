@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { RootState } from '../../../store';
-import { Bid, OfferDetails, TripRequest } from '../../../shared/types';
 import BidForm from '../../bids/components/BidForm';
 import {
   clearSelectedBid,
@@ -11,20 +9,26 @@ import {
   fetchAgencyBids,
   fetchBidThread,
 } from '../../bids/store/bidsSlice';
+import { RootState } from '../../../store';
+import { Bid, OfferDetails, TripRequest } from '../../../shared/types';
+import {
+  formatCurrency,
+  formatDate,
+  formatDateRange,
+  formatStatusLabel,
+} from '../../../shared/utils/formatters';
 import { fetchTripRequests } from '../store/tripRequestsSlice';
-import TripRequestCard from './TripRequestCard';
 
 const TripRequestList = () => {
   const dispatch = useDispatch();
-  const { tripRequests, loading, error, pagination } = useSelector(
-    (state: RootState) => state.tripRequests,
-  );
+  const { tripRequests, loading, error, pagination } = useSelector((state: RootState) => state.tripRequests);
   const {
     bids,
     selectedBid,
     loading: bidsLoading,
     error: bidsError,
   } = useSelector((state: RootState) => state.bids);
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [selectedTripRequest, setSelectedTripRequest] = useState<TripRequest | null>(null);
@@ -43,12 +47,10 @@ const TripRequestList = () => {
     dispatch(fetchAgencyBids({ limit: 100 }) as any);
   }, [dispatch]);
 
-  const bidsByTripRequestId = useMemo(() => {
-    return bids.reduce<Record<string, Bid>>((accumulator, bid) => {
-      accumulator[bid.tripRequestId] = bid;
-      return accumulator;
-    }, {});
-  }, [bids]);
+  const bidsByTripRequestId = useMemo(
+    () => bids.reduce<Record<string, Bid>>((accumulator, bid) => ({ ...accumulator, [bid.tripRequestId]: bid }), {}),
+    [bids],
+  );
 
   const modalBid = useMemo(() => {
     if (!selectedTripRequest) {
@@ -131,76 +133,173 @@ const TripRequestList = () => {
     }
   };
 
+  const stats = [
+    { label: 'Traveler briefs', value: tripRequests.length },
+    { label: 'Agency live offers', value: bids.filter((bid) => bid.status === 'PENDING').length },
+    { label: 'Awaiting agency action', value: bids.filter((bid) => bid.awaitingActionBy === 'AGENCY' && bid.status === 'PENDING').length },
+    { label: 'Accepted threads', value: bids.filter((bid) => bid.status === 'ACCEPTED').length },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Trip Request Marketplace</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Review structured traveler briefs, quote commercially, and revise offers when negotiations come back to your agency.
+      <section className="grid gap-6 xl:grid-cols-[1.18fr,0.82fr]">
+        <div className="app-card px-6 py-6 md:px-8 md:py-8">
+          <div className="app-section-label">Marketplace</div>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">Structured traveler briefs and live negotiations</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
+            Review commercial trip requirements, compare the traveler&apos;s requested structure against your inventory, and respond with one negotiated offer thread per agency.
           </p>
         </div>
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-800">
-          {bids.length} active offer thread{bids.length === 1 ? '' : 's'} for your agency
-        </div>
-      </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-        <div className="relative">
-          <svg
-            className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            value={search}
-            onChange={(event) => {
-              setPage(1);
-              setSearch(event.target.value);
-            }}
-            placeholder="Search by destination or trip description..."
-            className="w-full rounded-xl border border-gray-200 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-          />
+        <div className="app-panel-dark px-6 py-6">
+          <div className="app-section-label text-white/55">Commercial queue</div>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Negotiation position</h2>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {stats.map((stat) => (
+              <div key={stat.label} className="rounded-[22px] border border-white/8 bg-white/6 px-4 py-4">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">{stat.label}</div>
+                <div className="mt-2 text-3xl font-semibold tracking-tight text-white">{stat.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="app-card px-5 py-5">
+        <div className="grid gap-3 lg:grid-cols-[1fr,auto] lg:items-center">
+          <div className="relative">
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => {
+                setPage(1);
+                setSearch(event.target.value);
+              }}
+              placeholder="Search by destination or traveler notes..."
+              className="app-field pl-11"
+            />
+            <svg
+              className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-soft)]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <div className="text-sm text-[var(--text-muted)]">{pagination.total} total brief(s)</div>
         </div>
       </div>
 
       {(error || bidsError) && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {error || bidsError}
         </div>
       )}
 
       {loading ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center shadow-sm">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-gray-200 border-t-indigo-600" />
-          <p className="mt-4 text-sm text-gray-500">Loading trip requests...</p>
+        <div className="app-table-shell px-6 py-14 text-center">
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
+          <p className="mt-4 text-sm text-[var(--text-muted)]">Loading trip requests...</p>
         </div>
       ) : tripRequests.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50">
-            <svg className="h-8 w-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h2 className="mt-4 text-xl font-bold text-gray-900">No open requests found</h2>
-          <p className="mt-2 text-sm text-gray-500">
-            {search ? 'Try adjusting your search terms.' : 'Traveler requests will appear here when available.'}
+        <div className="app-table-shell px-6 py-14 text-center">
+          <div className="text-lg font-semibold tracking-tight text-[var(--text)]">No open trip briefs found</div>
+          <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
+            {search ? 'Try widening the search terms.' : 'Traveler requests will appear here once the marketplace has matching demand.'}
           </p>
         </div>
       ) : (
-        <div className="space-y-5">
-          {tripRequests.map((tripRequest) => (
-            <TripRequestCard
-              key={tripRequest.id}
-              tripRequest={tripRequest}
-              existingBid={bidsByTripRequestId[tripRequest.id]}
-              onOpenOffer={handleOpenOffer}
-            />
-          ))}
+        <div className="app-table-shell overflow-x-auto">
+          <table className="app-table min-w-[1120px]">
+            <thead>
+              <tr>
+                <th>Traveler brief</th>
+                <th>Window and budget</th>
+                <th>Requested structure</th>
+                <th>Your thread</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tripRequests.map((tripRequest) => {
+                const existingBid = bidsByTripRequestId[tripRequest.id];
+                const bidStateLabel = !existingBid
+                  ? 'Open'
+                  : existingBid.status === 'PENDING'
+                    ? existingBid.awaitingActionBy === 'AGENCY'
+                      ? 'Agency turn'
+                      : 'Traveler review'
+                    : formatStatusLabel(existingBid.status);
+
+                return (
+                  <tr key={tripRequest.id}>
+                    <td>
+                      <div className="font-semibold tracking-tight text-[var(--text)]">{tripRequest.destination}</div>
+                      <div className="mt-1 text-sm text-[var(--text-muted)]">
+                        {tripRequest.userName || 'Traveler'} • Published {formatDate(tripRequest.createdAt)}
+                      </div>
+                      {(tripRequest.description || tripRequest.tripSpecs.specialRequirements) && (
+                        <div className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+                          {tripRequest.description || tripRequest.tripSpecs.specialRequirements}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <div className="font-semibold tracking-tight text-[var(--text)]">{formatDateRange(tripRequest.startDate, tripRequest.endDate)}</div>
+                      <div className="mt-1 text-sm text-[var(--text-muted)]">{tripRequest.travelers} traveler(s)</div>
+                      <div className="mt-3 text-sm font-semibold text-[var(--text)]">{formatCurrency(tripRequest.budget)}</div>
+                      <div className="mt-1 text-sm text-[var(--text-muted)]">{tripRequest.bidsCount} agency thread(s)</div>
+                    </td>
+                    <td>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="app-pill app-pill-neutral">{formatStatusLabel(tripRequest.tripSpecs.stayType)}</span>
+                        <span className="app-pill app-pill-neutral">{tripRequest.tripSpecs.roomCount} room(s)</span>
+                        <span className="app-pill app-pill-neutral">
+                          {tripRequest.tripSpecs.transportRequired ? formatStatusLabel(tripRequest.tripSpecs.transportType) : 'No transport'}
+                        </span>
+                        <span className="app-pill app-pill-neutral">{formatStatusLabel(tripRequest.tripSpecs.mealPlan)}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="font-semibold tracking-tight text-[var(--text)]">
+                        {existingBid ? formatCurrency(existingBid.price) : 'No quote yet'}
+                      </div>
+                      <div className="mt-2">
+                        <span className={`app-pill ${
+                          !existingBid
+                            ? 'app-pill-neutral'
+                            : existingBid.status === 'ACCEPTED'
+                              ? 'app-pill-success'
+                              : existingBid.status === 'REJECTED'
+                                ? 'app-pill-danger'
+                                : existingBid.awaitingActionBy === 'AGENCY'
+                                  ? 'app-pill-warning'
+                                  : 'app-pill-neutral'
+                        }`}>
+                          {bidStateLabel}
+                        </span>
+                      </div>
+                      {existingBid && (
+                        <div className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+                          {existingBid.revisionCount} revision(s) • Updated {formatDate(existingBid.updatedAt)}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenOffer(tripRequest)}
+                        className={`${existingBid ? 'app-btn-secondary' : 'app-btn-primary'} h-11 px-4 text-sm`}
+                      >
+                        {existingBid ? (existingBid.awaitingActionBy === 'AGENCY' && existingBid.status === 'PENDING' ? 'Revise offer' : 'View thread') : 'Submit offer'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -210,18 +309,18 @@ const TripRequestList = () => {
             type="button"
             onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
             disabled={page === 1}
-            className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-sm font-medium text-gray-600">
+          <span className="text-sm font-medium text-[var(--text-muted)]">
             Page {page} of {Math.ceil(pagination.total / pagination.limit)}
           </span>
           <button
             type="button"
             onClick={() => setPage((currentPage) => currentPage + 1)}
             disabled={page >= Math.ceil(pagination.total / pagination.limit)}
-            className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Next
           </button>

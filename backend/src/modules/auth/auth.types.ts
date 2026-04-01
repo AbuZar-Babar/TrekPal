@@ -154,6 +154,17 @@ export interface AuthResponse {
     authUid: string;
     email: string;
     name: string | null;
+    phone?: string | null;
+    cnic?: string | null;
+    cnicVerified?: boolean;
+    travelerKycStatus?: string;
+    dateOfBirth?: Date | null;
+    city?: string | null;
+    residentialAddress?: string | null;
+    emergencyContactName?: string | null;
+    emergencyContactPhone?: string | null;
+    kycSubmittedAt?: Date | null;
+    kycVerifiedAt?: Date | null;
     role: string;
   };
   token: string;

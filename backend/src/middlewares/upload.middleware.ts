@@ -37,3 +37,11 @@ export const uploadKycDocuments = upload.fields([
     { name: 'bankCertificate', maxCount: 1 },
     { name: 'additionalSupportingDocument', maxCount: 1 },
 ]);
+
+/**
+ * Middleware for traveler KYC upload
+ */
+export const uploadTravelerKycDocuments = upload.fields([
+    { name: 'cnicFrontImage', maxCount: 1 },
+    { name: 'selfieImage', maxCount: 1 },
+]);

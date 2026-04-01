@@ -1,6 +1,12 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import { Bid, OfferDetails, TripRequest } from '../../../shared/types';
+import {
+  formatCurrency,
+  formatDateRange,
+  formatDateTime,
+  formatStatusLabel,
+} from '../../../shared/utils/formatters';
 
 interface BidFormProps {
   tripRequest: TripRequest;
@@ -13,13 +19,6 @@ interface BidFormProps {
     offerDetails: OfferDetails;
   }) => Promise<void>;
 }
-
-const prettyLabel = (value: string) =>
-  value
-    .toLowerCase()
-    .split('_')
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(' ');
 
 const BidForm = ({
   tripRequest,
@@ -69,24 +68,24 @@ const BidForm = ({
       (existingBid.status !== 'PENDING' || existingBid.awaitingActionBy !== 'AGENCY'),
   );
 
-  const heading = existingBid ? 'Offer Thread' : 'Submit Structured Offer';
-  const submitLabel = existingBid ? 'Send Revision' : 'Submit Offer';
+  const heading = existingBid ? 'Offer thread' : 'Create structured offer';
+  const submitLabel = existingBid ? 'Send revision' : 'Submit offer';
 
   const statusMessage = useMemo(() => {
     if (!existingBid) {
-      return null;
+      return 'Structure your price and inclusions clearly so the traveler can compare your offer against other agencies.';
     }
 
     if (existingBid.status === 'ACCEPTED') {
-      return 'This offer has been accepted and turned into a booking.';
+      return 'This offer has been accepted and converted into a booking.';
     }
 
     if (existingBid.status === 'REJECTED') {
-      return 'This negotiation thread is closed because another offer was chosen.';
+      return 'This thread is closed because another agency offer was selected.';
     }
 
     if (existingBid.awaitingActionBy === 'AGENCY') {
-      return 'The traveler has responded. You can revise the price or inclusions now.';
+      return 'The traveler has responded. You can revise the commercial scope and send a counteroffer now.';
     }
 
     return 'The traveler is reviewing your latest offer.';
@@ -123,21 +122,20 @@ const BidForm = ({
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-950/50 p-4 backdrop-blur-sm">
-      <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex items-start justify-between border-b border-gray-100 px-6 py-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 px-4 py-6 backdrop-blur-md">
+      <div className="app-card max-h-[94vh] w-full max-w-6xl overflow-hidden">
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{heading}</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              {tripRequest.destination} from{' '}
-              {new Date(tripRequest.startDate).toLocaleDateString()} to{' '}
-              {new Date(tripRequest.endDate).toLocaleDateString()}
+            <div className="app-section-label">Negotiation thread</div>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--text)]">{heading}</h2>
+            <p className="mt-1 text-sm leading-7 text-[var(--text-muted)]">
+              {tripRequest.destination} • {formatDateRange(tripRequest.startDate, tripRequest.endDate)}
             </p>
           </div>
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            className="app-btn-secondary h-11 w-11 p-0"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -145,181 +143,152 @@ const BidForm = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="max-h-[calc(92vh-86px)] overflow-y-auto px-6 py-6">
-          <div className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
-            <div className="space-y-5">
-              <div className="grid gap-4 rounded-2xl bg-gray-50 p-4 text-sm text-gray-600 sm:grid-cols-2 xl:grid-cols-4">
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-gray-400">Travelers</div>
-                  <div className="mt-1 font-semibold text-gray-900">{tripRequest.travelers}</div>
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-gray-400">Budget</div>
-                  <div className="mt-1 font-semibold text-gray-900">
-                    {tripRequest.budget ? `PKR ${tripRequest.budget.toLocaleString()}` : 'Open'}
+        <form onSubmit={handleSubmit} className="max-h-[calc(94vh-88px)] overflow-y-auto px-6 py-6">
+          <div className="grid gap-6 xl:grid-cols-[1.18fr,0.82fr]">
+            <div className="space-y-6">
+              <div className="app-card-subtle px-5 py-5">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">Travelers</div>
+                    <div className="mt-2 text-base font-semibold tracking-tight text-[var(--text)]">{tripRequest.travelers}</div>
                   </div>
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-gray-400">Stay</div>
-                  <div className="mt-1 font-semibold text-gray-900">
-                    {prettyLabel(tripRequest.tripSpecs.stayType)}
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">Budget</div>
+                    <div className="mt-2 text-base font-semibold tracking-tight text-[var(--text)]">{formatCurrency(tripRequest.budget)}</div>
                   </div>
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-gray-400">Transport</div>
-                  <div className="mt-1 font-semibold text-gray-900">
-                    {tripRequest.tripSpecs.transportRequired
-                      ? prettyLabel(tripRequest.tripSpecs.transportType)
-                      : 'Not required'}
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">Stay type</div>
+                    <div className="mt-2 text-base font-semibold tracking-tight text-[var(--text)]">{formatStatusLabel(tripRequest.tripSpecs.stayType)}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">Meal plan</div>
+                    <div className="mt-2 text-base font-semibold tracking-tight text-[var(--text)]">{formatStatusLabel(tripRequest.tripSpecs.mealPlan)}</div>
                   </div>
                 </div>
               </div>
 
-              {(tripRequest.description || tripRequest.tripSpecs.specialRequirements) && (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {tripRequest.description && (
-                    <div className="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-900">
-                      {tripRequest.description}
-                    </div>
-                  )}
-                  {tripRequest.tripSpecs.specialRequirements && (
-                    <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                      <span className="font-semibold">Special requirements:</span>{' '}
-                      {tripRequest.tripSpecs.specialRequirements}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {statusMessage && (
-                <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
-                  {statusMessage}
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="price" className="mb-2 block text-sm font-semibold text-gray-700">
-                  Total Offer (PKR)
-                </label>
-                <input
-                  id="price"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={price}
-                  onChange={(event) => setPrice(event.target.value)}
-                  disabled={isReadOnly}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-gray-100"
-                  placeholder="Enter your total commercial offer"
-                />
+              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-5 py-4 text-sm leading-7 text-[var(--text-muted)]">
+                {statusMessage}
               </div>
 
-              <div>
-                <label htmlFor="description" className="mb-2 block text-sm font-semibold text-gray-700">
-                  Negotiation Note
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                  rows={4}
-                  disabled={isReadOnly}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-gray-100"
-                  placeholder="Summarize the commercial logic, itinerary scope, or changes you are proposing."
-                />
+              <div className="app-card-subtle px-5 py-5">
+                <div className="app-section-label">Pricing</div>
+                <div className="mt-4 grid gap-5">
+                  <div>
+                    <label htmlFor="price" className="mb-2 block text-sm font-semibold text-[var(--text)]">
+                      Total offer (PKR)
+                    </label>
+                    <input
+                      id="price"
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={price}
+                      onChange={(event) => setPrice(event.target.value)}
+                      disabled={isReadOnly}
+                      className="app-field"
+                      placeholder="Enter your total commercial offer"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="description" className="mb-2 block text-sm font-semibold text-[var(--text)]">
+                      Negotiation note
+                    </label>
+                    <textarea
+                      id="description"
+                      value={description}
+                      onChange={(event) => setDescription(event.target.value)}
+                      rows={4}
+                      disabled={isReadOnly}
+                      className="app-field min-h-[112px]"
+                      placeholder="Summarize the commercial logic or scope adjustments you are proposing."
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="grid gap-4">
-                <StructuredToggle
+                <StructuredBlock
                   checked={stayIncluded}
                   title="Stay included"
-                  disabled={isReadOnly}
-                  onChange={setStayIncluded}
-                />
-                <textarea
+                  description="Explain room arrangement, hotel tier, location, or property notes."
                   value={stayDetails}
-                  onChange={(event) => setStayDetails(event.target.value)}
-                  rows={2}
                   disabled={isReadOnly}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-gray-100"
-                  placeholder="Hotel/resort class, room arrangement, area, or property notes."
+                  onToggle={setStayIncluded}
+                  onChange={setStayDetails}
                 />
-
-                <StructuredToggle
+                <StructuredBlock
                   checked={transportIncluded}
                   title="Transport included"
-                  disabled={isReadOnly}
-                  onChange={setTransportIncluded}
-                />
-                <textarea
+                  description="Explain vehicle class, transfers, driver, and pickup scope."
                   value={transportDetails}
-                  onChange={(event) => setTransportDetails(event.target.value)}
-                  rows={2}
                   disabled={isReadOnly}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-gray-100"
-                  placeholder="Vehicle type, pickup model, intercity transfers, driver availability."
+                  onToggle={setTransportIncluded}
+                  onChange={setTransportDetails}
                 />
-
-                <StructuredToggle
+                <StructuredBlock
                   checked={mealsIncluded}
                   title="Meals included"
-                  disabled={isReadOnly}
-                  onChange={setMealsIncluded}
-                />
-                <textarea
+                  description="Explain breakfast, half-board, full-board, or dietary coverage."
                   value={mealDetails}
-                  onChange={(event) => setMealDetails(event.target.value)}
-                  rows={2}
                   disabled={isReadOnly}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-gray-100"
-                  placeholder="Breakfast, half-board, full-board, meal quality, dietary coverage."
+                  onToggle={setMealsIncluded}
+                  onChange={setMealDetails}
                 />
 
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">Extras</label>
+                <div className="app-card-subtle px-5 py-5">
+                  <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Extras</label>
                   <textarea
                     value={extras}
                     onChange={(event) => setExtras(event.target.value)}
-                    rows={2}
+                    rows={3}
                     disabled={isReadOnly}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-gray-100"
-                    placeholder="Sightseeing, welcome kit, guide, flexible timing, or other differentiators."
+                    className="app-field min-h-[96px]"
+                    placeholder="Guides, sightseeing, flexible timing, welcome kits, or other differentiators."
                   />
                 </div>
               </div>
             </div>
 
             <div className="space-y-5">
-              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
-                <div className="text-xs uppercase tracking-wide text-gray-400">Commercial brief</div>
-                <div className="mt-3 space-y-3 text-sm text-gray-600">
-                  <div className="flex justify-between gap-4">
-                    <span>Room preference</span>
-                    <span className="font-semibold text-gray-900">
-                      {tripRequest.tripSpecs.roomCount} x {prettyLabel(tripRequest.tripSpecs.roomPreference)}
+              <div className="app-panel-dark px-5 py-5">
+                <div className="app-section-label text-white/55">Commercial brief</div>
+                <div className="mt-4 space-y-3 text-sm">
+                  <div className="flex justify-between gap-4 text-white/72">
+                    <span>Travel window</span>
+                    <span className="text-right font-semibold text-white">{formatDateRange(tripRequest.startDate, tripRequest.endDate)}</span>
+                  </div>
+                  <div className="flex justify-between gap-4 text-white/72">
+                    <span>Rooms requested</span>
+                    <span className="text-right font-semibold text-white">
+                      {tripRequest.tripSpecs.roomCount} x {formatStatusLabel(tripRequest.tripSpecs.roomPreference)}
                     </span>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <span>Meal plan</span>
-                    <span className="font-semibold text-gray-900">
-                      {prettyLabel(tripRequest.tripSpecs.mealPlan)}
+                  <div className="flex justify-between gap-4 text-white/72">
+                    <span>Transport</span>
+                    <span className="text-right font-semibold text-white">
+                      {tripRequest.tripSpecs.transportRequired ? formatStatusLabel(tripRequest.tripSpecs.transportType) : 'Not required'}
                     </span>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <span>Offer threads</span>
-                    <span className="font-semibold text-gray-900">{tripRequest.bidsCount}</span>
+                  <div className="flex justify-between gap-4 text-white/72">
+                    <span>Bid competition</span>
+                    <span className="text-right font-semibold text-white">{tripRequest.bidsCount} thread(s)</span>
                   </div>
                   {existingBid && (
                     <>
-                      <div className="flex justify-between gap-4">
-                        <span>Revision count</span>
-                        <span className="font-semibold text-gray-900">{existingBid.revisionCount}</span>
-                      </div>
-                      <div className="flex justify-between gap-4">
-                        <span>Next move</span>
-                        <span className="font-semibold text-gray-900">
-                          {existingBid.awaitingActionBy === 'AGENCY' ? 'Agency' : existingBid.awaitingActionBy === 'TRAVELER' ? 'Traveler' : 'Closed'}
+                      <div className="flex justify-between gap-4 text-white/72">
+                        <span>Current status</span>
+                        <span className="text-right font-semibold text-white">
+                          {existingBid.status === 'PENDING'
+                            ? existingBid.awaitingActionBy === 'AGENCY'
+                              ? 'Agency turn'
+                              : 'Traveler review'
+                            : formatStatusLabel(existingBid.status)}
                         </span>
+                      </div>
+                      <div className="flex justify-between gap-4 text-white/72">
+                        <span>Revision count</span>
+                        <span className="text-right font-semibold text-white">{existingBid.revisionCount}</span>
                       </div>
                     </>
                   )}
@@ -327,26 +296,29 @@ const BidForm = ({
               </div>
 
               {existingBid?.revisions && existingBid.revisions.length > 0 && (
-                <div className="rounded-2xl border border-gray-100 bg-white p-5">
-                  <div className="text-sm font-semibold text-gray-900">Negotiation History</div>
+                <div className="app-card px-5 py-5">
+                  <div className="app-section-label">History</div>
+                  <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Negotiation revisions</h3>
                   <div className="mt-4 space-y-3">
                     {existingBid.revisions.map((revision) => (
                       <div
                         key={revision.id}
-                        className={`rounded-xl border px-4 py-3 text-sm ${
+                        className={`rounded-[20px] border px-4 py-4 text-sm ${
                           revision.actorRole === 'AGENCY'
-                            ? 'border-indigo-100 bg-indigo-50 text-indigo-900'
-                            : 'border-amber-100 bg-amber-50 text-amber-900'
+                            ? 'border-[var(--border)] bg-[var(--panel-subtle)]'
+                            : 'border-[var(--warning-bg)] bg-[var(--warning-bg)]'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-4">
-                          <span className="font-semibold">
+                          <span className="font-semibold text-[var(--text)]">
                             {revision.actorRole === 'AGENCY' ? 'Agency update' : 'Traveler counteroffer'}
                           </span>
-                          <span>{new Date(revision.createdAt).toLocaleString()}</span>
+                          <span className="text-[var(--text-soft)]">{formatDateTime(revision.createdAt)}</span>
                         </div>
-                        <div className="mt-2 font-bold">PKR {revision.price.toLocaleString()}</div>
-                        {revision.description && <div className="mt-2">{revision.description}</div>}
+                        <div className="mt-2 font-semibold tracking-tight text-[var(--text)]">{formatCurrency(revision.price)}</div>
+                        {revision.description && (
+                          <div className="mt-2 leading-7 text-[var(--text-muted)]">{revision.description}</div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -356,16 +328,16 @@ const BidForm = ({
           </div>
 
           {error && (
-            <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="mt-5 rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
               {error}
             </div>
           )}
 
-          <div className="mt-6 flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end">
+          <div className="mt-6 flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+              className="app-btn-secondary h-11 px-5 text-sm"
             >
               {isReadOnly ? 'Close' : 'Cancel'}
             </button>
@@ -373,7 +345,7 @@ const BidForm = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
+                className="app-btn-primary h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? 'Saving...' : submitLabel}
               </button>
@@ -385,28 +357,48 @@ const BidForm = ({
   );
 };
 
-const StructuredToggle = ({
+const StructuredBlock = ({
   checked,
   title,
+  description,
+  value,
   disabled,
+  onToggle,
   onChange,
 }: {
   checked: boolean;
   title: string;
+  description: string;
+  value: string;
   disabled: boolean;
-  onChange: (value: boolean) => void;
+  onToggle: (value: boolean) => void;
+  onChange: (value: string) => void;
 }) => {
   return (
-    <label className={`flex items-center justify-between rounded-xl border px-4 py-3 ${disabled ? 'bg-gray-100' : 'bg-white'} border-gray-200`}>
-      <span className="text-sm font-semibold text-gray-700">{title}</span>
-      <input
-        type="checkbox"
-        checked={checked}
+    <div className="app-card-subtle px-5 py-5">
+      <label className="flex items-center justify-between gap-4">
+        <div>
+          <div className="text-sm font-semibold text-[var(--text)]">{title}</div>
+          <div className="mt-1 text-sm leading-6 text-[var(--text-muted)]">{description}</div>
+        </div>
+        <input
+          type="checkbox"
+          checked={checked}
+          disabled={disabled}
+          onChange={(event) => onToggle(event.target.checked)}
+          className="h-4 w-4 rounded border-[var(--border)] text-[var(--primary)]"
+        />
+      </label>
+
+      <textarea
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        rows={3}
         disabled={disabled}
-        onChange={(event) => onChange(event.target.checked)}
-        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        className="app-field mt-4 min-h-[96px]"
+        placeholder="Add the commercial details for this section."
       />
-    </label>
+    </div>
   );
 };
 

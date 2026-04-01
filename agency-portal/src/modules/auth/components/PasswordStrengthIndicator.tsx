@@ -39,16 +39,16 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({ p
     return (
         <div className="mt-2">
             <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-medium text-gray-500">Password Strength:</span>
+                <span className="text-xs font-medium text-[var(--text-muted)]">Password Strength:</span>
                 <span className={`text-xs font-bold ${strengthInfo.textColor}`}>{strengthInfo.label}</span>
             </div>
-            <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-strong)]">
                 <div
                     className={`h-full ${strengthInfo.color} transition-all duration-300 ease-out`}
                     style={{ width: strengthInfo.width }}
                 />
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="mt-1 text-xs text-[var(--text-soft)]">
                 Use 8+ chars with mix of letters, numbers & symbols
             </p>
         </div>

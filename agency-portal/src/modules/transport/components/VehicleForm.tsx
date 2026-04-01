@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createVehicle, updateVehicle, fetchVehicles } from '../store/transportSlice';
+
+import { createVehicle, fetchVehicles, updateVehicle } from '../store/transportSlice';
+import { transportService } from '../services/transportService';
+import { formatCurrency, formatStatusLabel } from '../../../shared/utils/formatters';
 
 interface VehicleFormData {
   type: string;
@@ -18,74 +21,106 @@ interface VehicleFormData {
   driverLicense: string;
 }
 
+const initialState: VehicleFormData = {
+  type: '',
+  make: '',
+  model: '',
+  year: new Date().getFullYear(),
+  capacity: 4,
+  pricePerDay: 0,
+  images: [],
+  isAvailable: true,
+  vehicleNumber: '',
+  driverName: '',
+  driverPhone: '',
+  driverLicense: '',
+};
+
 const VehicleForm = () => {
   const { id } = useParams<{ id?: string }>();
-  const isEdit = !!id;
+  const isEdit = Boolean(id);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState<VehicleFormData>({
-    type: '',
-    make: '',
-    model: '',
-    year: new Date().getFullYear(),
-    capacity: 4,
-    pricePerDay: 0,
-    images: [],
-    isAvailable: true,
-    vehicleNumber: '',
-    driverName: '',
-    driverPhone: '',
-    driverLicense: '',
-  });
-
+  const [formData, setFormData] = useState<VehicleFormData>(initialState);
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [fetchingVehicle, setFetchingVehicle] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+  useEffect(() => {
+    if (!isEdit || !id) {
+      return;
+    }
+
+    setFetchingVehicle(true);
+    transportService
+      .getVehicleById(id)
+      .then((vehicle) => {
+        setFormData({
+          type: vehicle.type,
+          make: vehicle.make,
+          model: vehicle.model,
+          year: vehicle.year,
+          capacity: vehicle.capacity,
+          pricePerDay: vehicle.pricePerDay,
+          images: vehicle.images || [],
+          isAvailable: vehicle.isAvailable,
+          vehicleNumber: vehicle.vehicleNumber || '',
+          driverName: vehicle.driverName || '',
+          driverPhone: vehicle.driverPhone || '',
+          driverLicense: vehicle.driverLicense || '',
+        });
+      })
+      .catch(() => setError('Failed to load vehicle details'))
+      .finally(() => setFetchingVehicle(false));
+  }, [id, isEdit]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = event.target;
+    setFormData((current) => ({
+      ...current,
       [name]:
         type === 'number'
-          ? parseFloat(value) || 0
+          ? Number(value) || 0
           : type === 'checkbox'
-          ? (e.target as HTMLInputElement).checked
-          : value,
+            ? (event.target as HTMLInputElement).checked
+            : value,
     }));
   };
 
   const handleAddImage = () => {
-    if (imageUrl.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, imageUrl.trim()],
-      }));
-      setImageUrl('');
+    if (!imageUrl.trim() || formData.images.includes(imageUrl.trim())) {
+      return;
     }
+
+    setFormData((current) => ({
+      ...current,
+      images: [...current.images, imageUrl.trim()],
+    }));
+    setImageUrl('');
   };
 
   const handleRemoveImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
+    setFormData((current) => ({
+      ...current,
+      images: current.images.filter((_, imageIndex) => imageIndex !== index),
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      if (isEdit) {
-        await dispatch(updateVehicle({ id: id!, data: formData }) as any);
+      if (isEdit && id) {
+        await dispatch(updateVehicle({ id, data: formData }) as any);
       } else {
         await dispatch(createVehicle(formData) as any);
       }
       navigate('/transport');
-      dispatch(fetchVehicles() as any);
+      dispatch(fetchVehicles({ limit: 20 }) as any);
     } catch (err: any) {
       setError(err.message || 'Failed to save vehicle');
     } finally {
@@ -93,306 +128,286 @@ const VehicleForm = () => {
     }
   };
 
+  if (fetchingVehicle) {
+    return (
+      <div className="app-table-shell px-6 py-14 text-center">
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
+        <p className="mt-4 text-sm text-[var(--text-muted)]">Loading vehicle details...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <button
-            onClick={() => navigate('/transport')}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </button>
-          <h2 className="text-3xl font-bold text-gray-900">
-            {isEdit ? 'Edit Vehicle' : 'Add New Vehicle'}
-          </h2>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="app-section-label">{isEdit ? 'Edit vehicle' : 'New vehicle'}</div>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">
+            {isEdit ? 'Update vehicle and driver details' : 'Create a fleet listing'}
+          </h1>
         </div>
-        <p className="text-gray-500 ml-12">
-          {isEdit ? 'Update your vehicle information' : 'Register a new vehicle to your fleet'}
-        </p>
+        <button
+          type="button"
+          onClick={() => navigate('/transport')}
+          className="app-btn-secondary h-11 px-4 text-sm"
+        >
+          Back to vehicles
+        </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+        <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-8">
-        {/* Vehicle Information Section */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-            Vehicle Information
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Vehicle Type *
-              </label>
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              >
-                <option value="">Select Type</option>
-                <option value="CAR">Car</option>
-                <option value="SUV">SUV</option>
-                <option value="VAN">Van</option>
-                <option value="BUS">Bus</option>
-                <option value="MOTORCYCLE">Motorcycle</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Vehicle Number/Registration *
-              </label>
-              <input
-                type="text"
-                name="vehicleNumber"
-                value={formData.vehicleNumber}
-                onChange={handleChange}
-                required
-                placeholder="ABC-1234"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Make *
-              </label>
-              <input
-                type="text"
-                name="make"
-                value={formData.make}
-                onChange={handleChange}
-                required
-                placeholder="Toyota"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Model *
-              </label>
-              <input
-                type="text"
-                name="model"
-                value={formData.model}
-                onChange={handleChange}
-                required
-                placeholder="Corolla"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Year *
-              </label>
-              <input
-                type="number"
-                name="year"
-                value={formData.year}
-                onChange={handleChange}
-                required
-                min="1900"
-                max={new Date().getFullYear() + 1}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Number of Seats *
-              </label>
-              <input
-                type="number"
-                name="capacity"
-                value={formData.capacity}
-                onChange={handleChange}
-                required
-                min="1"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price Per Day (PKR) *
-              </label>
-              <input
-                type="number"
-                name="pricePerDay"
-                value={formData.pricePerDay}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.01"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Driver Information Section */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-            Driver Information
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Driver Name *
-              </label>
-              <input
-                type="text"
-                name="driverName"
-                value={formData.driverName}
-                onChange={handleChange}
-                required
-                placeholder="John Doe"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Driver Phone *
-              </label>
-              <input
-                type="tel"
-                name="driverPhone"
-                value={formData.driverPhone}
-                onChange={handleChange}
-                required
-                placeholder="+92 300 1234567"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Driver License Number *
-              </label>
-              <input
-                type="text"
-                name="driverLicense"
-                value={formData.driverLicense}
-                onChange={handleChange}
-                required
-                placeholder="LIC-12345"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Images Section */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-            Vehicle Images
-          </h3>
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddImage();
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={handleAddImage}
-                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
-              >
-                Add Image
-              </button>
-            </div>
-            {formData.images.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {formData.images.map((img, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={img}
-                      alt={`Vehicle ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          'https://via.placeholder.com/300x200?text=Invalid+URL';
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+      <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
+        <div className="space-y-6">
+          <div className="app-card px-6 py-6">
+            <div className="app-section-label">Vehicle information</div>
+            <div className="mt-5 grid gap-5 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Vehicle type</label>
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  required
+                  className="app-field"
+                >
+                  <option value="">Select type</option>
+                  <option value="CAR">Car</option>
+                  <option value="SUV">SUV</option>
+                  <option value="VAN">Van</option>
+                  <option value="BUS">Bus</option>
+                  <option value="MOTORCYCLE">Motorcycle</option>
+                </select>
               </div>
-            )}
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Registration number</label>
+                <input
+                  type="text"
+                  name="vehicleNumber"
+                  value={formData.vehicleNumber}
+                  onChange={handleChange}
+                  required
+                  className="app-field"
+                  placeholder="ABC-1234"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Make</label>
+                <input
+                  type="text"
+                  name="make"
+                  value={formData.make}
+                  onChange={handleChange}
+                  required
+                  className="app-field"
+                  placeholder="Toyota"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Model</label>
+                <input
+                  type="text"
+                  name="model"
+                  value={formData.model}
+                  onChange={handleChange}
+                  required
+                  className="app-field"
+                  placeholder="Corolla"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Year</label>
+                <input
+                  type="number"
+                  name="year"
+                  value={formData.year}
+                  onChange={handleChange}
+                  min="1900"
+                  max={new Date().getFullYear() + 1}
+                  className="app-field"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Seats</label>
+                <input
+                  type="number"
+                  name="capacity"
+                  value={formData.capacity}
+                  onChange={handleChange}
+                  min="1"
+                  className="app-field"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Price per day (PKR)</label>
+                <input
+                  type="number"
+                  name="pricePerDay"
+                  value={formData.pricePerDay}
+                  onChange={handleChange}
+                  min="0"
+                  step="1"
+                  className="app-field"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="app-card px-6 py-6">
+            <div className="app-section-label">Driver information</div>
+            <div className="mt-5 grid gap-5 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver name</label>
+                <input
+                  type="text"
+                  name="driverName"
+                  value={formData.driverName}
+                  onChange={handleChange}
+                  required
+                  className="app-field"
+                  placeholder="Driver full name"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver phone</label>
+                <input
+                  type="tel"
+                  name="driverPhone"
+                  value={formData.driverPhone}
+                  onChange={handleChange}
+                  required
+                  className="app-field"
+                  placeholder="+92 300 1234567"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver license</label>
+                <input
+                  type="text"
+                  name="driverLicense"
+                  value={formData.driverLicense}
+                  onChange={handleChange}
+                  required
+                  className="app-field"
+                  placeholder="License number"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="app-card px-6 py-6">
+            <div className="app-section-label">Images and availability</div>
+            <div className="mt-5 space-y-5">
+              <div className="grid gap-3 md:grid-cols-[1fr,auto]">
+                <input
+                  type="url"
+                  value={imageUrl}
+                  onChange={(event) => setImageUrl(event.target.value)}
+                  placeholder="Paste an image URL"
+                  className="app-field"
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      handleAddImage();
+                    }
+                  }}
+                />
+                <button type="button" onClick={handleAddImage} className="app-btn-secondary h-11 px-5 text-sm">
+                  Add image
+                </button>
+              </div>
+
+              {formData.images.length > 0 && (
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {formData.images.map((image, index) => (
+                    <div key={image} className="relative overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)]">
+                      <img src={image} alt="" className="h-36 w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950/70 text-white"
+                      >
+                        x
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <label className="flex items-center gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4">
+                <input
+                  type="checkbox"
+                  name="isAvailable"
+                  checked={formData.isAvailable}
+                  onChange={handleChange}
+                  className="h-4 w-4 rounded border-[var(--border)] text-[var(--primary)]"
+                />
+                <span className="text-sm leading-7 text-[var(--text)]">Vehicle is currently available for booking</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => navigate('/transport')}
+              className="app-btn-secondary h-11 px-5 text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="app-btn-primary h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? 'Saving...' : isEdit ? 'Update vehicle' : 'Create vehicle'}
+            </button>
           </div>
         </div>
 
-        {/* Availability Section */}
-        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-          <input
-            type="checkbox"
-            name="isAvailable"
-            checked={formData.isAvailable}
-            onChange={handleChange}
-            className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-          />
-          <label className="text-sm font-medium text-gray-700">
-            Vehicle is currently available for booking
-          </label>
-        </div>
+        <div className="space-y-6">
+          <div className="app-panel-dark px-6 py-6">
+            <div className="app-section-label text-white/55">Listing summary</div>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+              {formData.make || 'New'} {formData.model || 'vehicle'}
+            </h2>
+            <div className="mt-5 space-y-3 text-sm text-white/72">
+              <div className="flex justify-between gap-4">
+                <span>Vehicle type</span>
+                <span className="text-right font-semibold text-white">{formatStatusLabel(formData.type || 'UNSPECIFIED')}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span>Capacity</span>
+                <span className="text-right font-semibold text-white">{formData.capacity} seat(s)</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span>Rate</span>
+                <span className="text-right font-semibold text-white">{formatCurrency(formData.pricePerDay, 'PKR 0')}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span>Availability</span>
+                <span className="text-right font-semibold text-white">{formData.isAvailable ? 'Available' : 'Unavailable'}</span>
+              </div>
+            </div>
+          </div>
 
-        {/* Submit Buttons */}
-        <div className="flex gap-4 pt-4 border-t border-gray-200">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Saving...
-              </span>
-            ) : (
-              isEdit ? 'Update Vehicle' : 'Create Vehicle'
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/transport')}
-            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
-          >
-            Cancel
-          </button>
+          <div className="app-card px-6 py-6">
+            <div className="app-section-label">Publishing note</div>
+            <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Inventory review still applies</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+              Newly created or updated vehicle records remain subject to platform approval before they can confidently support traveler offers.
+            </p>
+          </div>
         </div>
       </form>
     </div>

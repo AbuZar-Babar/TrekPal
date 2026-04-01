@@ -1,5 +1,6 @@
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_client.dart';
+import '../../domain/entities/auth_entities.dart';
 import '../models/auth_model.dart';
 
 class AuthRemoteDataSource {
@@ -25,7 +26,6 @@ class AuthRemoteDataSource {
     required String email,
     required String password,
     String? phone,
-    String? cnic,
   }) async {
     final dynamic data = await _apiClient.post(
       ApiConstants.registerTraveler,
@@ -35,22 +35,40 @@ class AuthRemoteDataSource {
         'email': email,
         'password': password,
         if (phone != null && phone.trim().isNotEmpty) 'phone': phone.trim(),
-        if (cnic != null && cnic.trim().isNotEmpty)
-          'cnic': cnic.replaceAll(RegExp(r'\D'), ''),
       },
     );
 
     return AuthSessionModel.fromJson(data as Map<String, dynamic>);
   }
 
-  Future<void> verifyCnic({required String cnic, String? cnicImageUrl}) async {
-    await _apiClient.post(
-      ApiConstants.verifyCnic,
-      body: <String, dynamic>{
-        'cnic': cnic.replaceAll(RegExp(r'\D'), ''),
-        if (cnicImageUrl != null && cnicImageUrl.trim().isNotEmpty)
-          'cnicImage': cnicImageUrl.trim(),
+  Future<AuthUserModel> fetchProfile() async {
+    final dynamic data = await _apiClient.get(ApiConstants.authProfile);
+    return AuthUserModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<void> submitTravelerKyc(TravelerKycSubmission submission) async {
+    await _apiClient.postMultipart(
+      ApiConstants.travelerKyc,
+      fields: <String, String>{
+        'cnic': submission.cnic.replaceAll(RegExp(r'\D'), ''),
+        'dateOfBirth': submission.dateOfBirth.toIso8601String(),
+        'city': submission.city.trim(),
+        'residentialAddress': submission.residentialAddress.trim(),
+        'emergencyContactName': submission.emergencyContactName.trim(),
+        'emergencyContactPhone': submission.emergencyContactPhone.trim(),
       },
+      files: <MultipartFilePayload>[
+        MultipartFilePayload(
+          fieldName: submission.cnicFrontImage.fieldName,
+          fileName: submission.cnicFrontImage.fileName,
+          bytes: submission.cnicFrontImage.bytes,
+        ),
+        MultipartFilePayload(
+          fieldName: submission.selfieImage.fieldName,
+          fileName: submission.selfieImage.fileName,
+          bytes: submission.selfieImage.bytes,
+        ),
+      ],
     );
   }
 }

@@ -2,14 +2,18 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../domain/entities/auth_entities.dart';
 import '../models/auth_model.dart';
 
 class AuthLocalDataSource {
   static const String _sessionKey = 'trekpal_auth_session';
 
-  Future<void> saveSession(AuthSessionModel session) async {
+  Future<void> saveSession(AuthSession session) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_sessionKey, jsonEncode(session.toJson()));
+    final AuthSessionModel model = session is AuthSessionModel
+        ? session
+        : AuthSessionModel.fromEntity(session);
+    await prefs.setString(_sessionKey, jsonEncode(model.toJson()));
   }
 
   Future<AuthSessionModel?> getSession() async {

@@ -1,5 +1,5 @@
 import { type User as SupabaseUser } from '@supabase/supabase-js';
-import { ROLES, APPROVAL_STATUS } from '../../config/constants';
+import { ROLES, APPROVAL_STATUS, TRAVELER_KYC_STATUS } from '../../config/constants';
 import {
   createSupabaseAuthUser,
   isSupabaseConfigured,
@@ -67,12 +67,42 @@ export class AuthService {
     });
   }
 
-  private mapTraveler(user: { id: string; authUid: string; email: string; name: string | null }): AuthResponse['user'] {
+  private mapTraveler(user: {
+    id: string;
+    authUid: string;
+    email: string;
+    name: string | null;
+    phone?: string | null;
+    cnic?: string | null;
+    cnicVerified?: boolean;
+    travelerKycStatus?: string;
+    dateOfBirth?: Date | null;
+    city?: string | null;
+    residentialAddress?: string | null;
+    emergencyContactName?: string | null;
+    emergencyContactPhone?: string | null;
+    kycSubmittedAt?: Date | null;
+    kycVerifiedAt?: Date | null;
+  }): AuthResponse['user'] {
     return {
       id: user.id,
       authUid: user.authUid,
       email: user.email,
       name: user.name,
+      phone: user.phone ?? null,
+      cnic: user.cnic ?? null,
+      cnicVerified: user.cnicVerified ?? false,
+      travelerKycStatus:
+        user.travelerKycStatus === TRAVELER_KYC_STATUS.VERIFIED
+          ? TRAVELER_KYC_STATUS.VERIFIED
+          : TRAVELER_KYC_STATUS.NOT_SUBMITTED,
+      dateOfBirth: user.dateOfBirth ?? null,
+      city: user.city ?? null,
+      residentialAddress: user.residentialAddress ?? null,
+      emergencyContactName: user.emergencyContactName ?? null,
+      emergencyContactPhone: user.emergencyContactPhone ?? null,
+      kycSubmittedAt: user.kycSubmittedAt ?? null,
+      kycVerifiedAt: user.kycVerifiedAt ?? null,
       role: ROLES.TRAVELER,
     };
   }

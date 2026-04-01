@@ -8,12 +8,15 @@ abstract class AuthRepository {
     required String email,
     required String password,
     String? phone,
-    String? cnic,
   });
 
-  Future<void> verifyCnic({required String cnic, String? cnicImageUrl});
+  Future<AuthUser> fetchProfile();
+
+  Future<void> submitTravelerKyc(TravelerKycSubmission submission);
 
   Future<AuthSession?> restoreSession();
+
+  Future<void> saveSession(AuthSession session);
 
   Future<void> logout();
 }

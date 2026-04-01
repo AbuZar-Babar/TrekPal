@@ -20,8 +20,9 @@ class ApiConstants {
 
   static const String login = '/auth/login';
   static const String registerTraveler = '/auth/register/user';
-  static const String verifyCnic = '/auth/verify-cnic';
   static const String authProfile = '/auth/profile';
+  static const String usersProfile = '/users/profile';
+  static const String travelerKyc = '/users/profile/kyc';
 
   static const String tripRequests = '/trip-requests';
   static const String bids = '/bids';

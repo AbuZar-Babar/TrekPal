@@ -43,3 +43,11 @@ export const APPROVAL_STATUS = {
 
 export type ApprovalStatus = typeof APPROVAL_STATUS[keyof typeof APPROVAL_STATUS];
 
+export const TRAVELER_KYC_STATUS = {
+  NOT_SUBMITTED: 'NOT_SUBMITTED',
+  VERIFIED: 'VERIFIED',
+} as const;
+
+export type TravelerKycStatus =
+  typeof TRAVELER_KYC_STATUS[keyof typeof TRAVELER_KYC_STATUS];
+

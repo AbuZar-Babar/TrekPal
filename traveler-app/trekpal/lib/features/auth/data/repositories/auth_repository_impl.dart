@@ -18,7 +18,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    final session = await _remoteDataSource.login(
+    final AuthSession session = await _remoteDataSource.login(
       email: email,
       password: password,
     );
@@ -32,26 +32,32 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     String? phone,
-    String? cnic,
   }) async {
-    final session = await _remoteDataSource.registerTraveler(
+    final AuthSession session = await _remoteDataSource.registerTraveler(
       name: name,
       email: email,
       password: password,
       phone: phone,
-      cnic: cnic,
     );
     await _localDataSource.saveSession(session);
     return session;
   }
 
   @override
-  Future<void> verifyCnic({required String cnic, String? cnicImageUrl}) {
-    return _remoteDataSource.verifyCnic(cnic: cnic, cnicImageUrl: cnicImageUrl);
+  Future<AuthUser> fetchProfile() => _remoteDataSource.fetchProfile();
+
+  @override
+  Future<void> submitTravelerKyc(TravelerKycSubmission submission) {
+    return _remoteDataSource.submitTravelerKyc(submission);
   }
 
   @override
   Future<AuthSession?> restoreSession() => _localDataSource.getSession();
+
+  @override
+  Future<void> saveSession(AuthSession session) {
+    return _localDataSource.saveSession(session);
+  }
 
   @override
   Future<void> logout() => _localDataSource.clearSession();

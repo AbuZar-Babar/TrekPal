@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/destination_artwork.dart';
 import '../../domain/entities/trip_request_entities.dart';
 
 class TripRequestCard extends StatelessWidget {
@@ -28,65 +28,86 @@ class TripRequestCard extends StatelessWidget {
     }
 
     if (tripRequest.bidsCount > 0) {
-      return 'Offers received';
+      return 'Offers';
     }
 
     return 'Published';
   }
 
+  Widget _metaChip(BuildContext context, IconData icon, String label) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.36 : 0.54,
+        ),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(icon, size: 16, color: colorScheme.primary),
+          const SizedBox(width: 8),
+          Text(label, style: theme.textTheme.bodySmall),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
     return Card(
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onOpen,
-        borderRadius: BorderRadius.circular(28),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      tripRequest.destination,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                  ),
-                  _StatusChip(status: _marketplaceState()),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                AppFormatters.dateRange(
+              TrekpalDestinationArtwork(
+                destination: tripRequest.destination,
+                caption: AppFormatters.dateRange(
                   tripRequest.startDate,
                   tripRequest.endDate,
                 ),
+                badge: _marketplaceState(),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 18),
+              Text(
+                tripRequest.destination,
+                style: theme.textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 10),
               Wrap(
-                spacing: 10,
-                runSpacing: 10,
+                spacing: 8,
+                runSpacing: 8,
                 children: <Widget>[
-                  _InfoPill(
-                    icon: Icons.people_alt_outlined,
-                    label: '${tripRequest.travelers} travelers',
+                  _metaChip(
+                    context,
+                    Icons.people_alt_outlined,
+                    '${tripRequest.travelers} travelers',
                   ),
-                  _InfoPill(
-                    icon: Icons.payments_outlined,
-                    label: AppFormatters.currency(tripRequest.budget),
+                  _metaChip(
+                    context,
+                    Icons.payments_outlined,
+                    AppFormatters.currency(tripRequest.budget),
                   ),
-                  _InfoPill(
-                    icon: Icons.hotel_outlined,
-                    label:
-                        '${_prettyLabel(tripRequest.tripSpecs.stayType)} • ${tripRequest.tripSpecs.roomCount} rooms',
+                  _metaChip(
+                    context,
+                    Icons.hotel_outlined,
+                    '${_prettyLabel(tripRequest.tripSpecs.stayType)} / ${tripRequest.tripSpecs.roomCount} rooms',
                   ),
-                  _InfoPill(
-                    icon: Icons.handshake_outlined,
-                    label: '${tripRequest.bidsCount} offers',
+                  _metaChip(
+                    context,
+                    Icons.handshake_outlined,
+                    '${tripRequest.bidsCount} offers',
                   ),
                 ],
               ),
@@ -95,7 +116,11 @@ class TripRequestCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Text(
                   tripRequest.description!,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
               const SizedBox(height: 16),
@@ -104,87 +129,22 @@ class TripRequestCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Meal plan: ${_prettyLabel(tripRequest.tripSpecs.mealPlan)}',
-                      style: const TextStyle(color: AppColors.clay),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                   if (onOpen != null)
                     FilledButton.tonalIcon(
                       onPressed: onOpen,
-                      icon: const Icon(Icons.visibility_outlined),
-                      label: const Text('Open'),
+                      icon: const Icon(Icons.arrow_outward_rounded),
+                      label: const Text('Open brief'),
                     ),
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _InfoPill extends StatelessWidget {
-  const _InfoPill({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3E9D9),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(icon, size: 16, color: AppColors.clay),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.status});
-
-  final String status;
-
-  @override
-  Widget build(BuildContext context) {
-    Color background;
-    Color foreground;
-    switch (status) {
-      case 'Booked':
-        background = const Color(0xFFDDEBDD);
-        foreground = AppColors.forest;
-        break;
-      case 'Cancelled':
-        background = const Color(0xFFFFECE7);
-        foreground = AppColors.danger;
-        break;
-      case 'Offers received':
-        background = const Color(0xFFEAF3EE);
-        foreground = AppColors.forest;
-        break;
-      default:
-        background = const Color(0xFFFFF4DF);
-        foreground = AppColors.clay;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        status,
-        style: TextStyle(fontWeight: FontWeight.w700, color: foreground),
       ),
     );
   }

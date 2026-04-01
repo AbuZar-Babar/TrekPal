@@ -11,14 +11,12 @@ class RegisterUseCase {
     required String email,
     required String password,
     String? phone,
-    String? cnic,
   }) {
     return _repository.registerTraveler(
       name: name,
       email: email,
       password: password,
       phone: phone,
-      cnic: cnic,
     );
   }
 }

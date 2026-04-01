@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/destination_artwork.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../domain/entities/trip_request_entities.dart';
@@ -31,19 +31,24 @@ class _BidsViewPageState extends State<BidsViewPage> {
     });
   }
 
-  Widget _summaryPill(IconData icon, String label) {
+  Widget _summaryPill(BuildContext context, IconData icon, String label) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3E9D9),
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.36 : 0.54,
+        ),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(icon, size: 16, color: AppColors.clay),
+          Icon(icon, size: 16, color: colorScheme.primary),
           const SizedBox(width: 8),
-          Text(label),
+          Text(label, style: theme.textTheme.bodySmall),
         ],
       ),
     );
@@ -71,6 +76,8 @@ class _BidsViewPageState extends State<BidsViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     final TripRequestsProvider provider = context.watch<TripRequestsProvider>();
     final TripRequestEntity? request = provider.findTripRequestById(
       widget.tripRequestId,
@@ -78,66 +85,34 @@ class _BidsViewPageState extends State<BidsViewPage> {
     final List<BidEntity> bids = provider.currentBids;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Agency offers')),
+      appBar: AppBar(),
       body: RefreshIndicator(
         onRefresh: () => provider.fetchBids(widget.tripRequestId),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
           children: <Widget>[
-            if (request != null)
-              Container(
-                padding: const EdgeInsets.all(22),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: <Color>[AppColors.pine, AppColors.forest],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(28),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      request.destination,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      AppFormatters.dateRange(
-                        request.startDate,
-                        request.endDate,
-                      ),
-                      style: const TextStyle(color: Color(0xFFE6F3EC)),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: <Widget>[
-                        _summaryPill(
-                          Icons.people_alt_outlined,
-                          '${request.travelers} travelers',
-                        ),
-                        _summaryPill(
-                          Icons.payments_outlined,
-                          AppFormatters.currency(request.budget),
-                        ),
-                        _summaryPill(
-                          Icons.handshake_outlined,
-                          '${request.bidsCount} offer threads',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            Text('Compare Agency Offers', style: theme.textTheme.displayMedium),
+            const SizedBox(height: 10),
+            Text(
+              'Review the latest quotes, compare inclusions, and open a negotiation thread when you want to revise the deal.',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-            const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 20),
+            if (request != null) ...<Widget>[
+              TrekpalDestinationArtwork(
+                destination: request.destination,
+                caption: AppFormatters.dateRange(
+                  request.startDate,
+                  request.endDate,
+                ),
+                badge: '${request.bidsCount} offers',
+                height: 210,
+              ),
+              const SizedBox(height: 18),
+            ],
             if (provider.isBidsLoading && bids.isEmpty)
               const TrekpalLoadingWidget(message: 'Loading agency offers...')
             else if (provider.errorMessage != null && bids.isEmpty)
@@ -153,65 +128,100 @@ class _BidsViewPageState extends State<BidsViewPage> {
             else
               ...bids.map(
                 (BidEntity bid) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 14),
                   child: Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Icon(
+                                  Icons.apartment_outlined,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
                               Expanded(
-                                child: Text(
-                                  bid.agencyName,
-                                  style: Theme.of(context).textTheme.titleLarge
-                                      ?.copyWith(fontWeight: FontWeight.w800),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      bid.agencyName,
+                                      style: theme.textTheme.titleLarge,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _nextActionLabel(bid),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Text(
                                 AppFormatters.currency(bid.price),
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      color: AppColors.forest,
-                                    ),
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  color: colorScheme.primary,
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 14),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
                             children: <Widget>[
                               _summaryPill(
+                                context,
                                 Icons.hotel_outlined,
                                 bid.offerDetails.stayIncluded
                                     ? 'Stay included'
                                     : 'No stay',
                               ),
                               _summaryPill(
+                                context,
                                 Icons.directions_car_outlined,
                                 bid.offerDetails.transportIncluded
                                     ? 'Transport included'
                                     : 'No transport',
                               ),
                               _summaryPill(
+                                context,
                                 Icons.restaurant_outlined,
                                 bid.offerDetails.mealsIncluded
                                     ? 'Meals included'
                                     : 'No meals',
                               ),
                               _summaryPill(
+                                context,
                                 Icons.timeline_outlined,
-                                _nextActionLabel(bid),
+                                '${bid.revisionCount} revisions',
                               ),
                             ],
                           ),
                           if (bid.description != null &&
                               bid.description!.trim().isNotEmpty) ...<Widget>[
                             const SizedBox(height: 12),
-                            Text(bid.description!),
+                            Text(
+                              bid.description!,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                           const SizedBox(height: 16),
                           Row(
@@ -219,7 +229,9 @@ class _BidsViewPageState extends State<BidsViewPage> {
                               Expanded(
                                 child: Text(
                                   'Updated ${AppFormatters.dateTime(bid.updatedAt)}',
-                                  style: const TextStyle(color: AppColors.clay),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ),
                               FilledButton.tonalIcon(

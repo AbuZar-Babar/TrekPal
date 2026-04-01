@@ -20,6 +20,16 @@ model User {
   phone     String?
   cnic      String?  @unique
   cnicVerified Boolean @default(false)
+  travelerKycStatus String @default("NOT_SUBMITTED")
+  dateOfBirth DateTime?
+  city String?
+  residentialAddress String?
+  emergencyContactName String?
+  emergencyContactPhone String?
+  cnicFrontImageUrl String?
+  selfieImageUrl String?
+  kycSubmittedAt DateTime?
+  kycVerifiedAt DateTime?
   avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

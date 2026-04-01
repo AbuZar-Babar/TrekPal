@@ -3,7 +3,7 @@ import { AuthRequest } from '../../middlewares/auth.middleware';
 import { tripRequestsService } from './tripRequests.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
 import { prisma } from '../../config/database';
-import { ROLES } from '../../config/constants';
+import { ROLES, TRAVELER_KYC_STATUS } from '../../config/constants';
 import {
   createTripRequestSchema,
   tripRequestFiltersSchema,
@@ -33,6 +33,15 @@ export class TripRequestsController {
 
       if (!user) {
         sendError(res, 'User profile not found. Please complete registration first.', 404);
+        return;
+      }
+
+      if (user.travelerKycStatus !== TRAVELER_KYC_STATUS.VERIFIED) {
+        sendError(
+          res,
+          'Complete traveler KYC before publishing a trip brief',
+          403,
+        );
         return;
       }
 

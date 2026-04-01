@@ -8,14 +8,12 @@ class AuthFormValues {
     required this.password,
     this.name,
     this.phone,
-    this.cnic,
   });
 
   final String email;
   final String password;
   final String? name;
   final String? phone;
-  final String? cnic;
 }
 
 class AuthFormWidget extends StatefulWidget {
@@ -41,15 +39,14 @@ class _AuthFormWidgetState extends State<AuthFormWidget> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _cnicController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _cnicController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -64,7 +61,6 @@ class _AuthFormWidgetState extends State<AuthFormWidget> {
         name: widget.isRegister ? _nameController.text.trim() : null,
         email: _emailController.text.trim(),
         phone: widget.isRegister ? _phoneController.text.trim() : null,
-        cnic: widget.isRegister ? _cnicController.text.trim() : null,
         password: _passwordController.text.trim(),
       ),
     );
@@ -72,15 +68,22 @@ class _AuthFormWidgetState extends State<AuthFormWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
     return Form(
       key: _formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           if (widget.isRegister) ...<Widget>[
             TextFormField(
               controller: _nameController,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Full name'),
+              decoration: const InputDecoration(
+                labelText: 'LEGAL NAME',
+                hintText: 'Enter your full name',
+              ),
               validator: (String? value) =>
                   AppValidators.requiredText(value, fieldName: 'Name'),
             ),
@@ -89,7 +92,10 @@ class _AuthFormWidgetState extends State<AuthFormWidget> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(labelText: 'Email'),
+            decoration: const InputDecoration(
+              labelText: 'EMAIL ADDRESS',
+              hintText: 'name@example.com',
+            ),
             validator: AppValidators.email,
           ),
           const SizedBox(height: 14),
@@ -98,50 +104,87 @@ class _AuthFormWidgetState extends State<AuthFormWidget> {
               controller: _phoneController,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
-                labelText: 'Phone number',
+                labelText: 'PHONE NUMBER',
                 hintText: '+92 300 1234567',
               ),
-            ),
-            const SizedBox(height: 14),
-            TextFormField(
-              controller: _cnicController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'CNIC',
-                hintText: '3520212345671',
-              ),
-              validator: AppValidators.cnic,
             ),
             const SizedBox(height: 14),
           ],
           TextFormField(
             controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: 'Password'),
+            obscureText: _obscurePassword,
+            decoration: InputDecoration(
+              labelText: widget.isRegister ? 'SECURE PASSWORD' : 'PASSWORD',
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+                icon: Icon(
+                  _obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                ),
+              ),
+            ),
             validator: AppValidators.password,
           ),
           const SizedBox(height: 22),
-          ElevatedButton(
-            onPressed: widget.isLoading ? null : _submit,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                if (widget.isLoading) ...<Widget>[
-                  const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.2,
-                      color: Colors.white,
+          if (!widget.isRegister)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 18),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.check_box_outline_blank_rounded,
+                    size: 18,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Remember this session',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const Spacer(),
+                  Text(
+                    'Forgot?',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colorScheme.primary,
+                    ),
+                  ),
                 ],
-                Text(
-                  widget.submitLabel ??
-                      (widget.isRegister ? 'Create account' : 'Sign in'),
-                ),
-              ],
+              ),
+            ),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: widget.isLoading ? null : _submit,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (widget.isLoading) ...<Widget>[
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+                  Text(
+                    widget.submitLabel ??
+                        (widget.isRegister
+                            ? 'Proceed to Verification'
+                            : 'Sign in'),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

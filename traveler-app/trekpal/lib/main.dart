@@ -4,13 +4,13 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_constants.dart';
 import 'core/network/api_client.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
 import 'core/widgets/loading_widget.dart';
 import 'features/auth/data/datasources/auth_local_datasource.dart';
 import 'features/auth/data/datasources/auth_remote_datasource.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/register_usecase.dart';
-import 'features/auth/domain/usecases/verify_cnic_usecase.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/bookings/data/datasources/bookings_remote_datasource.dart';
@@ -28,11 +28,14 @@ import 'features/trip_requests/domain/usecases/submit_counter_offer_usecase.dart
 import 'features/trip_requests/domain/usecases/view_bids_usecase.dart';
 import 'features/trip_requests/presentation/providers/trip_requests_provider.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   final AuthLocalDataSource authLocalDataSource = AuthLocalDataSource();
   final ApiClient apiClient = ApiClient(
     tokenProvider: authLocalDataSource.getToken,
   );
+  final ThemeController themeController = await ThemeController.create();
 
   final authRepository = AuthRepositoryImpl(
     remoteDataSource: AuthRemoteDataSource(apiClient),
@@ -50,7 +53,6 @@ void main() {
       authProvider: AuthProvider(
         loginUseCase: LoginUseCase(authRepository),
         registerUseCase: RegisterUseCase(authRepository),
-        verifyCnicUseCase: VerifyCnicUseCase(authRepository),
         authRepository: authRepository,
       ),
       tripRequestsProvider: TripRequestsProvider(
@@ -69,6 +71,7 @@ void main() {
         acceptBidUseCase: AcceptBidUseCase(bookingsRepository),
         bookingsRepository: bookingsRepository,
       ),
+      themeController: themeController,
     ),
   );
 }
@@ -79,11 +82,13 @@ class TrekPalApp extends StatelessWidget {
     required this.authProvider,
     required this.tripRequestsProvider,
     required this.bookingsProvider,
+    required this.themeController,
   });
 
   final AuthProvider authProvider;
   final TripRequestsProvider tripRequestsProvider;
   final BookingsProvider bookingsProvider;
+  final ThemeController themeController;
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +99,19 @@ class TrekPalApp extends StatelessWidget {
           value: tripRequestsProvider,
         ),
         ChangeNotifierProvider<BookingsProvider>.value(value: bookingsProvider),
+        ChangeNotifierProvider<ThemeController>.value(value: themeController),
       ],
-      child: MaterialApp(
-        title: AppConstants.appName,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const _AppRoot(),
+      child: Consumer<ThemeController>(
+        builder: (BuildContext context, ThemeController themeController, _) {
+          return MaterialApp(
+            title: AppConstants.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeController.themeMode,
+            home: const _AppRoot(),
+          );
+        },
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/destination_artwork.dart';
 import '../../../bookings/domain/entities/booking_entities.dart';
 
 class BookingCard extends StatelessWidget {
@@ -10,108 +10,96 @@ class BookingCard extends StatelessWidget {
   final BookingEntity booking;
   final VoidCallback? onTap;
 
+  Widget _metaChip(BuildContext context, IconData icon, String label) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.36 : 0.54,
+        ),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(icon, size: 16, color: colorScheme.primary),
+          const SizedBox(width: 8),
+          Text(label, style: theme.textTheme.bodySmall),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final String destination = booking.destination ?? 'Trip booking';
+
     return Card(
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              TrekpalDestinationArtwork(
+                destination: destination,
+                caption: booking.agencyName ?? 'Verified agency assignment',
+                badge: booking.status,
+                height: 164,
+              ),
+              const SizedBox(height: 18),
+              Text(destination, style: theme.textTheme.headlineSmall),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  _metaChip(
+                    context,
+                    Icons.calendar_today_outlined,
+                    AppFormatters.dateRange(booking.startDate, booking.endDate),
+                  ),
+                  _metaChip(
+                    context,
+                    Icons.apartment_outlined,
+                    booking.agencyName ?? 'Assigned agency',
+                  ),
+                  _metaChip(
+                    context,
+                    Icons.payments_outlined,
+                    AppFormatters.currency(booking.totalAmount),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               Row(
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      booking.destination ?? 'Trip booking',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      'Booking ID ${booking.id.substring(0, booking.id.length > 8 ? 8 : booking.id.length)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
-                  _BookingStatusChip(status: booking.status),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(AppFormatters.dateRange(booking.startDate, booking.endDate)),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: <Widget>[
-                  _BookingInfoPill(
-                    icon: Icons.apartment_outlined,
-                    label: booking.agencyName ?? 'Assigned agency',
-                  ),
-                  _BookingInfoPill(
-                    icon: Icons.payments_outlined,
-                    label: AppFormatters.currency(booking.totalAmount),
-                  ),
+                  if (onTap != null)
+                    FilledButton.tonalIcon(
+                      onPressed: onTap,
+                      icon: const Icon(Icons.receipt_long_outlined),
+                      label: const Text('View booking'),
+                    ),
                 ],
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _BookingInfoPill extends StatelessWidget {
-  const _BookingInfoPill({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3E9D9),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(icon, size: 16, color: AppColors.clay),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
-      ),
-    );
-  }
-}
-
-class _BookingStatusChip extends StatelessWidget {
-  const _BookingStatusChip({required this.status});
-
-  final String status;
-
-  @override
-  Widget build(BuildContext context) {
-    Color background;
-    switch (status) {
-      case 'CONFIRMED':
-      case 'COMPLETED':
-        background = const Color(0xFFDDEBDD);
-        break;
-      case 'CANCELLED':
-        background = const Color(0xFFF5DAD2);
-        break;
-      default:
-        background = const Color(0xFFF3E9D9);
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(status, style: const TextStyle(fontWeight: FontWeight.w700)),
     );
   }
 }

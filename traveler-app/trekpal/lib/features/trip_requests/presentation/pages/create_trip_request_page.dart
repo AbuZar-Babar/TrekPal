@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/validators.dart';
@@ -259,31 +258,28 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
   }
 
   Widget _buildOverviewItem(String label, String value) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.mist,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.4 : 0.55,
+        ),
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             label,
-            style: const TextStyle(
-              color: AppColors.clay,
-              fontWeight: FontWeight.w700,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.ink,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          Text(value, style: theme.textTheme.titleSmall),
         ],
       ),
     );
@@ -538,68 +534,104 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
     final bool isSubmitting = context
         .watch<TripRequestsProvider>()
         .isSubmitting;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     const List<String> titles = <String>[
       'Where & when',
       'Group & budget',
       'Stay & services',
       'Notes & review',
     ];
+    const List<String> prompts = <String>[
+      'Where to?',
+      'Who is going?',
+      'What should agencies include?',
+      'Review your brief',
+    ];
+    const List<String> descriptions = <String>[
+      'Start with the destination and the dates agencies should price against.',
+      'Set the size of the group and the budget range you want negotiated.',
+      'Define stay, transport, and meals so offers come back structured.',
+      'Add notes, then review the brief before it is published to agencies.',
+    ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Plan your trip brief')),
+      appBar: AppBar(),
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
-              child: Row(
-                children: List<Widget>.generate(titles.length, (int index) {
-                  final bool isActive = index == _currentStep;
-                  final bool isComplete = index < _currentStep;
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Step ${_currentStep + 1} of ${titles.length}',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colorScheme.primary,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    prompts[_currentStep],
+                    style: theme.textTheme.displayMedium,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    descriptions[_currentStep],
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      value: (_currentStep + 1) / titles.length,
+                      minHeight: 6,
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: List<Widget>.generate(titles.length, (int index) {
+                      final bool isActive = index == _currentStep;
+                      final bool isComplete = index < _currentStep;
 
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: index == titles.length - 1 ? 0 : 8,
-                      ),
-                      child: Container(
+                      return Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 14,
+                          horizontal: 14,
+                          vertical: 10,
                         ),
                         decoration: BoxDecoration(
                           color: isActive
-                              ? AppColors.pine
+                              ? colorScheme.primary
                               : isComplete
-                              ? const Color(0xFFEAF3EE)
-                              : AppColors.mist,
-                          borderRadius: BorderRadius.circular(18),
+                              ? colorScheme.tertiaryContainer
+                              : colorScheme.surfaceContainerHighest.withValues(
+                                  alpha: theme.brightness == Brightness.dark
+                                      ? 0.46
+                                      : 0.6,
+                                ),
+                          borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              '${index + 1}',
-                              style: TextStyle(
-                                color: isActive ? Colors.white : AppColors.clay,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              titles[index],
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: isActive ? Colors.white : AppColors.ink,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          titles[index],
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: isActive
+                                ? colorScheme.onPrimary
+                                : isComplete
+                                ? colorScheme.onTertiaryContainer
+                                : colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                }),
+                      );
+                    }),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -611,15 +643,12 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                     child: Container(
                       padding: const EdgeInsets.all(22),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Color(0x14000000),
-                            blurRadius: 24,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
+                        color: colorScheme.surfaceContainerHighest.withValues(
+                          alpha: theme.brightness == Brightness.dark
+                              ? 0.42
+                              : 0.5,
+                        ),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                       child: _buildStepContent(),
                     ),
@@ -629,9 +658,10 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
             ),
             Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: Color(0xFFE6E0D5))),
+              decoration: BoxDecoration(
+                color: colorScheme.surface.withValues(
+                  alpha: theme.brightness == Brightness.dark ? 0.95 : 0.98,
+                ),
               ),
               child: SafeArea(
                 top: false,
