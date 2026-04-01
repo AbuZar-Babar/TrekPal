@@ -83,6 +83,9 @@ export interface UserProfile {
   phone: string | null;
   cnic: string | null;
   cnicVerified: boolean;
+  travelerKycStatus: 'NOT_SUBMITTED' | 'VERIFIED' | string;
+  kycSubmittedAt: string | null;
+  kycVerifiedAt: string | null;
   createdAt: string;
   bookingsCount?: number;
   tripRequestsCount?: number;

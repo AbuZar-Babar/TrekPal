@@ -1,71 +1,130 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../store';
-import { logout } from '../../../modules/auth/store/authSlice';
+import { useLocation } from 'react-router-dom';
 
-/**
- * Header Component — Premium Design with SVG Icons
- * Matches agency portal's design system
- */
+import { logout } from '../../../modules/auth/store/authSlice';
+import { RootState } from '../../../store';
+import { useTheme } from '../../theme/ThemeProvider';
+import { formatDate } from '../../utils/formatters';
+
 const Header = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { theme, toggleTheme } = useTheme();
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+  const routeMeta = [
+    {
+      match: '/dashboard',
+      title: 'Operational Overview',
+      description: 'System health, review queues, and logistics performance at a glance.',
+    },
+    {
+      match: '/agencies',
+      title: 'Agency Approvals',
+      description: 'Inspect submitted business evidence and make approval decisions.',
+    },
+    {
+      match: '/users',
+      title: 'Traveler Review',
+      description: 'Monitor traveler verification posture and KYC submission signals.',
+    },
+    {
+      match: '/hotels',
+      title: 'Hotel Moderation',
+      description: 'Review hospitality inventory quality, location data, and approval state.',
+    },
+    {
+      match: '/vehicles',
+      title: 'Vehicle Approvals',
+      description: 'Verify fleet readiness, pricing posture, and compliance-sensitive records.',
+    },
+    {
+      match: '/reports',
+      title: 'Reports & Analytics',
+      description: 'Read platform growth, booking movement, and revenue trends clearly.',
+    },
+    {
+      match: '/activity',
+      title: 'Audit & Moderation Activity',
+      description: 'Track the latest activity feed across agency, traveler, hotel, and vehicle review.',
+    },
+  ].find((item) => location.pathname.startsWith(item.match));
 
   return (
-    <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/80 sticky top-0 z-50">
-      <div className="px-6 py-3.5">
-        <div className="flex items-center justify-between">
-          {/* Page Context */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">TrekPal Admin</h1>
-              <p className="text-[11px] text-gray-400">Platform Management</p>
-            </div>
+    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color:color-mix(in_srgb,var(--background)_88%,transparent)] backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 px-4 py-4 md:px-6 xl:flex-row xl:items-center xl:justify-between xl:px-8">
+        <div className="min-w-0">
+          <div className="sovereign-label">TrekPal sovereign</div>
+          <h1 className="mt-2 truncate font-headline text-2xl font-extrabold tracking-tight text-[var(--text)]">
+            {routeMeta?.title || 'Precision Admin Control'}
+          </h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
+            {routeMeta?.description || 'Review the platform with clarity, rigor, and tonal precision.'}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="hidden min-w-[320px] items-center gap-3 rounded-[20px] border border-[var(--border)] bg-[var(--surface)] px-4 py-3 lg:flex">
+            <svg className="h-4 w-4 text-[var(--text-soft)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              className="w-full bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-soft)]"
+              placeholder="Search systems, applications, or traveler IDs..."
+            />
           </div>
 
-          {/* Right Side */}
-          <div className="flex items-center gap-3">
-            {/* Notifications placeholder */}
-            <button className="relative w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button>
+          <div className="hidden rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)] md:inline-flex">
+            {formatDate(new Date(), { weekday: 'short', month: 'short', day: 'numeric' })}
+          </div>
 
-            {/* Divider */}
-            <div className="w-px h-8 bg-gray-200"></div>
+          <button type="button" onClick={toggleTheme} className="sovereign-button-secondary h-11 px-4">
+            {theme === 'dark' ? (
+              <>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3v2.25m0 13.5V21m9-9h-2.25M5.25 12H3m15.114 6.364-1.591-1.591M7.477 7.477 5.886 5.886m12.228 0-1.591 1.591M7.477 16.523l-1.591 1.591M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Light mode
+              </>
+            ) : (
+              <>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 12.79A9 9 0 1111.21 3c0 .56.06 1.107.174 1.634A7 7 0 0019.366 12.4c.527.114 1.074.174 1.634.174z" />
+                </svg>
+                Dark mode
+              </>
+            )}
+          </button>
 
-            {/* User Info */}
-            <div className="flex items-center gap-3 pl-1">
-              <div className="hidden md:flex items-center gap-2.5 px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-semibold text-xs shadow-sm">
-                  {user?.name?.charAt(0).toUpperCase() || 'A'}
+          <div className="sovereign-pill sovereign-pill-success">Sovereign live</div>
+
+          <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[var(--surface-high)] font-semibold text-[var(--text)]">
+                {user?.name?.charAt(0).toUpperCase() || 'A'}
+              </div>
+              <div className="hidden min-w-0 md:block">
+                <div className="truncate text-sm font-semibold tracking-tight text-[var(--text)]">
+                  {user?.name || 'Admin Profile'}
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-gray-800 leading-tight">{user?.name || 'Admin'}</p>
-                  <p className="text-[10px] text-gray-400 leading-tight">{user?.email}</p>
+                <div className="truncate text-xs text-[var(--text-soft)]">
+                  {user?.email || 'admin@trekpal.com'}
                 </div>
               </div>
-
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all duration-200 font-medium text-xs active:scale-95"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <span className="hidden sm:inline">Logout</span>
-              </button>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => dispatch(logout())}
+            className="sovereign-button-danger h-11 px-4"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </button>
         </div>
       </div>
     </header>

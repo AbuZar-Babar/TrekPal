@@ -9,6 +9,7 @@ import HotelApprovalList from './modules/hotels/components/HotelApprovalList';
 import VehicleApprovalList from './modules/vehicles/components/VehicleApprovalList';
 import UserList from './modules/users/components/UserList';
 import ReportDashboard from './modules/reports/components/ReportDashboard';
+import ActivityDashboard from './modules/activity/components/ActivityDashboard';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -81,6 +82,16 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <ReportDashboard />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/activity"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ActivityDashboard />
             </Layout>
           </ProtectedRoute>
         }

@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
-import { useReports } from '../hooks/useReports';
+
+import { formatCurrency } from '../../../shared/utils/formatters';
 import ReportCharts from './ReportCharts';
+import { useReports } from '../hooks/useReports';
 import { ReportRange } from '../store/reportsSlice';
 
 const rangeOptions: Array<{ label: string; value: ReportRange }> = [
@@ -28,81 +30,149 @@ const ReportDashboard = () => {
 
   if (loading && !dashboardStats) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600" />
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[var(--primary)]" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
-        <h3 className="text-lg font-semibold text-red-800 mb-1">Failed to load reports</h3>
-        <p className="text-sm text-red-700">{error}</p>
+      <div className="sovereign-panel p-8 text-center">
+        <h3 className="font-headline text-2xl font-bold text-[var(--text)]">
+          Failed to load reports
+        </h3>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">{error}</p>
       </div>
     );
   }
 
+  const latestRevenue = revenueData.at(-1)?.revenue ?? 0;
+  const latestBookings = bookingsData.at(-1)?.bookings ?? 0;
+  const latestUsers = userGrowthData.at(-1)?.users ?? 0;
+
   const statCards = [
     {
       label: 'Total Revenue',
-      value: `$${Math.round(dashboardStats?.totalRevenue || 0).toLocaleString()}`,
-      color: 'from-indigo-500 to-purple-600',
+      value: formatCurrency(dashboardStats?.totalRevenue),
+      detail: `Latest period ${formatCurrency(latestRevenue)}`,
     },
     {
       label: 'Total Bookings',
       value: (dashboardStats?.totalBookings || 0).toLocaleString(),
-      color: 'from-emerald-500 to-green-600',
+      detail: `${latestBookings} bookings in the latest period`,
     },
     {
       label: 'Total Users',
       value: (dashboardStats?.totalUsers || 0).toLocaleString(),
-      color: 'from-sky-500 to-blue-600',
+      detail: `${latestUsers} travelers in the latest cumulative view`,
     },
     {
       label: 'Total Agencies',
       value: (dashboardStats?.totalAgencies || 0).toLocaleString(),
-      color: 'from-violet-500 to-purple-600',
+      detail: `${dashboardStats?.pendingAgencies || 0} agencies still pending`,
     },
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8">
+      <section className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Reports & Analytics</h1>
-          <p className="text-xs text-gray-400">Platform insights and growth trends</p>
+          <div className="sovereign-label">Reports & analytics</div>
+          <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
+            Read the platform like an editorial operations ledger
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
+            Track revenue, bookings, and user growth with a calmer administrative interface that
+            keeps the numbers legible and the signal obvious.
+          </p>
         </div>
-        <select
-          value={range}
-          onChange={(e) => updateRange(e.target.value as ReportRange)}
-          className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 shadow-sm transition-all cursor-pointer"
-        >
-          {rangeOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-low)] p-1.5">
+          {rangeOptions.map((option) => {
+            const active = range === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => updateRange(option.value)}
+                className={`sovereign-tab ${active ? 'sovereign-tab-active' : 'sovereign-tab-idle'}`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-4">
         {statCards.map((card) => (
-          <div
-            key={card.label}
-            className={`bg-gradient-to-r ${card.color} rounded-2xl p-5 text-white shadow-md`}
-          >
-            <p className="text-xs text-white/75 mb-1">{card.label}</p>
-            <p className="text-2xl font-bold">{card.value}</p>
-          </div>
+          <article key={card.label} className="sovereign-kpi p-6">
+            <div className="sovereign-label">{card.label}</div>
+            <div className="mt-3 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
+              {card.value}
+            </div>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{card.detail}</p>
+          </article>
         ))}
-      </div>
+      </section>
 
-      <ReportCharts
-        revenueData={revenueData}
-        bookingsData={bookingsData}
-        userGrowthData={userGrowthData}
-      />
+      <section className="grid gap-6 xl:grid-cols-[1.45fr_0.95fr]">
+        <ReportCharts
+          revenueData={revenueData}
+          bookingsData={bookingsData}
+          userGrowthData={userGrowthData}
+        />
+
+        <aside className="space-y-6">
+          <div className="sovereign-dark-panel p-7">
+            <div className="sovereign-label text-white/55">Insight summary</div>
+            <h3 className="mt-3 font-headline text-2xl font-bold text-white">
+              Current reporting posture
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-white/70">
+              Revenue and booking momentum remain visible, while agency growth and approval queues
+              continue to shape the administrative workload.
+            </p>
+
+            <div className="mt-8 space-y-4">
+              <div className="rounded-[20px] bg-white/8 p-4">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+                  Booking Core
+                </div>
+                <div className="mt-2 text-lg font-semibold text-white">
+                  {dashboardStats?.totalBookings || 0} bookings tracked
+                </div>
+              </div>
+              <div className="rounded-[20px] bg-white/8 p-4">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+                  Revenue Base
+                </div>
+                <div className="mt-2 text-lg font-semibold text-white">
+                  {formatCurrency(dashboardStats?.totalRevenue)}
+                </div>
+              </div>
+              <div className="rounded-[20px] bg-white/8 p-4">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+                  Agency Queue
+                </div>
+                <div className="mt-2 text-lg font-semibold text-white">
+                  {dashboardStats?.pendingAgencies || 0} approvals pending
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="sovereign-panel p-6">
+            <div className="sovereign-label">Reading notes</div>
+            <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--text-muted)]">
+              <li>Compare booking trend against user growth before forecasting demand.</li>
+              <li>Watch pending agency counts alongside revenue growth for review pressure.</li>
+              <li>Use the longer range when judging structural growth, not weekly movement.</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
     </div>
   );
 };

@@ -12,69 +12,84 @@ interface ReportChartsProps {
 
 const ChartCard = ({
   title,
-  colorClass,
-  maxValue,
+  subtitle,
+  color,
   values,
   valueFormatter,
 }: {
   title: string;
-  colorClass: string;
-  maxValue: number;
+  subtitle: string;
+  color: string;
   values: Array<{ month: string; value: number }>;
   valueFormatter: (value: number) => string;
 }) => {
+  const maxValue = Math.max(...values.map((value) => value.value), 0);
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
-      <div className="h-52 flex items-end justify-between gap-2">
+    <article className="sovereign-panel p-6">
+      <div className="sovereign-label">{title}</div>
+      <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{subtitle}</p>
+
+      <div className="mt-6 flex h-56 items-end justify-between gap-3">
         {values.map((item) => {
-          const height = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
+          const height = maxValue > 0 ? Math.max((item.value / maxValue) * 100, 12) : 12;
           return (
-            <div key={`${title}-${item.month}`} className="flex-1 flex flex-col items-center group">
-              <div className="w-full bg-gray-100 rounded-lg relative" style={{ height: '180px' }}>
+            <div key={`${title}-${item.month}`} className="flex flex-1 flex-col items-center gap-3">
+              <div className="flex h-44 w-full items-end rounded-[18px] bg-[var(--surface-low)] px-2 py-2">
                 <div
-                  className={`w-full rounded-lg absolute bottom-0 transition-all duration-500 ${colorClass}`}
-                  style={{ height: `${height}%` }}
+                  className="w-full rounded-[12px]"
+                  style={{
+                    height: `${height}%`,
+                    background: `linear-gradient(180deg, color-mix(in srgb, ${color} 72%, white 28%), ${color})`,
+                  }}
                 />
               </div>
-              <span className="text-[10px] text-gray-500 mt-2 font-medium">{item.month}</span>
-              <span className="text-[10px] text-gray-400">{valueFormatter(item.value)}</span>
+              <div className="text-center">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)]">
+                  {item.month}
+                </div>
+                <div className="mt-1 text-xs font-medium text-[var(--text-muted)]">
+                  {valueFormatter(item.value)}
+                </div>
+              </div>
             </div>
           );
         })}
       </div>
-    </div>
+    </article>
   );
 };
 
 const ReportCharts = ({ revenueData, bookingsData, userGrowthData }: ReportChartsProps) => {
-  const revenueValues = revenueData.map((r) => ({ month: r.month, value: r.revenue }));
-  const bookingsValues = bookingsData.map((b) => ({ month: b.month, value: b.bookings }));
-  const userGrowthValues = userGrowthData.map((u) => ({ month: u.month, value: u.users }));
+  const revenueValues = revenueData.map((item) => ({ month: item.month, value: item.revenue }));
+  const bookingsValues = bookingsData.map((item) => ({ month: item.month, value: item.bookings }));
+  const userGrowthValues = userGrowthData.map((item) => ({ month: item.month, value: item.users }));
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <div className="grid gap-6">
       <ChartCard
         title="Revenue Trend"
-        colorClass="bg-gradient-to-t from-indigo-500 to-indigo-400"
-        maxValue={Math.max(...revenueValues.map((v) => v.value), 0)}
+        subtitle="Monthly revenue movement across the selected reporting window."
+        color="var(--primary)"
         values={revenueValues}
-        valueFormatter={(value) => `$${Math.round(value).toLocaleString()}`}
+        valueFormatter={(value) => `PKR ${Math.round(value).toLocaleString()}`}
       />
-      <ChartCard
-        title="Bookings Trend"
-        colorClass="bg-gradient-to-t from-green-500 to-emerald-400"
-        maxValue={Math.max(...bookingsValues.map((v) => v.value), 0)}
-        values={bookingsValues}
-        valueFormatter={(value) => value.toString()}
-      />
-      <ChartCard
-        title="User Growth"
-        colorClass="bg-gradient-to-t from-purple-500 to-violet-400"
-        maxValue={Math.max(...userGrowthValues.map((v) => v.value), 0)}
-        values={userGrowthValues}
-        valueFormatter={(value) => value.toString()}
-      />
+      <div className="grid gap-6 xl:grid-cols-2">
+        <ChartCard
+          title="Bookings Trend"
+          subtitle="Confirmed booking volume by reporting period."
+          color="#526074"
+          values={bookingsValues}
+          valueFormatter={(value) => value.toLocaleString()}
+        />
+        <ChartCard
+          title="User Growth"
+          subtitle="Traveler growth curve for the same reporting window."
+          color="#595e78"
+          values={userGrowthValues}
+          valueFormatter={(value) => value.toLocaleString()}
+        />
+      </div>
     </div>
   );
 };

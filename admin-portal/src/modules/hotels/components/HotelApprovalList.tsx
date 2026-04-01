@@ -1,17 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { RootState } from '../../../store';
-import { fetchHotels, approveHotel, rejectHotel } from '../store/hotelSlice';
-import HotelCard from './HotelCard';
+import { formatDate, getInitials } from '../../../shared/utils/formatters';
+import { approveHotel, fetchHotels, rejectHotel } from '../store/hotelSlice';
+
+const statusClassMap: Record<string, string> = {
+  PENDING: 'sovereign-pill sovereign-pill-warning',
+  APPROVED: 'sovereign-pill sovereign-pill-success',
+  REJECTED: 'sovereign-pill sovereign-pill-danger',
+};
 
 const HotelApprovalList = () => {
   const dispatch = useDispatch();
-  const { hotels, loading, error, pagination } = useSelector(
-    (state: RootState) => state.hotels
-  );
+  const { hotels, loading, error, pagination } = useSelector((state: RootState) => state.hotels);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedHotelId, setSelectedHotelId] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -22,165 +28,346 @@ const HotelApprovalList = () => {
         search: search || undefined,
       }) as any
     );
-  }, [dispatch, page, statusFilter, search]);
+  }, [dispatch, page, search, statusFilter]);
+
+  useEffect(() => {
+    if (hotels.length === 0) {
+      setSelectedHotelId(null);
+      return;
+    }
+
+    if (!selectedHotelId || !hotels.some((hotel) => hotel.id === selectedHotelId)) {
+      setSelectedHotelId(hotels[0].id);
+    }
+  }, [hotels, selectedHotelId]);
+
+  const selectedHotel = hotels.find((hotel) => hotel.id === selectedHotelId) ?? null;
+  const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.limit));
+
+  const tabCounts = useMemo(() => {
+    const base = { ALL: pagination.total, PENDING: 0, APPROVED: 0, REJECTED: 0 };
+    hotels.forEach((hotel) => {
+      base[hotel.status as 'PENDING' | 'APPROVED' | 'REJECTED'] += 1;
+    });
+    return base;
+  }, [hotels, pagination.total]);
+
+  const refreshList = () =>
+    dispatch(
+      fetchHotels({
+        page,
+        limit: 20,
+        status: statusFilter || undefined,
+        search: search || undefined,
+      }) as any
+    );
 
   const handleApprove = async (id: string) => {
-    if (confirm('Are you sure you want to approve this hotel?')) {
+    if (window.confirm('Approve this hotel listing?')) {
       await dispatch(approveHotel({ id }) as any);
-      dispatch(fetchHotels({ page, status: statusFilter || undefined }) as any);
+      refreshList();
     }
   };
 
   const handleReject = async (id: string) => {
-    const reason = prompt('Enter rejection reason (optional):');
+    const reason = window.prompt('Enter rejection reason (optional):');
     if (reason !== null) {
       await dispatch(rejectHotel({ id, reason: reason || undefined }) as any);
-      dispatch(fetchHotels({ page, status: statusFilter || undefined }) as any);
+      refreshList();
     }
   };
 
   if (loading && hotels.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[var(--primary)]" />
       </div>
     );
   }
 
   if (error) {
-    const isNetworkError = error.includes('Backend server is not running') || error.includes('Network Error');
     return (
-      <div className="text-center py-12">
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-8 max-w-md mx-auto">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-red-100 rounded-2xl mb-4">
-            <svg className="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-red-800 mb-2">Connection Error</h3>
-          <p className="text-red-600 text-sm mb-4">{error}</p>
-          {isNetworkError && (
-            <div className="text-sm text-red-700 bg-red-100 p-4 rounded-xl text-left">
-              <p className="font-semibold mb-2">To fix this:</p>
-              <ol className="list-decimal list-inside space-y-1">
-                <li>Make sure the backend server is running</li>
-                <li>Run: <code className="bg-red-200 px-1 rounded">npm run dev</code> in the backend folder</li>
-              </ol>
-            </div>
-          )}
-        </div>
+      <div className="sovereign-panel p-8 text-center">
+        <h3 className="font-headline text-2xl font-bold text-[var(--text)]">
+          Failed to load hotel approvals
+        </h3>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">{error}</p>
       </div>
     );
   }
 
-  const totalPages = Math.ceil(pagination.total / pagination.limit);
-
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
-            <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4m-4 0v-5a2 2 0 00-2-2h0a2 2 0 00-2 2v5" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">Hotels</h1>
-            <p className="text-xs text-gray-400">
-              {pagination.total} total {pagination.total === 1 ? 'hotel' : 'hotels'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Search & Filter */}
-      <div className="flex gap-3 items-center">
-        <div className="relative flex-1">
-          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search hotels..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 shadow-sm transition-all"
-          />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => {
-            setStatusFilter(e.target.value);
-            setPage(1);
-          }}
-          className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 shadow-sm transition-all cursor-pointer"
-        >
-          <option value="">All Status</option>
-          <option value="PENDING">Pending</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
-        </select>
-      </div>
-
-      {/* Cards */}
-      <div className="grid gap-4">
-        {hotels.map((hotel) => (
-          <HotelCard
-            key={hotel.id}
-            hotel={hotel}
-            onApprove={handleApprove}
-            onReject={handleReject}
-          />
-        ))}
-      </div>
-
-      {/* Empty State */}
-      {hotels.length === 0 && !loading && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-50 rounded-2xl mb-4">
-            <svg className="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4m-4 0v-5a2 2 0 00-2-2h0a2 2 0 00-2 2v5" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No hotels found</h3>
-          <p className="text-sm text-gray-500">
-            {statusFilter ? `No hotels with status "${statusFilter}"` : 'No hotels registered yet'}
+    <div className="space-y-8">
+      <section className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <div className="sovereign-label">Hotel moderation</div>
+          <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
+            Review hospitality inventory with clean evidence hierarchy
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
+            Moderate hotel submissions, inspect amenities and imagery, and keep the stay catalog
+            aligned with platform standards.
           </p>
         </div>
-      )}
+      </section>
 
-      {/* Pagination */}
-      {pagination.total > pagination.limit && (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm transition-all"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      <section className="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-low)] p-1.5">
+        {[
+          { value: '', label: 'All Hotels', count: tabCounts.ALL },
+          { value: 'PENDING', label: 'Pending', count: tabCounts.PENDING },
+          { value: 'APPROVED', label: 'Approved', count: tabCounts.APPROVED },
+          { value: 'REJECTED', label: 'Rejected', count: tabCounts.REJECTED },
+        ].map((tab) => {
+          const active = statusFilter === tab.value;
+          return (
+            <button
+              key={tab.label}
+              type="button"
+              onClick={() => {
+                setStatusFilter(tab.value);
+                setPage(1);
+              }}
+              className={`sovereign-tab ${active ? 'sovereign-tab-active' : 'sovereign-tab-idle'}`}
+            >
+              {tab.label}
+              <span className="rounded-full bg-[var(--surface-high)] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
+                {tab.count}
+              </span>
+            </button>
+          );
+        })}
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.95fr)]">
+        <div className="space-y-5">
+          <div className="relative">
+            <svg
+              className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-soft)]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.8}
+                d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
-            Previous
-          </button>
-          <span className="px-4 py-2 text-sm font-medium text-gray-600">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={page >= totalPages}
-            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm transition-all"
-          >
-            Next
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+            <input
+              type="text"
+              placeholder="Search hotels, agencies, or locations..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="sovereign-input pl-11"
+            />
+          </div>
+
+          <div className="sovereign-table-shell overflow-x-auto">
+            <table className="sovereign-table min-w-full">
+              <thead>
+                <tr>
+                  <th>Hotel</th>
+                  <th>Agency</th>
+                  <th>Location</th>
+                  <th>Submitted</th>
+                  <th>Status</th>
+                  <th className="text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {hotels.map((hotel) => {
+                  const active = hotel.id === selectedHotelId;
+                  return (
+                    <tr
+                      key={hotel.id}
+                      onClick={() => setSelectedHotelId(hotel.id)}
+                      className={`cursor-pointer transition-colors ${active ? 'bg-[var(--surface-low)]' : ''}`}
+                    >
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-[var(--secondary-container)] font-semibold text-[var(--text)]">
+                            {getInitials(hotel.name, 'HT')}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-[var(--text)]">{hotel.name}</div>
+                            <div className="text-xs text-[var(--text-soft)]">
+                              {hotel.rating ? `${hotel.rating} stars` : 'Unrated'}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="font-medium text-[var(--text)]">{hotel.agencyName}</div>
+                        <div className="mt-1 text-xs text-[var(--text-soft)]">
+                          {hotel.roomsCount ?? 0} rooms
+                        </div>
+                      </td>
+                      <td>
+                        <div className="font-medium text-[var(--text)]">{hotel.city}</div>
+                        <div className="mt-1 text-xs text-[var(--text-soft)]">{hotel.country}</div>
+                      </td>
+                      <td>{formatDate(hotel.createdAt)}</td>
+                      <td>
+                        <span className={statusClassMap[hotel.status] || 'sovereign-pill sovereign-pill-neutral'}>
+                          {hotel.status}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        <button type="button" className="sovereign-button-secondary h-10 px-4">
+                          {hotel.status === 'PENDING' ? 'Review' : 'Inspect'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {pagination.total > pagination.limit && (
+            <div className="flex items-center justify-between rounded-[24px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4">
+              <p className="text-sm text-[var(--text-muted)]">
+                Page {page} of {totalPages}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  disabled={page === 1}
+                  className="sovereign-button-secondary h-11 px-4 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                  disabled={page >= totalPages}
+                  className="sovereign-button-secondary h-11 px-4 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        <aside className="space-y-5">
+          {selectedHotel ? (
+            <div className="sovereign-panel sticky top-28 p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="sovereign-label">Hotel review</div>
+                  <h3 className="mt-2 font-headline text-2xl font-bold tracking-tight text-[var(--text)]">
+                    {selectedHotel.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedHotel.agencyName}</p>
+                </div>
+                <span className={statusClassMap[selectedHotel.status] || 'sovereign-pill sovereign-pill-neutral'}>
+                  {selectedHotel.status}
+                </span>
+              </div>
+
+              {selectedHotel.images[0] ? (
+                <img
+                  src={selectedHotel.images[0]}
+                  alt={selectedHotel.name}
+                  className="mt-5 h-48 w-full rounded-[22px] object-cover"
+                />
+              ) : (
+                <div className="mt-5 flex h-48 items-center justify-center rounded-[22px] border border-dashed border-[var(--border)] bg-[var(--surface-low)] text-[var(--text-soft)]">
+                  No preview image available
+                </div>
+              )}
+
+              <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+                <div className="sovereign-label">Property details</div>
+                <div className="mt-4 space-y-3 text-sm">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[var(--text-soft)]">Address</span>
+                    <span className="max-w-[55%] text-right font-semibold text-[var(--text)]">
+                      {selectedHotel.address}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[var(--text-soft)]">City</span>
+                    <span className="font-semibold text-[var(--text)]">{selectedHotel.city}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[var(--text-soft)]">Country</span>
+                    <span className="font-semibold text-[var(--text)]">{selectedHotel.country}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[var(--text-soft)]">Rooms</span>
+                    <span className="font-semibold text-[var(--text)]">
+                      {selectedHotel.roomsCount ?? 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedHotel.description && (
+                <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+                  <div className="sovereign-label">Description</div>
+                  <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+                    {selectedHotel.description}
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+                <div className="sovereign-label">Amenities</div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {selectedHotel.amenities.length > 0 ? (
+                    selectedHotel.amenities.map((amenity) => (
+                      <span key={amenity} className="sovereign-pill sovereign-pill-neutral">
+                        {amenity}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm text-[var(--text-soft)]">
+                      No amenities were attached to this listing.
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
+                {selectedHotel.status !== 'APPROVED' && (
+                  <button
+                    type="button"
+                    onClick={() => handleApprove(selectedHotel.id)}
+                    className="sovereign-button-primary h-12 px-5"
+                  >
+                    Approve Hotel
+                  </button>
+                )}
+                {selectedHotel.status !== 'REJECTED' && (
+                  <button
+                    type="button"
+                    onClick={() => handleReject(selectedHotel.id)}
+                    className="sovereign-button-danger h-12 px-5"
+                  >
+                    Reject Hotel
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="sovereign-panel p-10 text-center">
+              <h3 className="font-headline text-2xl font-bold text-[var(--text)]">
+                No hotel selected
+              </h3>
+              <p className="mt-2 text-sm text-[var(--text-muted)]">
+                Select a hotel record to review its moderation details.
+              </p>
+            </div>
+          )}
+        </aside>
+      </section>
     </div>
   );
 };
