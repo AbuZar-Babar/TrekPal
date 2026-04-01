@@ -116,6 +116,182 @@ const formatCurrency = (value: string) => {
 
 const fileLooksLikeImage = (file: File | null) => !!file && IMAGE_MIME_TYPES.includes(file.type);
 
+const ProgressBar = ({ step }: { step: number }) => (
+  <div className="mb-8 flex items-center justify-between gap-2">
+    {STEPS.map((label, index) => (
+      <div key={label} className="flex flex-1 items-center">
+        <div className="flex min-w-0 flex-col items-center">
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
+              index < step
+                ? 'bg-[var(--success-text)] text-white'
+                : index === step
+                  ? 'scale-105 bg-[var(--primary)] text-white shadow-lg'
+                  : 'bg-[var(--panel-strong)] text-[var(--text-soft)]'
+            }`}
+          >
+            {index < step ? 'OK' : index + 1}
+          </div>
+          <span
+            className={`mt-2 text-[11px] font-medium ${
+              index <= step ? 'text-[var(--text)]' : 'text-[var(--text-soft)]'
+            }`}
+          >
+            {label}
+          </span>
+        </div>
+        {index < STEPS.length - 1 && (
+          <div className="mx-2 h-1 flex-1 overflow-hidden rounded-full bg-[var(--panel-strong)]">
+            <div
+              className="h-full bg-[var(--success-text)] transition-all duration-300"
+              style={{ width: index < step ? '100%' : '0%' }}
+            />
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+);
+
+const TextInput = ({
+  id,
+  label,
+  value,
+  placeholder,
+  type = 'text',
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  placeholder: string;
+  type?: string;
+  onChange: (value: string) => void;
+}) => (
+  <div>
+    <label htmlFor={id} className="mb-2 block text-sm font-semibold text-[var(--text)]">
+      {label}
+    </label>
+    <input
+      id={id}
+      type={type}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      className="app-field"
+      placeholder={placeholder}
+    />
+  </div>
+);
+
+const SelectInput = ({
+  id,
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  options: readonly { value: string; label: string }[];
+  onChange: (value: string) => void;
+}) => (
+  <div>
+    <label htmlFor={id} className="mb-2 block text-sm font-semibold text-[var(--text)]">
+      {label}
+    </label>
+    <select
+      id={id}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      className="app-field"
+    >
+      <option value="">Select {label.toLowerCase()}</option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+const FileUploadCard = ({
+  id,
+  label,
+  file,
+  previewUrl,
+  helperText,
+  required = false,
+  accept,
+  onDrop,
+  onFileChange,
+}: {
+  id: FileFieldKey;
+  label: string;
+  file: File | null;
+  previewUrl?: string | null;
+  helperText: string;
+  required?: boolean;
+  accept: string;
+  onDrop: (event: DragEvent<HTMLLabelElement>) => void;
+  onFileChange: (file: File) => void;
+}) => (
+  <label
+    htmlFor={id}
+    onDrop={onDrop}
+    onDragOver={(event) => event.preventDefault()}
+    className="block cursor-pointer rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-5 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--panel)]"
+  >
+    <input
+      id={id}
+      type="file"
+      accept={accept}
+      className="hidden"
+      onChange={(event) => {
+        const selectedFile = event.target.files?.[0];
+        if (selectedFile) {
+          onFileChange(selectedFile);
+        }
+      }}
+    />
+    <div className="flex items-start justify-between gap-4">
+      <div className="min-w-0">
+        <div className="mb-1 flex items-center gap-2">
+          <span className="text-sm font-semibold text-[var(--text)]">{label}</span>
+          {required && (
+            <span className="rounded-full bg-[var(--danger-bg)] px-2 py-1 text-[10px] text-[var(--danger-text)]">
+              Required
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-[var(--text-muted)]">{helperText}</p>
+        <p className="mt-2 truncate text-xs text-[var(--text-soft)]">
+          {file ? file.name : 'Drag and drop or click to upload'}
+        </p>
+      </div>
+      {previewUrl && fileLooksLikeImage(file) ? (
+        <img
+          src={previewUrl}
+          alt={label}
+          className="h-16 w-16 rounded-xl border border-[var(--border)] object-cover shadow-sm"
+        />
+      ) : (
+        <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--panel)] text-xs font-semibold text-[var(--text-soft)]">
+          {file?.type === 'application/pdf' ? 'PDF' : 'FILE'}
+        </div>
+      )}
+    </div>
+  </label>
+);
+
+const ReviewRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex items-center justify-between gap-4 py-2 text-sm">
+    <span className="text-[var(--text-muted)]">{label}</span>
+    <span className="text-right font-medium text-[var(--text)]">{value}</span>
+  </div>
+);
+
 const RegisterForm = () => {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -307,157 +483,6 @@ const RegisterForm = () => {
     }
   };
 
-  const ProgressBar = () => (
-    <div className="mb-8 flex items-center justify-between gap-2">
-      {STEPS.map((label, index) => (
-        <div key={label} className="flex flex-1 items-center">
-          <div className="flex min-w-0 flex-col items-center">
-            <div
-              className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
-                index < step
-                  ? 'bg-[var(--success-text)] text-white'
-                  : index === step
-                    ? 'scale-105 bg-[var(--primary)] text-white shadow-lg'
-                    : 'bg-[var(--panel-strong)] text-[var(--text-soft)]'
-              }`}
-            >
-              {index < step ? 'OK' : index + 1}
-            </div>
-            <span className={`mt-2 text-[11px] font-medium ${index <= step ? 'text-[var(--text)]' : 'text-[var(--text-soft)]'}`}>
-              {label}
-            </span>
-          </div>
-          {index < STEPS.length - 1 && (
-            <div className="mx-2 h-1 flex-1 overflow-hidden rounded-full bg-[var(--panel-strong)]">
-              <div className="h-full bg-[var(--success-text)] transition-all duration-300" style={{ width: index < step ? '100%' : '0%' }} />
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-
-  const TextInput = ({
-    id,
-    label,
-    value,
-    placeholder,
-    type = 'text',
-    onChange,
-  }: {
-    id: string;
-    label: string;
-    value: string;
-    placeholder: string;
-    type?: string;
-    onChange: (value: string) => void;
-  }) => (
-    <div>
-      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-[var(--text)]">{label}</label>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="app-field"
-        placeholder={placeholder}
-      />
-    </div>
-  );
-
-  const SelectInput = ({
-    id,
-    label,
-    value,
-    options,
-    onChange,
-  }: {
-    id: string;
-    label: string;
-    value: string;
-    options: readonly { value: string; label: string }[];
-    onChange: (value: string) => void;
-  }) => (
-    <div>
-      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-[var(--text)]">{label}</label>
-      <select
-        id={id}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="app-field"
-      >
-        <option value="">Select {label.toLowerCase()}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>{option.label}</option>
-        ))}
-      </select>
-    </div>
-  );
-
-  const FileUploadCard = ({
-    id,
-    label,
-    file,
-    previewUrl,
-    helperText,
-    required = false,
-    accept,
-    onFileChange,
-  }: {
-    id: FileFieldKey;
-    label: string;
-    file: File | null;
-    previewUrl?: string | null;
-    helperText: string;
-    required?: boolean;
-    accept: string;
-    onFileChange: (file: File) => void;
-  }) => (
-    <label
-      htmlFor={id}
-      onDrop={handleDrop(id)}
-      onDragOver={(event) => event.preventDefault()}
-      className="block cursor-pointer rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-5 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--panel)]"
-    >
-      <input
-        id={id}
-        type="file"
-        accept={accept}
-        className="hidden"
-        onChange={(event) => {
-          const selectedFile = event.target.files?.[0];
-          if (selectedFile) {
-            onFileChange(selectedFile);
-          }
-        }}
-      />
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="mb-1 flex items-center gap-2">
-            <span className="text-sm font-semibold text-[var(--text)]">{label}</span>
-            {required && <span className="rounded-full bg-[var(--danger-bg)] px-2 py-1 text-[10px] text-[var(--danger-text)]">Required</span>}
-          </div>
-          <p className="text-xs text-[var(--text-muted)]">{helperText}</p>
-          <p className="mt-2 truncate text-xs text-[var(--text-soft)]">{file ? file.name : 'Drag and drop or click to upload'}</p>
-        </div>
-        {previewUrl && fileLooksLikeImage(file) ? (
-          <img src={previewUrl} alt={label} className="h-16 w-16 rounded-xl border border-[var(--border)] object-cover shadow-sm" />
-        ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--panel)] text-xs font-semibold text-[var(--text-soft)]">
-            {file?.type === 'application/pdf' ? 'PDF' : 'FILE'}
-          </div>
-        )}
-      </div>
-    </label>
-  );
-
-  const ReviewRow = ({ label, value }: { label: string; value: string }) => (
-    <div className="flex items-center justify-between gap-4 py-2 text-sm">
-      <span className="text-[var(--text-muted)]">{label}</span>
-      <span className="text-right font-medium text-[var(--text)]">{value}</span>
-    </div>
-  );
-
   return (
     <AuthShell
       badge="Agency registration"
@@ -473,7 +498,7 @@ const RegisterForm = () => {
     >
       {error && <ErrorPopup message={error} onClose={() => setError(null)} />}
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
-          <ProgressBar />
+          <ProgressBar step={step} />
           <form onSubmit={handleSubmit}>
             {step === 0 && (
               <div className="grid md:grid-cols-2 gap-5 animate-stepIn">
@@ -498,8 +523,8 @@ const RegisterForm = () => {
                   <TextInput id="cnic" label="CNIC Number" value={form.cnic} placeholder="1234567890123" onChange={(value) => updateForm('cnic', value.replace(/\D/g, '').slice(0, 13))} />
                 </div>
                 <div className="grid md:grid-cols-2 gap-5">
-                  <FileUploadCard id="cnicImage" label="CNIC Image" file={files.cnicImage} previewUrl={previews.cnicImage} helperText="Upload a clear photo of the representative CNIC" required accept="image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('cnicImage', file)} />
-                  <FileUploadCard id="ownerPhoto" label="Owner Photo" file={files.ownerPhoto} previewUrl={previews.ownerPhoto} helperText="Upload a recent photo of the representative" required accept="image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('ownerPhoto', file)} />
+                  <FileUploadCard id="cnicImage" label="CNIC Image" file={files.cnicImage} previewUrl={previews.cnicImage} helperText="Upload a clear photo of the representative CNIC" required accept="image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('cnicImage')} onFileChange={(file) => handleFileSelect('cnicImage', file)} />
+                  <FileUploadCard id="ownerPhoto" label="Owner Photo" file={files.ownerPhoto} previewUrl={previews.ownerPhoto} helperText="Upload a recent photo of the representative" required accept="image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('ownerPhoto')} onFileChange={(file) => handleFileSelect('ownerPhoto', file)} />
                 </div>
               </div>
             )}
@@ -557,12 +582,12 @@ const RegisterForm = () => {
             {step === 3 && (
               <div className="space-y-5 animate-stepIn">
                 <div className="grid md:grid-cols-2 gap-5">
-                  <FileUploadCard id="licenseCertificate" label="Tourism License Certificate" file={files.licenseCertificate} helperText="Upload the regulator-issued tourism license certificate" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('licenseCertificate', file)} />
-                  <FileUploadCard id="ntnCertificate" label="NTN Certificate" file={files.ntnCertificate} helperText="Upload the FBR NTN certificate" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('ntnCertificate', file)} />
-                  <FileUploadCard id="officeProof" label="Office Ownership / Rent Proof" file={files.officeProof} helperText="Rent agreement, office ownership proof, or similar document" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('officeProof', file)} />
-                  <FileUploadCard id="bankCertificate" label="Bank Certificate" file={files.bankCertificate} helperText="Upload a bank certificate or equivalent business banking proof" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('bankCertificate', file)} />
-                  <FileUploadCard id="businessRegistrationProof" label="Business Registration Proof" file={files.businessRegistrationProof} helperText={isBusinessRegistrationRequired ? 'Required for company and partnership registrations' : 'Optional for sole proprietors'} required={isBusinessRegistrationRequired} accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('businessRegistrationProof', file)} />
-                  <FileUploadCard id="additionalSupportingDocument" label="Additional Supporting Document" file={files.additionalSupportingDocument} helperText="Optional extra document for any supporting material" accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onFileChange={(file) => handleFileSelect('additionalSupportingDocument', file)} />
+                  <FileUploadCard id="licenseCertificate" label="Tourism License Certificate" file={files.licenseCertificate} helperText="Upload the regulator-issued tourism license certificate" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('licenseCertificate')} onFileChange={(file) => handleFileSelect('licenseCertificate', file)} />
+                  <FileUploadCard id="ntnCertificate" label="NTN Certificate" file={files.ntnCertificate} helperText="Upload the FBR NTN certificate" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('ntnCertificate')} onFileChange={(file) => handleFileSelect('ntnCertificate', file)} />
+                  <FileUploadCard id="officeProof" label="Office Ownership / Rent Proof" file={files.officeProof} helperText="Rent agreement, office ownership proof, or similar document" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('officeProof')} onFileChange={(file) => handleFileSelect('officeProof', file)} />
+                  <FileUploadCard id="bankCertificate" label="Bank Certificate" file={files.bankCertificate} helperText="Upload a bank certificate or equivalent business banking proof" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('bankCertificate')} onFileChange={(file) => handleFileSelect('bankCertificate', file)} />
+                  <FileUploadCard id="businessRegistrationProof" label="Business Registration Proof" file={files.businessRegistrationProof} helperText={isBusinessRegistrationRequired ? 'Required for company and partnership registrations' : 'Optional for sole proprietors'} required={isBusinessRegistrationRequired} accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('businessRegistrationProof')} onFileChange={(file) => handleFileSelect('businessRegistrationProof', file)} />
+                  <FileUploadCard id="additionalSupportingDocument" label="Additional Supporting Document" file={files.additionalSupportingDocument} helperText="Optional extra document for any supporting material" accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('additionalSupportingDocument')} onFileChange={(file) => handleFileSelect('additionalSupportingDocument', file)} />
                 </div>
               </div>
             )}
