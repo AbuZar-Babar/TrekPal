@@ -9,6 +9,7 @@ import {
   updateHotelSchema,
 } from './hotels.types';
 import { hotelsService } from './hotels.service';
+import { buildUploadUrl } from '../../utils/upload-url.util';
 
 export class HotelsController {
   private async getActor(req: AuthRequest): Promise<{ role: string; agencyId?: string }> {
@@ -75,6 +76,27 @@ export class HotelsController {
     } catch (error: any) {
       const statusCode = error.message === 'Unauthorized' ? 401 : 400;
       sendError(res, error.message || 'Failed to create hotel', statusCode);
+    }
+  }
+
+  async uploadImage(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const actor = await this.getActor(req);
+      if (!actor.agencyId) {
+        sendError(res, 'Only agencies can upload hotel images', 403);
+        return;
+      }
+
+      if (!req.file) {
+        sendError(res, 'Image file is required', 400);
+        return;
+      }
+
+      const imageUrl = buildUploadUrl(req, `/uploads/hotels/${req.file.filename}`);
+      sendSuccess(res, { url: imageUrl }, 'Hotel image uploaded successfully', 201);
+    } catch (error: any) {
+      const statusCode = error.message === 'Unauthorized' ? 401 : 400;
+      sendError(res, error.message || 'Failed to upload hotel image', statusCode);
     }
   }
 

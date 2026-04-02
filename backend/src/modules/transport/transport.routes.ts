@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { transportController } from './transport.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
 import { requireAgency } from '../../middlewares/roleGuard.middleware';
+import { createMediaImageUpload } from '../../middlewares/upload.middleware';
 
 const router = Router();
 
@@ -15,6 +16,13 @@ router.use(requireAgency);
  * @access  Private (Agency only)
  */
 router.post('/', transportController.createVehicle.bind(transportController));
+
+/**
+ * @route   POST /api/transport/upload-image
+ * @desc    Upload a vehicle image
+ * @access  Private (Agency only)
+ */
+router.post('/upload-image', createMediaImageUpload('vehicles') as any, transportController.uploadImage.bind(transportController));
 
 /**
  * @route   GET /api/transport

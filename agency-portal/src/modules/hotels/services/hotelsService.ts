@@ -5,6 +5,19 @@ import { Hotel, PaginatedResponse } from '../../../shared/types';
  * Hotels Service - CRUD operations for hotel management
  */
 export const hotelsService = {
+    async uploadImage(file: File): Promise<string> {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await apiClient.post('/hotels/upload-image', formData);
+            return response.data.data.url;
+        } catch (error: any) {
+            const serverError = error.response?.data?.error || error.response?.data?.message;
+            throw new Error(serverError || 'Failed to upload hotel image');
+        }
+    },
+
     /**
      * Get all hotels for the agency
      */

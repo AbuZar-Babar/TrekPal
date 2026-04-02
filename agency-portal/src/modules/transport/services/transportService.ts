@@ -5,6 +5,19 @@ import { Vehicle, PaginatedResponse } from '../../../shared/types';
  * Transport Service
  */
 export const transportService = {
+  async uploadImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await apiClient.post('/transport/upload-image', formData);
+      return response.data.data.url;
+    } catch (error: any) {
+      const serverError = error.response?.data?.error || error.response?.data?.message;
+      throw new Error(serverError || 'Failed to upload vehicle image');
+    }
+  },
+
   /**
    * Get all vehicles for the agency
    */

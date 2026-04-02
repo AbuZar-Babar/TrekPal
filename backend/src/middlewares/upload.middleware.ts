@@ -1,5 +1,11 @@
+import fs from 'fs';
+import path from 'path';
 import multer from 'multer';
-import { isAllowedKycFile } from '../utils/kyc-file.util';
+import {
+  inferKycExtensionFromMimeType,
+  isAllowedKycFile,
+  resolveKycMimeType,
+} from '../utils/kyc-file.util';
 
 /**
  * Upload Middleware
@@ -45,3 +51,52 @@ export const uploadTravelerKycDocuments = upload.fields([
     { name: 'cnicFrontImage', maxCount: 1 },
     { name: 'selfieImage', maxCount: 1 },
 ]);
+
+const ALLOWED_MEDIA_IMAGE_MIME_TYPES = new Set<string>([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+const isAllowedMediaImage = (file: {
+  mimetype?: string | null;
+  originalname?: string | null;
+}): boolean => {
+  return ALLOWED_MEDIA_IMAGE_MIME_TYPES.has(
+    resolveKycMimeType(file.mimetype, file.originalname),
+  );
+};
+
+const ensureUploadDirectory = (directoryName: string): string => {
+  const absoluteDirectory = path.join(process.cwd(), 'uploads', directoryName);
+  fs.mkdirSync(absoluteDirectory, { recursive: true });
+  return absoluteDirectory;
+};
+
+const createMediaStorage = (directoryName: string): multer.StorageEngine =>
+  multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      cb(null, ensureUploadDirectory(directoryName));
+    },
+    filename: (_req, file, cb) => {
+      const originalExtension = path.extname(file.originalname || '').toLowerCase();
+      const extension = originalExtension || inferKycExtensionFromMimeType(file.mimetype);
+      const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
+      cb(null, fileName);
+    },
+  });
+
+export const createMediaImageUpload = (directoryName: string) =>
+  multer({
+    storage: createMediaStorage(directoryName),
+    fileFilter: (_req, file, cb) => {
+      if (isAllowedMediaImage(file)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only JPEG, PNG, and WebP image files are allowed'));
+      }
+    },
+    limits: {
+      fileSize: 10 * 1024 * 1024,
+    },
+  }).single('image');

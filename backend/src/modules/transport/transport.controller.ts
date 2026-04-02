@@ -3,12 +3,42 @@ import { AuthRequest } from '../../middlewares/auth.middleware';
 import { transportService } from './transport.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
 import { prisma } from '../../config/database';
+import { buildUploadUrl } from '../../utils/upload-url.util';
 
 /**
  * Transport Controller
  * Handles HTTP requests for transport/vehicles
  */
 export class TransportController {
+  async uploadImage(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'Unauthorized', 401);
+        return;
+      }
+
+      const agency = await prisma.agency.findUnique({
+        where: { authUid: req.user.uid },
+        select: { id: true },
+      });
+
+      if (!agency) {
+        sendError(res, 'Agency not found', 404);
+        return;
+      }
+
+      if (!req.file) {
+        sendError(res, 'Image file is required', 400);
+        return;
+      }
+
+      const imageUrl = buildUploadUrl(req, `/uploads/vehicles/${req.file.filename}`);
+      sendSuccess(res, { url: imageUrl }, 'Vehicle image uploaded successfully', 201);
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to upload vehicle image', 400);
+    }
+  }
+
   /**
    * Create a new vehicle
    * POST /api/transport

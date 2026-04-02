@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createVehicle, fetchVehicles, updateVehicle } from '../store/transportSlice';
 import { transportService } from '../services/transportService';
 import { formatCurrency, formatStatusLabel } from '../../../shared/utils/formatters';
+import ImageGalleryInput from '../../../shared/components/forms/ImageGalleryInput';
 
 interface VehicleFormData {
   type: string;
@@ -43,7 +44,6 @@ const VehicleForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<VehicleFormData>(initialState);
-  const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetchingVehicle, setFetchingVehicle] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,25 +86,6 @@ const VehicleForm = () => {
           : type === 'checkbox'
             ? (event.target as HTMLInputElement).checked
             : value,
-    }));
-  };
-
-  const handleAddImage = () => {
-    if (!imageUrl.trim() || formData.images.includes(imageUrl.trim())) {
-      return;
-    }
-
-    setFormData((current) => ({
-      ...current,
-      images: [...current.images, imageUrl.trim()],
-    }));
-    setImageUrl('');
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setFormData((current) => ({
-      ...current,
-      images: current.images.filter((_, imageIndex) => imageIndex !== index),
     }));
   };
 
@@ -305,45 +286,16 @@ const VehicleForm = () => {
             </div>
           </div>
 
+          <ImageGalleryInput
+            title="Images"
+            images={formData.images}
+            uploadImage={transportService.uploadImage}
+            onChange={(images) => setFormData((current) => ({ ...current, images }))}
+          />
+
           <div className="app-card px-6 py-6">
-            <div className="app-section-label">Images and availability</div>
-            <div className="mt-5 space-y-5">
-              <div className="grid gap-3 md:grid-cols-[1fr,auto]">
-                <input
-                  type="url"
-                  value={imageUrl}
-                  onChange={(event) => setImageUrl(event.target.value)}
-                  placeholder="Paste an image URL"
-                  className="app-field"
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      handleAddImage();
-                    }
-                  }}
-                />
-                <button type="button" onClick={handleAddImage} className="app-btn-secondary h-11 px-5 text-sm">
-                  Add image
-                </button>
-              </div>
-
-              {formData.images.length > 0 && (
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {formData.images.map((image, index) => (
-                    <div key={image} className="relative overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)]">
-                      <img src={image} alt="" className="h-36 w-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950/70 text-white"
-                      >
-                        x
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
+            <div className="app-section-label">Availability</div>
+            <div className="mt-5">
               <label className="flex items-center gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4">
                 <input
                   type="checkbox"

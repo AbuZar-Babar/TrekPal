@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { createHotel, fetchHotels, updateHotel } from '../store/hotelsSlice';
 import { hotelsService } from '../services/hotelsService';
+import ImageGalleryInput from '../../../shared/components/forms/ImageGalleryInput';
 
 const AMENITY_OPTIONS = [
   'WiFi',
@@ -41,7 +42,6 @@ const HotelForm = () => {
   const [loading, setLoading] = useState(false);
   const [fetchingHotel, setFetchingHotel] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState('');
 
   const [form, setForm] = useState<HotelFormData>({
     name: '',
@@ -85,20 +85,6 @@ const HotelForm = () => {
       amenities: current.amenities.includes(amenity)
         ? current.amenities.filter((item) => item !== amenity)
         : [...current.amenities, amenity],
-    }));
-  };
-
-  const handleAddImage = () => {
-    if (imageUrl.trim() && !form.images.includes(imageUrl.trim())) {
-      setForm((current) => ({ ...current, images: [...current.images, imageUrl.trim()] }));
-      setImageUrl('');
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setForm((current) => ({
-      ...current,
-      images: current.images.filter((_, imageIndex) => imageIndex !== index),
     }));
   };
 
@@ -266,45 +252,12 @@ const HotelForm = () => {
             </div>
           </div>
 
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Images</div>
-            <div className="mt-5 space-y-4">
-              <div className="grid gap-3 md:grid-cols-[1fr,auto]">
-                <input
-                  type="url"
-                  value={imageUrl}
-                  onChange={(event) => setImageUrl(event.target.value)}
-                  className="app-field"
-                  placeholder="Paste an image URL"
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      handleAddImage();
-                    }
-                  }}
-                />
-                <button type="button" onClick={handleAddImage} className="app-btn-secondary h-11 px-5 text-sm">
-                  Add image
-                </button>
-              </div>
-              {form.images.length > 0 && (
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {form.images.map((image, index) => (
-                    <div key={image} className="relative overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)]">
-                      <img src={image} alt="" className="h-36 w-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950/70 text-white"
-                      >
-                        x
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <ImageGalleryInput
+            title="Images"
+            images={form.images}
+            uploadImage={hotelsService.uploadImage}
+            onChange={(images) => setForm((current) => ({ ...current, images }))}
+          />
 
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <button
