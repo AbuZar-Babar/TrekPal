@@ -6,6 +6,7 @@ import {
   HotelResponse,
   UpdateHotelInput,
 } from './hotels.types';
+import { normalizeMediaStoragePaths, resolveMediaUrls } from '../../services/media-storage.service';
 
 const hotelSelect = {
   id: true,
@@ -25,7 +26,7 @@ const hotelSelect = {
   updatedAt: true,
 } as const;
 
-const mapHotel = (hotel: any): HotelResponse => ({
+const mapHotel = async (hotel: any): Promise<HotelResponse> => ({
   id: hotel.id,
   agencyId: hotel.agencyId,
   name: hotel.name,
@@ -37,7 +38,7 @@ const mapHotel = (hotel: any): HotelResponse => ({
   longitude: hotel.longitude,
   rating: hotel.rating,
   status: hotel.status,
-  images: hotel.images,
+  images: await resolveMediaUrls(hotel.images),
   amenities: hotel.amenities,
   createdAt: hotel.createdAt,
   updatedAt: hotel.updatedAt,
@@ -83,7 +84,7 @@ export class HotelsService {
     ]);
 
     return {
-      hotels: hotels.map(mapHotel),
+      hotels: await Promise.all(hotels.map((hotel) => mapHotel(hotel))),
       total,
       page,
       limit,
@@ -106,7 +107,7 @@ export class HotelsService {
       throw new Error('Hotel not found');
     }
 
-    return mapHotel(hotel);
+    return await mapHotel(hotel);
   }
 
   async createHotel(agencyId: string, input: CreateHotelInput): Promise<HotelResponse> {
@@ -120,14 +121,14 @@ export class HotelsService {
         country: input.country,
         latitude: input.latitude ?? null,
         longitude: input.longitude ?? null,
-        images: input.images ?? [],
+        images: normalizeMediaStoragePaths(input.images ?? []),
         amenities: input.amenities ?? [],
         status: APPROVAL_STATUS.APPROVED,
       },
       select: hotelSelect,
     });
 
-    return mapHotel(hotel);
+    return await mapHotel(hotel);
   }
 
   async updateHotel(id: string, agencyId: string, input: UpdateHotelInput): Promise<HotelResponse> {
@@ -150,14 +151,14 @@ export class HotelsService {
         ...(input.country !== undefined ? { country: input.country } : {}),
         ...(input.latitude !== undefined ? { latitude: input.latitude ?? null } : {}),
         ...(input.longitude !== undefined ? { longitude: input.longitude ?? null } : {}),
-        ...(input.images !== undefined ? { images: input.images } : {}),
+        ...(input.images !== undefined ? { images: normalizeMediaStoragePaths(input.images) } : {}),
         ...(input.amenities !== undefined ? { amenities: input.amenities } : {}),
         status: APPROVAL_STATUS.APPROVED,
       },
       select: hotelSelect,
     });
 
-    return mapHotel(hotel);
+    return await mapHotel(hotel);
   }
 
   async deleteHotel(id: string, agencyId: string): Promise<void> {

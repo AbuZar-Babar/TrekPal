@@ -3,7 +3,7 @@ import { AuthRequest } from '../../middlewares/auth.middleware';
 import { transportService } from './transport.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
 import { prisma } from '../../config/database';
-import { buildUploadUrl } from '../../utils/upload-url.util';
+import { buildMediaObjectPath, createSignedMediaUrl, uploadMediaFile } from '../../services/media-storage.service';
 
 /**
  * Transport Controller
@@ -32,7 +32,14 @@ export class TransportController {
         return;
       }
 
-      const imageUrl = buildUploadUrl(req, `/uploads/vehicles/${req.file.filename}`);
+      const objectPath = buildMediaObjectPath(
+        `vehicles/${agency.id}`,
+        `${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+        req.file.mimetype,
+        req.file.originalname,
+      );
+      await uploadMediaFile(req.file.buffer, req.file.mimetype, objectPath);
+      const imageUrl = await createSignedMediaUrl(objectPath);
       sendSuccess(res, { url: imageUrl }, 'Vehicle image uploaded successfully', 201);
     } catch (error: any) {
       sendError(res, error.message || 'Failed to upload vehicle image', 400);

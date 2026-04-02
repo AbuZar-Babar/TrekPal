@@ -1,8 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import multer from 'multer';
 import {
-  inferKycExtensionFromMimeType,
   isAllowedKycFile,
   resolveKycMimeType,
 } from '../utils/kyc-file.util';
@@ -67,28 +64,9 @@ const isAllowedMediaImage = (file: {
   );
 };
 
-const ensureUploadDirectory = (directoryName: string): string => {
-  const absoluteDirectory = path.join(process.cwd(), 'uploads', directoryName);
-  fs.mkdirSync(absoluteDirectory, { recursive: true });
-  return absoluteDirectory;
-};
-
-const createMediaStorage = (directoryName: string): multer.StorageEngine =>
-  multer.diskStorage({
-    destination: (_req, _file, cb) => {
-      cb(null, ensureUploadDirectory(directoryName));
-    },
-    filename: (_req, file, cb) => {
-      const originalExtension = path.extname(file.originalname || '').toLowerCase();
-      const extension = originalExtension || inferKycExtensionFromMimeType(file.mimetype);
-      const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
-      cb(null, fileName);
-    },
-  });
-
-export const createMediaImageUpload = (directoryName: string) =>
+export const createMediaImageUpload = (_directoryName: string) =>
   multer({
-    storage: createMediaStorage(directoryName),
+    storage: multer.memoryStorage(),
     fileFilter: (_req, file, cb) => {
       if (isAllowedMediaImage(file)) {
         cb(null, true);

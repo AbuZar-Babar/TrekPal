@@ -15,6 +15,7 @@ import {
   TRAVELER_KYC_STATUS,
 } from '../../config/constants';
 import { createSignedKycUrl, deleteKycFile, isHttpUrl } from '../../services/kyc-storage.service';
+import { resolveMediaUrls } from '../../services/media-storage.service';
 import {
   AgencyResponse,
   HotelResponse,
@@ -122,6 +123,15 @@ export class AdminService {
       hotelsCount: agency.hotelsCount || 0,
       vehiclesCount: agency.vehiclesCount || 0,
     };
+  }
+
+  private async resolveMediaImages(values: string[] = []): Promise<string[]> {
+    try {
+      return await resolveMediaUrls(values);
+    } catch (error) {
+      console.error('[Admin Service] Failed to resolve media URLs:', error);
+      return values;
+    }
   }
 
   private async mapUserResponse(user: any): Promise<UserResponse> {
@@ -314,22 +324,24 @@ export class AdminService {
       this.hotelRepo.count(filters),
     ]);
 
-    const hotelsResponse: HotelResponse[] = hotels.map((hotel) => ({
-      id: hotel.id,
-      agencyId: hotel.agencyId,
-      agencyName: hotel.agencyName || '',
-      name: hotel.name,
-      description: hotel.description,
-      address: hotel.address,
-      city: hotel.city,
-      country: hotel.country,
-      rating: hotel.rating,
-      status: hotel.status,
-      images: hotel.images,
-      amenities: hotel.amenities,
-      createdAt: hotel.createdAt,
-      roomsCount: hotel.roomsCount || 0,
-    }));
+    const hotelsResponse = await Promise.all(
+      hotels.map(async (hotel) => ({
+        id: hotel.id,
+        agencyId: hotel.agencyId,
+        agencyName: hotel.agencyName || '',
+        name: hotel.name,
+        description: hotel.description,
+        address: hotel.address,
+        city: hotel.city,
+        country: hotel.country,
+        rating: hotel.rating,
+        status: hotel.status,
+        images: await this.resolveMediaImages(hotel.images),
+        amenities: hotel.amenities,
+        createdAt: hotel.createdAt,
+        roomsCount: hotel.roomsCount || 0,
+      }))
+    );
 
     return {
       hotels: hotelsResponse,
@@ -360,7 +372,7 @@ export class AdminService {
       country: hotelWithRelations.country,
       rating: hotelWithRelations.rating,
       status: hotelWithRelations.status,
-      images: hotelWithRelations.images,
+      images: await this.resolveMediaImages(hotelWithRelations.images),
       amenities: hotelWithRelations.amenities,
       createdAt: hotelWithRelations.createdAt,
       roomsCount: (hotelWithRelations as any).roomsCount || 0,
@@ -388,7 +400,7 @@ export class AdminService {
       country: hotelWithRelations.country,
       rating: hotelWithRelations.rating,
       status: hotelWithRelations.status,
-      images: hotelWithRelations.images,
+      images: await this.resolveMediaImages(hotelWithRelations.images),
       amenities: hotelWithRelations.amenities,
       createdAt: hotelWithRelations.createdAt,
       roomsCount: (hotelWithRelations as any).roomsCount || 0,
@@ -410,21 +422,23 @@ export class AdminService {
       this.vehicleRepo.count(filters),
     ]);
 
-    const vehiclesResponse: VehicleResponse[] = vehicles.map((vehicle) => ({
-      id: vehicle.id,
-      agencyId: vehicle.agencyId,
-      agencyName: vehicle.agencyName || '',
-      type: vehicle.type,
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      capacity: vehicle.capacity,
-      pricePerDay: vehicle.pricePerDay,
-      status: vehicle.status,
-      isAvailable: vehicle.isAvailable,
-      images: vehicle.images,
-      createdAt: vehicle.createdAt,
-    }));
+    const vehiclesResponse = await Promise.all(
+      vehicles.map(async (vehicle) => ({
+        id: vehicle.id,
+        agencyId: vehicle.agencyId,
+        agencyName: vehicle.agencyName || '',
+        type: vehicle.type,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+        capacity: vehicle.capacity,
+        pricePerDay: vehicle.pricePerDay,
+        status: vehicle.status,
+        isAvailable: vehicle.isAvailable,
+        images: await this.resolveMediaImages(vehicle.images),
+        createdAt: vehicle.createdAt,
+      }))
+    );
 
     return {
       vehicles: vehiclesResponse,
@@ -456,7 +470,7 @@ export class AdminService {
       pricePerDay: vehicleWithRelations.pricePerDay,
       status: vehicleWithRelations.status,
       isAvailable: vehicleWithRelations.isAvailable,
-      images: vehicleWithRelations.images,
+      images: await this.resolveMediaImages(vehicleWithRelations.images),
       createdAt: vehicleWithRelations.createdAt,
     };
   }
@@ -483,7 +497,7 @@ export class AdminService {
       pricePerDay: vehicleWithRelations.pricePerDay,
       status: vehicleWithRelations.status,
       isAvailable: vehicleWithRelations.isAvailable,
-      images: vehicleWithRelations.images,
+      images: await this.resolveMediaImages(vehicleWithRelations.images),
       createdAt: vehicleWithRelations.createdAt,
     };
   }

@@ -5,12 +5,45 @@ import {
   UpdateVehicleInput,
   VehicleResponse,
 } from './transport.types';
+import { normalizeMediaStoragePaths, resolveMediaUrls } from '../../services/media-storage.service';
 
 /**
  * Transport Service
  * Handles vehicle/transport business logic
  */
 export class TransportService {
+  private async mapVehicleResponse(vehicle: {
+    id: string;
+    agencyId: string;
+    agency: { name: string };
+    type: string;
+    make: string;
+    model: string;
+    year: number;
+    capacity: number;
+    pricePerDay: number;
+    status: string;
+    isAvailable: boolean;
+    images: string[];
+    createdAt: Date;
+  }): Promise<VehicleResponse> {
+    return {
+      id: vehicle.id,
+      agencyId: vehicle.agencyId,
+      agencyName: vehicle.agency.name,
+      type: vehicle.type,
+      make: vehicle.make,
+      model: vehicle.model,
+      year: vehicle.year,
+      capacity: vehicle.capacity,
+      pricePerDay: vehicle.pricePerDay,
+      status: vehicle.status,
+      isAvailable: vehicle.isAvailable,
+      images: await resolveMediaUrls(vehicle.images),
+      createdAt: vehicle.createdAt,
+    };
+  }
+
   /**
    * Create a new vehicle (for agency)
    */
@@ -24,7 +57,7 @@ export class TransportService {
         year: input.year,
         capacity: input.capacity,
         pricePerDay: input.pricePerDay,
-        images: input.images || [],
+        images: normalizeMediaStoragePaths(input.images || []),
         status: APPROVAL_STATUS.APPROVED,
         isAvailable: input.isAvailable ?? true,
       },
@@ -37,21 +70,7 @@ export class TransportService {
       },
     });
 
-    return {
-      id: vehicle.id,
-      agencyId: vehicle.agencyId,
-      agencyName: vehicle.agency.name,
-      type: vehicle.type,
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      capacity: vehicle.capacity,
-      pricePerDay: vehicle.pricePerDay,
-      status: vehicle.status,
-      isAvailable: vehicle.isAvailable,
-      images: vehicle.images,
-      createdAt: vehicle.createdAt,
-    };
+    return await this.mapVehicleResponse(vehicle);
   }
 
   /**
@@ -99,21 +118,9 @@ export class TransportService {
       prisma.vehicle.count({ where }),
     ]);
 
-    const vehiclesResponse: VehicleResponse[] = vehicles.map((vehicle) => ({
-      id: vehicle.id,
-      agencyId: vehicle.agencyId,
-      agencyName: vehicle.agency.name,
-      type: vehicle.type,
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      capacity: vehicle.capacity,
-      pricePerDay: vehicle.pricePerDay,
-      status: vehicle.status,
-      isAvailable: vehicle.isAvailable,
-      images: vehicle.images,
-      createdAt: vehicle.createdAt,
-    }));
+    const vehiclesResponse = await Promise.all(
+      vehicles.map((vehicle) => this.mapVehicleResponse(vehicle)),
+    );
 
     return {
       vehicles: vehiclesResponse,
@@ -147,21 +154,7 @@ export class TransportService {
       throw new Error('Vehicle not found');
     }
 
-    return {
-      id: vehicle.id,
-      agencyId: vehicle.agencyId,
-      agencyName: vehicle.agency.name,
-      type: vehicle.type,
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      capacity: vehicle.capacity,
-      pricePerDay: vehicle.pricePerDay,
-      status: vehicle.status,
-      isAvailable: vehicle.isAvailable,
-      images: vehicle.images,
-      createdAt: vehicle.createdAt,
-    };
+    return await this.mapVehicleResponse(vehicle);
   }
 
   /**
@@ -192,7 +185,7 @@ export class TransportService {
     if (input.year !== undefined) updateData.year = input.year;
     if (input.capacity !== undefined) updateData.capacity = input.capacity;
     if (input.pricePerDay !== undefined) updateData.pricePerDay = input.pricePerDay;
-    if (input.images !== undefined) updateData.images = input.images;
+    if (input.images !== undefined) updateData.images = normalizeMediaStoragePaths(input.images);
     if (input.isAvailable !== undefined) updateData.isAvailable = input.isAvailable;
     updateData.status = APPROVAL_STATUS.APPROVED;
 
@@ -208,21 +201,7 @@ export class TransportService {
       },
     });
 
-    return {
-      id: vehicle.id,
-      agencyId: vehicle.agencyId,
-      agencyName: vehicle.agency.name,
-      type: vehicle.type,
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      capacity: vehicle.capacity,
-      pricePerDay: vehicle.pricePerDay,
-      status: vehicle.status,
-      isAvailable: vehicle.isAvailable,
-      images: vehicle.images,
-      createdAt: vehicle.createdAt,
-    };
+    return await this.mapVehicleResponse(vehicle);
   }
 
   /**

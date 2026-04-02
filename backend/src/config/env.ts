@@ -17,6 +17,7 @@ const envSchema = z.object({
   SUPABASE_URL: z.string().url().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   SUPABASE_STORAGE_BUCKET_KYC: z.string().min(1).default('kyc-private'),
+  SUPABASE_STORAGE_BUCKET_MEDIA: z.string().min(1).optional(),
   SUPABASE_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
 });
@@ -34,6 +35,7 @@ const parsedEnv = envSchema.parse({
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   SUPABASE_STORAGE_BUCKET_KYC: process.env.SUPABASE_STORAGE_BUCKET_KYC,
+  SUPABASE_STORAGE_BUCKET_MEDIA: process.env.SUPABASE_STORAGE_BUCKET_MEDIA,
   SUPABASE_SIGNED_URL_TTL_SECONDS: process.env.SUPABASE_SIGNED_URL_TTL_SECONDS,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
 });
@@ -60,6 +62,7 @@ export const env = {
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
   SUPABASE_STORAGE_BUCKET_KYC: string;
+  SUPABASE_STORAGE_BUCKET_MEDIA?: string;
   SUPABASE_SIGNED_URL_TTL_SECONDS: number;
   CORS_ORIGIN: string;
 };
