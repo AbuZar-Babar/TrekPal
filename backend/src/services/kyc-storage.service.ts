@@ -1,5 +1,6 @@
 import { env } from '../config/env';
 import { getSupabaseAdminClient } from '../config/supabase';
+import { resolveKycMimeType } from '../utils/kyc-file.util';
 
 export const isHttpUrl = (value: string | null | undefined): value is string => {
   if (!value) {
@@ -14,8 +15,9 @@ export const uploadKycFile = async (
   objectPath: string
 ): Promise<string> => {
   const supabase = getSupabaseAdminClient();
+  const resolvedMimeType = resolveKycMimeType(mimeType, objectPath);
   const { error } = await supabase.storage.from(env.SUPABASE_STORAGE_BUCKET_KYC).upload(objectPath, buffer, {
-    contentType: mimeType || 'application/octet-stream',
+    contentType: resolvedMimeType,
     cacheControl: '3600',
     upsert: true,
   });

@@ -93,11 +93,13 @@ class KycDocument {
     required this.fieldName,
     required this.fileName,
     required this.bytes,
+    required this.mimeType,
   });
 
   final String fieldName;
   final String fileName;
   final List<int> bytes;
+  final String mimeType;
 }
 
 class TravelerKycSubmission {

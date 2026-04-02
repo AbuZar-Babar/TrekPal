@@ -62,11 +62,13 @@ class AuthRemoteDataSource {
           fieldName: submission.cnicFrontImage.fieldName,
           fileName: submission.cnicFrontImage.fileName,
           bytes: submission.cnicFrontImage.bytes,
+          mimeType: submission.cnicFrontImage.mimeType,
         ),
         MultipartFilePayload(
           fieldName: submission.selfieImage.fieldName,
           fileName: submission.selfieImage.fileName,
           bytes: submission.selfieImage.bytes,
+          mimeType: submission.selfieImage.mimeType,
         ),
       ],
     );

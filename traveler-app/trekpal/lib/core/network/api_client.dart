@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -14,11 +15,25 @@ class MultipartFilePayload {
     required this.fieldName,
     required this.fileName,
     required this.bytes,
+    this.mimeType,
   });
 
   final String fieldName;
   final String fileName;
   final List<int> bytes;
+  final String? mimeType;
+}
+
+MediaType? _parseMultipartContentType(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return null;
+  }
+
+  try {
+    return MediaType.parse(value.trim());
+  } catch (_) {
+    return null;
+  }
 }
 
 class ApiClient {
@@ -75,6 +90,7 @@ class ApiClient {
             file.fieldName,
             file.bytes,
             filename: file.fileName,
+            contentType: _parseMultipartContentType(file.mimeType),
           ),
         );
       }

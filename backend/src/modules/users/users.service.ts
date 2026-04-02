@@ -11,23 +11,15 @@ import {
   uploadKycFile,
 } from '../../services/kyc-storage.service';
 import {
+  inferKycExtensionFromMimeType,
+  resolveKycMimeType,
+} from '../../utils/kyc-file.util';
+import {
   normalizeTravelerKycStatus,
   type SubmitTravelerKycInput,
   type UpdateProfileInput,
   type UserProfileResponse,
 } from './users.types';
-
-const inferExtensionFromMimeType = (mimeType: string): string => {
-  const map: Record<string, string> = {
-    'image/jpeg': '.jpg',
-    'image/jpg': '.jpg',
-    'image/png': '.png',
-    'image/webp': '.webp',
-    'application/pdf': '.pdf',
-  };
-
-  return map[mimeType] || '.bin';
-};
 
 const buildTravelerKycObjectPath = (
   userId: string,
@@ -36,7 +28,8 @@ const buildTravelerKycObjectPath = (
   file: Express.Multer.File,
 ): string => {
   const originalExt = path.extname(file.originalname || '').toLowerCase();
-  const extension = originalExt || inferExtensionFromMimeType(file.mimetype);
+  const extension =
+    originalExt || inferKycExtensionFromMimeType(file.mimetype);
   return `travelers/${userId}/${uploadBatchId}/${fieldName}${extension}`;
 };
 
@@ -187,7 +180,10 @@ export class UsersService {
       );
       await uploadKycFile(
         files.cnicFrontImage.buffer,
-        files.cnicFrontImage.mimetype,
+        resolveKycMimeType(
+          files.cnicFrontImage.mimetype,
+          files.cnicFrontImage.originalname,
+        ),
         cnicFrontImagePath,
       );
       uploadedObjectPaths.push(cnicFrontImagePath);
@@ -200,7 +196,10 @@ export class UsersService {
       );
       await uploadKycFile(
         files.selfieImage.buffer,
-        files.selfieImage.mimetype,
+        resolveKycMimeType(
+          files.selfieImage.mimetype,
+          files.selfieImage.originalname,
+        ),
         selfieImagePath,
       );
       uploadedObjectPaths.push(selfieImagePath);

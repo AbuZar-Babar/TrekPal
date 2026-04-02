@@ -17,6 +17,12 @@ class TravelerKycPage extends StatefulWidget {
 }
 
 class _TravelerKycPageState extends State<TravelerKycPage> {
+  static const Set<String> _allowedTravelerImageMimeTypes = <String>{
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+  };
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _cnicController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -30,6 +36,8 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
   DateTime? _dateOfBirth;
   XFile? _cnicFrontImage;
   XFile? _selfieImage;
+  String? _cnicFrontMimeType;
+  String? _selfieMimeType;
   Uint8List? _cnicFrontPreviewBytes;
   Uint8List? _selfiePreviewBytes;
 
@@ -132,16 +140,61 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
       return;
     }
 
+    final String? mimeType = _resolveTravelerImageMimeType(picked);
+    if (mimeType == null) {
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Use a JPG, PNG, or WebP image for traveler KYC.'),
+        ),
+      );
+      return;
+    }
+
     final Uint8List bytes = await picked.readAsBytes();
     setState(() {
       if (isCnicFront) {
         _cnicFrontImage = picked;
+        _cnicFrontMimeType = mimeType;
         _cnicFrontPreviewBytes = bytes;
       } else {
         _selfieImage = picked;
+        _selfieMimeType = mimeType;
         _selfiePreviewBytes = bytes;
       }
     });
+  }
+
+  String? _resolveTravelerImageMimeType(XFile file) {
+    final String normalizedMimeType = (file.mimeType ?? '')
+        .trim()
+        .toLowerCase();
+    if (normalizedMimeType == 'image/jpg' ||
+        normalizedMimeType == 'image/pjpeg') {
+      return 'image/jpeg';
+    }
+    if (normalizedMimeType == 'image/x-png') {
+      return 'image/png';
+    }
+    if (_allowedTravelerImageMimeTypes.contains(normalizedMimeType)) {
+      return normalizedMimeType;
+    }
+
+    final String lowerName = file.name.toLowerCase();
+    if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg')) {
+      return 'image/jpeg';
+    }
+    if (lowerName.endsWith('.png')) {
+      return 'image/png';
+    }
+    if (lowerName.endsWith('.webp')) {
+      return 'image/webp';
+    }
+
+    return null;
   }
 
   Future<void> _submit() async {
@@ -162,11 +215,27 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
       );
       return;
     }
+    if (_cnicFrontMimeType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Re-select the CNIC image as JPG, PNG, or WebP.'),
+        ),
+      );
+      return;
+    }
 
     if (_selfieImage == null || _selfiePreviewBytes == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Upload a clear selfie')));
+      return;
+    }
+    if (_selfieMimeType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Re-select the selfie as JPG, PNG, or WebP.'),
+        ),
+      );
       return;
     }
 
@@ -186,11 +255,13 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
             fieldName: 'cnicFrontImage',
             fileName: _cnicFrontImage!.name,
             bytes: _cnicFrontPreviewBytes!,
+            mimeType: _cnicFrontMimeType!,
           ),
           selfieImage: KycDocument(
             fieldName: 'selfieImage',
             fileName: _selfieImage!.name,
             bytes: _selfiePreviewBytes!,
+            mimeType: _selfieMimeType!,
           ),
         ),
       );

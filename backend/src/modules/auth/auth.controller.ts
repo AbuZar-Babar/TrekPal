@@ -6,6 +6,10 @@ import { sendSuccess, sendError } from '../../utils/response.util';
 import { getErrorMessage } from '../../utils/error.util';
 import { deleteKycFile, uploadKycFile } from '../../services/kyc-storage.service';
 import { AgencyRegisterInput } from './auth.types';
+import {
+  inferKycExtensionFromMimeType,
+  resolveKycMimeType,
+} from '../../utils/kyc-file.util';
 
 type AgencyApplicationFileField =
   | 'cnicImage'
@@ -56,24 +60,14 @@ const requiredAgencyFileFields = (input: AgencyRegisterInput): AgencyApplication
   return required;
 };
 
-const inferExtensionFromMimeType = (mimeType: string): string => {
-  const map: Record<string, string> = {
-    'image/jpeg': '.jpg',
-    'image/jpg': '.jpg',
-    'image/png': '.png',
-    'image/webp': '.webp',
-    'application/pdf': '.pdf',
-  };
-  return map[mimeType] || '.bin';
-};
-
 const buildKycObjectPath = (
   uploadBatchId: string,
   fieldName: string,
   file: Express.Multer.File
 ): string => {
   const originalExt = path.extname(file.originalname || '').toLowerCase();
-  const extension = originalExt || inferExtensionFromMimeType(file.mimetype);
+  const extension =
+    originalExt || inferKycExtensionFromMimeType(file.mimetype);
   return `agencies/pending/${uploadBatchId}/${fieldName}${extension}`;
 };
 
@@ -152,7 +146,11 @@ export class AuthController {
         }
 
         const objectPath = buildKycObjectPath(uploadBatchId, fieldName, file);
-        await uploadKycFile(file.buffer, file.mimetype, objectPath);
+        await uploadKycFile(
+          file.buffer,
+          resolveKycMimeType(file.mimetype, file.originalname),
+          objectPath,
+        );
         uploadedObjectPaths.push(objectPath);
         uploadedDocuments[fieldName] = objectPath;
       }

@@ -1,4 +1,5 @@
 import multer from 'multer';
+import { isAllowedKycFile } from '../utils/kyc-file.util';
 
 /**
  * Upload Middleware
@@ -7,8 +8,7 @@ import multer from 'multer';
 
 // File filter - allow images and PDFs for agency application documents
 const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'application/pdf'];
-    if (allowedTypes.includes(file.mimetype)) {
+    if (isAllowedKycFile(file)) {
         cb(null, true);
     } else {
         cb(new Error('Only PDF, JPEG, PNG, and WebP files are allowed'));
