@@ -27,6 +27,7 @@ class ApiConstants {
   static const String tripRequests = '/trip-requests';
   static const String bids = '/bids';
   static const String bookings = '/bookings';
+  static const String packages = '/packages';
 
   static String tripRequestById(String id) => '$tripRequests/$id';
   static String tripRequestBids(String tripRequestId) =>
@@ -35,6 +36,7 @@ class ApiConstants {
   static String counterOffer(String bidId) => '$bids/$bidId/counteroffer';
   static String acceptBid(String bidId) => '$bids/$bidId/accept';
   static String bookingById(String bookingId) => '$bookings/$bookingId';
+  static String applyPackage(String packageId) => '$packages/$packageId/apply';
 
   static String get connectionHint {
     if (kIsWeb) {

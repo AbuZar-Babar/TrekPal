@@ -2,6 +2,12 @@
  * Shared TypeScript types
  */
 
+export type TravelerKycStatus =
+  | 'NOT_SUBMITTED'
+  | 'PENDING'
+  | 'VERIFIED'
+  | 'REJECTED';
+
 export interface User {
   id: string;
   authUid: string;
@@ -82,8 +88,12 @@ export interface UserProfile {
   name: string | null;
   phone: string | null;
   cnic: string | null;
+  city: string | null;
+  residentialAddress: string | null;
   cnicVerified: boolean;
-  travelerKycStatus: 'NOT_SUBMITTED' | 'VERIFIED' | string;
+  travelerKycStatus: TravelerKycStatus | string;
+  cnicFrontImageUrl: string | null;
+  selfieImageUrl: string | null;
   kycSubmittedAt: string | null;
   kycVerifiedAt: string | null;
   createdAt: string;
@@ -96,6 +106,8 @@ export interface DashboardStats {
   totalAgencies: number;
   approvedAgencies: number;
   pendingAgencies: number;
+  pendingTravelers: number;
+  verifiedTravelers: number;
   totalHotels: number;
   approvedHotels: number;
   pendingHotels: number;
@@ -115,4 +127,23 @@ export interface PaginatedResponse<T> {
   total: number;
   page: number;
   limit: number;
+}
+
+export interface AgencyUpdateInput {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  address?: string | null;
+  officeCity?: string | null;
+  jurisdiction?: string | null;
+  ownerName?: string | null;
+}
+
+export interface TravelerUpdateInput {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  cnic?: string | null;
+  city?: string | null;
+  residentialAddress?: string | null;
 }

@@ -1,3 +1,5 @@
+import '../../../../core/models/participant_preview.dart';
+
 class BookingEntity {
   const BookingEntity({
     required this.id,
@@ -8,6 +10,8 @@ class BookingEntity {
     required this.endDate,
     required this.createdAt,
     required this.updatedAt,
+    this.packageTravelerCount,
+    this.packageParticipants = const <ParticipantPreview>[],
     this.userName,
     this.agencyId,
     this.agencyName,
@@ -37,5 +41,7 @@ class BookingEntity {
   final DateTime endDate;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int? packageTravelerCount;
+  final List<ParticipantPreview> packageParticipants;
   final String? destination;
 }

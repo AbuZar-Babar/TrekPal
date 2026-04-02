@@ -45,9 +45,26 @@ export type ApprovalStatus = typeof APPROVAL_STATUS[keyof typeof APPROVAL_STATUS
 
 export const TRAVELER_KYC_STATUS = {
   NOT_SUBMITTED: 'NOT_SUBMITTED',
+  PENDING: 'PENDING',
   VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
 } as const;
 
 export type TravelerKycStatus =
   typeof TRAVELER_KYC_STATUS[keyof typeof TRAVELER_KYC_STATUS];
+
+export const normalizeTravelerKycStatus = (
+  value: unknown,
+): TravelerKycStatus => {
+  switch (value) {
+    case TRAVELER_KYC_STATUS.PENDING:
+      return TRAVELER_KYC_STATUS.PENDING;
+    case TRAVELER_KYC_STATUS.VERIFIED:
+      return TRAVELER_KYC_STATUS.VERIFIED;
+    case TRAVELER_KYC_STATUS.REJECTED:
+      return TRAVELER_KYC_STATUS.REJECTED;
+    default:
+      return TRAVELER_KYC_STATUS.NOT_SUBMITTED;
+  }
+};
 

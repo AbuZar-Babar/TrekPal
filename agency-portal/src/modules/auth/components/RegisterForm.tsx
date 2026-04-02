@@ -1,12 +1,23 @@
-import { DragEvent, useState } from 'react';
+import { DragEvent, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { signup } from '../store/authSlice';
+
 import AuthShell from './AuthShell';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
-import ErrorPopup from '../../../shared/components/ErrorPopup';
+import { signup } from '../store/authSlice';
+import {
+  ValidationErrors,
+  validateCnic,
+  validateEmail,
+  validateFilePresent,
+  validateMinLength,
+  validatePassword,
+  validatePhone,
+  validatePositiveNumber,
+  validateRequired,
+} from '../../../shared/utils/validators';
 
-const STEPS = ['Account', 'Representative', 'Business', 'Documents', 'Review'];
+const STEPS = ['Account', 'Owner', 'Business', 'Docs'];
 const FIELD_OF_OPERATIONS = [
   'Domestic Tours',
   'Inbound Tours',
@@ -101,53 +112,22 @@ const initialFileState: FileState = {
 const labelForJurisdiction = (jurisdiction: Jurisdiction | '') =>
   jurisdiction ? `${jurisdiction} Tourism License Number` : 'Tourism License Number';
 
-const formatCurrency = (value: string) => {
-  const amount = Number(value || 0);
-  if (Number.isNaN(amount) || amount <= 0) {
-    return 'PKR 0';
-  }
-
-  return new Intl.NumberFormat('en-PK', {
-    style: 'currency',
-    currency: 'PKR',
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
-
 const fileLooksLikeImage = (file: File | null) => !!file && IMAGE_MIME_TYPES.includes(file.type);
 
-const ProgressBar = ({ step }: { step: number }) => (
-  <div className="mb-8 flex items-center justify-between gap-2">
+const StepIndicator = ({ currentStep }: { currentStep: number }) => (
+  <div className="mb-8 grid grid-cols-4 gap-3">
     {STEPS.map((label, index) => (
-      <div key={label} className="flex flex-1 items-center">
-        <div className="flex min-w-0 flex-col items-center">
-          <div
-            className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
-              index < step
-                ? 'bg-[var(--success-text)] text-white'
-                : index === step
-                  ? 'scale-105 bg-[var(--primary)] text-white shadow-lg'
-                  : 'bg-[var(--panel-strong)] text-[var(--text-soft)]'
-            }`}
-          >
-            {index < step ? 'OK' : index + 1}
-          </div>
-          <span
-            className={`mt-2 text-[11px] font-medium ${
-              index <= step ? 'text-[var(--text)]' : 'text-[var(--text-soft)]'
-            }`}
-          >
-            {label}
-          </span>
-        </div>
-        {index < STEPS.length - 1 && (
-          <div className="mx-2 h-1 flex-1 overflow-hidden rounded-full bg-[var(--panel-strong)]">
-            <div
-              className="h-full bg-[var(--success-text)] transition-all duration-300"
-              style={{ width: index < step ? '100%' : '0%' }}
-            />
-          </div>
-        )}
+      <div
+        key={label}
+        className={`rounded-[18px] border px-3 py-3 text-center text-sm font-medium ${
+          index === currentStep
+            ? 'border-[var(--primary)] bg-[var(--panel)] text-[var(--primary)]'
+            : index < currentStep
+              ? 'border-[var(--success-bg)] bg-[var(--success-bg)] text-[var(--success-text)]'
+              : 'border-[var(--border)] bg-[var(--panel-subtle)] text-[var(--text-soft)]'
+        }`}
+      >
+        {label}
       </div>
     ))}
   </div>
@@ -159,6 +139,7 @@ const TextInput = ({
   value,
   placeholder,
   type = 'text',
+  error,
   onChange,
 }: {
   id: string;
@@ -166,6 +147,7 @@ const TextInput = ({
   value: string;
   placeholder: string;
   type?: string;
+  error?: string;
   onChange: (value: string) => void;
 }) => (
   <div>
@@ -180,6 +162,7 @@ const TextInput = ({
       className="app-field"
       placeholder={placeholder}
     />
+    {error && <p className="mt-2 text-sm text-[var(--danger-text)]">{error}</p>}
   </div>
 );
 
@@ -188,12 +171,14 @@ const SelectInput = ({
   label,
   value,
   options,
+  error,
   onChange,
 }: {
   id: string;
   label: string;
   value: string;
   options: readonly { value: string; label: string }[];
+  error?: string;
   onChange: (value: string) => void;
 }) => (
   <div>
@@ -213,6 +198,7 @@ const SelectInput = ({
         </option>
       ))}
     </select>
+    {error && <p className="mt-2 text-sm text-[var(--danger-text)]">{error}</p>}
   </div>
 );
 
@@ -224,6 +210,7 @@ const FileUploadCard = ({
   helperText,
   required = false,
   accept,
+  error,
   onDrop,
   onFileChange,
 }: {
@@ -234,79 +221,80 @@ const FileUploadCard = ({
   helperText: string;
   required?: boolean;
   accept: string;
+  error?: string;
   onDrop: (event: DragEvent<HTMLLabelElement>) => void;
   onFileChange: (file: File) => void;
 }) => (
-  <label
-    htmlFor={id}
-    onDrop={onDrop}
-    onDragOver={(event) => event.preventDefault()}
-    className="block cursor-pointer rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-5 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--panel)]"
-  >
-    <input
-      id={id}
-      type="file"
-      accept={accept}
-      className="hidden"
-      onChange={(event) => {
-        const selectedFile = event.target.files?.[0];
-        if (selectedFile) {
-          onFileChange(selectedFile);
-        }
-      }}
-    />
-    <div className="flex items-start justify-between gap-4">
-      <div className="min-w-0">
-        <div className="mb-1 flex items-center gap-2">
-          <span className="text-sm font-semibold text-[var(--text)]">{label}</span>
-          {required && (
-            <span className="rounded-full bg-[var(--danger-bg)] px-2 py-1 text-[10px] text-[var(--danger-text)]">
-              Required
-            </span>
-          )}
+  <div>
+    <label
+      htmlFor={id}
+      onDrop={onDrop}
+      onDragOver={(event) => event.preventDefault()}
+      className="block cursor-pointer rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-5 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--panel)]"
+    >
+      <input
+        id={id}
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(event) => {
+          const selectedFile = event.target.files?.[0];
+          if (selectedFile) {
+            onFileChange(selectedFile);
+          }
+        }}
+      />
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="mb-1 flex items-center gap-2">
+            <span className="text-sm font-semibold text-[var(--text)]">{label}</span>
+            {required && (
+              <span className="rounded-full bg-[var(--danger-bg)] px-2 py-1 text-[10px] text-[var(--danger-text)]">
+                Required
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-[var(--text-muted)]">{helperText}</p>
+          <p className="mt-2 truncate text-xs text-[var(--text-soft)]">
+            {file ? file.name : 'Click or drop a file'}
+          </p>
         </div>
-        <p className="text-xs text-[var(--text-muted)]">{helperText}</p>
-        <p className="mt-2 truncate text-xs text-[var(--text-soft)]">
-          {file ? file.name : 'Drag and drop or click to upload'}
-        </p>
+        {previewUrl && fileLooksLikeImage(file) ? (
+          <img
+            src={previewUrl}
+            alt={label}
+            className="h-16 w-16 rounded-xl border border-[var(--border)] object-cover shadow-sm"
+          />
+        ) : (
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--panel)] text-xs font-semibold text-[var(--text-soft)]">
+            {file?.type === 'application/pdf' ? 'PDF' : 'FILE'}
+          </div>
+        )}
       </div>
-      {previewUrl && fileLooksLikeImage(file) ? (
-        <img
-          src={previewUrl}
-          alt={label}
-          className="h-16 w-16 rounded-xl border border-[var(--border)] object-cover shadow-sm"
-        />
-      ) : (
-        <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--panel)] text-xs font-semibold text-[var(--text-soft)]">
-          {file?.type === 'application/pdf' ? 'PDF' : 'FILE'}
-        </div>
-      )}
-    </div>
-  </label>
-);
-
-const ReviewRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-center justify-between gap-4 py-2 text-sm">
-    <span className="text-[var(--text-muted)]">{label}</span>
-    <span className="text-right font-medium text-[var(--text)]">{value}</span>
+    </label>
+    {error && <p className="mt-2 text-sm text-[var(--danger-text)]">{error}</p>}
   </div>
 );
 
 const RegisterForm = () => {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<ValidationErrors>({});
   const [form, setForm] = useState<FormState>(initialFormState);
   const [files, setFiles] = useState<FileState>(initialFileState);
   const [previews, setPreviews] = useState<Record<ImageFileField, string | null>>({
     cnicImage: null,
     ownerPhoto: null,
   });
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const isBusinessRegistrationRequired =
-    form.legalEntityType === 'COMPANY' || form.legalEntityType === 'PARTNERSHIP';
+  const isBusinessRegistrationRequired = useMemo(
+    () => form.legalEntityType === 'COMPANY' || form.legalEntityType === 'PARTNERSHIP',
+    [form.legalEntityType],
+  );
 
   const updateForm = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -327,20 +315,20 @@ const RegisterForm = () => {
       : DOCUMENT_MIME_TYPES;
 
     if (!allowedTypes.includes(file.type)) {
-      setError(
+      setFormError(
         field === 'cnicImage' || field === 'ownerPhoto'
-          ? 'CNIC image and owner photo must be JPEG, PNG, or WebP'
-          : 'Documents must be PDF, JPEG, PNG, or WebP'
+          ? 'CNIC image and owner photo must be JPG, PNG, or WebP.'
+          : 'Documents must be PDF, JPG, PNG, or WebP.',
       );
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      setError('Each uploaded file must be 10MB or smaller');
+      setFormError('Each file must be 10MB or smaller.');
       return;
     }
 
-    setError(null);
+    setFormError(null);
     setFiles((current) => ({ ...current, [field]: file }));
 
     if (field === 'cnicImage' || field === 'ownerPhoto') {
@@ -356,103 +344,184 @@ const RegisterForm = () => {
     }
   };
 
-  const getStepError = (targetStep: number): string | null => {
+  const validateStep = (targetStep: number): ValidationErrors => {
+    const nextErrors: ValidationErrors = {};
+
     if (targetStep === 0) {
-      if (!form.name.trim()) return 'Agency name is required';
-      if (!form.email.trim()) return 'Email is required';
-      if (form.password.length < 8) return 'Password must be at least 8 characters';
+      const nameError = validateMinLength(form.name, 'Agency name', 2);
+      if (nameError) {
+        nextErrors.name = nameError;
+      }
+
+      const emailError = validateEmail(form.email);
+      if (emailError) {
+        nextErrors.email = emailError;
+      }
+
+      const passwordError = validatePassword(form.password);
+      if (passwordError) {
+        nextErrors.password = passwordError;
+      }
     }
 
     if (targetStep === 1) {
-      if (!form.ownerName.trim()) return 'Representative name is required';
-      if (!form.phone.trim()) return 'Phone number is required';
-      if (!/^\d{13}$/.test(form.cnic)) return 'CNIC must be exactly 13 digits';
-      if (!files.cnicImage) return 'CNIC image is required';
-      if (!files.ownerPhoto) return 'Owner photo is required';
+      const ownerNameError = validateMinLength(form.ownerName, 'Representative name', 2);
+      if (ownerNameError) {
+        nextErrors.ownerName = ownerNameError;
+      }
+
+      const phoneError = validatePhone(form.phone);
+      if (phoneError) {
+        nextErrors.phone = phoneError;
+      }
+
+      const cnicError = validateCnic(form.cnic);
+      if (cnicError) {
+        nextErrors.cnic = cnicError;
+      }
+
+      const cnicImageError = validateFilePresent(files.cnicImage, 'CNIC image');
+      if (cnicImageError) {
+        nextErrors.cnicImage = cnicImageError;
+      }
+
+      const ownerPhotoError = validateFilePresent(files.ownerPhoto, 'Owner photo');
+      if (ownerPhotoError) {
+        nextErrors.ownerPhoto = ownerPhotoError;
+      }
     }
 
     if (targetStep === 2) {
-      if (!form.address.trim()) return 'Office address is required';
-      if (!form.officeCity.trim()) return 'Office city is required';
-      if (!form.jurisdiction) return 'Jurisdiction is required';
-      if (!form.legalEntityType) return 'Legal entity type is required';
-      if (!form.license.trim()) return 'Tourism license number is required';
-      if (!form.ntn.trim()) return 'NTN is required';
-      if (form.fieldOfOperations.length === 0) return 'Select at least one field of operation';
-
-      const capital = Number(form.capitalAvailablePkr);
-      if (!form.capitalAvailablePkr.trim() || Number.isNaN(capital)) {
-        return 'Capital available in PKR is required';
+      const addressError = validateMinLength(form.address, 'Office address', 5);
+      if (addressError) {
+        nextErrors.address = addressError;
       }
-      if (capital < 400000) return 'Capital available must be at least PKR 400,000';
+
+      const officeCityError = validateMinLength(form.officeCity, 'Office city', 2);
+      if (officeCityError) {
+        nextErrors.officeCity = officeCityError;
+      }
+
+      const jurisdictionError = validateRequired(form.jurisdiction, 'Jurisdiction');
+      if (jurisdictionError) {
+        nextErrors.jurisdiction = jurisdictionError;
+      }
+
+      const entityError = validateRequired(form.legalEntityType, 'Legal entity type');
+      if (entityError) {
+        nextErrors.legalEntityType = entityError;
+      }
+
+      const licenseError = validateRequired(form.license, 'Tourism license number');
+      if (licenseError) {
+        nextErrors.license = licenseError;
+      }
+
+      const ntnError = validateRequired(form.ntn, 'NTN');
+      if (ntnError) {
+        nextErrors.ntn = ntnError;
+      }
+
+      const capitalError = validatePositiveNumber(form.capitalAvailablePkr, 'Capital', 400000);
+      if (capitalError) {
+        nextErrors.capitalAvailablePkr = 'Capital must be at least 400000';
+      }
+
+      if (form.fieldOfOperations.length === 0) {
+        nextErrors.fieldOfOperations = 'Select at least one field of operation';
+      }
 
       if (form.legalEntityType === 'COMPANY' && !form.secpRegistrationNumber.trim()) {
-        return 'SECP registration number is required for companies';
+        nextErrors.secpRegistrationNumber = 'SECP registration number is required';
       }
+
       if (form.legalEntityType === 'PARTNERSHIP' && !form.partnershipRegistrationNumber.trim()) {
-        return 'Partnership registration number is required for partnerships';
+        nextErrors.partnershipRegistrationNumber = 'Partnership registration number is required';
       }
     }
 
     if (targetStep === 3) {
-      if (!files.licenseCertificate) return 'Tourism license certificate is required';
-      if (!files.ntnCertificate) return 'NTN certificate is required';
-      if (!files.officeProof) return 'Office ownership or rent proof is required';
-      if (!files.bankCertificate) return 'Bank certificate is required';
-      if (isBusinessRegistrationRequired && !files.businessRegistrationProof) {
-        return 'Business registration proof is required for companies and partnerships';
+      const licenseCertificateError = validateFilePresent(
+        files.licenseCertificate,
+        'Tourism license certificate',
+      );
+      if (licenseCertificateError) {
+        nextErrors.licenseCertificate = licenseCertificateError;
+      }
+
+      const ntnCertificateError = validateFilePresent(files.ntnCertificate, 'NTN certificate');
+      if (ntnCertificateError) {
+        nextErrors.ntnCertificate = ntnCertificateError;
+      }
+
+      const officeProofError = validateFilePresent(files.officeProof, 'Office proof');
+      if (officeProofError) {
+        nextErrors.officeProof = officeProofError;
+      }
+
+      const bankCertificateError = validateFilePresent(files.bankCertificate, 'Bank certificate');
+      if (bankCertificateError) {
+        nextErrors.bankCertificate = bankCertificateError;
+      }
+
+      if (isBusinessRegistrationRequired) {
+        const businessProofError = validateFilePresent(
+          files.businessRegistrationProof,
+          'Business registration proof',
+        );
+        if (businessProofError) {
+          nextErrors.businessRegistrationProof = businessProofError;
+        }
       }
     }
 
-    return null;
-  };
-
-  const validateCurrentStep = () => {
-    const validationError = getStepError(step);
-    setError(validationError);
-    return !validationError;
+    return nextErrors;
   };
 
   const goToNextStep = () => {
-    if (validateCurrentStep()) {
+    const nextErrors = validateStep(step);
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length === 0) {
       setStep((current) => Math.min(current + 1, STEPS.length - 1));
     }
   };
 
   const goToPreviousStep = () => {
-    setError(null);
+    setFormError(null);
+    setErrors({});
     setStep((current) => Math.max(current - 1, 0));
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setFormError(null);
 
-    for (let index = 0; index < STEPS.length - 1; index += 1) {
-      const validationError = getStepError(index);
-      if (validationError) {
-        setError(validationError);
+    for (let index = 0; index < STEPS.length; index += 1) {
+      const stepErrors = validateStep(index);
+      if (Object.keys(stepErrors).length > 0) {
+        setErrors(stepErrors);
         setStep(index);
         return;
       }
     }
 
-    setError(null);
     setLoading(true);
 
     try {
-      const resultAction = await dispatch(
+      await dispatch(
         signup({
-          email: form.email,
+          email: form.email.trim(),
           password: form.password,
-          name: form.name,
-          phone: form.phone,
-          address: form.address,
-          officeCity: form.officeCity,
+          name: form.name.trim(),
+          phone: form.phone.trim(),
+          address: form.address.trim(),
+          officeCity: form.officeCity.trim(),
           jurisdiction: form.jurisdiction as Jurisdiction,
           legalEntityType: form.legalEntityType as LegalEntityType,
-          license: form.license,
-          ntn: form.ntn,
-          ownerName: form.ownerName,
+          license: form.license.trim(),
+          ntn: form.ntn.trim(),
+          ownerName: form.ownerName.trim(),
           cnic: form.cnic,
           fieldOfOperations: form.fieldOfOperations,
           capitalAvailablePkr: Number(form.capitalAvailablePkr),
@@ -464,20 +533,14 @@ const RegisterForm = () => {
           bankCertificate: files.bankCertificate!,
           businessRegistrationProof: files.businessRegistrationProof || undefined,
           additionalSupportingDocument: files.additionalSupportingDocument || undefined,
-          secpRegistrationNumber: form.secpRegistrationNumber || undefined,
-          partnershipRegistrationNumber: form.partnershipRegistrationNumber || undefined,
-        }) as any
-      );
-
-      if (resultAction?.error) {
-        setError(resultAction.error.message || 'Registration failed. Please try again.');
-        setLoading(false);
-        return;
-      }
+          secpRegistrationNumber: form.secpRegistrationNumber.trim() || undefined,
+          partnershipRegistrationNumber: form.partnershipRegistrationNumber.trim() || undefined,
+        }) as any,
+      ).unwrap();
 
       navigate('/pending-approval', { state: { email: form.email, name: form.name } });
-    } catch (err: any) {
-      setError(err.message || 'Signup failed');
+    } catch (error: any) {
+      setFormError(error.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -485,180 +548,368 @@ const RegisterForm = () => {
 
   return (
     <AuthShell
-      badge="Agency registration"
-      title="Register your travel business for marketplace access"
-      subtitle="Complete the business application with representative details, operational scope, and verification documents."
-      panelTitle="Built for agencies that need operational clarity."
-      panelText="The registration flow captures enough structure for approval without turning the application into paperwork chaos. Once approved, the same portal opens into quoting, bookings, hotels, and vehicles."
+      badge="Agency sign up"
+      title="Register agency"
+      subtitle="Add your business details and documents for review."
+      panelTitle="Register once. Start after approval."
+      panelText="Submit the agency details, representative identity, and core documents. Admin approval unlocks login."
       panelPoints={[
-        'Submit verified business and representative details.',
-        'Upload regulator, identity, and banking support documents.',
-        'Move into the marketplace after admin approval.',
+        'Business and representative details.',
+        'Required KYC and registration documents.',
+        'Pending review before portal access.',
       ]}
     >
-      {error && <ErrorPopup message={error} onClose={() => setError(null)} />}
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
-          <ProgressBar step={step} />
-          <form onSubmit={handleSubmit}>
-            {step === 0 && (
-              <div className="grid md:grid-cols-2 gap-5 animate-stepIn">
+        <StepIndicator currentStep={step} />
+
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+          {formError && (
+            <div className="rounded-[20px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+              {formError}
+            </div>
+          )}
+
+          {step === 0 && (
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <TextInput
+                  id="name"
+                  label="Agency name"
+                  value={form.name}
+                  placeholder="Example Travels"
+                  error={errors.name}
+                  onChange={(value) => updateForm('name', value)}
+                />
+              </div>
+
+              <TextInput
+                id="email"
+                label="Business email"
+                type="email"
+                value={form.email}
+                placeholder="agency@example.com"
+                error={errors.email}
+                onChange={(value) => updateForm('email', value)}
+              />
+
+              <div>
+                <TextInput
+                  id="password"
+                  label="Password"
+                  type="password"
+                  value={form.password}
+                  placeholder="Create password"
+                  error={errors.password}
+                  onChange={(value) => updateForm('password', value)}
+                />
+                <PasswordStrengthIndicator password={form.password} />
+              </div>
+            </div>
+          )}
+
+          {step === 1 && (
+            <div className="space-y-5">
+              <div className="grid gap-5 md:grid-cols-2">
+                <TextInput
+                  id="ownerName"
+                  label="Representative name"
+                  value={form.ownerName}
+                  placeholder="Full name"
+                  error={errors.ownerName}
+                  onChange={(value) => updateForm('ownerName', value)}
+                />
+
+                <TextInput
+                  id="phone"
+                  label="Phone"
+                  value={form.phone}
+                  placeholder="+92 300 1234567"
+                  error={errors.phone}
+                  onChange={(value) => updateForm('phone', value)}
+                />
+              </div>
+
+              <div className="max-w-sm">
+                <TextInput
+                  id="cnic"
+                  label="CNIC"
+                  value={form.cnic}
+                  placeholder="1234567890123"
+                  error={errors.cnic}
+                  onChange={(value) => updateForm('cnic', value.replace(/\D/g, '').slice(0, 13))}
+                />
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <FileUploadCard
+                  id="cnicImage"
+                  label="CNIC image"
+                  file={files.cnicImage}
+                  previewUrl={previews.cnicImage}
+                  helperText="JPG, PNG, or WebP"
+                  required
+                  accept="image/jpeg,image/png,image/jpg,image/webp"
+                  error={errors.cnicImage}
+                  onDrop={handleDrop('cnicImage')}
+                  onFileChange={(file) => handleFileSelect('cnicImage', file)}
+                />
+
+                <FileUploadCard
+                  id="ownerPhoto"
+                  label="Owner photo"
+                  file={files.ownerPhoto}
+                  previewUrl={previews.ownerPhoto}
+                  helperText="JPG, PNG, or WebP"
+                  required
+                  accept="image/jpeg,image/png,image/jpg,image/webp"
+                  error={errors.ownerPhoto}
+                  onDrop={handleDrop('ownerPhoto')}
+                  onFileChange={(file) => handleFileSelect('ownerPhoto', file)}
+                />
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-5">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <TextInput id="name" label="Agency Name" value={form.name} placeholder="Example Travels" onChange={(value) => updateForm('name', value)} />
+                  <TextInput
+                    id="address"
+                    label="Office address"
+                    value={form.address}
+                    placeholder="Full office address"
+                    error={errors.address}
+                    onChange={(value) => updateForm('address', value)}
+                  />
                 </div>
-                <TextInput id="email" label="Business Email" type="email" value={form.email} placeholder="agency@example.com" onChange={(value) => updateForm('email', value)} />
-                <div>
-                  <TextInput id="password" label="Password" type="password" value={form.password} placeholder="Create a password" onChange={(value) => updateForm('password', value)} />
-                  <PasswordStrengthIndicator password={form.password} />
-                </div>
-              </div>
-            )}
 
-            {step === 1 && (
-              <div className="space-y-5 animate-stepIn">
-                <div className="grid md:grid-cols-2 gap-5">
-                  <TextInput id="ownerName" label="Owner / Authorized Representative" value={form.ownerName} placeholder="Full name as per CNIC" onChange={(value) => updateForm('ownerName', value)} />
-                  <TextInput id="phone" label="Phone Number" value={form.phone} placeholder="+92 300 1234567" onChange={(value) => updateForm('phone', value)} />
-                </div>
-                <div className="max-w-sm">
-                  <TextInput id="cnic" label="CNIC Number" value={form.cnic} placeholder="1234567890123" onChange={(value) => updateForm('cnic', value.replace(/\D/g, '').slice(0, 13))} />
-                </div>
-                <div className="grid md:grid-cols-2 gap-5">
-                  <FileUploadCard id="cnicImage" label="CNIC Image" file={files.cnicImage} previewUrl={previews.cnicImage} helperText="Upload a clear photo of the representative CNIC" required accept="image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('cnicImage')} onFileChange={(file) => handleFileSelect('cnicImage', file)} />
-                  <FileUploadCard id="ownerPhoto" label="Owner Photo" file={files.ownerPhoto} previewUrl={previews.ownerPhoto} helperText="Upload a recent photo of the representative" required accept="image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('ownerPhoto')} onFileChange={(file) => handleFileSelect('ownerPhoto', file)} />
-                </div>
-              </div>
-            )}
+                <TextInput
+                  id="officeCity"
+                  label="Office city"
+                  value={form.officeCity}
+                  placeholder="Islamabad"
+                  error={errors.officeCity}
+                  onChange={(value) => updateForm('officeCity', value)}
+                />
 
-            {step === 2 && (
-              <div className="space-y-5 animate-stepIn">
-                <div className="grid md:grid-cols-2 gap-5">
-                  <div className="md:col-span-2">
-                    <TextInput id="address" label="Office Address" value={form.address} placeholder="Full office address" onChange={(value) => updateForm('address', value)} />
-                  </div>
-                  <TextInput id="officeCity" label="Office City" value={form.officeCity} placeholder="Islamabad" onChange={(value) => updateForm('officeCity', value)} />
-                  <SelectInput id="jurisdiction" label="Jurisdiction" value={form.jurisdiction} options={JURISDICTIONS.map((item) => ({ value: item, label: item }))} onChange={(value) => updateForm('jurisdiction', value as Jurisdiction | '')} />
-                  <SelectInput id="legalEntityType" label="Legal Entity Type" value={form.legalEntityType} options={LEGAL_ENTITY_OPTIONS} onChange={(value) => updateForm('legalEntityType', value as LegalEntityType | '')} />
-                  <TextInput id="license" label={labelForJurisdiction(form.jurisdiction)} value={form.license} placeholder="Enter regulator-issued license number" onChange={(value) => updateForm('license', value)} />
-                  <TextInput id="ntn" label="NTN" value={form.ntn} placeholder="National Tax Number" onChange={(value) => updateForm('ntn', value)} />
-                  {form.legalEntityType === 'COMPANY' && (
-                    <TextInput id="secpRegistrationNumber" label="SECP Registration Number" value={form.secpRegistrationNumber} placeholder="Enter SECP registration number" onChange={(value) => updateForm('secpRegistrationNumber', value)} />
-                  )}
-                  {form.legalEntityType === 'PARTNERSHIP' && (
-                    <TextInput id="partnershipRegistrationNumber" label="Partnership Registration Number" value={form.partnershipRegistrationNumber} placeholder="Enter partnership registration number" onChange={(value) => updateForm('partnershipRegistrationNumber', value)} />
-                  )}
-                  <TextInput id="capitalAvailablePkr" label="Capital Available (PKR)" value={form.capitalAvailablePkr} placeholder="400000" onChange={(value) => updateForm('capitalAvailablePkr', value.replace(/[^\d]/g, ''))} />
+                <SelectInput
+                  id="jurisdiction"
+                  label="Jurisdiction"
+                  value={form.jurisdiction}
+                  options={JURISDICTIONS.map((item) => ({ value: item, label: item }))}
+                  error={errors.jurisdiction}
+                  onChange={(value) => updateForm('jurisdiction', value as Jurisdiction | '')}
+                />
+
+                <SelectInput
+                  id="legalEntityType"
+                  label="Legal entity type"
+                  value={form.legalEntityType}
+                  options={LEGAL_ENTITY_OPTIONS}
+                  error={errors.legalEntityType}
+                  onChange={(value) => updateForm('legalEntityType', value as LegalEntityType | '')}
+                />
+
+                <TextInput
+                  id="license"
+                  label={labelForJurisdiction(form.jurisdiction)}
+                  value={form.license}
+                  placeholder="Regulator-issued number"
+                  error={errors.license}
+                  onChange={(value) => updateForm('license', value)}
+                />
+
+                <TextInput
+                  id="ntn"
+                  label="NTN"
+                  value={form.ntn}
+                  placeholder="National Tax Number"
+                  error={errors.ntn}
+                  onChange={(value) => updateForm('ntn', value)}
+                />
+
+                {form.legalEntityType === 'COMPANY' && (
+                  <TextInput
+                    id="secpRegistrationNumber"
+                    label="SECP registration number"
+                    value={form.secpRegistrationNumber}
+                    placeholder="SECP number"
+                    error={errors.secpRegistrationNumber}
+                    onChange={(value) => updateForm('secpRegistrationNumber', value)}
+                  />
+                )}
+
+                {form.legalEntityType === 'PARTNERSHIP' && (
+                  <TextInput
+                    id="partnershipRegistrationNumber"
+                    label="Partnership registration number"
+                    value={form.partnershipRegistrationNumber}
+                    placeholder="Partnership number"
+                    error={errors.partnershipRegistrationNumber}
+                    onChange={(value) => updateForm('partnershipRegistrationNumber', value)}
+                  />
+                )}
+
+                <TextInput
+                  id="capitalAvailablePkr"
+                  label="Capital available (PKR)"
+                  value={form.capitalAvailablePkr}
+                  placeholder="400000"
+                  error={errors.capitalAvailablePkr}
+                  onChange={(value) => updateForm('capitalAvailablePkr', value.replace(/[^\d]/g, ''))}
+                />
+              </div>
+
+              <div>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <label className="block text-sm font-semibold text-[var(--text)]">
+                    Field of operations
+                  </label>
+                  <span className="text-xs text-[var(--text-soft)]">
+                    {form.fieldOfOperations.length} selected
+                  </span>
                 </div>
-                <div>
-                  <div className="flex items-center justify-between gap-3 mb-3">
-                    <label className="block text-sm font-semibold text-gray-700">Field of Operations</label>
-                    <span className="text-xs text-gray-500">{form.fieldOfOperations.length} selected</span>
-                  </div>
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                   {FIELD_OF_OPERATIONS.map((item) => {
-                      const active = form.fieldOfOperations.includes(item);
-                      return (
-                        <button
-                          key={item}
-                          type="button"
-                          onClick={() => toggleFieldOperation(item)}
-                          className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-200 ${
-                            active
-                              ? 'border-[var(--primary)] bg-[var(--panel)] text-[var(--primary)] shadow-sm'
-                              : 'border-[var(--border)] bg-[var(--panel-subtle)] text-[var(--text-muted)] hover:border-[var(--primary)]'
-                          }`}
-                        >
-                          {item}
-                        </button>
-                      );
-                    })}
-                  </div>
+                    const active = form.fieldOfOperations.includes(item);
+                    return (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => toggleFieldOperation(item)}
+                        className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                          active
+                            ? 'border-[var(--primary)] bg-[var(--panel)] text-[var(--primary)] shadow-sm'
+                            : 'border-[var(--border)] bg-[var(--panel-subtle)] text-[var(--text-muted)] hover:border-[var(--primary)]'
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
                 </div>
-                <div className="rounded-xl border border-[var(--warning-bg)] bg-[var(--warning-bg)] px-4 py-3 text-sm text-[var(--warning-text)]">
-                  Minimum capital for this simplified application is set to PKR 400,000 for demo and review purposes.
-                </div>
+                {errors.fieldOfOperations && (
+                  <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.fieldOfOperations}</p>
+                )}
               </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="grid gap-5 md:grid-cols-2">
+              <FileUploadCard
+                id="licenseCertificate"
+                label="Tourism license certificate"
+                file={files.licenseCertificate}
+                helperText="PDF, JPG, PNG, or WebP"
+                required
+                accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp"
+                error={errors.licenseCertificate}
+                onDrop={handleDrop('licenseCertificate')}
+                onFileChange={(file) => handleFileSelect('licenseCertificate', file)}
+              />
+
+              <FileUploadCard
+                id="ntnCertificate"
+                label="NTN certificate"
+                file={files.ntnCertificate}
+                helperText="PDF, JPG, PNG, or WebP"
+                required
+                accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp"
+                error={errors.ntnCertificate}
+                onDrop={handleDrop('ntnCertificate')}
+                onFileChange={(file) => handleFileSelect('ntnCertificate', file)}
+              />
+
+              <FileUploadCard
+                id="officeProof"
+                label="Office proof"
+                file={files.officeProof}
+                helperText="Ownership or rent proof"
+                required
+                accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp"
+                error={errors.officeProof}
+                onDrop={handleDrop('officeProof')}
+                onFileChange={(file) => handleFileSelect('officeProof', file)}
+              />
+
+              <FileUploadCard
+                id="bankCertificate"
+                label="Bank certificate"
+                file={files.bankCertificate}
+                helperText="Business bank proof"
+                required
+                accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp"
+                error={errors.bankCertificate}
+                onDrop={handleDrop('bankCertificate')}
+                onFileChange={(file) => handleFileSelect('bankCertificate', file)}
+              />
+
+              <FileUploadCard
+                id="businessRegistrationProof"
+                label="Business registration proof"
+                file={files.businessRegistrationProof}
+                helperText={isBusinessRegistrationRequired ? 'Required for company and partnership' : 'Optional'}
+                required={isBusinessRegistrationRequired}
+                accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp"
+                error={errors.businessRegistrationProof}
+                onDrop={handleDrop('businessRegistrationProof')}
+                onFileChange={(file) => handleFileSelect('businessRegistrationProof', file)}
+              />
+
+              <FileUploadCard
+                id="additionalSupportingDocument"
+                label="Additional document"
+                file={files.additionalSupportingDocument}
+                helperText="Optional extra proof"
+                accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp"
+                onDrop={handleDrop('additionalSupportingDocument')}
+                onFileChange={(file) => handleFileSelect('additionalSupportingDocument', file)}
+              />
+            </div>
+          )}
+
+          <div className="flex items-center justify-between gap-3">
+            {step > 0 ? (
+              <button
+                type="button"
+                onClick={goToPreviousStep}
+                className="app-btn-secondary h-11 px-5 text-sm"
+              >
+                Back
+              </button>
+            ) : (
+              <div />
             )}
 
-            {step === 3 && (
-              <div className="space-y-5 animate-stepIn">
-                <div className="grid md:grid-cols-2 gap-5">
-                  <FileUploadCard id="licenseCertificate" label="Tourism License Certificate" file={files.licenseCertificate} helperText="Upload the regulator-issued tourism license certificate" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('licenseCertificate')} onFileChange={(file) => handleFileSelect('licenseCertificate', file)} />
-                  <FileUploadCard id="ntnCertificate" label="NTN Certificate" file={files.ntnCertificate} helperText="Upload the FBR NTN certificate" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('ntnCertificate')} onFileChange={(file) => handleFileSelect('ntnCertificate', file)} />
-                  <FileUploadCard id="officeProof" label="Office Ownership / Rent Proof" file={files.officeProof} helperText="Rent agreement, office ownership proof, or similar document" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('officeProof')} onFileChange={(file) => handleFileSelect('officeProof', file)} />
-                  <FileUploadCard id="bankCertificate" label="Bank Certificate" file={files.bankCertificate} helperText="Upload a bank certificate or equivalent business banking proof" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('bankCertificate')} onFileChange={(file) => handleFileSelect('bankCertificate', file)} />
-                  <FileUploadCard id="businessRegistrationProof" label="Business Registration Proof" file={files.businessRegistrationProof} helperText={isBusinessRegistrationRequired ? 'Required for company and partnership registrations' : 'Optional for sole proprietors'} required={isBusinessRegistrationRequired} accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('businessRegistrationProof')} onFileChange={(file) => handleFileSelect('businessRegistrationProof', file)} />
-                  <FileUploadCard id="additionalSupportingDocument" label="Additional Supporting Document" file={files.additionalSupportingDocument} helperText="Optional extra document for any supporting material" accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('additionalSupportingDocument')} onFileChange={(file) => handleFileSelect('additionalSupportingDocument', file)} />
-                </div>
-              </div>
+            {step < STEPS.length - 1 ? (
+              <button
+                type="button"
+                onClick={goToNextStep}
+                className="app-btn-primary h-11 px-6 text-sm"
+              >
+                Next
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={loading}
+                className="app-btn-primary h-11 px-6 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? 'Submitting...' : 'Submit for review'}
+              </button>
             )}
+          </div>
 
-            {step === 4 && (
-              <div className="space-y-6 animate-stepIn">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-subtle)] p-5">
-                    <h3 className="mb-3 text-base font-semibold text-[var(--text)]">Agency Summary</h3>
-                    <ReviewRow label="Agency Name" value={form.name} />
-                    <ReviewRow label="Business Email" value={form.email} />
-                    <ReviewRow label="Phone" value={form.phone} />
-                    <ReviewRow label="Office City" value={form.officeCity} />
-                    <ReviewRow label="Jurisdiction" value={form.jurisdiction || '-'} />
-                    <ReviewRow label="Legal Entity" value={LEGAL_ENTITY_OPTIONS.find((option) => option.value === form.legalEntityType)?.label || '-'} />
-                    <ReviewRow label="Tourism License Number" value={form.license} />
-                    <ReviewRow label="NTN" value={form.ntn} />
-                    <ReviewRow label="Capital" value={formatCurrency(form.capitalAvailablePkr)} />
-                  </div>
-                  <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-subtle)] p-5">
-                    <h3 className="mb-3 text-base font-semibold text-[var(--text)]">Representative & Scope</h3>
-                    <ReviewRow label="Representative" value={form.ownerName} />
-                    <ReviewRow label="CNIC" value={form.cnic} />
-                    <ReviewRow label="Field of Operations" value={form.fieldOfOperations.length > 0 ? form.fieldOfOperations.join(', ') : '-'} />
-                    {form.secpRegistrationNumber && <ReviewRow label="SECP Registration" value={form.secpRegistrationNumber} />}
-                    {form.partnershipRegistrationNumber && <ReviewRow label="Partnership Registration" value={form.partnershipRegistrationNumber} />}
-                    <ReviewRow label="Documents Ready" value={[files.cnicImage, files.ownerPhoto, files.licenseCertificate, files.ntnCertificate, files.officeProof, files.bankCertificate, files.businessRegistrationProof, files.additionalSupportingDocument].filter(Boolean).length.toString()} />
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-subtle)] p-4 text-sm text-[var(--text-muted)]">
-                  Your agency account will stay in <strong>PENDING</strong> status until an admin reviews the application and documents.
-                </div>
-              </div>
-            )}
-            <div className="mt-8 flex items-center justify-between gap-3">
-              {step > 0 ? (
-                <button type="button" onClick={goToPreviousStep} className="app-btn-secondary h-11 px-5 text-sm">
-                  Back
-                </button>
-              ) : (
-                <div />
-              )}
-              {step < STEPS.length - 1 ? (
-                <button type="button" onClick={goToNextStep} className="app-btn-primary h-11 px-6 text-sm">
-                  Next
-                </button>
-              ) : (
-                <button type="submit" disabled={loading} className="app-btn-primary h-11 px-6 text-sm disabled:cursor-not-allowed disabled:opacity-60">
-                  {loading ? 'Submitting...' : 'Submit Application'}
-                </button>
-              )}
-            </div>
-            <div className="mt-4 border-t border-[var(--border)] pt-6 text-center">
-              <p className="text-sm text-[var(--text-muted)]">
-                Already have an account? <Link to="/login" className="font-semibold text-[var(--primary)]">Sign in</Link>
-              </p>
-            </div>
-          </form>
+          <div className="border-t border-[var(--border)] pt-6 text-center text-sm text-[var(--text-muted)]">
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold text-[var(--primary)]">
+              Sign in
+            </Link>
+          </div>
+        </form>
       </div>
-      <style>{`
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes stepIn {
-          from { opacity: 0; transform: translateX(12px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        .animate-slideUp { animation: slideUp 0.5s ease-out; }
-        .animate-stepIn { animation: stepIn 0.3s ease-out; }
-      `}</style>
     </AuthShell>
   );
 };

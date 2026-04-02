@@ -17,13 +17,12 @@ const Header = () => {
   };
 
   const routeMeta = [
-    { match: '/dashboard', title: 'Agency Operations Overview', description: 'Track inventory, live negotiation threads, and booking movement.' },
-    { match: '/trip-requests', title: 'Marketplace', description: 'Review traveler briefs and respond with structured commercial offers.' },
-    { match: '/bookings', title: 'Accepted Bookings', description: 'Manage confirmed traveler work and milestone execution.' },
-    { match: '/hotels', title: 'Hotels', description: 'Maintain stay inventory for quote packaging and booking delivery.' },
-    { match: '/transport', title: 'Vehicles', description: 'Manage fleet capacity, pricing, and transport readiness.' },
-    { match: '/profile', title: 'Agency Profile', description: 'View current access, identity anchors, and operational snapshot.' },
-    { match: '/status', title: 'Business Status', description: 'Review operational readiness, inventory depth, and marketplace activity.' },
+    { match: '/dashboard', title: 'Dashboard', description: 'Offers, requests, bookings, and inventory.' },
+    { match: '/packages', title: 'Trip Offers', description: 'Create and publish your own offers.' },
+    { match: '/trip-requests', title: 'Traveler Requests', description: 'Review traveler posts and bid on them.' },
+    { match: '/bookings', title: 'Bookings', description: 'Track accepted work and updates.' },
+    { match: '/hotels', title: 'Hotels', description: 'Manage hotel inventory.' },
+    { match: '/transport', title: 'Vehicles', description: 'Manage vehicle inventory.' },
   ].find((item) => location.pathname.startsWith(item.match));
 
   return (
@@ -34,7 +33,7 @@ const Header = () => {
           <h1 className="mt-1 truncate text-2xl font-semibold tracking-tight text-[var(--text)]">
             {routeMeta?.title || 'Agency Portal'}
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">{routeMeta?.description || 'Operate traveler marketplace workflows from one place.'}</p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{routeMeta?.description || 'Operate your agency from one place.'}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -64,7 +63,7 @@ const Header = () => {
             )}
           </button>
 
-          <div className="app-pill app-pill-success">Approved agency</div>
+          <div className="app-pill app-pill-success">Approved</div>
 
           <div className="rounded-[20px] border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
             <div className="flex items-center gap-3">

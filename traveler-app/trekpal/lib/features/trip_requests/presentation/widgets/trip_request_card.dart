@@ -61,6 +61,7 @@ class TripRequestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
+    final String? description = tripRequest.description;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -111,11 +112,11 @@ class TripRequestCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (tripRequest.description != null &&
-                  tripRequest.description!.trim().isNotEmpty) ...<Widget>[
+              if (description != null &&
+                  description.trim().isNotEmpty) ...<Widget>[
                 const SizedBox(height: 14),
                 Text(
-                  tripRequest.description!,
+                  description,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodyMedium?.copyWith(

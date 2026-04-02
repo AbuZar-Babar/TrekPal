@@ -226,7 +226,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(56),
+          minimumSize: const Size(0, 56),
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           disabledBackgroundColor: colorScheme.primary.withValues(alpha: 0.38),
@@ -243,7 +243,7 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(0, 52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
@@ -252,7 +252,7 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(0, 52),
           side: BorderSide(color: colorScheme.outlineVariant),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
@@ -304,7 +304,7 @@ class AppTheme {
           Set<WidgetState> states,
         ) {
           final bool selected = states.contains(WidgetState.selected);
-          return textTheme.labelMedium!.copyWith(
+          return (textTheme.labelMedium ?? const TextStyle()).copyWith(
             color: selected
                 ? colorScheme.primary
                 : colorScheme.onSurfaceVariant,

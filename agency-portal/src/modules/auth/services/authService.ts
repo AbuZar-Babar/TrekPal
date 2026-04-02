@@ -32,6 +32,10 @@ export const authService = {
         throw new Error('Your agency account is pending admin approval. Please wait for approval before logging in.');
       }
 
+      if (errorMessage.toLowerCase().includes('rejected')) {
+        throw new Error('Your agency application was rejected. Contact admin or register again.');
+      }
+
       if (error.message?.includes('Network Error') || error.isNetworkError) {
         throw new Error('Cannot connect to server. Please make sure the backend is running.');
       }

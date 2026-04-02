@@ -1,5 +1,9 @@
 import { type User as SupabaseUser } from '@supabase/supabase-js';
-import { ROLES, APPROVAL_STATUS, TRAVELER_KYC_STATUS } from '../../config/constants';
+import {
+  ROLES,
+  APPROVAL_STATUS,
+  normalizeTravelerKycStatus,
+} from '../../config/constants';
 import {
   createSupabaseAuthUser,
   isSupabaseConfigured,
@@ -92,10 +96,7 @@ export class AuthService {
       phone: user.phone ?? null,
       cnic: user.cnic ?? null,
       cnicVerified: user.cnicVerified ?? false,
-      travelerKycStatus:
-        user.travelerKycStatus === TRAVELER_KYC_STATUS.VERIFIED
-          ? TRAVELER_KYC_STATUS.VERIFIED
-          : TRAVELER_KYC_STATUS.NOT_SUBMITTED,
+      travelerKycStatus: normalizeTravelerKycStatus(user.travelerKycStatus),
       dateOfBirth: user.dateOfBirth ?? null,
       city: user.city ?? null,
       residentialAddress: user.residentialAddress ?? null,
@@ -127,6 +128,14 @@ export class AuthService {
     };
   }
 
+  private getAgencyApprovalErrorMessage(status: string): string {
+    if (status === APPROVAL_STATUS.REJECTED) {
+      return 'Agency account was rejected';
+    }
+
+    return 'Agency account is pending approval';
+  }
+
   private async findProfileByEmail(email: string, enforceAgencyApproval: boolean): Promise<AuthResponse['user'] | null> {
     const traveler = await this.userRepo.findByEmail(email);
     if (traveler) {
@@ -136,7 +145,7 @@ export class AuthService {
     const agency = await this.agencyRepo.findByEmail(email);
     if (agency) {
       if (enforceAgencyApproval && agency.status !== APPROVAL_STATUS.APPROVED) {
-        throw new Error('Agency account is pending approval');
+        throw new Error(this.getAgencyApprovalErrorMessage(agency.status));
       }
       return this.mapAgency(agency);
     }
@@ -164,7 +173,7 @@ export class AuthService {
         ? agency
         : await this.agencyRepo.update(agency.id, { authUid });
       if (updatedAgency.status !== APPROVAL_STATUS.APPROVED) {
-        throw new Error('Agency account is pending approval');
+        throw new Error(this.getAgencyApprovalErrorMessage(updatedAgency.status));
       }
       return this.mapAgency(updatedAgency);
     }

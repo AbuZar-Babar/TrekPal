@@ -1,11 +1,60 @@
 import { prisma } from '../../config/database';
-import { BookingResponse } from './bookings.types';
+import { BOOKING_STATUS } from '../../config/constants';
+import { BookingParticipantPreview, BookingResponse } from './bookings.types';
 
 const bookingInclude = {
   user: { select: { name: true } },
   agency: { select: { name: true } },
   tripRequest: { select: { destination: true } },
+  package: {
+    select: {
+      name: true,
+      bookings: {
+        where: {
+          status: {
+            not: BOOKING_STATUS.CANCELLED,
+          },
+        },
+        orderBy: {
+          createdAt: 'asc' as const,
+        },
+        select: {
+          userId: true,
+          status: true,
+          createdAt: true,
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  },
 };
+
+function buildInitials(name?: string | null): string {
+  const trimmed = name?.trim() ?? '';
+  if (!trimmed) {
+    return 'TP';
+  }
+
+  return trimmed
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((segment) => segment[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
+function mapParticipant(booking: any): BookingParticipantPreview {
+  return {
+    userId: booking.userId,
+    travelerName: booking.user?.name?.trim() || 'Traveler',
+    initials: buildInitials(booking.user?.name),
+    bookingStatus: booking.status,
+    joinedAt: booking.createdAt,
+  };
+}
 
 function mapBooking(booking: any): BookingResponse {
   return {
@@ -26,7 +75,9 @@ function mapBooking(booking: any): BookingResponse {
     endDate: booking.endDate,
     createdAt: booking.createdAt,
     updatedAt: booking.updatedAt,
-    destination: booking.tripRequest?.destination ?? undefined,
+    destination: booking.tripRequest?.destination ?? booking.package?.name ?? undefined,
+    packageTravelerCount: booking.package?.bookings?.length,
+    packageParticipants: booking.package?.bookings?.map(mapParticipant),
   };
 }
 

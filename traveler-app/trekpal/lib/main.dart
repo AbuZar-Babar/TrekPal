@@ -19,6 +19,11 @@ import 'features/bookings/domain/usecases/accept_bid_usecase.dart';
 import 'features/bookings/domain/usecases/get_bookings_usecase.dart';
 import 'features/bookings/presentation/providers/bookings_provider.dart';
 import 'features/home/presentation/pages/home_page.dart';
+import 'features/packages/data/datasources/packages_remote_datasource.dart';
+import 'features/packages/data/repositories/packages_repository_impl.dart';
+import 'features/packages/domain/usecases/apply_package_usecase.dart';
+import 'features/packages/domain/usecases/get_packages_usecase.dart';
+import 'features/packages/presentation/providers/packages_provider.dart';
 import 'features/trip_requests/data/datasources/trip_requests_remote_datasource.dart';
 import 'features/trip_requests/data/repositories/trip_requests_repository_impl.dart';
 import 'features/trip_requests/domain/usecases/create_trip_request_usecase.dart';
@@ -47,6 +52,9 @@ Future<void> main() async {
   final bookingsRepository = BookingsRepositoryImpl(
     BookingsRemoteDataSource(apiClient),
   );
+  final packagesRepository = PackagesRepositoryImpl(
+    PackagesRemoteDataSource(apiClient),
+  );
 
   runApp(
     TrekPalApp(
@@ -71,6 +79,10 @@ Future<void> main() async {
         acceptBidUseCase: AcceptBidUseCase(bookingsRepository),
         bookingsRepository: bookingsRepository,
       ),
+      packagesProvider: PackagesProvider(
+        getPackagesUseCase: GetPackagesUseCase(packagesRepository),
+        applyPackageUseCase: ApplyPackageUseCase(packagesRepository),
+      ),
       themeController: themeController,
     ),
   );
@@ -82,12 +94,14 @@ class TrekPalApp extends StatelessWidget {
     required this.authProvider,
     required this.tripRequestsProvider,
     required this.bookingsProvider,
+    required this.packagesProvider,
     required this.themeController,
   });
 
   final AuthProvider authProvider;
   final TripRequestsProvider tripRequestsProvider;
   final BookingsProvider bookingsProvider;
+  final PackagesProvider packagesProvider;
   final ThemeController themeController;
 
   @override
@@ -99,6 +113,7 @@ class TrekPalApp extends StatelessWidget {
           value: tripRequestsProvider,
         ),
         ChangeNotifierProvider<BookingsProvider>.value(value: bookingsProvider),
+        ChangeNotifierProvider<PackagesProvider>.value(value: packagesProvider),
         ChangeNotifierProvider<ThemeController>.value(value: themeController),
       ],
       child: Consumer<ThemeController>(

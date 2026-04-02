@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
@@ -8,15 +9,15 @@ import BookingList from './modules/bookings/components/BookingList';
 import Dashboard from './modules/dashboard/components/Dashboard';
 import HotelForm from './modules/hotels/components/HotelForm';
 import HotelList from './modules/hotels/components/HotelList';
-import AgencyProfile from './modules/profile/components/AgencyProfile';
-import BusinessStatus from './modules/profile/components/BusinessStatus';
+import PackageForm from './modules/packages/components/PackageForm';
+import PackageList from './modules/packages/components/PackageList';
 import TripRequestList from './modules/tripRequests/components/TripRequestList';
 import VehicleForm from './modules/transport/components/VehicleForm';
 import VehicleList from './modules/transport/components/VehicleList';
 import Layout from './shared/components/Layout/Layout';
 import { RootState } from './store';
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   if (!isAuthenticated) {
@@ -39,6 +40,36 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <Dashboard />
+            </Layout>
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/packages"
+        element={(
+          <ProtectedRoute>
+            <Layout>
+              <PackageList />
+            </Layout>
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/packages/new"
+        element={(
+          <ProtectedRoute>
+            <Layout>
+              <PackageForm />
+            </Layout>
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/packages/:id/edit"
+        element={(
+          <ProtectedRoute>
+            <Layout>
+              <PackageForm />
             </Layout>
           </ProtectedRoute>
         )}
@@ -123,28 +154,8 @@ function App() {
           </ProtectedRoute>
         )}
       />
-      <Route
-        path="/profile"
-        element={(
-          <ProtectedRoute>
-            <Layout>
-              <AgencyProfile />
-            </Layout>
-          </ProtectedRoute>
-        )}
-      />
-      <Route
-        path="/status"
-        element={(
-          <ProtectedRoute>
-            <Layout>
-              <BusinessStatus />
-            </Layout>
-          </ProtectedRoute>
-        )}
-      />
-
-      <Route path="/packages" element={<Navigate to="/status" replace />} />
+      <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/status" element={<Navigate to="/dashboard" replace />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

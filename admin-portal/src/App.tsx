@@ -5,11 +5,9 @@ import Layout from './shared/components/Layout/Layout';
 import AdminLoginForm from './modules/auth/components/AdminLoginForm';
 import Dashboard from './modules/dashboard/components/Dashboard';
 import AgencyList from './modules/agencies/components/AgencyList';
-import HotelApprovalList from './modules/hotels/components/HotelApprovalList';
-import VehicleApprovalList from './modules/vehicles/components/VehicleApprovalList';
 import UserList from './modules/users/components/UserList';
 import ReportDashboard from './modules/reports/components/ReportDashboard';
-import ActivityDashboard from './modules/activity/components/ActivityDashboard';
+import InventoryPage from './modules/inventory/components/InventoryPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -47,27 +45,7 @@ function App() {
         }
       />
       <Route
-        path="/hotels"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <HotelApprovalList />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/vehicles"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <VehicleApprovalList />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/users"
+        path="/travelers"
         element={
           <ProtectedRoute>
             <Layout>
@@ -77,7 +55,17 @@ function App() {
         }
       />
       <Route
-        path="/reports"
+        path="/inventory"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <InventoryPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
         element={
           <ProtectedRoute>
             <Layout>
@@ -86,16 +74,11 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/activity"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <ActivityDashboard />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/users" element={<Navigate to="/travelers" replace />} />
+      <Route path="/hotels" element={<Navigate to="/inventory?type=hotels" replace />} />
+      <Route path="/vehicles" element={<Navigate to="/inventory?type=vehicles" replace />} />
+      <Route path="/reports" element={<Navigate to="/analytics" replace />} />
+      <Route path="/activity" element={<Navigate to="/analytics" replace />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

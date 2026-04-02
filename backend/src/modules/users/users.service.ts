@@ -153,7 +153,7 @@ export class UsersService {
   }
 
   /**
-   * Submit traveler KYC documents and unlock traveler marketplace access.
+   * Submit traveler KYC documents for admin review.
    */
   async submitTravelerKyc(
     authUid: string,
@@ -204,13 +204,13 @@ export class UsersService {
       );
       uploadedObjectPaths.push(selfieImagePath);
 
-      const verificationTimestamp = new Date();
+      const submissionTimestamp = new Date();
       const updatedUser = await prisma.user.update({
         where: { authUid },
         data: {
           cnic: input.cnic,
-          cnicVerified: true,
-          travelerKycStatus: TRAVELER_KYC_STATUS.VERIFIED,
+          cnicVerified: false,
+          travelerKycStatus: TRAVELER_KYC_STATUS.PENDING,
           dateOfBirth: new Date(input.dateOfBirth),
           city: input.city,
           residentialAddress: input.residentialAddress,
@@ -218,8 +218,8 @@ export class UsersService {
           emergencyContactPhone: input.emergencyContactPhone,
           cnicFrontImageUrl: cnicFrontImagePath,
           selfieImageUrl: selfieImagePath,
-          kycSubmittedAt: verificationTimestamp,
-          kycVerifiedAt: verificationTimestamp,
+          kycSubmittedAt: submissionTimestamp,
+          kycVerifiedAt: null,
         },
       });
 

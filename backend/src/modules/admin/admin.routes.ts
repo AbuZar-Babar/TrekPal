@@ -37,6 +37,13 @@ router.post(
 );
 
 /**
+ * @route   PATCH /api/admin/agencies/:id
+ * @desc    Update an agency profile
+ * @access  Private (Admin only)
+ */
+router.patch('/agencies/:id', adminController.updateAgency.bind(adminController));
+
+/**
  * @route   DELETE /api/admin/agencies/:id
  * @desc    Delete an agency permanently
  * @access  Private (Admin only)
@@ -106,6 +113,27 @@ router.post(
  * @access  Private (Admin only)
  */
 router.get('/users', adminController.getUsers.bind(adminController));
+
+/**
+ * @route   POST /api/admin/users/:id/approve
+ * @desc    Approve a traveler KYC submission
+ * @access  Private (Admin only)
+ */
+router.post('/users/:id/approve', adminController.approveUser.bind(adminController));
+
+/**
+ * @route   POST /api/admin/users/:id/reject
+ * @desc    Reject a traveler KYC submission
+ * @access  Private (Admin only)
+ */
+router.post('/users/:id/reject', adminController.rejectUser.bind(adminController));
+
+/**
+ * @route   PATCH /api/admin/users/:id
+ * @desc    Update a traveler profile
+ * @access  Private (Admin only)
+ */
+router.patch('/users/:id', adminController.updateUser.bind(adminController));
 
 /**
  * @route   GET /api/admin/reports/dashboard

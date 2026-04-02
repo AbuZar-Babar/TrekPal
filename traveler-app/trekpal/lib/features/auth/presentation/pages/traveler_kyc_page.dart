@@ -272,7 +272,7 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
 
       messenger.showSnackBar(
         const SnackBar(
-          content: Text('Traveler KYC completed. Marketplace unlocked.'),
+          content: Text('Traveler KYC submitted. Waiting for admin approval.'),
         ),
       );
       Navigator.of(context).pop(true);
@@ -399,6 +399,9 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
   @override
   Widget build(BuildContext context) {
     final AuthProvider authProvider = context.watch<AuthProvider>();
+    final String travelerKycStatus =
+        authProvider.currentUser?.travelerKycStatus ?? 'NOT_SUBMITTED';
+    final DateTime? submittedAt = authProvider.currentUser?.kycSubmittedAt;
     final DateTime? verifiedAt = authProvider.currentUser?.kycVerifiedAt;
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
@@ -430,7 +433,7 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'To unlock premium expedition and secure bookings, verify this traveler account once with CNIC details, a selfie, and emergency information.',
+                      'Submit your CNIC details, selfie, and emergency information for admin review.',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -450,6 +453,25 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                           'Verified on ${DateFormat('dd MMM yyyy').format(verifiedAt.toLocal())}',
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: colorScheme.onTertiaryContainer,
+                          ),
+                        ),
+                      ),
+                    ] else if (travelerKycStatus == 'PENDING' &&
+                        submittedAt != null) ...<Widget>[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          'Submitted on ${DateFormat('dd MMM yyyy').format(submittedAt.toLocal())}',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSecondaryContainer,
                           ),
                         ),
                       ),
@@ -601,7 +623,7 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Your identity submission is stored so TrekPal can protect agencies and travelers from fraud while unlocking verified marketplace access.',
+                              'Your identity submission is stored so TrekPal can review it and unlock marketplace access after approval.',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSecondaryContainer,
                               ),
@@ -619,7 +641,7 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                         label: Text(
                           authProvider.isLoading
                               ? 'Submitting KYC...'
-                              : 'Continue to verification',
+                              : 'Submit for review',
                         ),
                       ),
                     ),

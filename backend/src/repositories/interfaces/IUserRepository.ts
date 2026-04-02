@@ -6,6 +6,7 @@ import { IRepository } from './IRepository';
  */
 export interface UserFilters {
     search?: string;
+    travelerKycStatus?: string;
     page?: number;
     limit?: number;
 }

@@ -80,6 +80,21 @@ export interface Hotel {
   updatedAt: string;
 }
 
+export interface Package {
+  id: string;
+  agencyId: string;
+  agencyName: string;
+  name: string;
+  description?: string | null;
+  price: number;
+  duration: number;
+  destinations: string[];
+  images: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface TripSpecs {
   stayType: 'ANY' | 'HOTEL' | 'RESORT' | 'GUEST_HOUSE';
   roomCount: number;

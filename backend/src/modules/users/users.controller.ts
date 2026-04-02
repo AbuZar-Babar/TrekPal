@@ -77,7 +77,7 @@ export class UsersController {
         cnicFrontImage,
         selfieImage,
       });
-      sendSuccess(res, profile, 'Traveler KYC submitted successfully');
+      sendSuccess(res, profile, 'Traveler KYC submitted for review');
     } catch (error: any) {
       if (error.code === 'P2002') {
         sendError(res, 'This CNIC is already registered with another traveler', 409);

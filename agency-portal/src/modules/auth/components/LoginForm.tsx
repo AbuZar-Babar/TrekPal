@@ -2,34 +2,56 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import ErrorPopup from '../../../shared/components/ErrorPopup';
 import AuthShell from './AuthShell';
 import { login } from '../store/authSlice';
+import {
+  ValidationErrors,
+  validateEmail,
+  validatePassword,
+} from '../../../shared/utils/validators';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [formError, setFormError] = useState<string | null>(null);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const validateForm = (): boolean => {
+    const nextErrors: ValidationErrors = {};
+
+    const emailError = validateEmail(email);
+    if (emailError) {
+      nextErrors.email = emailError;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      nextErrors.password = passwordError;
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setError(null);
+    setFormError(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
-      if (password.length < 8) {
-        setError('Password must be at least 8 characters');
-        setLoading(false);
-        return;
-      }
-
-      await dispatch(login({ email, password }) as any).unwrap();
+      await dispatch(login({ email: email.trim(), password }) as any).unwrap();
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (error: any) {
+      setFormError(error.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -38,34 +60,38 @@ const LoginForm = () => {
   return (
     <AuthShell
       badge="Agency sign in"
-      title="Sign in to your operations workspace"
-      subtitle="Access marketplace requests, negotiations, bookings, hotels, and vehicles from one clean operations surface."
-      panelTitle="Commercial trip operations, clarified."
-      panelText="The agency portal is designed for quoting, negotiation, and service execution. Keep your inventory updated and respond to traveler briefs with structured commercial offers."
+      title="Sign in"
+      subtitle="Use your approved agency account."
+      panelTitle="Run your agency from one place."
+      panelText="Sign in after approval to manage trip offers, traveler requests, hotels, vehicles, and bookings."
       panelPoints={[
-        'Review structured traveler briefs before pricing.',
-        'Revise negotiation threads when the traveler counters.',
-        'Manage bookings, hotels, and vehicles from the same control surface.',
+        'Create your own trip offers.',
+        'Review traveler requests and place bids.',
+        'Manage hotels, vehicles, and bookings.',
       ]}
     >
-      {error && <ErrorPopup message={error} onClose={() => setError(null)} />}
-
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+          {formError && (
+            <div className="rounded-[20px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+              {formError}
+            </div>
+          )}
+
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[var(--text)]">
-              Business email
+              Email
             </label>
             <input
               id="email"
               name="email"
               type="email"
-              required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               className="app-field"
               placeholder="agency@example.com"
             />
+            {errors.email && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.email}</p>}
           </div>
 
           <div>
@@ -76,14 +102,16 @@ const LoginForm = () => {
               id="password"
               name="password"
               type="password"
-              required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               className="app-field"
-              placeholder="Enter your password"
+              placeholder="Enter password"
             />
-            <p className="mt-2 text-xs leading-6 text-[var(--text-soft)]">
-              Agency access is only enabled after admin approval.
+            {errors.password && (
+              <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.password}</p>
+            )}
+            <p className="mt-2 text-xs text-[var(--text-soft)]">
+              Login stays blocked until admin approval.
             </p>
           </div>
 
@@ -96,9 +124,9 @@ const LoginForm = () => {
           </button>
 
           <div className="border-t border-[var(--border)] pt-5 text-center text-sm text-[var(--text-muted)]">
-            Don&apos;t have an account?{' '}
+            No account yet?{' '}
             <Link to="/signup" className="font-semibold text-[var(--primary)]">
-              Register your agency
+              Register agency
             </Link>
           </div>
         </form>

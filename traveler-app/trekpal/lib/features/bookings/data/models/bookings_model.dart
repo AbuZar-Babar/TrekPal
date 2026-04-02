@@ -1,3 +1,4 @@
+import '../../../../core/models/participant_preview.dart';
 import '../../domain/entities/booking_entities.dart';
 
 DateTime _parseBookingDate(dynamic value) {
@@ -18,6 +19,8 @@ class BookingModel extends BookingEntity {
     required super.endDate,
     required super.createdAt,
     required super.updatedAt,
+    super.packageTravelerCount,
+    super.packageParticipants = const <ParticipantPreview>[],
     super.userName,
     super.agencyId,
     super.agencyName,
@@ -31,6 +34,9 @@ class BookingModel extends BookingEntity {
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> participantList =
+        json['packageParticipants'] as List<dynamic>? ?? <dynamic>[];
+
     return BookingModel(
       id: json['id'] as String? ?? '',
       userId: json['userId'] as String? ?? '',
@@ -49,6 +55,14 @@ class BookingModel extends BookingEntity {
       endDate: _parseBookingDate(json['endDate']),
       createdAt: _parseBookingDate(json['createdAt']),
       updatedAt: _parseBookingDate(json['updatedAt']),
+      packageTravelerCount:
+          json['packageTravelerCount'] as int? ?? participantList.length,
+      packageParticipants: participantList
+          .map(
+            (dynamic item) =>
+                ParticipantPreview.fromJson(item as Map<String, dynamic>),
+          )
+          .toList(),
       destination: json['destination'] as String?,
     );
   }

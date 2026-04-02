@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { UserProfile } from '../../../shared/types';
+import { TravelerUpdateInput, UserProfile } from '../../../shared/types';
 import { usersService } from '../services/usersService';
 
 interface UsersState {
@@ -26,8 +26,34 @@ const initialState: UsersState = {
 
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async (params?: { page?: number; limit?: number; search?: string }) => {
+  async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  }) => {
     return usersService.getUsers(params);
+  }
+);
+
+export const approveUser = createAsyncThunk(
+  'users/approveUser',
+  async ({ id, reason }: { id: string; reason?: string }) => {
+    return usersService.approveUser(id, reason);
+  }
+);
+
+export const rejectUser = createAsyncThunk(
+  'users/rejectUser',
+  async ({ id, reason }: { id: string; reason?: string }) => {
+    return usersService.rejectUser(id, reason);
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  'users/updateUser',
+  async ({ id, payload }: { id: string; payload: TravelerUpdateInput }) => {
+    return usersService.updateUser(id, payload);
   }
 );
 
@@ -53,6 +79,24 @@ const usersSlice = createSlice({
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch users';
+      })
+      .addCase(approveUser.fulfilled, (state, action) => {
+        const index = state.users.findIndex((user) => user.id === action.payload.id);
+        if (index !== -1) {
+          state.users[index] = action.payload;
+        }
+      })
+      .addCase(rejectUser.fulfilled, (state, action) => {
+        const index = state.users.findIndex((user) => user.id === action.payload.id);
+        if (index !== -1) {
+          state.users[index] = action.payload;
+        }
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        const index = state.users.findIndex((user) => user.id === action.payload.id);
+        if (index !== -1) {
+          state.users[index] = action.payload;
+        }
       });
   },
 });

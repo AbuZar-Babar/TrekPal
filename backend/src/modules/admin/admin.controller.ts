@@ -1,7 +1,13 @@
 import { Response } from 'express';
+import { ZodError } from 'zod';
 import { AuthRequest } from '../../middlewares/auth.middleware';
 import { adminService } from './admin.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
+import {
+  updateAgencySchema,
+  updateUserSchema,
+  userPaginationSchema,
+} from './admin.types';
 
 /**
  * Admin Controller
@@ -230,14 +236,131 @@ export class AdminController {
    */
   async getUsers(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
-      const search = req.query.search as string | undefined;
+      const parsed = userPaginationSchema.parse({
+        query: {
+          page: req.query.page,
+          limit: req.query.limit,
+          status: req.query.status,
+          search: req.query.search,
+        },
+      });
+      const { page, limit, status, search } = parsed.query;
 
-      const result = await adminService.getUsers(page, limit, search);
+      const result = await adminService.getUsers(page, limit, search, status);
       sendSuccess(res, result, 'Users retrieved successfully');
     } catch (error: any) {
+      if (error instanceof ZodError) {
+        sendError(res, error.errors[0]?.message || 'Validation error', 400);
+        return;
+      }
+
       sendError(res, error.message || 'Failed to get users', 500);
+    }
+  }
+
+  /**
+   * Approve a traveler
+   * POST /api/admin/users/:id/approve
+   */
+  async approveUser(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body || {};
+
+      const user = await adminService.approveUser(id, reason);
+      sendSuccess(res, user, 'Traveler approved successfully');
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        sendError(res, 'Traveler not found', 404);
+      } else {
+        sendError(res, error.message || 'Failed to approve traveler', 500);
+      }
+    }
+  }
+
+  /**
+   * Reject a traveler
+   * POST /api/admin/users/:id/reject
+   */
+  async rejectUser(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body || {};
+
+      const user = await adminService.rejectUser(id, reason);
+      sendSuccess(res, user, 'Traveler rejected successfully');
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        sendError(res, 'Traveler not found', 404);
+      } else {
+        sendError(res, error.message || 'Failed to reject traveler', 500);
+      }
+    }
+  }
+
+  /**
+   * Update an agency profile
+   * PATCH /api/admin/agencies/:id
+   */
+  async updateAgency(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const parsed = updateAgencySchema.parse({
+        params: req.params,
+        body: req.body,
+      });
+
+      const agency = await adminService.updateAgency(parsed.params.id, parsed.body);
+      sendSuccess(res, agency, 'Agency updated successfully');
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        sendError(res, error.errors[0]?.message || 'Validation error', 400);
+        return;
+      }
+
+      if (error.code === 'P2002') {
+        sendError(res, 'An agency with this email already exists', 409);
+        return;
+      }
+
+      if (error.code === 'P2025') {
+        sendError(res, 'Agency not found', 404);
+        return;
+      }
+
+      sendError(res, error.message || 'Failed to update agency', 400);
+    }
+  }
+
+  /**
+   * Update a traveler profile
+   * PATCH /api/admin/users/:id
+   */
+  async updateUser(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const parsed = updateUserSchema.parse({
+        params: req.params,
+        body: req.body,
+      });
+
+      const user = await adminService.updateUser(parsed.params.id, parsed.body);
+      sendSuccess(res, user, 'Traveler updated successfully');
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        sendError(res, error.errors[0]?.message || 'Validation error', 400);
+        return;
+      }
+
+      if (error.code === 'P2002') {
+        sendError(res, 'A traveler with this email or CNIC already exists', 409);
+        return;
+      }
+
+      if (error.code === 'P2025') {
+        sendError(res, 'Traveler not found', 404);
+        return;
+      }
+
+      sendError(res, error.message || 'Failed to update traveler', 400);
     }
   }
 

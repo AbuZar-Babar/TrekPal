@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/theme_controller.dart';
 import '../../../auth/presentation/pages/traveler_kyc_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bookings/presentation/pages/bookings_list_page.dart';
+import '../../../chat/presentation/pages/chat_list_page.dart';
+import '../../../complaints/presentation/pages/complaint_form_page.dart';
+import '../../../packages/presentation/pages/packages_list_page.dart';
 import '../../../trip_requests/presentation/pages/trip_requests_list_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
         index: _currentIndex,
         children: const <Widget>[
           TripRequestsListPage(),
+          PackagesListPage(),
           BookingsListPage(),
           _AccountPage(),
         ],
@@ -65,19 +68,24 @@ class _HomePageState extends State<HomePage> {
               },
               destinations: const <NavigationDestination>[
                 NavigationDestination(
-                  icon: Icon(Icons.explore_outlined),
-                  selectedIcon: Icon(Icons.explore),
-                  label: 'Trips',
+                  icon: Icon(Icons.edit_note_outlined),
+                  selectedIcon: Icon(Icons.edit_note),
+                  label: 'Request',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.route_outlined),
+                  selectedIcon: Icon(Icons.route),
+                  label: 'Offers',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.luggage_outlined),
                   selectedIcon: Icon(Icons.luggage),
-                  label: 'Bookings',
+                  label: 'Trips',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.account_circle_outlined),
                   selectedIcon: Icon(Icons.account_circle),
-                  label: 'Account',
+                  label: 'You',
                 ),
               ],
             ),
@@ -91,12 +99,34 @@ class _HomePageState extends State<HomePage> {
 class _AccountPage extends StatelessWidget {
   const _AccountPage();
 
-  String _kycStatusLabel(AuthProvider authProvider) {
+  String _kycTitle(AuthProvider authProvider) {
     if (authProvider.isTravelerKycVerified) {
-      return 'Identity verified';
+      return 'KYC approved';
     }
 
-    return 'Verification required';
+    switch (authProvider.currentUser?.travelerKycStatus) {
+      case 'PENDING':
+        return 'KYC in review';
+      case 'REJECTED':
+        return 'KYC needs update';
+      default:
+        return 'KYC required';
+    }
+  }
+
+  String _kycMessage(AuthProvider authProvider) {
+    if (authProvider.isTravelerKycVerified) {
+      return 'Requests and bookings are unlocked.';
+    }
+
+    switch (authProvider.currentUser?.travelerKycStatus) {
+      case 'PENDING':
+        return 'Your account is waiting for admin approval.';
+      case 'REJECTED':
+        return 'Update your details to unlock trips again.';
+      default:
+        return 'Finish KYC after login to unlock the full app.';
+    }
   }
 
   String _themeModeLabel(ThemeMode themeMode) {
@@ -117,6 +147,7 @@ class _AccountPage extends StatelessWidget {
     final AuthProvider authProvider = context.watch<AuthProvider>();
     final ThemeController themeController = context.watch<ThemeController>();
     final user = authProvider.currentUser;
+    final bool unlocked = authProvider.canUseTravelerMarketplace;
 
     return Scaffold(
       body: SafeArea(
@@ -125,217 +156,218 @@ class _AccountPage extends StatelessWidget {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      AppConstants.appName,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colorScheme.primary,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        AppConstants.appName,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: colorScheme.primary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      AppConstants.appSignature,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        letterSpacing: 1.2,
-                        color: colorScheme.onSurfaceVariant,
+                      const SizedBox(height: 4),
+                      Text(
+                        'Simple travel control',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const Spacer(),
                 CircleAvatar(
-                  radius: 20,
+                  radius: 24,
                   backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
                   foregroundColor: colorScheme.primary,
                   child: Text(
                     (user?.name.trim().isNotEmpty ?? false)
                         ? user!.name.trim().substring(0, 1).toUpperCase()
                         : 'T',
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.titleLarge?.copyWith(
                       color: colorScheme.primary,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
             Text(user?.name ?? 'Traveler', style: theme.textTheme.displaySmall),
             const SizedBox(height: 10),
             Text(
-              'Manage your identity, marketplace access, and the look of the app from one place.',
+              'Request trips, join offers, and keep the rest lightweight.',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(
-                  alpha: theme.brightness == Brightness.dark ? 0.54 : 0.66,
-                ),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          _kycStatusLabel(authProvider),
-                          style: theme.textTheme.headlineSmall,
+            const SizedBox(height: 18),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            _kycTitle(authProvider),
+                            style: theme.textTheme.headlineSmall,
+                          ),
                         ),
+                        _StatusPill(
+                          label: unlocked ? 'Open' : 'Locked',
+                          color: unlocked
+                              ? colorScheme.tertiary
+                              : colorScheme.secondary,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _kycMessage(authProvider),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                      Icon(
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: _MetricTile(
+                            icon: unlocked
+                                ? Icons.lock_open_rounded
+                                : Icons.lock_outline_rounded,
+                            label: 'Trips',
+                            value: unlocked ? 'Active' : 'Restricted',
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _MetricTile(
+                            icon: Icons.palette_outlined,
+                            label: 'Theme',
+                            value: _themeModeLabel(themeController.themeMode),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<bool>(
+                            builder: (_) => const TravelerKycPage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
                         authProvider.isTravelerKycVerified
                             ? Icons.verified_user_outlined
                             : Icons.badge_outlined,
-                        color: authProvider.isTravelerKycVerified
-                            ? colorScheme.tertiary
-                            : colorScheme.secondary,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    authProvider.isTravelerKycVerified
-                        ? 'Your traveler account is fully unlocked for trip publishing, negotiation, and booking.'
-                        : 'This account has basic access only. Finish traveler KYC to publish trip briefs and book with agencies.',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                      label: Text(
+                        authProvider.isTravelerKycVerified
+                            ? 'View KYC'
+                            : 'Complete KYC',
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: _MetricTile(
-                          label: 'Marketplace',
-                          value: authProvider.canUseTravelerMarketplace
-                              ? 'Open'
-                              : 'Locked',
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _MetricTile(
-                          label: 'Appearance',
-                          value: _themeModeLabel(themeController.themeMode),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  ElevatedButton.icon(
-                    onPressed: () {
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: _QuickActionCard(
+                    icon: Icons.forum_outlined,
+                    title: 'Traveler chat',
+                    subtitle: 'Mockup',
+                    onTap: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute<bool>(
-                          builder: (_) => const TravelerKycPage(),
+                        MaterialPageRoute<void>(
+                          builder: (_) => const ChatListPage(),
                         ),
                       );
                     },
-                    icon: Icon(
-                      authProvider.isTravelerKycVerified
-                          ? Icons.visibility_outlined
-                          : Icons.verified_user_outlined,
-                    ),
-                    label: Text(
-                      authProvider.isTravelerKycVerified
-                          ? 'Review traveler KYC'
-                          : 'Complete traveler KYC',
-                    ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-            _SectionCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _SectionEyebrow(label: 'Profile'),
-                  const SizedBox(height: 10),
-                  _InfoRow(label: 'Email address', value: user?.email ?? '-'),
-                  _InfoRow(label: 'Phone number', value: user?.phone ?? '-'),
-                  _InfoRow(
-                    label: 'Account role',
-                    value: user?.role ?? 'TRAVELER',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-            _SectionCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _SectionEyebrow(label: 'Appearance'),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Switch between light, dark, and system-driven themes.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SegmentedButton<ThemeMode>(
-                    showSelectedIcon: false,
-                    segments: const <ButtonSegment<ThemeMode>>[
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.light,
-                        icon: Icon(Icons.wb_sunny_outlined),
-                        label: Text('Light'),
-                      ),
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.system,
-                        icon: Icon(Icons.phone_android_outlined),
-                        label: Text('System'),
-                      ),
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.dark,
-                        icon: Icon(Icons.nightlight_outlined),
-                        label: Text('Dark'),
-                      ),
-                    ],
-                    selected: <ThemeMode>{themeController.themeMode},
-                    onSelectionChanged: (Set<ThemeMode> modes) {
-                      final ThemeMode selectedMode = modes.first;
-                      themeController.setThemeMode(selectedMode);
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _QuickActionCard(
+                    icon: Icons.report_problem_outlined,
+                    title: 'Complaint',
+                    subtitle: 'Mockup',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const ComplaintFormPage(
+                            subject: 'General support',
+                          ),
+                        ),
+                      );
                     },
                   ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Profile', style: theme.textTheme.titleLarge),
+                    const SizedBox(height: 14),
+                    _InfoRow(label: 'Email', value: user?.email ?? '-'),
+                    _InfoRow(label: 'Phone', value: user?.phone ?? '-'),
+                    _InfoRow(
+                      label: 'City',
+                      value: user?.city?.trim().isNotEmpty == true
+                          ? user!.city!
+                          : '-',
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 18),
-            _SectionCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _SectionEyebrow(label: 'Service'),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.memory_outlined,
-                    title: 'Backend target',
-                    subtitle: ApiConstants.baseUrl,
-                  ),
-                  const SizedBox(height: 12),
-                  _ActionTile(
-                    icon: Icons.privacy_tip_outlined,
-                    title: 'Privacy and security',
-                    subtitle:
-                        'Traveler KYC data is stored to unlock verified marketplace access.',
-                  ),
-                  const SizedBox(height: 12),
-                  _ActionTile(
-                    icon: Icons.support_agent_outlined,
-                    title: 'Support and feedback',
-                    subtitle:
-                        'Need help with your identity review or a booking thread? Contact TrekPal support.',
-                  ),
-                ],
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Theme', style: theme.textTheme.titleLarge),
+                    const SizedBox(height: 14),
+                    SegmentedButton<ThemeMode>(
+                      showSelectedIcon: false,
+                      segments: const <ButtonSegment<ThemeMode>>[
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.light,
+                          icon: Icon(Icons.wb_sunny_outlined),
+                          label: Text('Light'),
+                        ),
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.system,
+                          icon: Icon(Icons.phone_android_outlined),
+                          label: Text('System'),
+                        ),
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.dark,
+                          icon: Icon(Icons.nightlight_outlined),
+                          label: Text('Dark'),
+                        ),
+                      ],
+                      selected: <ThemeMode>{themeController.themeMode},
+                      onSelectionChanged: (Set<ThemeMode> modes) {
+                        themeController.setThemeMode(modes.first);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -344,7 +376,7 @@ class _AccountPage extends StatelessWidget {
                   ? null
                   : () => context.read<AuthProvider>().logout(),
               icon: const Icon(Icons.logout_rounded),
-              label: const Text('Sign out of TrekPal'),
+              label: const Text('Sign out'),
             ),
           ],
         ),
@@ -353,9 +385,36 @@ class _AccountPage extends StatelessWidget {
   }
 }
 
-class _MetricTile extends StatelessWidget {
-  const _MetricTile({required this.label, required this.value});
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.label, required this.color});
 
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: color),
+      ),
+    );
+  }
+}
+
+class _MetricTile extends StatelessWidget {
+  const _MetricTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
   final String label;
   final String value;
 
@@ -365,22 +424,19 @@ class _MetricTile extends StatelessWidget {
     final ColorScheme colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(
-          alpha: theme.brightness == Brightness.dark ? 0.32 : 0.9,
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.3 : 0.6,
         ),
         borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: colorScheme.onSurface,
-            ),
-          ),
+          Icon(icon, color: colorScheme.primary),
+          const SizedBox(height: 10),
+          Text(value, style: theme.textTheme.titleMedium),
           const SizedBox(height: 4),
           Text(
             label,
@@ -394,41 +450,46 @@ class _MetricTile extends StatelessWidget {
   }
 }
 
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.child});
+class _QuickActionCard extends StatelessWidget {
+  const _QuickActionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
 
-  final Widget child;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(
-          alpha: theme.brightness == Brightness.dark ? 0.42 : 0.5,
-        ),
+    return Card(
+      child: InkWell(
         borderRadius: BorderRadius.circular(30),
-      ),
-      child: child,
-    );
-  }
-}
-
-class _SectionEyebrow extends StatelessWidget {
-  const _SectionEyebrow({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label.toUpperCase(),
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
-        letterSpacing: 1.1,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Icon(icon, color: colorScheme.primary),
+              const SizedBox(height: 14),
+              Text(title, style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -448,10 +509,9 @@ class _InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(
-            width: 112,
+            width: 72,
             child: Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -459,72 +519,7 @@ class _InfoRow extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: colorScheme.onSurface,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(
-          alpha: theme.brightness == Brightness.dark ? 0.3 : 0.88,
-        ),
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, color: colorScheme.primary),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(title, style: theme.textTheme.titleSmall),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: Text(value, style: theme.textTheme.titleSmall)),
         ],
       ),
     );

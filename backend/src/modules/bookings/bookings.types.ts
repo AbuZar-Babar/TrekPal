@@ -2,6 +2,14 @@
  * Booking Types
  */
 
+export interface BookingParticipantPreview {
+  userId: string;
+  travelerName: string;
+  initials: string;
+  bookingStatus: string;
+  joinedAt: Date;
+}
+
 export interface BookingResponse {
   id: string;
   userId: string;
@@ -22,6 +30,8 @@ export interface BookingResponse {
   updatedAt: Date;
   // Trip summary
   destination?: string;
+  packageTravelerCount?: number;
+  packageParticipants?: BookingParticipantPreview[];
 }
 
 export interface UpdateBookingStatusInput {

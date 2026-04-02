@@ -20,6 +20,7 @@ class TrekpalDestinationArtwork extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final bool dark = theme.brightness == Brightness.dark;
+    final String? badgeText = badge;
     final List<Color> colors = AppColors.paletteForSeed(
       destination,
       dark: dark,
@@ -98,7 +99,7 @@ class TrekpalDestinationArtwork extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  if (badge != null)
+                  if (badgeText != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -111,7 +112,7 @@ class TrekpalDestinationArtwork extends StatelessWidget {
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
-                        badge!,
+                        badgeText,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: theme.colorScheme.onSurface,
                         ),

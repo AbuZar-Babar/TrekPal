@@ -9,7 +9,11 @@ import {
   PrismaUserRepository,
 } from '../../repositories';
 import { prisma } from '../../config/database';
-import { APPROVAL_STATUS } from '../../config/constants';
+import {
+  APPROVAL_STATUS,
+  normalizeTravelerKycStatus,
+  TRAVELER_KYC_STATUS,
+} from '../../config/constants';
 import { createSignedKycUrl, deleteKycFile, isHttpUrl } from '../../services/kyc-storage.service';
 import {
   AgencyResponse,
@@ -17,6 +21,8 @@ import {
   VehicleResponse,
   UserResponse,
   DashboardStats,
+  UpdateAgencyInput,
+  UpdateUserInput,
 } from './admin.types';
 
 /**
@@ -118,6 +124,80 @@ export class AdminService {
     };
   }
 
+  private async mapUserResponse(user: any): Promise<UserResponse> {
+    const [cnicFrontImageUrl, selfieImageUrl] = await Promise.all([
+      this.resolveKycUrl(user.cnicFrontImageUrl),
+      this.resolveKycUrl(user.selfieImageUrl),
+    ]);
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+      cnic: user.cnic,
+      city: user.city,
+      residentialAddress: user.residentialAddress,
+      cnicVerified: user.cnicVerified,
+      travelerKycStatus: normalizeTravelerKycStatus(user.travelerKycStatus),
+      cnicFrontImageUrl,
+      selfieImageUrl,
+      kycSubmittedAt: user.kycSubmittedAt,
+      kycVerifiedAt: user.kycVerifiedAt,
+      createdAt: user.createdAt,
+      bookingsCount: user.bookingsCount || 0,
+      tripRequestsCount: user.tripRequestsCount || 0,
+    };
+  }
+
+  private async getAgencyWithCounts(agencyId: string): Promise<any> {
+    const agency = await prisma.agency.findUnique({
+      where: { id: agencyId },
+      include: {
+        _count: {
+          select: {
+            hotels: true,
+            vehicles: true,
+          },
+        },
+      },
+    });
+
+    if (!agency) {
+      throw new Error('Agency not found');
+    }
+
+    return {
+      ...agency,
+      hotelsCount: agency._count.hotels,
+      vehiclesCount: agency._count.vehicles,
+    };
+  }
+
+  private async getUserWithCounts(userId: string): Promise<any> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        _count: {
+          select: {
+            bookings: true,
+            tripRequests: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      ...user,
+      bookingsCount: user._count.bookings,
+      tripRequestsCount: user._count.tripRequests,
+    };
+  }
+
   /**
    * Get all agencies with filtering and pagination
    */
@@ -161,26 +241,36 @@ export class AdminService {
    * Approve an agency
    */
   async approveAgency(agencyId: string, _reason?: string): Promise<AgencyResponse> {
-    const agency = await this.agencyRepo.updateStatus(agencyId, APPROVAL_STATUS.APPROVED);
-
-    // Refetch with counts
-    const agencies = await this.agencyRepo.findMany({ page: 1, limit: 1 });
-    const agencyWithCounts = agencies.find(a => a.id === agencyId) || agency;
-
-    return this.mapAgencyResponse(agencyWithCounts);
+    await this.agencyRepo.updateStatus(agencyId, APPROVAL_STATUS.APPROVED);
+    return this.mapAgencyResponse(await this.getAgencyWithCounts(agencyId));
   }
 
   /**
    * Reject an agency
    */
   async rejectAgency(agencyId: string, _reason?: string): Promise<AgencyResponse> {
-    const agency = await this.agencyRepo.updateStatus(agencyId, APPROVAL_STATUS.REJECTED);
+    await this.agencyRepo.updateStatus(agencyId, APPROVAL_STATUS.REJECTED);
+    return this.mapAgencyResponse(await this.getAgencyWithCounts(agencyId));
+  }
 
-    // Refetch with counts
-    const agencies = await this.agencyRepo.findMany({ page: 1, limit: 1 });
-    const agencyWithCounts = agencies.find(a => a.id === agencyId) || agency;
+  /**
+   * Update an agency profile
+   */
+  async updateAgency(
+    agencyId: string,
+    input: UpdateAgencyInput,
+  ): Promise<AgencyResponse> {
+    await this.agencyRepo.update(agencyId, {
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      address: input.address,
+      officeCity: input.officeCity,
+      jurisdiction: input.jurisdiction,
+      ownerName: input.ownerName,
+    });
 
-    return this.mapAgencyResponse(agencyWithCounts);
+    return this.mapAgencyResponse(await this.getAgencyWithCounts(agencyId));
   }
 
   /**
@@ -404,28 +494,18 @@ export class AdminService {
   async getUsers(
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    status?: string,
   ): Promise<{ users: UserResponse[]; total: number; page: number; limit: number }> {
-    const filters = { page, limit, search };
+    const filters = { page, limit, search, travelerKycStatus: status };
     const [users, total] = await Promise.all([
       this.userRepo.findMany(filters),
       this.userRepo.count(filters),
     ]);
 
-    const usersResponse: UserResponse[] = users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      phone: user.phone,
-      cnic: user.cnic,
-      cnicVerified: user.cnicVerified,
-      travelerKycStatus: user.travelerKycStatus,
-      kycSubmittedAt: user.kycSubmittedAt,
-      kycVerifiedAt: user.kycVerifiedAt,
-      createdAt: user.createdAt,
-      bookingsCount: user.bookingsCount || 0,
-      tripRequestsCount: user.tripRequestsCount || 0,
-    }));
+    const usersResponse = await Promise.all(
+      users.map((user) => this.mapUserResponse(user)),
+    );
 
     return {
       users: usersResponse,
@@ -433,6 +513,51 @@ export class AdminService {
       page,
       limit,
     };
+  }
+
+  /**
+   * Approve a traveler KYC submission
+   */
+  async approveUser(userId: string, _reason?: string): Promise<UserResponse> {
+    await this.userRepo.update(userId, {
+      travelerKycStatus: TRAVELER_KYC_STATUS.VERIFIED,
+      cnicVerified: true,
+      kycVerifiedAt: new Date(),
+    });
+
+    return this.mapUserResponse(await this.getUserWithCounts(userId));
+  }
+
+  /**
+   * Reject a traveler KYC submission
+   */
+  async rejectUser(userId: string, _reason?: string): Promise<UserResponse> {
+    await this.userRepo.update(userId, {
+      travelerKycStatus: TRAVELER_KYC_STATUS.REJECTED,
+      cnicVerified: false,
+      kycVerifiedAt: null,
+    });
+
+    return this.mapUserResponse(await this.getUserWithCounts(userId));
+  }
+
+  /**
+   * Update a traveler profile
+   */
+  async updateUser(
+    userId: string,
+    input: UpdateUserInput,
+  ): Promise<UserResponse> {
+    await this.userRepo.update(userId, {
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      cnic: input.cnic,
+      city: input.city,
+      residentialAddress: input.residentialAddress,
+    });
+
+    return this.mapUserResponse(await this.getUserWithCounts(userId));
   }
 
   /**
@@ -445,6 +570,8 @@ export class AdminService {
       totalAgencies,
       approvedAgencies,
       pendingAgencies,
+      pendingTravelers,
+      verifiedTravelers,
       totalHotels,
       approvedHotels,
       pendingHotels,
@@ -460,6 +587,8 @@ export class AdminService {
       this.agencyRepo.count(),
       this.agencyRepo.count({ status: APPROVAL_STATUS.APPROVED }),
       this.agencyRepo.count({ status: APPROVAL_STATUS.PENDING }),
+      this.userRepo.count({ travelerKycStatus: TRAVELER_KYC_STATUS.PENDING }),
+      this.userRepo.count({ travelerKycStatus: TRAVELER_KYC_STATUS.VERIFIED }),
       this.hotelRepo.count(),
       this.hotelRepo.count({ status: APPROVAL_STATUS.APPROVED }),
       this.hotelRepo.count({ status: APPROVAL_STATUS.PENDING }),
@@ -485,6 +614,8 @@ export class AdminService {
       totalAgencies,
       approvedAgencies,
       pendingAgencies,
+      pendingTravelers,
+      verifiedTravelers,
       totalHotels,
       approvedHotels,
       pendingHotels,

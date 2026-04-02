@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-import { TRAVELER_KYC_STATUS, type TravelerKycStatus } from '../../config/constants';
+import {
+  normalizeTravelerKycStatus as normalizeTravelerKycStatusValue,
+  type TravelerKycStatus,
+} from '../../config/constants';
 
 const phoneSchema = z
   .string()
@@ -80,7 +83,6 @@ export interface UserProfileResponse {
   updatedAt: Date;
 }
 
-export const normalizeTravelerKycStatus = (value: unknown): TravelerKycStatus =>
-  value === TRAVELER_KYC_STATUS.VERIFIED
-    ? TRAVELER_KYC_STATUS.VERIFIED
-    : TRAVELER_KYC_STATUS.NOT_SUBMITTED;
+export const normalizeTravelerKycStatus = (
+  value: unknown,
+): TravelerKycStatus => normalizeTravelerKycStatusValue(value);

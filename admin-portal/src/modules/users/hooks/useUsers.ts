@@ -6,6 +6,7 @@ import { fetchUsers } from '../store/usersSlice';
 interface FetchUserParams {
   page?: number;
   limit?: number;
+  status?: string;
   search?: string;
 }
 

@@ -34,8 +34,15 @@ class AuthProvider extends ChangeNotifier {
   bool get isInitializing => _isInitializing;
   String? get errorMessage => _errorMessage;
   bool get isTraveler => currentUser?.role == 'TRAVELER';
-  bool get isTravelerKycVerified =>
-      !isTraveler || (currentUser?.isTravelerKycVerified ?? false);
+  bool get isTravelerKycVerified {
+    final AuthUser? user = currentUser;
+    if (user == null) {
+      return false;
+    }
+
+    return user.role != 'TRAVELER' || user.isTravelerKycVerified;
+  }
+
   bool get canUseTravelerMarketplace => isTravelerKycVerified;
 
   Future<void> restoreSession() async {

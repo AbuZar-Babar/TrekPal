@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../auth/presentation/pages/traveler_kyc_page.dart';
@@ -61,6 +60,8 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     final AuthProvider authProvider = context.watch<AuthProvider>();
+    final String travelerKycStatus =
+        authProvider.currentUser?.travelerKycStatus ?? 'NOT_SUBMITTED';
     final TripRequestsProvider provider = context.watch<TripRequestsProvider>();
     final List<TripRequestEntity> requests = provider.tripRequests;
 
@@ -82,11 +83,17 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
         onPressed: _openCreatePage,
         icon: Icon(
           authProvider.canUseTravelerMarketplace
-              ? Icons.edit_outlined
+              ? Icons.add_rounded
+              : travelerKycStatus == 'PENDING'
+              ? Icons.hourglass_top_rounded
               : Icons.verified_user_outlined,
         ),
         label: Text(
-          authProvider.canUseTravelerMarketplace ? 'New brief' : 'Verify now',
+          authProvider.canUseTravelerMarketplace
+              ? 'New request'
+              : travelerKycStatus == 'PENDING'
+              ? 'Under review'
+              : 'Verify now',
         ),
       ),
       body: SafeArea(
@@ -97,7 +104,7 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
                   builder: (BuildContext context) {
                     if (provider.isLoading && requests.isEmpty) {
                       return const TrekpalLoadingWidget(
-                        message: 'Loading your traveler marketplace...',
+                        message: 'Loading your trip requests...',
                       );
                     }
 
@@ -113,105 +120,72 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
                       padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
                       children: <Widget>[
                         Text(
-                          AppConstants.appName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: colorScheme.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Curated Escapes',
+                          'Arrange a trip',
                           style: theme.textTheme.displayMedium,
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Publish structured trip briefs, compare agency offers, and lock the right journey without leaving the marketplace.',
+                          'Post a brief and compare agency bids.',
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Container(
-                          padding: const EdgeInsets.all(22),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHighest
-                                .withValues(
-                                  alpha: theme.brightness == Brightness.dark
-                                      ? 0.42
-                                      : 0.5,
-                                ),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Marketplace overview',
-                                style: theme.textTheme.headlineSmall,
+                        const SizedBox(height: 18),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: _MiniStat(
+                                icon: Icons.edit_note_outlined,
+                                label: 'Requests',
+                                value: '${requests.length}',
                               ),
-                              const SizedBox(height: 16),
-                              Row(
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _MiniStat(
+                                icon: Icons.mark_email_unread_outlined,
+                                label: 'Open',
+                                value: '$publishedCount',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _MiniStat(
+                                icon: Icons.task_alt_outlined,
+                                label: 'Booked',
+                                value: '$bookedCount',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        if (requests.isEmpty)
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(26),
+                              child: Column(
                                 children: <Widget>[
-                                  Expanded(
-                                    child: _StatTile(
-                                      label: 'Total',
-                                      value: '${requests.length}',
-                                    ),
+                                  Icon(
+                                    Icons.explore_outlined,
+                                    size: 56,
+                                    color: colorScheme.primary,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: _StatTile(
-                                      label: 'Open',
-                                      value: '$publishedCount',
-                                    ),
+                                  const SizedBox(height: 18),
+                                  Text(
+                                    'Create your first request',
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.headlineSmall,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: _StatTile(
-                                      label: 'Booked',
-                                      value: '$bookedCount',
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    'Choose destination, people, stay, and transport. Agencies will bid on it.',
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        if (requests.isEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(26),
-                            decoration: BoxDecoration(
-                              color: colorScheme.surfaceContainerHighest
-                                  .withValues(
-                                    alpha: theme.brightness == Brightness.dark
-                                        ? 0.42
-                                        : 0.5,
-                                  ),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.explore_outlined,
-                                  size: 56,
-                                  color: colorScheme.primary,
-                                ),
-                                const SizedBox(height: 18),
-                                Text(
-                                  'Create your first trip brief',
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.headlineSmall,
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Tell agencies where you want to go, how many people are traveling, and what services you want quoted.',
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
                             ),
                           )
                         else
@@ -241,29 +215,41 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
                 children: <Widget>[
                   Text(
-                    AppConstants.appName,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Almost ready for departure',
+                    travelerKycStatus == 'PENDING'
+                        ? 'KYC in review'
+                        : travelerKycStatus == 'REJECTED'
+                        ? 'KYC needs update'
+                        : 'Request flow is locked',
                     style: theme.textTheme.displayMedium,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Traveler KYC unlocks trip publishing, offer negotiation, and booking actions.',
+                    travelerKycStatus == 'PENDING'
+                        ? 'Your KYC was submitted. Requests unlock after admin approval.'
+                        : travelerKycStatus == 'REJECTED'
+                        ? 'Update your traveler KYC and submit it again.'
+                        : 'Complete traveler KYC before agencies can bid on your request.',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 22),
                   TravelerKycGateCard(
-                    title: 'Traveler verification required',
-                    message:
-                        'Your account is active, but trip publishing is locked until you submit CNIC details and identity photos.',
-                    actionLabel: 'Complete traveler KYC',
+                    title: travelerKycStatus == 'PENDING'
+                        ? 'Traveler KYC under review'
+                        : travelerKycStatus == 'REJECTED'
+                        ? 'Traveler KYC needs update'
+                        : 'Traveler verification required',
+                    message: travelerKycStatus == 'PENDING'
+                        ? 'Open KYC if you want to review your submission.'
+                        : travelerKycStatus == 'REJECTED'
+                        ? 'Open KYC, correct the details, and resubmit.'
+                        : 'Your account is active, but request publishing is still locked.',
+                    actionLabel: travelerKycStatus == 'PENDING'
+                        ? 'View traveler KYC'
+                        : travelerKycStatus == 'REJECTED'
+                        ? 'Update traveler KYC'
+                        : 'Complete traveler KYC',
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute<bool>(
@@ -279,9 +265,14 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
   }
 }
 
-class _StatTile extends StatelessWidget {
-  const _StatTile({required this.label, required this.value});
+class _MiniStat extends StatelessWidget {
+  const _MiniStat({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
+  final IconData icon;
   final String label;
   final String value;
 
@@ -290,26 +281,24 @@ class _StatTile extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-      decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(
-          alpha: theme.brightness == Brightness.dark ? 0.28 : 0.9,
-        ),
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(value, style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Icon(icon, color: colorScheme.primary),
+            const SizedBox(height: 10),
+            Text(value, style: theme.textTheme.titleLarge),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

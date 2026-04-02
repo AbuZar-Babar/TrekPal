@@ -1,5 +1,9 @@
 import apiClient from '../../../shared/services/apiClient';
-import { Agency, PaginatedResponse } from '../../../shared/types';
+import {
+  Agency,
+  AgencyUpdateInput,
+  PaginatedResponse,
+} from '../../../shared/types';
 
 /**
  * Agency Service
@@ -72,6 +76,14 @@ export const agencyService = {
     const response = await apiClient.post(`/admin/agencies/${id}/reject`, {
       reason,
     });
+    return response.data.data;
+  },
+
+  /**
+   * Update agency profile
+   */
+  async updateAgency(id: string, payload: AgencyUpdateInput): Promise<Agency> {
+    const response = await apiClient.patch(`/admin/agencies/${id}`, payload);
     return response.data.data;
   },
 

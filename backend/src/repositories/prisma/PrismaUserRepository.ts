@@ -12,10 +12,13 @@ import { prisma } from '../../config/database';
  */
 export class PrismaUserRepository implements IUserRepository {
     async findMany(filters: UserFilters): Promise<UserWithCounts[]> {
-        const { search, page = 1, limit = 20 } = filters;
+        const { search, travelerKycStatus, page = 1, limit = 20 } = filters;
         const skip = (page - 1) * limit;
 
         const where: any = {};
+        if (travelerKycStatus) {
+            where.travelerKycStatus = travelerKycStatus;
+        }
         if (search) {
             where.OR = [
                 { name: { contains: search, mode: 'insensitive' } },
@@ -73,6 +76,9 @@ export class PrismaUserRepository implements IUserRepository {
 
     async count(filters?: Omit<UserFilters, 'page' | 'limit'>): Promise<number> {
         const where: any = {};
+        if (filters?.travelerKycStatus) {
+            where.travelerKycStatus = filters.travelerKycStatus;
+        }
         if (filters?.search) {
             where.OR = [
                 { name: { contains: filters.search, mode: 'insensitive' } },

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Agency } from '../../../shared/types';
+import { Agency, AgencyUpdateInput } from '../../../shared/types';
 import { agencyService } from '../services/agencyService';
 
 interface AgencyState {
@@ -45,6 +45,13 @@ export const rejectAgency = createAsyncThunk(
   }
 );
 
+export const updateAgency = createAsyncThunk(
+  'agencies/updateAgency',
+  async ({ id, payload }: { id: string; payload: AgencyUpdateInput }) => {
+    return await agencyService.updateAgency(id, payload);
+  }
+);
+
 export const deleteAgency = createAsyncThunk(
   'agencies/deleteAgency',
   async (id: string) => {
@@ -83,6 +90,12 @@ const agencySlice = createSlice({
         }
       })
       .addCase(rejectAgency.fulfilled, (state, action) => {
+        const index = state.agencies.findIndex((a) => a.id === action.payload.id);
+        if (index !== -1) {
+          state.agencies[index] = action.payload;
+        }
+      })
+      .addCase(updateAgency.fulfilled, (state, action) => {
         const index = state.agencies.findIndex((a) => a.id === action.payload.id);
         if (index !== -1) {
           state.agencies[index] = action.payload;

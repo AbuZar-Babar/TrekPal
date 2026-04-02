@@ -14,8 +14,17 @@ const Sidebar = () => {
       ),
     },
     {
+      path: '/packages',
+      label: 'Trip offers',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2m0 18 6-3m-6 3V2m6 15 6-3m-6 3V5m6 9V4m0 0L15 5" />
+        </svg>
+      ),
+    },
+    {
       path: '/trip-requests',
-      label: 'Marketplace',
+      label: 'Traveler requests',
       icon: (
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h10m6 0h.01M16 18h.01" />
@@ -49,24 +58,6 @@ const Sidebar = () => {
         </svg>
       ),
     },
-    {
-      path: '/profile',
-      label: 'Profile',
-      icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5.121 17.804A7.968 7.968 0 0112 14a7.968 7.968 0 016.879 3.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-    },
-    {
-      path: '/status',
-      label: 'Status',
-      icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-      ),
-    },
   ];
 
   return (
@@ -86,7 +77,7 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-5 xl:px-4">
-        <p className="mb-3 px-2 text-center text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--sidebar-muted)] xl:text-left">Operations</p>
+        <p className="mb-3 px-2 text-center text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--sidebar-muted)] xl:text-left">Workspace</p>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
 
@@ -112,9 +103,9 @@ const Sidebar = () => {
 
       <div className="border-t border-white/8 px-3 py-4 xl:px-4">
         <div className="hidden rounded-[20px] border border-white/8 bg-white/6 px-4 py-4 xl:block">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--sidebar-muted)]">Status</div>
-          <div className="mt-2 text-sm font-semibold text-white">Approved operations</div>
-          <p className="mt-2 text-xs leading-6 text-white/60">Quote traveler briefs, manage inventory, and operate bookings from one workspace.</p>
+          <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--sidebar-muted)]">Agency</div>
+          <div className="mt-2 text-sm font-semibold text-white">Approved</div>
+          <p className="mt-2 text-xs leading-6 text-white/60">Manage offers, requests, and inventory.</p>
         </div>
       </div>
     </aside>

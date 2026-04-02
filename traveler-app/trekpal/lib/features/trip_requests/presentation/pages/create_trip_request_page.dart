@@ -16,18 +16,14 @@ class CreateTripRequestPage extends StatefulWidget {
 
 class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
   final TextEditingController _destinationController = TextEditingController();
-  final TextEditingController _travelersController = TextEditingController(
-    text: '2',
-  );
   final TextEditingController _budgetController = TextEditingController();
-  final TextEditingController _roomCountController = TextEditingController(
-    text: '1',
-  );
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _specialRequirementsController =
       TextEditingController();
 
   int _currentStep = 0;
+  int _travelers = 2;
+  int _roomCount = 1;
   DateTime? _startDate;
   DateTime? _endDate;
   String _stayType = 'HOTEL';
@@ -39,9 +35,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
   @override
   void dispose() {
     _destinationController.dispose();
-    _travelersController.dispose();
     _budgetController.dispose();
-    _roomCountController.dispose();
     _descriptionController.dispose();
     _specialRequirementsController.dispose();
     super.dispose();
@@ -118,14 +112,8 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
         }
         return true;
       case 1:
-        final String? travelersError = AppValidators.integerLimit(
-          _travelersController.text,
-          min: 1,
-          max: 100,
-          fieldName: 'Travelers',
-        );
-        if (travelersError != null) {
-          _showValidation(travelersError);
+        if (_travelers < 1 || _travelers > 100) {
+          _showValidation('Travelers must be between 1 and 100');
           return false;
         }
         final String? budgetError = AppValidators.budget(
@@ -137,12 +125,8 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
         }
         return true;
       case 2:
-        final String? roomCountError = AppValidators.positiveInteger(
-          _roomCountController.text,
-          fieldName: 'Rooms',
-        );
-        if (roomCountError != null) {
-          _showValidation(roomCountError);
+        if (_roomCount < 1) {
+          _showValidation('Add at least 1 room');
           return false;
         }
         return true;
@@ -174,7 +158,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
   TripSpecsEntity _buildTripSpecs() {
     return TripSpecsEntity(
       stayType: _stayType,
-      roomCount: int.parse(_roomCountController.text.trim()),
+      roomCount: _roomCount,
       roomPreference: _roomPreference,
       transportRequired: _transportRequired,
       transportType: _transportRequired ? _transportType : 'ANY',
@@ -197,7 +181,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
         destination: _destinationController.text.trim(),
         startDate: _startDate!,
         endDate: _endDate!,
-        travelers: int.parse(_travelersController.text.trim()),
+        travelers: _travelers,
         tripSpecs: _buildTripSpecs(),
         budget: _budgetController.text.trim().isEmpty
             ? null
@@ -215,7 +199,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            provider.errorMessage ?? 'Unable to publish trip brief',
+            provider.errorMessage ?? 'Unable to publish trip request',
           ),
         ),
       );
@@ -258,37 +242,87 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
   Widget _buildChoiceGroup({
     required String title,
     required String value,
-    required List<String> options,
+    required List<_VisualOption> options,
     required ValueChanged<String> onChanged,
   }) {
+    final ThemeData theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: options
-              .map(
-                (String option) => ChoiceChip(
-                  label: Text(_prettyLabel(option)),
-                  selected: value == option,
-                  onSelected: (_) => onChanged(option),
+          children: options.map((_VisualOption option) {
+            final bool selected = value == option.value;
+            final ColorScheme colorScheme = theme.colorScheme;
+
+            return InkWell(
+              borderRadius: BorderRadius.circular(22),
+              onTap: () => onChanged(option.value),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
                 ),
-              )
-              .toList(),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? colorScheme.primary.withValues(alpha: 0.12)
+                      : colorScheme.surfaceContainerHighest.withValues(
+                          alpha: theme.brightness == Brightness.dark
+                              ? 0.34
+                              : 0.56,
+                        ),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: selected
+                        ? colorScheme.primary
+                        : colorScheme.outlineVariant,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      option.icon,
+                      size: 18,
+                      color: selected
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      option.label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: selected
+                            ? colorScheme.primary
+                            : colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );
   }
 
-  Widget _buildOverviewItem(String label, String value) {
+  Widget _buildOverviewItem({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
@@ -296,21 +330,33 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(
-          alpha: theme.brightness == Brightness.dark ? 0.4 : 0.55,
+          alpha: theme.brightness == Brightness.dark ? 0.36 : 0.56,
         ),
         borderRadius: BorderRadius.circular(22),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: <Widget>[
-          Text(
-            label,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+          CircleAvatar(
+            backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
+            foregroundColor: colorScheme.primary,
+            child: Icon(icon, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  label,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(value, style: theme.textTheme.titleSmall),
+              ],
             ),
           ),
-          const SizedBox(height: 6),
-          Text(value, style: theme.textTheme.titleSmall),
         ],
       ),
     );
@@ -320,6 +366,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
     switch (_currentStep) {
       case 0:
         return Column(
+          key: const ValueKey<int>(0),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextField(
@@ -327,6 +374,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
               decoration: const InputDecoration(
                 labelText: 'Destination',
                 hintText: 'Hunza, Skardu, Swat, Murree...',
+                prefixIcon: Icon(Icons.place_outlined),
               ),
             ),
             const SizedBox(height: 18),
@@ -334,6 +382,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
               children: <Widget>[
                 Expanded(
                   child: _DateField(
+                    icon: Icons.calendar_month_outlined,
                     label: 'Start date',
                     value: _startDate?.toDisplayDate(),
                     onTap: _pickStartDate,
@@ -342,6 +391,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _DateField(
+                    icon: Icons.event_outlined,
                     label: 'End date',
                     value: _endDate?.toDisplayDate(),
                     onTap: _pickEndDate,
@@ -349,30 +399,23 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAF3EE),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'Publish the destination and dates first so agencies know exactly which travel window they are pricing against.',
-              ),
-            ),
           ],
         );
       case 1:
         return Column(
+          key: const ValueKey<int>(1),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            TextField(
-              controller: _travelersController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Travelers',
-                hintText: 'How many people are going?',
-              ),
+            _CounterSelector(
+              icon: Icons.people_alt_outlined,
+              title: 'People going',
+              subtitle: 'Choose the group size',
+              value: _travelers,
+              onChanged: (int value) {
+                setState(() {
+                  _travelers = value.clamp(1, 100);
+                });
+              },
             ),
             const SizedBox(height: 18),
             TextField(
@@ -381,29 +424,29 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
               decoration: const InputDecoration(
                 labelText: 'Budget',
                 hintText: 'Optional total budget in PKR',
-              ),
-            ),
-            const SizedBox(height: 18),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF4DF),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'A realistic budget helps agencies decide whether to propose a tight, balanced, or premium trip offer.',
+                prefixIcon: Icon(Icons.payments_outlined),
               ),
             ),
           ],
         );
       case 2:
         return Column(
+          key: const ValueKey<int>(2),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildChoiceGroup(
-              title: 'Stay type',
+              title: 'Stay',
               value: _stayType,
-              options: const <String>['ANY', 'HOTEL', 'RESORT', 'GUEST_HOUSE'],
+              options: const <_VisualOption>[
+                _VisualOption('ANY', 'Any', Icons.grid_view_outlined),
+                _VisualOption('HOTEL', 'Hotel', Icons.hotel_outlined),
+                _VisualOption('RESORT', 'Resort', Icons.pool_outlined),
+                _VisualOption(
+                  'GUEST_HOUSE',
+                  'Guest house',
+                  Icons.house_outlined,
+                ),
+              ],
               onChanged: (String value) {
                 setState(() {
                   _stayType = value;
@@ -411,19 +454,31 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
               },
             ),
             const SizedBox(height: 20),
-            TextField(
-              controller: _roomCountController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Rooms needed',
-                hintText: 'Number of rooms agencies should plan for',
-              ),
+            _CounterSelector(
+              icon: Icons.bed_outlined,
+              title: 'Rooms',
+              subtitle: 'How many rooms should agencies plan for?',
+              value: _roomCount,
+              onChanged: (int value) {
+                setState(() {
+                  _roomCount = value.clamp(1, 20);
+                });
+              },
             ),
             const SizedBox(height: 20),
             _buildChoiceGroup(
-              title: 'Room preference',
+              title: 'Room type',
               value: _roomPreference,
-              options: const <String>['ANY', 'SINGLE', 'DOUBLE', 'FAMILY'],
+              options: const <_VisualOption>[
+                _VisualOption('ANY', 'Any', Icons.grid_view_outlined),
+                _VisualOption('SINGLE', 'Single', Icons.person_outline),
+                _VisualOption('DOUBLE', 'Double', Icons.people_outline),
+                _VisualOption(
+                  'FAMILY',
+                  'Family',
+                  Icons.family_restroom_outlined,
+                ),
+              ],
               onChanged: (String value) {
                 setState(() {
                   _roomPreference = value;
@@ -434,9 +489,9 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
             SwitchListTile.adaptive(
               value: _transportRequired,
               contentPadding: EdgeInsets.zero,
-              title: const Text('Transport required'),
+              title: const Text('Transport needed'),
               subtitle: const Text(
-                'Turn this off if you only want stay and meal quotes.',
+                'Turn off if you only want stay and meal quotes',
               ),
               onChanged: (bool value) {
                 setState(() {
@@ -447,26 +502,54 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                 });
               },
             ),
-            const SizedBox(height: 8),
-            _buildChoiceGroup(
-              title: 'Transport type',
-              value: _transportType,
-              options: const <String>['ANY', 'CAR', 'SUV', 'VAN', 'BUS'],
-              onChanged: (String value) {
-                setState(() {
-                  _transportType = value;
-                });
-              },
-            ),
+            if (_transportRequired) ...<Widget>[
+              const SizedBox(height: 8),
+              _buildChoiceGroup(
+                title: 'Vehicle',
+                value: _transportType,
+                options: const <_VisualOption>[
+                  _VisualOption('ANY', 'Any', Icons.alt_route_outlined),
+                  _VisualOption(
+                    'CAR',
+                    'Car',
+                    Icons.directions_car_filled_outlined,
+                  ),
+                  _VisualOption('SUV', 'SUV', Icons.airport_shuttle_outlined),
+                  _VisualOption('VAN', 'Van', Icons.airport_shuttle_outlined),
+                  _VisualOption(
+                    'BUS',
+                    'Bus',
+                    Icons.directions_bus_filled_outlined,
+                  ),
+                ],
+                onChanged: (String value) {
+                  setState(() {
+                    _transportType = value;
+                  });
+                },
+              ),
+            ],
             const SizedBox(height: 20),
             _buildChoiceGroup(
-              title: 'Meal plan',
+              title: 'Meals',
               value: _mealPlan,
-              options: const <String>[
-                'ANY',
-                'BREAKFAST_ONLY',
-                'HALF_BOARD',
-                'FULL_BOARD',
+              options: const <_VisualOption>[
+                _VisualOption('ANY', 'Any', Icons.restaurant_outlined),
+                _VisualOption(
+                  'BREAKFAST_ONLY',
+                  'Breakfast',
+                  Icons.free_breakfast_outlined,
+                ),
+                _VisualOption(
+                  'HALF_BOARD',
+                  'Half board',
+                  Icons.lunch_dining_outlined,
+                ),
+                _VisualOption(
+                  'FULL_BOARD',
+                  'Full board',
+                  Icons.dinner_dining_outlined,
+                ),
               ],
               onChanged: (String value) {
                 setState(() {
@@ -478,6 +561,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
         );
       default:
         return Column(
+          key: const ValueKey<int>(3),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextField(
@@ -485,8 +569,8 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
               maxLines: 4,
               decoration: const InputDecoration(
                 labelText: 'Trip notes',
-                hintText:
-                    'Tell agencies what kind of experience you want, your pace, or any expectations.',
+                hintText: 'Trip style, pace, or expectations',
+                prefixIcon: Icon(Icons.notes_outlined),
               ),
             ),
             const SizedBox(height: 18),
@@ -496,7 +580,8 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
               decoration: const InputDecoration(
                 labelText: 'Special requirements',
                 hintText:
-                    'Accessibility, kids, elderly travelers, luggage, food restrictions, pickup notes...',
+                    'Kids, elderly travelers, luggage, food restrictions...',
+                prefixIcon: Icon(Icons.info_outline),
               ),
             ),
             const SizedBox(height: 22),
@@ -507,51 +592,76 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 14),
-            GridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1.4,
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
               children: <Widget>[
-                _buildOverviewItem(
-                  'Destination',
-                  _destinationController.text.trim().isEmpty
-                      ? 'Not set'
-                      : _destinationController.text.trim(),
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildOverviewItem(
+                    icon: Icons.place_outlined,
+                    label: 'Destination',
+                    value: _destinationController.text.trim().isEmpty
+                        ? 'Not set'
+                        : _destinationController.text.trim(),
+                  ),
                 ),
-                _buildOverviewItem(
-                  'Dates',
-                  _startDate == null || _endDate == null
-                      ? 'Not set'
-                      : AppFormatters.dateRange(_startDate!, _endDate!),
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildOverviewItem(
+                    icon: Icons.calendar_today_outlined,
+                    label: 'Dates',
+                    value: _startDate == null || _endDate == null
+                        ? 'Not set'
+                        : AppFormatters.dateRange(_startDate!, _endDate!),
+                  ),
                 ),
-                _buildOverviewItem(
-                  'Travelers',
-                  _travelersController.text.trim().isEmpty
-                      ? 'Not set'
-                      : '${_travelersController.text.trim()} travelers',
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildOverviewItem(
+                    icon: Icons.people_alt_outlined,
+                    label: 'People',
+                    value: '$_travelers traveler${_travelers == 1 ? '' : 's'}',
+                  ),
                 ),
-                _buildOverviewItem(
-                  'Budget',
-                  _budgetController.text.trim().isEmpty
-                      ? 'Flexible'
-                      : AppFormatters.currency(
-                          num.tryParse(_budgetController.text.trim()),
-                        ),
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildOverviewItem(
+                    icon: Icons.payments_outlined,
+                    label: 'Budget',
+                    value: _budgetController.text.trim().isEmpty
+                        ? 'Flexible'
+                        : AppFormatters.currency(
+                            num.tryParse(_budgetController.text.trim()),
+                          ),
+                  ),
                 ),
-                _buildOverviewItem('Stay', _prettyLabel(_stayType)),
-                _buildOverviewItem(
-                  'Transport',
-                  _transportRequired
-                      ? _prettyLabel(_transportType)
-                      : 'Not needed',
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildOverviewItem(
+                    icon: Icons.hotel_outlined,
+                    label: 'Stay',
+                    value:
+                        '${_prettyLabel(_stayType)} / $_roomCount ${_prettyLabel(_roomPreference)}',
+                  ),
                 ),
-                _buildOverviewItem('Meals', _prettyLabel(_mealPlan)),
-                _buildOverviewItem(
-                  'Rooms',
-                  '${_roomCountController.text.trim().isEmpty ? '1' : _roomCountController.text.trim()} ${_prettyLabel(_roomPreference)}',
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildOverviewItem(
+                    icon: Icons.directions_car_filled_outlined,
+                    label: 'Transport',
+                    value: _transportRequired
+                        ? _prettyLabel(_transportType)
+                        : 'Not needed',
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildOverviewItem(
+                    icon: Icons.restaurant_outlined,
+                    label: 'Meals',
+                    value: _prettyLabel(_mealPlan),
+                  ),
                 ),
               ],
             ),
@@ -568,22 +678,22 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     const List<String> titles = <String>[
-      'Where & when',
-      'Group & budget',
-      'Stay & services',
-      'Notes & review',
+      'Where',
+      'People',
+      'Services',
+      'Review',
     ];
     const List<String> prompts = <String>[
-      'Where to?',
+      'Where are you going?',
       'Who is going?',
-      'What should agencies include?',
-      'Review your brief',
+      'What should be included?',
+      'Review your request',
     ];
     const List<String> descriptions = <String>[
-      'Start with the destination and the dates agencies should price against.',
-      'Set the size of the group and the budget range you want negotiated.',
-      'Define stay, transport, and meals so offers come back structured.',
-      'Add notes, then review the brief before it is published to agencies.',
+      'Choose the destination and travel dates.',
+      'Set the people count and an optional budget.',
+      'Pick stay, rooms, transport, and meal plan.',
+      'Check the request before agencies see it.',
     ];
 
     return Scaffold(
@@ -608,7 +718,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                     prompts[_currentStep],
                     style: theme.textTheme.displayMedium,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Text(
                     descriptions[_currentStep],
                     style: theme.textTheme.bodyLarge?.copyWith(
@@ -681,7 +791,25 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                         ),
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: _buildStepContent(),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOut,
+                        switchOutCurve: Curves.easeIn,
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0.08, 0),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                ),
+                              );
+                            },
+                        child: _buildStepContent(),
+                      ),
                     ),
                   ),
                 ),
@@ -712,7 +840,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                           isSubmitting
                               ? 'Publishing...'
                               : _currentStep == 3
-                              ? 'Publish brief'
+                              ? 'Publish request'
                               : 'Continue',
                         ),
                       ),
@@ -730,11 +858,13 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
 
 class _DateField extends StatelessWidget {
   const _DateField({
+    required this.icon,
     required this.label,
     required this.value,
     required this.onTap,
   });
 
+  final IconData icon;
   final String label;
   final String? value;
   final VoidCallback onTap;
@@ -745,9 +875,88 @@ class _DateField extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: InputDecorator(
-        decoration: InputDecoration(labelText: label),
+        decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
         child: Text(value ?? 'Select'),
       ),
     );
   }
+}
+
+class _CounterSelector extends StatelessWidget {
+  const _CounterSelector({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.32 : 0.58,
+        ),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        children: <Widget>[
+          CircleAvatar(
+            backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
+            foregroundColor: colorScheme.primary,
+            child: Icon(icon),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(title, style: theme.textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton.filledTonal(
+            onPressed: value > 1 ? () => onChanged(value - 1) : null,
+            icon: const Icon(Icons.remove_rounded),
+          ),
+          SizedBox(
+            width: 44,
+            child: Center(
+              child: Text('$value', style: theme.textTheme.titleLarge),
+            ),
+          ),
+          IconButton.filled(
+            onPressed: () => onChanged(value + 1),
+            icon: const Icon(Icons.add_rounded),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VisualOption {
+  const _VisualOption(this.value, this.label, this.icon);
+
+  final String value;
+  final String label;
+  final IconData icon;
 }
