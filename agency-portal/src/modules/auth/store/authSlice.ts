@@ -7,6 +7,7 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  authChecked: boolean;
 }
 
 const initialState: AuthState = {
@@ -14,6 +15,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   isAuthenticated: !!localStorage.getItem('token'),
+  authChecked: false,
 };
 
 /**
@@ -85,6 +87,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+      state.authChecked = true;
       authService.logout();
     },
     clearError: (state) => {
@@ -102,11 +105,16 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
+        state.authChecked = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Login failed';
+        state.user = null;
         state.isAuthenticated = false;
+        state.authChecked = true;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       })
       // Signup
       .addCase(signup.pending, (state) => {
@@ -124,16 +132,33 @@ const authSlice = createSlice({
           state.user = payload as User;
           state.isAuthenticated = true;
         }
+        state.authChecked = true;
       })
       .addCase(signup.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Signup failed';
+        state.user = null;
         state.isAuthenticated = false;
+        state.authChecked = true;
       })
       // Get Profile
+      .addCase(getProfile.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(getProfile.fulfilled, (state, action: PayloadAction<User>) => {
+        state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
+        state.authChecked = true;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.user = null;
+        state.error = action.error.message || 'Authentication failed';
+        state.isAuthenticated = false;
+        state.authChecked = true;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       });
   },
 });

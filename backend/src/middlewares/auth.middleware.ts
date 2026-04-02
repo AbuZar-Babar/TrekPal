@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifySupabaseAccessToken, isSupabaseConfigured } from '../config/supabase';
 import { generateJWT, verifyJWT } from '../utils/jwt.util';
-import { ROLES } from '../config/constants';
+import { APPROVAL_STATUS, ROLES } from '../config/constants';
+import { PrismaAgencyRepository } from '../repositories';
 
 /**
  * Extended Express Request with user information
@@ -26,6 +27,8 @@ const normalizeRole = (role: unknown): string => {
 
   return ROLES.TRAVELER;
 };
+
+const agencyRepo = new PrismaAgencyRepository();
 
 /**
  * Authentication middleware
@@ -94,6 +97,21 @@ export const authenticate = async (
       email: decodedToken.email,
       role: decodedToken.role,
     };
+
+    if (decodedToken.role === ROLES.AGENCY) {
+      const agency =
+        (await agencyRepo.findByAuthUid(decodedToken.uid))
+        || (decodedToken.email ? await agencyRepo.findByEmail(decodedToken.email) : null);
+
+      if (agency && agency.status !== APPROVAL_STATUS.APPROVED) {
+        res.status(403).json({
+          error: agency.status === APPROVAL_STATUS.REJECTED
+            ? 'Agency account was rejected'
+            : 'Agency account is pending approval',
+        });
+        return;
+      }
+    }
 
     res.setHeader('X-Auth-Token', jwtToken);
 

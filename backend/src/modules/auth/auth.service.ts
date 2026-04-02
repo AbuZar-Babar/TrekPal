@@ -108,12 +108,19 @@ export class AuthService {
     };
   }
 
-  private mapAgency(agency: { id: string; authUid: string; email: string; name: string }): AuthResponse['user'] {
+  private mapAgency(agency: {
+    id: string;
+    authUid: string;
+    email: string;
+    name: string;
+    status?: string;
+  }): AuthResponse['user'] {
     return {
       id: agency.id,
       authUid: agency.authUid,
       email: agency.email,
       name: agency.name,
+      status: agency.status,
       role: ROLES.AGENCY,
     };
   }
@@ -134,6 +141,12 @@ export class AuthService {
     }
 
     return 'Agency account is pending approval';
+  }
+
+  private assertAgencyApproved(agency: { status: string }): void {
+    if (agency.status !== APPROVAL_STATUS.APPROVED) {
+      throw new Error(this.getAgencyApprovalErrorMessage(agency.status));
+    }
   }
 
   private async findProfileByEmail(email: string, enforceAgencyApproval: boolean): Promise<AuthResponse['user'] | null> {
@@ -172,9 +185,7 @@ export class AuthService {
       const updatedAgency = agency.authUid === authUid
         ? agency
         : await this.agencyRepo.update(agency.id, { authUid });
-      if (updatedAgency.status !== APPROVAL_STATUS.APPROVED) {
-        throw new Error(this.getAgencyApprovalErrorMessage(updatedAgency.status));
-      }
+      this.assertAgencyApproved(updatedAgency);
       return this.mapAgency(updatedAgency);
     }
 
@@ -367,6 +378,7 @@ export class AuthService {
 
     const agency = await this.agencyRepo.findByAuthUid(authUid);
     if (agency) {
+      this.assertAgencyApproved(agency);
       return this.mapAgency(agency);
     }
 

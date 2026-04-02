@@ -71,6 +71,20 @@ const buildKycObjectPath = (
   return `agencies/pending/${uploadBatchId}/${fieldName}${extension}`;
 };
 
+const getAuthErrorStatusCode = (message: string): number => {
+  const normalizedMessage = message.toLowerCase();
+
+  if (normalizedMessage.includes('pending approval') || normalizedMessage.includes('was rejected')) {
+    return 403;
+  }
+
+  if (normalizedMessage.includes('not found')) {
+    return 404;
+  }
+
+  return 401;
+};
+
 /**
  * Auth Controller
  * Handles HTTP requests for authentication
@@ -226,7 +240,8 @@ export class AuthController {
       const result = await authService.login(req.body);
       sendSuccess(res, result, 'Login successful');
     } catch (error: unknown) {
-      sendError(res, getErrorMessage(error) || 'Login failed', 401);
+      const message = getErrorMessage(error) || 'Login failed';
+      sendError(res, message, getAuthErrorStatusCode(message));
     }
   }
 
@@ -273,7 +288,8 @@ export class AuthController {
       const profile = await authService.getProfile(req.user.uid);
       sendSuccess(res, profile, 'Profile retrieved successfully');
     } catch (error: unknown) {
-      sendError(res, getErrorMessage(error) || 'Failed to get profile', 404);
+      const message = getErrorMessage(error) || 'Failed to get profile';
+      sendError(res, message, getAuthErrorStatusCode(message));
     }
   }
 

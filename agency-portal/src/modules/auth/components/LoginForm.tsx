@@ -51,7 +51,19 @@ const LoginForm = () => {
       await dispatch(login({ email: email.trim(), password }) as any).unwrap();
       navigate('/dashboard');
     } catch (error: any) {
-      setFormError(error.message || 'Login failed');
+      const message = error.message || 'Login failed';
+
+      if (message.toLowerCase().includes('pending approval') || message.toLowerCase().includes('pending admin')) {
+        navigate('/pending-approval', {
+          replace: true,
+          state: {
+            email: email.trim(),
+          },
+        });
+        return;
+      }
+
+      setFormError(message);
     } finally {
       setLoading(false);
     }

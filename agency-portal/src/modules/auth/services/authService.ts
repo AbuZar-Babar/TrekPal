@@ -144,11 +144,29 @@ export const authService = {
    * Get current user profile
    */
   async getProfile(): Promise<User> {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) {
+    const token = localStorage.getItem('token');
+    if (!token) {
       throw new Error('Not authenticated');
     }
-    return JSON.parse(userStr);
+
+    try {
+      const response = await apiClient.get('/auth/profile');
+      const user = response.data.data || response.data;
+      localStorage.setItem('user', JSON.stringify(user));
+      return user;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Failed to get profile';
+
+      if (errorMessage.toLowerCase().includes('pending approval') || errorMessage.toLowerCase().includes('pending admin')) {
+        throw new Error('Your agency account is pending admin approval. Please wait for approval before logging in.');
+      }
+
+      if (errorMessage.toLowerCase().includes('rejected')) {
+        throw new Error('Your agency application was rejected. Contact admin or register again.');
+      }
+
+      throw new Error(errorMessage);
+    }
   },
 
   /**

@@ -165,6 +165,7 @@ export interface AuthResponse {
     emergencyContactPhone?: string | null;
     kycSubmittedAt?: Date | null;
     kycVerifiedAt?: Date | null;
+    status?: string;
     role: string;
   };
   token: string;

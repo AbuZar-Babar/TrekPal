@@ -1,10 +1,11 @@
-import type { ReactNode } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, type ReactNode } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import LoginForm from './modules/auth/components/LoginForm';
 import PendingApproval from './modules/auth/components/PendingApproval';
 import RegisterForm from './modules/auth/components/RegisterForm';
+import { getProfile } from './modules/auth/store/authSlice';
 import BookingList from './modules/bookings/components/BookingList';
 import Dashboard from './modules/dashboard/components/Dashboard';
 import HotelForm from './modules/hotels/components/HotelForm';
@@ -15,12 +16,45 @@ import TripRequestList from './modules/tripRequests/components/TripRequestList';
 import VehicleForm from './modules/transport/components/VehicleForm';
 import VehicleList from './modules/transport/components/VehicleList';
 import Layout from './shared/components/Layout/Layout';
-import { RootState } from './store';
+import { AppDispatch, RootState } from './store';
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated, loading, authChecked, user, error } = useSelector((state: RootState) => state.auth);
+  const hasStoredToken = !!localStorage.getItem('token');
+
+  useEffect(() => {
+    if (hasStoredToken && !authChecked && !loading) {
+      dispatch(getProfile());
+    }
+  }, [authChecked, dispatch, hasStoredToken, loading]);
+
+  if (hasStoredToken && !authChecked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--page-bg)] px-6">
+        <div className="app-card w-full max-w-sm px-6 py-8 text-center">
+          <div className="text-sm font-semibold text-[var(--text)]">Checking account</div>
+          <p className="mt-2 text-sm text-[var(--text-soft)]">Verifying approval status.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
+    const errorMessage = (error || '').toLowerCase();
+    if (errorMessage.includes('pending approval') || errorMessage.includes('pending admin')) {
+      return (
+        <Navigate
+          to="/pending-approval"
+          replace
+          state={{
+            email: user?.email,
+            name: user?.name,
+          }}
+        />
+      );
+    }
+
     return <Navigate to="/login" replace />;
   }
 
