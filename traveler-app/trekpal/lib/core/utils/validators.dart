@@ -54,6 +54,57 @@ class AppValidators {
     return null;
   }
 
+  static String? minLength(
+    String? value, {
+    required int min,
+    String fieldName = 'This field',
+  }) {
+    final String? required = requiredText(value, fieldName: fieldName);
+    if (required != null) {
+      return required;
+    }
+
+    if (value!.trim().length < min) {
+      return '$fieldName must be at least $min characters';
+    }
+
+    return null;
+  }
+
+  static String? maxLength(
+    String? value, {
+    required int max,
+    String fieldName = 'This field',
+  }) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+
+    if (value.trim().length > max) {
+      return '$fieldName must be $max characters or less';
+    }
+
+    return null;
+  }
+
+  static String? phone(String? value, {String fieldName = 'Phone number'}) {
+    final String? required = requiredText(value, fieldName: fieldName);
+    if (required != null) {
+      return required;
+    }
+
+    final String digitsOnly = value!.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.length < 5) {
+      return '$fieldName must be at least 5 digits';
+    }
+
+    if (value.trim().length > 30) {
+      return '$fieldName is too long';
+    }
+
+    return null;
+  }
+
   static String? positiveInteger(String? value, {String fieldName = 'Value'}) {
     final String? required = requiredText(value, fieldName: fieldName);
     if (required != null) {
@@ -63,6 +114,33 @@ class AppValidators {
     final int? parsed = int.tryParse(value!.trim());
     if (parsed == null || parsed <= 0) {
       return '$fieldName must be greater than zero';
+    }
+
+    return null;
+  }
+
+  static String? integerLimit(
+    String? value, {
+    required int min,
+    int? max,
+    String fieldName = 'Value',
+  }) {
+    final String? required = requiredText(value, fieldName: fieldName);
+    if (required != null) {
+      return required;
+    }
+
+    final int? parsed = int.tryParse(value!.trim());
+    if (parsed == null) {
+      return '$fieldName must be a whole number';
+    }
+
+    if (parsed < min) {
+      return '$fieldName must be at least $min';
+    }
+
+    if (max != null && parsed > max) {
+      return '$fieldName must be $max or less';
     }
 
     return null;

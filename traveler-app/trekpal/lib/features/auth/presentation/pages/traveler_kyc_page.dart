@@ -525,8 +525,9 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                               labelText: 'CITY',
                             ),
                             validator: (String? value) =>
-                                AppValidators.requiredText(
+                                AppValidators.minLength(
                                   value,
+                                  min: 2,
                                   fieldName: 'City',
                                 ),
                           ),
@@ -538,8 +539,9 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                               labelText: 'RESIDENTIAL ADDRESS',
                             ),
                             validator: (String? value) =>
-                                AppValidators.requiredText(
+                                AppValidators.minLength(
                                   value,
+                                  min: 10,
                                   fieldName: 'Residential address',
                                 ),
                           ),
@@ -558,8 +560,9 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                               labelText: 'EMERGENCY CONTACT NAME',
                             ),
                             validator: (String? value) =>
-                                AppValidators.requiredText(
+                                AppValidators.minLength(
                                   value,
+                                  min: 2,
                                   fieldName: 'Emergency contact name',
                                 ),
                           ),
@@ -571,11 +574,10 @@ class _TravelerKycPageState extends State<TravelerKycPage> {
                               labelText: 'EMERGENCY CONTACT PHONE',
                               hintText: '+92 300 1234567',
                             ),
-                            validator: (String? value) =>
-                                AppValidators.requiredText(
-                                  value,
-                                  fieldName: 'Emergency contact phone',
-                                ),
+                            validator: (String? value) => AppValidators.phone(
+                              value,
+                              fieldName: 'Emergency contact phone',
+                            ),
                           ),
                         ],
                       ),

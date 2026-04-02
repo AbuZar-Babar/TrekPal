@@ -99,6 +99,15 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
           _showValidation(destinationError);
           return false;
         }
+        final String? destinationLengthError = AppValidators.maxLength(
+          _destinationController.text,
+          max: 120,
+          fieldName: 'Destination',
+        );
+        if (destinationLengthError != null) {
+          _showValidation(destinationLengthError);
+          return false;
+        }
         if (_startDate == null || _endDate == null) {
           _showValidation('Select both travel dates');
           return false;
@@ -109,8 +118,10 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
         }
         return true;
       case 1:
-        final String? travelersError = AppValidators.positiveInteger(
+        final String? travelersError = AppValidators.integerLimit(
           _travelersController.text,
+          min: 1,
+          max: 100,
           fieldName: 'Travelers',
         );
         if (travelersError != null) {
@@ -132,6 +143,26 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
         );
         if (roomCountError != null) {
           _showValidation(roomCountError);
+          return false;
+        }
+        return true;
+      case 3:
+        final String? descriptionError = AppValidators.maxLength(
+          _descriptionController.text,
+          max: 1000,
+          fieldName: 'Trip notes',
+        );
+        if (descriptionError != null) {
+          _showValidation(descriptionError);
+          return false;
+        }
+        final String? specialRequirementsError = AppValidators.maxLength(
+          _specialRequirementsController.text,
+          max: 500,
+          fieldName: 'Special requirements',
+        );
+        if (specialRequirementsError != null) {
+          _showValidation(specialRequirementsError);
           return false;
         }
         return true;

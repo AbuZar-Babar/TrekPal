@@ -26,6 +26,30 @@ class ApiInterceptor {
     Map<String, dynamic> body, {
     String fallback = 'Request failed',
   }) {
+    final dynamic details = body['details'];
+    if (details is List) {
+      for (final dynamic detail in details) {
+        if (detail is Map<String, dynamic>) {
+          final dynamic message = detail['message'];
+          if (message is String && message.trim().isNotEmpty) {
+            return message;
+          }
+        }
+      }
+    }
+
+    final dynamic errors = body['errors'];
+    if (errors is List) {
+      for (final dynamic error in errors) {
+        if (error is Map<String, dynamic>) {
+          final dynamic message = error['message'];
+          if (message is String && message.trim().isNotEmpty) {
+            return message;
+          }
+        }
+      }
+    }
+
     final dynamic message = body['message'] ?? body['error'];
     if (message is String && message.trim().isNotEmpty) {
       return message;

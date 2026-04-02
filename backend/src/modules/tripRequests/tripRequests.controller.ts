@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { ZodError } from 'zod';
 import { AuthRequest } from '../../middlewares/auth.middleware';
 import { tripRequestsService } from './tripRequests.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
@@ -49,6 +50,20 @@ export class TripRequestsController {
       const result = await tripRequestsService.createTripRequest(user.id, input);
       sendSuccess(res, result, 'Trip request created successfully', 201);
     } catch (error: any) {
+      if (error instanceof ZodError) {
+        const errors = error.errors.map((issue) => ({
+          path: issue.path.join('.'),
+          message: issue.message,
+        }));
+        sendError(
+          res,
+          errors[0]?.message || 'Validation error',
+          400,
+          errors,
+        );
+        return;
+      }
+
       sendError(res, error.message || 'Failed to create trip request', 400);
     }
   }
