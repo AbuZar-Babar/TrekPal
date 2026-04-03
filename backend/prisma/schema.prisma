@@ -83,6 +83,7 @@ model Agency {
   packages    Package[]
   bids        Bid[]
   bookings    Booking[]
+  messages    Message[]
 
   @@map("agencies")
 }
@@ -186,6 +187,7 @@ model Package {
   // Relations
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   bookings    Booking[]
+  chatRoom    TripGroup?
 
   @@map("packages")
 }
@@ -308,10 +310,12 @@ model TripGroup {
   name        String
   description String?
   tripRequestId String? @unique
+  packageId   String?  @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
+  package     Package? @relation(fields: [packageId], references: [id], onDelete: Cascade)
   members     TripGroupMember[]
   messages    Message[]
 
@@ -337,13 +341,16 @@ model TripGroupMember {
 model Message {
   id        String   @id @default(cuid())
   groupId   String
-  userId    String
+  userId    String?
+  agencyId  String?
+  senderType String  @default("TRAVELER")
   content   String
   createdAt DateTime @default(now())
 
   // Relations
   group     TripGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agency    Agency?   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@map("messages")
 }

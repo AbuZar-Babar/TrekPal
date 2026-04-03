@@ -18,6 +18,9 @@ import 'features/bookings/data/repositories/bookings_repository_impl.dart';
 import 'features/bookings/domain/usecases/accept_bid_usecase.dart';
 import 'features/bookings/domain/usecases/get_bookings_usecase.dart';
 import 'features/bookings/presentation/providers/bookings_provider.dart';
+import 'features/chat/data/datasources/chat_remote_datasource.dart';
+import 'features/chat/data/repositories/chat_repository_impl.dart';
+import 'features/chat/presentation/providers/chat_provider.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/packages/data/datasources/packages_remote_datasource.dart';
 import 'features/packages/data/repositories/packages_repository_impl.dart';
@@ -52,6 +55,9 @@ Future<void> main() async {
   final bookingsRepository = BookingsRepositoryImpl(
     BookingsRemoteDataSource(apiClient),
   );
+  final chatRepository = ChatRepositoryImpl(
+    ChatRemoteDataSource(apiClient, tokenProvider: authLocalDataSource.getToken),
+  );
   final packagesRepository = PackagesRepositoryImpl(
     PackagesRemoteDataSource(apiClient),
   );
@@ -83,6 +89,7 @@ Future<void> main() async {
         getPackagesUseCase: GetPackagesUseCase(packagesRepository),
         applyPackageUseCase: ApplyPackageUseCase(packagesRepository),
       ),
+      chatProvider: ChatProvider(chatRepository: chatRepository),
       themeController: themeController,
     ),
   );
@@ -95,6 +102,7 @@ class TrekPalApp extends StatelessWidget {
     required this.tripRequestsProvider,
     required this.bookingsProvider,
     required this.packagesProvider,
+    required this.chatProvider,
     required this.themeController,
   });
 
@@ -102,6 +110,7 @@ class TrekPalApp extends StatelessWidget {
   final TripRequestsProvider tripRequestsProvider;
   final BookingsProvider bookingsProvider;
   final PackagesProvider packagesProvider;
+  final ChatProvider chatProvider;
   final ThemeController themeController;
 
   @override
@@ -114,6 +123,7 @@ class TrekPalApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<BookingsProvider>.value(value: bookingsProvider),
         ChangeNotifierProvider<PackagesProvider>.value(value: packagesProvider),
+        ChangeNotifierProvider<ChatProvider>.value(value: chatProvider),
         ChangeNotifierProvider<ThemeController>.value(value: themeController),
       ],
       child: Consumer<ThemeController>(

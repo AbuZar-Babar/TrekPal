@@ -116,10 +116,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           }
 
           final String destination = booking.destination ?? 'Trip booking';
-          final List<String> participantNames = booking.packageParticipants
-              .map((participant) => participant.travelerName)
-              .toList();
-
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: <Widget>[
@@ -240,13 +236,26 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     child: _ActionCard(
                       icon: Icons.forum_outlined,
                       label: 'Trip chat',
-                      subtitle: 'Mockup',
+                      subtitle: booking.packageId != null
+                          ? 'Live'
+                          : 'Offer only',
                       onTap: () {
+                        if (booking.packageId == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Trip chat is available for joined offers only.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
                             builder: (_) => ChatRoomPage(
-                              title: destination,
-                              participantNames: participantNames,
+                              packageId: booking.packageId,
+                              fallbackTitle: destination,
                             ),
                           ),
                         );

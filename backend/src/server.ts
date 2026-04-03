@@ -16,6 +16,7 @@ import transportRoutes from './modules/transport/transport.routes';
 import tripRequestRoutes from './modules/tripRequests/tripRequest.routes';
 import bidRoutes from './modules/bids/bid.routes';
 import bookingRoutes from './modules/bookings/booking.routes';
+import chatRoutes from './modules/chat/chat.routes';
 import adminRoutes from './modules/admin/admin.routes';
 
 /**
@@ -82,6 +83,7 @@ app.use('/api/transport', transportRoutes);
 app.use('/api/trip-requests', tripRequestRoutes);
 app.use('/api/bids', bidRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Error handling

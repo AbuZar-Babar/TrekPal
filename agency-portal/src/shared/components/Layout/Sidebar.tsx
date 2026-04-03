@@ -41,6 +41,15 @@ const Sidebar = () => {
       ),
     },
     {
+      path: '/chat',
+      label: 'Offer chat',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 8h10M7 12h7m-9 8l-4-4V6a2 2 0 012-2h18a2 2 0 012 2v10a2 2 0 01-2 2H7z" />
+        </svg>
+      ),
+    },
+    {
       path: '/hotels',
       label: 'Hotels',
       icon: (

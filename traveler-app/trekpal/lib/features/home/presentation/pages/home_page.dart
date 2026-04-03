@@ -258,6 +258,40 @@ class _AccountPageState extends State<_AccountPage> {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
+            if (authProvider.isTravelerKycVerified) ...<Widget>[
+              const SizedBox(height: 14),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.tertiary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.verified_rounded,
+                        size: 16,
+                        color: colorScheme.tertiary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Account approved',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colorScheme.tertiary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 18),
             Card(
               child: Padding(
@@ -278,13 +312,6 @@ class _AccountPageState extends State<_AccountPage> {
                             'Profile picture',
                             style: theme.textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'This is shown to other travelers when you join an offer.',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -298,89 +325,88 @@ class _AccountPageState extends State<_AccountPage> {
               ),
             ),
             const SizedBox(height: 18),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            _kycTitle(authProvider),
-                            style: theme.textTheme.headlineSmall,
+            if (!authProvider.isTravelerKycVerified) ...<Widget>[
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                              _kycTitle(authProvider),
+                              style: theme.textTheme.headlineSmall,
+                            ),
                           ),
-                        ),
-                        _StatusPill(
-                          label: unlocked ? 'Open' : 'Locked',
-                          color: unlocked
-                              ? colorScheme.tertiary
-                              : colorScheme.secondary,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      _kycMessage(authProvider),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                          _StatusPill(
+                            label: unlocked ? 'Open' : 'Locked',
+                            color: unlocked
+                                ? colorScheme.tertiary
+                                : colorScheme.secondary,
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 18),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: _MetricTile(
-                            icon: unlocked
-                                ? Icons.lock_open_rounded
-                                : Icons.lock_outline_rounded,
-                            label: 'Trips',
-                            value: unlocked ? 'Active' : 'Restricted',
-                          ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _kycMessage(authProvider),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _MetricTile(
-                            icon: Icons.palette_outlined,
-                            label: 'Theme',
-                            value: _themeModeLabel(themeController.themeMode),
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: _MetricTile(
+                              icon: unlocked
+                                  ? Icons.lock_open_rounded
+                                  : Icons.lock_outline_rounded,
+                              label: 'Trips',
+                              value: unlocked ? 'Active' : 'Restricted',
+                            ),
                           ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _MetricTile(
+                              icon: Icons.palette_outlined,
+                              label: 'Theme',
+                              value: _themeModeLabel(themeController.themeMode),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      FilledButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<bool>(
+                              builder: (_) => const TravelerKycPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.badge_outlined),
+                        label: Text(
+                          authProvider.currentUser?.travelerKycStatus ==
+                                  'REJECTED'
+                              ? 'Update KYC'
+                              : 'Complete KYC',
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    FilledButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<bool>(
-                            builder: (_) => const TravelerKycPage(),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        authProvider.isTravelerKycVerified
-                            ? Icons.verified_user_outlined
-                            : Icons.badge_outlined,
                       ),
-                      label: Text(
-                        authProvider.isTravelerKycVerified
-                            ? 'View KYC'
-                            : 'Complete KYC',
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 18),
+              const SizedBox(height: 18),
+            ],
             Row(
               children: <Widget>[
                 Expanded(
                   child: _QuickActionCard(
                     icon: Icons.forum_outlined,
                     title: 'Traveler chat',
-                    subtitle: 'Mockup',
+                    subtitle: 'Joined offers',
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(

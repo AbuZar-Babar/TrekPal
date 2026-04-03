@@ -7,6 +7,7 @@ import PendingApproval from './modules/auth/components/PendingApproval';
 import RegisterForm from './modules/auth/components/RegisterForm';
 import { getProfile } from './modules/auth/store/authSlice';
 import BookingList from './modules/bookings/components/BookingList';
+import ChatPage from './modules/chat/components/ChatPage';
 import Dashboard from './modules/dashboard/components/Dashboard';
 import HotelForm from './modules/hotels/components/HotelForm';
 import HotelList from './modules/hotels/components/HotelList';
@@ -124,6 +125,16 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <BookingList />
+            </Layout>
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/chat"
+        element={(
+          <ProtectedRoute>
+            <Layout>
+              <ChatPage />
             </Layout>
           </ProtectedRoute>
         )}

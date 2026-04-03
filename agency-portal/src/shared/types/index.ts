@@ -95,6 +95,35 @@ export interface Package {
   updatedAt: string;
 }
 
+export interface ChatParticipant {
+  id: string;
+  name: string;
+  avatar: string | null;
+}
+
+export interface ChatRoom {
+  id: string;
+  packageId: string;
+  title: string;
+  agencyId: string;
+  agencyName: string;
+  participantCount: number;
+  participants: ChatParticipant[];
+  latestMessagePreview: string | null;
+  latestMessageAt: string | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  roomId: string;
+  senderType: 'TRAVELER' | 'AGENCY';
+  senderId: string;
+  senderName: string;
+  senderAvatar: string | null;
+  content: string;
+  createdAt: string;
+}
+
 export interface TripSpecs {
   stayType: 'ANY' | 'HOTEL' | 'RESORT' | 'GUEST_HOUSE';
   roomCount: number;

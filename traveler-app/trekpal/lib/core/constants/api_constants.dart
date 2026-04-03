@@ -29,6 +29,7 @@ class ApiConstants {
   static const String bids = '/bids';
   static const String bookings = '/bookings';
   static const String packages = '/packages';
+  static const String chat = '/chat';
 
   static String tripRequestById(String id) => '$tripRequests/$id';
   static String tripRequestBids(String tripRequestId) =>
@@ -38,6 +39,21 @@ class ApiConstants {
   static String acceptBid(String bidId) => '$bids/$bidId/accept';
   static String bookingById(String bookingId) => '$bookings/$bookingId';
   static String applyPackage(String packageId) => '$packages/$packageId/apply';
+  static String get chatRooms => '$chat/rooms';
+  static String chatRoomById(String roomId) => '$chat/rooms/$roomId';
+  static String chatRoomMessages(String roomId) => '$chat/rooms/$roomId/messages';
+  static String chatRoomByPackage(String packageId) => '$chat/package/$packageId';
+
+  static String get socketUrl {
+    final Uri uri = Uri.parse(baseUrl);
+    final List<String> segments = List<String>.from(uri.pathSegments);
+    if (segments.isNotEmpty && segments.last == 'api') {
+      segments.removeLast();
+    }
+
+    final String socketPath = segments.isEmpty ? '' : '/${segments.join('/')}';
+    return uri.replace(path: socketPath, query: null, fragment: null).toString();
+  }
 
   static String get connectionHint {
     if (kIsWeb) {

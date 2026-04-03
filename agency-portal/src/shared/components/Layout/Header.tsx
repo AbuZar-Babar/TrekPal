@@ -21,6 +21,7 @@ const Header = () => {
     { match: '/packages', title: 'Trip Offers', description: 'Create and publish your own offers.' },
     { match: '/trip-requests', title: 'Traveler Requests', description: 'Review traveler posts and bid on them.' },
     { match: '/bookings', title: 'Bookings', description: 'Track accepted work and updates.' },
+    { match: '/chat', title: 'Offer Chat', description: 'Talk to travelers who joined your offers.' },
     { match: '/hotels', title: 'Hotels', description: 'Manage hotel inventory.' },
     { match: '/transport', title: 'Vehicles', description: 'Manage vehicle inventory.' },
   ].find((item) => location.pathname.startsWith(item.match));
