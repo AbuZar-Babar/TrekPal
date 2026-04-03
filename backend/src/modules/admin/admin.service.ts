@@ -135,9 +135,12 @@ export class AdminService {
   }
 
   private async mapUserResponse(user: any): Promise<UserResponse> {
-    const [cnicFrontImageUrl, selfieImageUrl] = await Promise.all([
+    const [cnicFrontImageUrl, selfieImageUrl, resolvedAvatar] = await Promise.all([
       this.resolveKycUrl(user.cnicFrontImageUrl),
       this.resolveKycUrl(user.selfieImageUrl),
+      user.avatar
+        ? this.resolveMediaImages([user.avatar]).then((values) => values[0] ?? null)
+        : Promise.resolve(null),
     ]);
 
     return {
@@ -145,9 +148,10 @@ export class AdminService {
       email: user.email,
       name: user.name,
       phone: user.phone,
-      cnic: user.cnic,
-      city: user.city,
+      gender: user.gender,
+      dateOfBirth: user.dateOfBirth,
       residentialAddress: user.residentialAddress,
+      avatar: resolvedAvatar,
       cnicVerified: user.cnicVerified,
       travelerKycStatus: normalizeTravelerKycStatus(user.travelerKycStatus),
       cnicFrontImageUrl,
@@ -566,8 +570,8 @@ export class AdminService {
       name: input.name,
       email: input.email,
       phone: input.phone,
-      cnic: input.cnic,
-      city: input.city,
+      gender: input.gender,
+      dateOfBirth: input.dateOfBirth,
       residentialAddress: input.residentialAddress,
     });
 

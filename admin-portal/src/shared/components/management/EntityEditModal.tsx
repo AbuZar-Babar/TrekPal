@@ -1,8 +1,12 @@
 interface EditFieldConfig {
   name: string;
   label: string;
-  type?: 'text' | 'email' | 'tel' | 'textarea';
+  type?: 'text' | 'email' | 'tel' | 'textarea' | 'date' | 'select';
   placeholder?: string;
+  options?: Array<{
+    label: string;
+    value: string;
+  }>;
 }
 
 interface EntityEditModalProps {
@@ -63,6 +67,25 @@ const EntityEditModal = ({
                     onChange={(event) => onChange(field.name, event.target.value)}
                     className="sovereign-input min-h-[112px] resize-y"
                   />
+                </label>
+              );
+            }
+
+            if (field.type === 'select') {
+              return (
+                <label key={field.name}>
+                  <div className="mb-2 text-sm font-semibold text-[var(--text)]">{field.label}</div>
+                  <select
+                    value={value}
+                    onChange={(event) => onChange(field.name, event.target.value)}
+                    className="sovereign-input"
+                  >
+                    {(field.options ?? []).map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
               );
             }

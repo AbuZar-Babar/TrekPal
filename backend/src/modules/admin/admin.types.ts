@@ -85,20 +85,25 @@ export const updateUserSchema = z.object({
       name: optionalTrimmedRequiredString(2, 120),
       email: z.string().trim().email('Invalid email address').optional(),
       phone: optionalTrimmedString(30),
-      cnic: z
-        .preprocess((value) => {
-          if (value === null || value === undefined) {
-            return value;
-          }
+      gender: z.preprocess((value) => {
+        if (value === null || value === undefined) {
+          return value;
+        }
 
-          if (typeof value !== 'string') {
-            return value;
-          }
+        if (typeof value !== 'string') {
+          return value;
+        }
 
-          const trimmed = value.trim();
-          return trimmed.length === 0 ? null : trimmed;
-        }, z.string().regex(/^\d{13}$/, 'CNIC must be exactly 13 digits').nullable().optional()),
-      city: optionalTrimmedString(120),
+        const trimmed = value.trim();
+        return trimmed.length === 0 ? null : trimmed;
+      }, z.enum(['Male', 'Female']).nullable().optional()),
+      dateOfBirth: z.preprocess((value) => {
+        if (value === null || value === undefined || value === '') {
+          return null;
+        }
+
+        return value;
+      }, z.coerce.date().nullable().optional()),
       residentialAddress: optionalTrimmedString(300),
     })
     .refine((data) => Object.keys(data).length > 0, {
@@ -184,9 +189,10 @@ export interface UserResponse {
   email: string;
   name: string | null;
   phone: string | null;
-  cnic: string | null;
-  city: string | null;
+  gender: 'Male' | 'Female' | null;
+  dateOfBirth: Date | null;
   residentialAddress: string | null;
+  avatar: string | null;
   cnicVerified: boolean;
   travelerKycStatus: string;
   cnicFrontImageUrl: string | null;

@@ -12,7 +12,7 @@ import {
   formatDate,
   formatTravelerKycStatus,
   getTravelerKycTone,
-  maskCnic,
+  getInitials,
 } from '../../../shared/utils/formatters';
 import { approveUser, fetchUsers, rejectUser, updateUser } from '../store/usersSlice';
 
@@ -33,10 +33,32 @@ const editableFields = [
   { name: 'name', label: 'Name' },
   { name: 'email', label: 'Email', type: 'email' as const },
   { name: 'phone', label: 'Phone', type: 'tel' as const },
-  { name: 'cnic', label: 'CNIC' },
-  { name: 'city', label: 'City' },
+  {
+    name: 'gender',
+    label: 'Gender',
+    type: 'select' as const,
+    options: [
+      { value: '', label: 'Select gender' },
+      { value: 'Male', label: 'Male' },
+      { value: 'Female', label: 'Female' },
+    ],
+  },
+  { name: 'dateOfBirth', label: 'Date of birth', type: 'date' as const },
   { name: 'residentialAddress', label: 'Residential address', type: 'textarea' as const },
 ];
+
+const getDateInputValue = (value: string | null | undefined) => {
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toISOString().slice(0, 10);
+};
 
 const UserList = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -121,8 +143,8 @@ const UserList = () => {
       name: selectedUser.name || '',
       email: selectedUser.email,
       phone: selectedUser.phone || '',
-      cnic: selectedUser.cnic || '',
-      city: selectedUser.city || '',
+      gender: selectedUser.gender || '',
+      dateOfBirth: getDateInputValue(selectedUser.dateOfBirth),
       residentialAddress: selectedUser.residentialAddress || '',
     });
     setIsEditOpen(true);
@@ -172,8 +194,11 @@ const UserList = () => {
             name: editValues.name?.trim(),
             email: editValues.email?.trim(),
             phone: editValues.phone?.trim() || null,
-            cnic: editValues.cnic?.trim() || null,
-            city: editValues.city?.trim() || null,
+            gender:
+              editValues.gender === 'Male' || editValues.gender === 'Female'
+                ? editValues.gender
+                : null,
+            dateOfBirth: editValues.dateOfBirth?.trim() || null,
             residentialAddress: editValues.residentialAddress?.trim() || null,
           },
         }),
@@ -349,12 +374,25 @@ const UserList = () => {
   const detail = selectedUser ? (
     <div className="sovereign-panel sticky top-28 p-6">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="sovereign-label">Traveler</div>
-          <h3 className="mt-2 font-headline text-2xl font-bold text-[var(--text)]">
-            {selectedUser.name || 'Unnamed traveler'}
-          </h3>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedUser.email}</p>
+        <div className="flex items-start gap-4">
+          {selectedUser.avatar ? (
+            <img
+              src={selectedUser.avatar}
+              alt={selectedUser.name || 'Traveler'}
+              className="h-14 w-14 rounded-full object-cover ring-1 ring-[var(--border)]"
+            />
+          ) : (
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--surface-low)] text-sm font-bold text-[var(--text-muted)] ring-1 ring-[var(--border)]">
+              {getInitials(selectedUser.name, 'TR')}
+            </div>
+          )}
+          <div>
+            <div className="sovereign-label">Traveler</div>
+            <h3 className="mt-2 font-headline text-2xl font-bold text-[var(--text)]">
+              {selectedUser.name || 'Unnamed traveler'}
+            </h3>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedUser.email}</p>
+          </div>
         </div>
         <span
           className={toneToClass(
@@ -372,12 +410,12 @@ const UserList = () => {
             <span className="font-semibold text-[var(--text)]">{selectedUser.phone || 'Not provided'}</span>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <span className="text-[var(--text-soft)]">CNIC</span>
-            <span className="font-semibold text-[var(--text)]">{maskCnic(selectedUser.cnic)}</span>
+            <span className="text-[var(--text-soft)]">Gender</span>
+            <span className="font-semibold text-[var(--text)]">{selectedUser.gender || 'Not provided'}</span>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <span className="text-[var(--text-soft)]">City</span>
-            <span className="font-semibold text-[var(--text)]">{selectedUser.city || 'Not provided'}</span>
+            <span className="text-[var(--text-soft)]">Date of birth</span>
+            <span className="font-semibold text-[var(--text)]">{formatDate(selectedUser.dateOfBirth)}</span>
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-[var(--text-soft)]">Joined</span>

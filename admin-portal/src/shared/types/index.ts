@@ -87,9 +87,10 @@ export interface UserProfile {
   email: string;
   name: string | null;
   phone: string | null;
-  cnic: string | null;
-  city: string | null;
+  gender: 'Male' | 'Female' | null;
+  dateOfBirth: string | null;
   residentialAddress: string | null;
+  avatar: string | null;
   cnicVerified: boolean;
   travelerKycStatus: TravelerKycStatus | string;
   cnicFrontImageUrl: string | null;
@@ -143,7 +144,7 @@ export interface TravelerUpdateInput {
   name?: string;
   email?: string;
   phone?: string | null;
-  cnic?: string | null;
-  city?: string | null;
+  gender?: 'Male' | 'Female' | null;
+  dateOfBirth?: string | null;
   residentialAddress?: string | null;
 }
