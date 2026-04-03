@@ -58,6 +58,15 @@ class BookingsProvider extends ChangeNotifier {
       return _selectedBooking!;
     } catch (error) {
       _errorMessage = _readableError(error);
+      final BookingEntity? fallbackBooking = _bookings.cast<BookingEntity?>()
+          .firstWhere(
+            (BookingEntity? booking) => booking?.id == bookingId,
+            orElse: () => null,
+          );
+      if (fallbackBooking != null) {
+        _selectedBooking = fallbackBooking;
+        return fallbackBooking;
+      }
       rethrow;
     } finally {
       _isLoading = false;

@@ -89,10 +89,35 @@ class BookingCard extends StatelessWidget {
                     ),
                   ),
                   if (onTap != null)
-                    FilledButton.tonalIcon(
-                      onPressed: onTap,
-                      icon: const Icon(Icons.receipt_long_outlined),
-                      label: const Text('View booking'),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(
+                          alpha: 0.1,
+                        ),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Details',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                 ],
               ),
