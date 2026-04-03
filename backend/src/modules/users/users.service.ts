@@ -61,6 +61,7 @@ export class UsersService {
     email: string;
     name: string | null;
     phone: string | null;
+    gender: string | null;
     cnic: string | null;
     cnicVerified: boolean;
     travelerKycStatus: string;
@@ -77,9 +78,10 @@ export class UsersService {
     createdAt: Date;
     updatedAt: Date;
   }): Promise<UserProfileResponse> {
-    const [cnicFrontImageUrl, selfieImageUrl] = await Promise.all([
+    const [cnicFrontImageUrl, selfieImageUrl, avatarUrl] = await Promise.all([
       this.resolveKycUrl(user.cnicFrontImageUrl),
       this.resolveKycUrl(user.selfieImageUrl),
+      this.resolveKycUrl(user.avatar),
     ]);
 
     return {
@@ -88,6 +90,7 @@ export class UsersService {
       email: user.email,
       name: user.name,
       phone: user.phone,
+      gender: user.gender as UserProfileResponse['gender'],
       cnic: user.cnic,
       cnicVerified: user.cnicVerified,
       travelerKycStatus: normalizeTravelerKycStatus(user.travelerKycStatus),
@@ -98,7 +101,7 @@ export class UsersService {
       emergencyContactPhone: user.emergencyContactPhone,
       cnicFrontImageUrl,
       selfieImageUrl,
-      avatar: user.avatar,
+      avatar: avatarUrl,
       kycSubmittedAt: user.kycSubmittedAt,
       kycVerifiedAt: user.kycVerifiedAt,
       createdAt: user.createdAt,
@@ -139,6 +142,12 @@ export class UsersService {
     }
     if (input.phone !== undefined) {
       updateData.phone = input.phone ?? null;
+    }
+    if (input.residentialAddress !== undefined) {
+      updateData.residentialAddress = input.residentialAddress ?? null;
+    }
+    if (input.gender !== undefined) {
+      updateData.gender = input.gender ?? null;
     }
     if (input.avatar !== undefined) {
       updateData.avatar = input.avatar ?? null;
@@ -250,6 +259,42 @@ export class UsersService {
 
       throw error;
     }
+  }
+
+  async uploadAvatar(
+    authUid: string,
+    file: Express.Multer.File,
+  ): Promise<UserProfileResponse> {
+    const existing = await prisma.user.findUnique({ where: { authUid } });
+    if (!existing) {
+      throw new Error('User profile not found');
+    }
+
+    const originalExt = path.extname(file.originalname || '').toLowerCase();
+    const extension =
+      originalExt || inferKycExtensionFromMimeType(file.mimetype);
+    const objectPath = `travelers/${existing.id}/profile/avatar${extension}`;
+
+    await uploadKycFile(
+      file.buffer,
+      resolveKycMimeType(file.mimetype, file.originalname),
+      objectPath,
+    );
+
+    if (
+      existing.avatar &&
+      !isHttpUrl(existing.avatar) &&
+      existing.avatar !== objectPath
+    ) {
+      await Promise.allSettled([deleteKycFile(existing.avatar)]);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { authUid },
+      data: { avatar: objectPath },
+    });
+
+    return this.mapUserProfile(updatedUser);
   }
 }
 

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../domain/entities/auth_entities.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/auth_form_widget.dart';
 
@@ -14,10 +15,15 @@ class RegisterPage extends StatelessWidget {
     final AuthProvider authProvider = context.read<AuthProvider>();
     try {
       await authProvider.registerTraveler(
-        name: values.name ?? '',
-        email: values.email,
-        password: values.password,
-        phone: values.phone,
+        input: TravelerRegistrationInput(
+          name: values.name ?? '',
+          email: values.email,
+          password: values.password,
+          phone: values.phone ?? '',
+          dateOfBirth: values.dateOfBirth!,
+          gender: values.gender ?? 'Male',
+          address: values.address ?? '',
+        ),
       );
       if (!context.mounted) {
         return;
@@ -61,47 +67,17 @@ class RegisterPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    'Begin Your Journey',
+                    'Create traveler account',
                     style: theme.textTheme.displayMedium,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Open your traveler profile now. You can browse the app immediately, then complete traveler KYC to unlock booking and negotiation.',
+                    'Start with your basic profile. KYC still unlocks the restricted parts of the app later.',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 22),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: colorScheme.secondaryContainer.withValues(
-                        alpha: 0.7,
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Step 01 of 02',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Create your traveler identity first, then verify it from the account tab.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 18),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(24),

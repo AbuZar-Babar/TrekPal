@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TRAVELER_GENDERS, type TravelerGender } from '../../config/constants';
 
 /**
  * Auth request/response types
@@ -36,13 +37,26 @@ const parseStringArray = (value: unknown): unknown => {
   return [trimmed];
 };
 
+const travelerGenderSchema = z.enum([
+  TRAVELER_GENDERS.MALE,
+  TRAVELER_GENDERS.FEMALE,
+]);
+
+const travelerDateOfBirthSchema = z
+  .string()
+  .refine((value) => !Number.isNaN(Date.parse(value)), 'Date of birth is required')
+  .refine((value) => new Date(value) <= new Date(), 'Date of birth cannot be in the future');
+
 // User Registration Schema
 export const userRegisterSchema = z.object({
   body: z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     name: z.string().min(2, 'Name must be at least 2 characters'),
-    phone: z.string().optional(),
+    phone: z.string().trim().min(5, 'Phone number is required'),
+    dateOfBirth: travelerDateOfBirthSchema,
+    gender: travelerGenderSchema,
+    address: z.string().trim().min(10, 'Address is required').max(300, 'Address is too long'),
     cnic: z.string().length(13, 'CNIC must be 13 digits').optional(),
   }),
 });
@@ -155,6 +169,7 @@ export interface AuthResponse {
     email: string;
     name: string | null;
     phone?: string | null;
+    gender?: TravelerGender | null;
     cnic?: string | null;
     cnicVerified?: boolean;
     travelerKycStatus?: string;
@@ -165,6 +180,7 @@ export interface AuthResponse {
     emergencyContactPhone?: string | null;
     kycSubmittedAt?: Date | null;
     kycVerifiedAt?: Date | null;
+    avatar?: string | null;
     status?: string;
     role: string;
   };

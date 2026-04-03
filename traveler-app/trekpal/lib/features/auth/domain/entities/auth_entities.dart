@@ -6,6 +6,7 @@ class AuthUser {
     required this.name,
     required this.role,
     this.phone,
+    this.gender,
     this.cnic,
     this.cnicVerified = false,
     this.travelerKycStatus = 'NOT_SUBMITTED',
@@ -14,6 +15,7 @@ class AuthUser {
     this.residentialAddress,
     this.emergencyContactName,
     this.emergencyContactPhone,
+    this.avatar,
     this.kycSubmittedAt,
     this.kycVerifiedAt,
   });
@@ -24,6 +26,7 @@ class AuthUser {
   final String name;
   final String role;
   final String? phone;
+  final String? gender;
   final String? cnic;
   final bool cnicVerified;
   final String travelerKycStatus;
@@ -32,6 +35,7 @@ class AuthUser {
   final String? residentialAddress;
   final String? emergencyContactName;
   final String? emergencyContactPhone;
+  final String? avatar;
   final DateTime? kycSubmittedAt;
   final DateTime? kycVerifiedAt;
 
@@ -44,6 +48,7 @@ class AuthUser {
     String? name,
     String? role,
     String? phone,
+    String? gender,
     String? cnic,
     bool? cnicVerified,
     String? travelerKycStatus,
@@ -52,6 +57,7 @@ class AuthUser {
     String? residentialAddress,
     String? emergencyContactName,
     String? emergencyContactPhone,
+    String? avatar,
     DateTime? kycSubmittedAt,
     DateTime? kycVerifiedAt,
   }) {
@@ -62,6 +68,7 @@ class AuthUser {
       name: name ?? this.name,
       role: role ?? this.role,
       phone: phone ?? this.phone,
+      gender: gender ?? this.gender,
       cnic: cnic ?? this.cnic,
       cnicVerified: cnicVerified ?? this.cnicVerified,
       travelerKycStatus: travelerKycStatus ?? this.travelerKycStatus,
@@ -71,6 +78,7 @@ class AuthUser {
       emergencyContactName: emergencyContactName ?? this.emergencyContactName,
       emergencyContactPhone:
           emergencyContactPhone ?? this.emergencyContactPhone,
+      avatar: avatar ?? this.avatar,
       kycSubmittedAt: kycSubmittedAt ?? this.kycSubmittedAt,
       kycVerifiedAt: kycVerifiedAt ?? this.kycVerifiedAt,
     );
@@ -122,4 +130,44 @@ class TravelerKycSubmission {
   final String emergencyContactPhone;
   final KycDocument cnicFrontImage;
   final KycDocument selfieImage;
+}
+
+class TravelerRegistrationInput {
+  const TravelerRegistrationInput({
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.phone,
+    required this.dateOfBirth,
+    required this.gender,
+    required this.address,
+  });
+
+  final String name;
+  final String email;
+  final String password;
+  final String phone;
+  final DateTime dateOfBirth;
+  final String gender;
+  final String address;
+}
+
+class TravelerProfileUpdate {
+  const TravelerProfileUpdate({this.name, this.phone, this.address});
+
+  final String? name;
+  final String? phone;
+  final String? address;
+}
+
+class ProfileImageUpload {
+  const ProfileImageUpload({
+    required this.fileName,
+    required this.bytes,
+    required this.mimeType,
+  });
+
+  final String fileName;
+  final List<int> bytes;
+  final String mimeType;
 }

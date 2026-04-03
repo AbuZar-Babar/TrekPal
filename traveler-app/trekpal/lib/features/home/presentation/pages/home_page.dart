@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/theme_controller.dart';
+import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/user_avatar.dart';
+import '../../../auth/domain/entities/auth_entities.dart';
 import '../../../auth/presentation/pages/traveler_kyc_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bookings/presentation/pages/bookings_list_page.dart';
@@ -96,9 +100,14 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _AccountPage extends StatelessWidget {
+class _AccountPage extends StatefulWidget {
   const _AccountPage();
 
+  @override
+  State<_AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<_AccountPage> {
   String _kycTitle(AuthProvider authProvider) {
     if (authProvider.isTravelerKycVerified) {
       return 'KYC approved';
@@ -140,6 +149,63 @@ class _AccountPage extends StatelessWidget {
     }
   }
 
+  Future<void> _pickAvatar() async {
+    final AuthProvider authProvider = context.read<AuthProvider>();
+    final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+    final XFile? file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1600,
+      imageQuality: 85,
+    );
+
+    if (file == null) {
+      return;
+    }
+
+    final List<int> bytes = await file.readAsBytes();
+    final String lowerName = file.name.toLowerCase();
+    final String mimeType = lowerName.endsWith('.png')
+        ? 'image/png'
+        : lowerName.endsWith('.webp')
+        ? 'image/webp'
+        : 'image/jpeg';
+
+    try {
+      await authProvider.uploadTravelerAvatar(
+        ProfileImageUpload(
+          fileName: file.name,
+          bytes: bytes,
+          mimeType: mimeType,
+        ),
+      );
+      if (!mounted) {
+        return;
+      }
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Profile picture updated')),
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            authProvider.errorMessage ?? 'Failed to update profile picture',
+          ),
+        ),
+      );
+    }
+  }
+
+  String _profileValue(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return '-';
+    }
+
+    return value.trim();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -168,7 +234,7 @@ class _AccountPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Simple travel control',
+                        'Profile and access',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -176,18 +242,10 @@ class _AccountPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                CircleAvatar(
+                UserAvatar(
+                  label: user?.name ?? 'Traveler',
+                  imageUrl: user?.avatar,
                   radius: 24,
-                  backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-                  foregroundColor: colorScheme.primary,
-                  child: Text(
-                    (user?.name.trim().isNotEmpty ?? false)
-                        ? user!.name.trim().substring(0, 1).toUpperCase()
-                        : 'T',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: colorScheme.primary,
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -195,9 +253,48 @@ class _AccountPage extends StatelessWidget {
             Text(user?.name ?? 'Traveler', style: theme.textTheme.displaySmall),
             const SizedBox(height: 10),
             Text(
-              'Request trips, join offers, and keep the rest lightweight.',
+              'Keep your profile ready before you join the next trip.',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: <Widget>[
+                    UserAvatar(
+                      label: user?.name ?? 'Traveler',
+                      imageUrl: user?.avatar,
+                      radius: 34,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Profile picture',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'This is shown to other travelers when you join an offer.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    FilledButton.tonalIcon(
+                      onPressed: authProvider.isLoading ? null : _pickAvatar,
+                      icon: const Icon(Icons.photo_camera_outlined),
+                      label: Text(user?.avatar != null ? 'Change' : 'Add'),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 18),
@@ -322,13 +419,22 @@ class _AccountPage extends StatelessWidget {
                     Text('Profile', style: theme.textTheme.titleLarge),
                     const SizedBox(height: 14),
                     _InfoRow(label: 'Email', value: user?.email ?? '-'),
-                    _InfoRow(label: 'Phone', value: user?.phone ?? '-'),
+                    _InfoRow(label: 'Phone', value: _profileValue(user?.phone)),
                     _InfoRow(
-                      label: 'City',
-                      value: user?.city?.trim().isNotEmpty == true
-                          ? user!.city!
+                      label: 'Gender',
+                      value: _profileValue(user?.gender),
+                    ),
+                    _InfoRow(
+                      label: 'DOB',
+                      value: user?.dateOfBirth != null
+                          ? AppFormatters.date(user!.dateOfBirth!)
                           : '-',
                     ),
+                    _InfoRow(
+                      label: 'Address',
+                      value: _profileValue(user?.residentialAddress),
+                    ),
+                    _InfoRow(label: 'City', value: _profileValue(user?.city)),
                   ],
                 ),
               ),

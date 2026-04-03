@@ -1,5 +1,6 @@
 import { prisma } from '../../config/database';
 import { BOOKING_STATUS, ROLES } from '../../config/constants';
+import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
 import {
   ApplyPackageInput,
   CreatePackageInput,
@@ -31,6 +32,9 @@ const packageInclude = {
       user: {
         select: {
           name: true,
+          dateOfBirth: true,
+          gender: true,
+          avatar: true,
         },
       },
     },
@@ -47,15 +51,53 @@ const buildInitials = (name?: string | null): string => {
   return parts.map((part) => part[0]?.toUpperCase() ?? '').join('');
 };
 
-const mapParticipant = (booking: any): PackageParticipantPreview => ({
+const deriveAge = (dateOfBirth?: Date | null): number | null => {
+  if (!dateOfBirth) {
+    return null;
+  }
+
+  const now = new Date();
+  let age = now.getFullYear() - dateOfBirth.getFullYear();
+  const hasBirthdayPassed =
+    now.getMonth() > dateOfBirth.getMonth() ||
+    (now.getMonth() === dateOfBirth.getMonth() &&
+      now.getDate() >= dateOfBirth.getDate());
+
+  if (!hasBirthdayPassed) {
+    age -= 1;
+  }
+
+  return age >= 0 ? age : null;
+};
+
+const resolveAvatarUrl = async (value?: string | null): Promise<string | null> => {
+  if (!value) {
+    return null;
+  }
+
+  if (isHttpUrl(value)) {
+    return value;
+  }
+
+  try {
+    return await createSignedKycUrl(value);
+  } catch {
+    return null;
+  }
+};
+
+const mapParticipant = async (booking: any): Promise<PackageParticipantPreview> => ({
   userId: booking.userId,
   travelerName: booking.user?.name?.trim() || 'Traveler',
   initials: buildInitials(booking.user?.name),
+  age: deriveAge(booking.user?.dateOfBirth),
+  gender: booking.user?.gender ?? null,
+  avatar: await resolveAvatarUrl(booking.user?.avatar),
   bookingStatus: booking.status,
   joinedAt: booking.createdAt,
 });
 
-const mapPackage = (tripPackage: any): PackageResponse => ({
+const mapPackage = async (tripPackage: any): Promise<PackageResponse> => ({
   id: tripPackage.id,
   agencyId: tripPackage.agencyId,
   agencyName: tripPackage.agency.name,
@@ -67,7 +109,7 @@ const mapPackage = (tripPackage: any): PackageResponse => ({
   images: tripPackage.images,
   isActive: tripPackage.isActive,
   participantCount: tripPackage.bookings.length,
-  participants: tripPackage.bookings.map(mapParticipant),
+  participants: await Promise.all(tripPackage.bookings.map(mapParticipant)),
   createdAt: tripPackage.createdAt,
   updatedAt: tripPackage.updatedAt,
 });
@@ -109,7 +151,7 @@ export class PackagesService {
     ]);
 
     return {
-      packages: packages.map(mapPackage),
+      packages: await Promise.all(packages.map(mapPackage)),
       total,
       page,
       limit,

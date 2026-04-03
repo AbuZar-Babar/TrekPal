@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/widgets/avatar_group.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/destination_artwork.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
+import '../../../../core/widgets/participant_roster.dart';
 import '../../../chat/presentation/pages/chat_room_page.dart';
 import '../../../complaints/presentation/pages/complaint_form_page.dart';
 import '../../../reviews/presentation/pages/review_form_page.dart';
@@ -123,6 +123,28 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: <Widget>[
+              if (provider.errorMessage != null) ...<Widget>[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(Icons.info_outline, color: colorScheme.secondary),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Showing saved booking details while the latest trip data reloads.',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
               Text(destination, style: theme.textTheme.displayMedium),
               const SizedBox(height: 10),
               Text(
@@ -178,31 +200,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Travelers going',
-                                style: theme.textTheme.titleLarge,
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                '${booking.packageTravelerCount ?? booking.packageParticipants.length} traveler${(booking.packageTravelerCount ?? booking.packageParticipants.length) == 1 ? '' : 's'} in this offer',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        AvatarGroup(
-                          participants: booking.packageParticipants,
-                          avatarRadius: 18,
-                        ),
-                      ],
+                    child: ParticipantRoster(
+                      participants: booking.packageParticipants,
+                      title: 'Travelers going',
+                      countLabel:
+                          '${booking.packageTravelerCount ?? booking.packageParticipants.length} traveler${(booking.packageTravelerCount ?? booking.packageParticipants.length) == 1 ? '' : 's'} in this offer',
+                      maxRows: booking.packageParticipants.length,
                     ),
                   ),
                 ),

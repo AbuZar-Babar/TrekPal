@@ -6,6 +6,9 @@ export interface BookingParticipantPreview {
   userId: string;
   travelerName: string;
   initials: string;
+  age: number | null;
+  gender: string | null;
+  avatar: string | null;
   bookingStatus: string;
   joinedAt: Date;
 }

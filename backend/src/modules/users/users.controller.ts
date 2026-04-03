@@ -87,6 +87,30 @@ export class UsersController {
       sendError(res, error.message || 'Failed to submit traveler KYC', 400);
     }
   }
+
+  /**
+   * Upload traveler avatar
+   * POST /api/users/profile/avatar
+   */
+  async uploadAvatar(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'Unauthorized', 401);
+        return;
+      }
+
+      const file = req.file;
+      if (!file) {
+        sendError(res, 'Profile picture is required', 400);
+        return;
+      }
+
+      const profile = await usersService.uploadAvatar(req.user.uid, file);
+      sendSuccess(res, profile, 'Profile picture updated successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to upload profile picture', 400);
+    }
+  }
 }
 
 export const usersController = new UsersController();

@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { usersController } from './users.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
-import { uploadTravelerKycDocuments } from '../../middlewares/upload.middleware';
+import {
+  createMediaImageUpload,
+  uploadTravelerKycDocuments,
+} from '../../middlewares/upload.middleware';
 import { requireTraveler } from '../../middlewares/roleGuard.middleware';
 import { validateBody } from '../../middlewares/validation.middleware';
 import { submitTravelerKycSchema, updateProfileSchema } from './users.types';
@@ -40,6 +43,12 @@ router.post(
   uploadTravelerKycDocuments as any,
   validateBody(submitTravelerKycSchema),
   usersController.submitTravelerKyc.bind(usersController),
+);
+
+router.post(
+  '/profile/avatar',
+  createMediaImageUpload('traveler-avatars') as any,
+  usersController.uploadAvatar.bind(usersController),
 );
 
 export default router;

@@ -22,6 +22,7 @@ class ApiConstants {
   static const String registerTraveler = '/auth/register/user';
   static const String authProfile = '/auth/profile';
   static const String usersProfile = '/users/profile';
+  static const String usersProfileAvatar = '/users/profile/avatar';
   static const String travelerKyc = '/users/profile/kyc';
 
   static const String tripRequests = '/trip-requests';

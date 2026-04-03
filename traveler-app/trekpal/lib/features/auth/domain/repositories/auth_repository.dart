@@ -4,13 +4,14 @@ abstract class AuthRepository {
   Future<AuthSession> login({required String email, required String password});
 
   Future<AuthSession> registerTraveler({
-    required String name,
-    required String email,
-    required String password,
-    String? phone,
+    required TravelerRegistrationInput input,
   });
 
   Future<AuthUser> fetchProfile();
+
+  Future<AuthUser> updateProfile(TravelerProfileUpdate update);
+
+  Future<AuthUser> uploadAvatar(ProfileImageUpload upload);
 
   Future<void> submitTravelerKyc(TravelerKycSubmission submission);
 

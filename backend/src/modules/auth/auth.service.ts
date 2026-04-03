@@ -3,6 +3,8 @@ import {
   ROLES,
   APPROVAL_STATUS,
   normalizeTravelerKycStatus,
+  TRAVELER_GENDERS,
+  type TravelerGender,
 } from '../../config/constants';
 import {
   createSupabaseAuthUser,
@@ -77,6 +79,7 @@ export class AuthService {
     email: string;
     name: string | null;
     phone?: string | null;
+    gender?: string | null;
     cnic?: string | null;
     cnicVerified?: boolean;
     travelerKycStatus?: string;
@@ -87,13 +90,21 @@ export class AuthService {
     emergencyContactPhone?: string | null;
     kycSubmittedAt?: Date | null;
     kycVerifiedAt?: Date | null;
+    avatar?: string | null;
   }): AuthResponse['user'] {
+    const normalizedGender: TravelerGender | null =
+      user.gender === TRAVELER_GENDERS.MALE ||
+          user.gender === TRAVELER_GENDERS.FEMALE
+      ? user.gender
+      : null;
+
     return {
       id: user.id,
       authUid: user.authUid,
       email: user.email,
       name: user.name,
       phone: user.phone ?? null,
+      gender: normalizedGender,
       cnic: user.cnic ?? null,
       cnicVerified: user.cnicVerified ?? false,
       travelerKycStatus: normalizeTravelerKycStatus(user.travelerKycStatus),
@@ -104,6 +115,7 @@ export class AuthService {
       emergencyContactPhone: user.emergencyContactPhone ?? null,
       kycSubmittedAt: user.kycSubmittedAt ?? null,
       kycVerifiedAt: user.kycVerifiedAt ?? null,
+      avatar: user.avatar ?? null,
       role: ROLES.TRAVELER,
     };
   }
@@ -230,6 +242,9 @@ export class AuthService {
       email: input.email,
       name: input.name,
       phone: input.phone,
+      gender: input.gender,
+      dateOfBirth: new Date(input.dateOfBirth),
+      residentialAddress: input.address,
       cnic: input.cnic,
       cnicVerified: false,
     });

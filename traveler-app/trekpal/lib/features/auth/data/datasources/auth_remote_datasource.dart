@@ -22,19 +22,19 @@ class AuthRemoteDataSource {
   }
 
   Future<AuthSessionModel> registerTraveler({
-    required String name,
-    required String email,
-    required String password,
-    String? phone,
+    required TravelerRegistrationInput input,
   }) async {
     final dynamic data = await _apiClient.post(
       ApiConstants.registerTraveler,
       authenticated: false,
       body: <String, dynamic>{
-        'name': name,
-        'email': email,
-        'password': password,
-        if (phone != null && phone.trim().isNotEmpty) 'phone': phone.trim(),
+        'name': input.name,
+        'email': input.email,
+        'password': input.password,
+        'phone': input.phone.trim(),
+        'dateOfBirth': input.dateOfBirth.toIso8601String(),
+        'gender': input.gender,
+        'address': input.address.trim(),
       },
     );
 
@@ -42,7 +42,37 @@ class AuthRemoteDataSource {
   }
 
   Future<AuthUserModel> fetchProfile() async {
-    final dynamic data = await _apiClient.get(ApiConstants.authProfile);
+    final dynamic data = await _apiClient.get(ApiConstants.usersProfile);
+    return AuthUserModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<AuthUserModel> updateProfile(TravelerProfileUpdate update) async {
+    final dynamic data = await _apiClient.put(
+      ApiConstants.usersProfile,
+      body: <String, dynamic>{
+        if (update.name != null) 'name': update.name,
+        if (update.phone != null) 'phone': update.phone,
+        if (update.address != null) 'residentialAddress': update.address,
+      },
+    );
+
+    return AuthUserModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<AuthUserModel> uploadAvatar(ProfileImageUpload upload) async {
+    final dynamic data = await _apiClient.postMultipart(
+      ApiConstants.usersProfileAvatar,
+      fields: const <String, String>{},
+      files: <MultipartFilePayload>[
+        MultipartFilePayload(
+          fieldName: 'image',
+          fileName: upload.fileName,
+          bytes: upload.bytes,
+          mimeType: upload.mimeType,
+        ),
+      ],
+    );
+
     return AuthUserModel.fromJson(data as Map<String, dynamic>);
   }
 

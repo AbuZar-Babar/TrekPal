@@ -158,4 +158,16 @@ class AppValidators {
 
     return null;
   }
+
+  static String? dateOfBirth(DateTime? value) {
+    if (value == null) {
+      return 'Date of birth is required';
+    }
+
+    if (value.isAfter(DateTime.now())) {
+      return 'Date of birth cannot be in the future';
+    }
+
+    return null;
+  }
 }

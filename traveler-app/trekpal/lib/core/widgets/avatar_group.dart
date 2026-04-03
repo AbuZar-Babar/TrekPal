@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/participant_preview.dart';
+import 'user_avatar.dart';
 
 class AvatarGroup extends StatelessWidget {
   const AvatarGroup({
@@ -22,8 +23,14 @@ class AvatarGroup extends StatelessWidget {
         .take(maxVisible)
         .toList();
     final int remaining = participants.length - visible.length;
+    final int bubbleCount = visible.length + (remaining > 0 ? 1 : 0);
+    final double overlapSpacing = avatarRadius + 10;
+    final double stackWidth = bubbleCount == 0
+        ? avatarRadius * 2
+        : avatarRadius * 2 + (bubbleCount - 1) * overlapSpacing;
 
     return SizedBox(
+      width: stackWidth,
       height: avatarRadius * 2,
       child: Stack(
         children: <Widget>[
@@ -31,18 +38,12 @@ class AvatarGroup extends StatelessWidget {
             Positioned(
               left: index * (avatarRadius + 10),
               child: Tooltip(
-                message: visible[index].travelerName,
-                child: CircleAvatar(
+                message:
+                    '${visible[index].travelerName}${visible[index].details == '-' ? '' : '\n${visible[index].details}'}',
+                child: UserAvatar(
+                  label: visible[index].travelerName,
+                  imageUrl: visible[index].avatar,
                   radius: avatarRadius,
-                  backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-                  foregroundColor: colorScheme.primary,
-                  child: Text(
-                    visible[index].initials,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
                 ),
               ),
             ),

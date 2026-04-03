@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/widgets/avatar_group.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
+import '../../../../core/widgets/participant_roster.dart';
 import '../../../auth/presentation/pages/traveler_kyc_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/traveler_kyc_gate_card.dart';
@@ -93,12 +93,19 @@ class _PackagesListPageState extends State<PackagesListPage> {
     final ColorScheme colorScheme = theme.colorScheme;
     final AuthProvider authProvider = context.watch<AuthProvider>();
     final PackagesProvider provider = context.watch<PackagesProvider>();
+    final String? currentTravelerId = authProvider.currentUser?.id;
 
     _ensureLoaded();
 
     final List<PackageOfferEntity> offers = provider.packages;
     final int joinedOffers = offers
-        .where((PackageOfferEntity item) => item.participantCount > 0)
+        .where(
+          (PackageOfferEntity item) =>
+              currentTravelerId != null &&
+              item.participants.any(
+                (participant) => participant.userId == currentTravelerId,
+              ),
+        )
         .length;
 
     return Scaffold(
@@ -185,16 +192,23 @@ class _PackagesListPageState extends State<PackagesListPage> {
                             ),
                             const SizedBox(height: 18),
                             Text(
-                              'No trip offers yet',
+                              'No offers available right now',
                               style: theme.textTheme.headlineSmall,
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Agency offers will appear here after they are posted.',
+                              'Check back later or pull to refresh after an agency posts a trip offer.',
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
+                            ),
+                            const SizedBox(height: 18),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  provider.fetchPackages(force: true),
+                              icon: const Icon(Icons.refresh_outlined),
+                              label: const Text('Refresh offers'),
                             ),
                           ],
                         ),
@@ -207,6 +221,12 @@ class _PackagesListPageState extends State<PackagesListPage> {
                         child: _OfferCard(
                           offer: offer,
                           isApplying: provider.applyingPackageId == offer.id,
+                          isJoined:
+                              currentTravelerId != null &&
+                              offer.participants.any(
+                                (participant) =>
+                                    participant.userId == currentTravelerId,
+                              ),
                           canApply: authProvider.canUseTravelerMarketplace,
                           onApply: () => _handleApply(offer),
                         ),
@@ -226,12 +246,14 @@ class _OfferCard extends StatelessWidget {
   const _OfferCard({
     required this.offer,
     required this.isApplying,
+    required this.isJoined,
     required this.canApply,
     required this.onApply,
   });
 
   final PackageOfferEntity offer;
   final bool isApplying;
+  final bool isJoined;
   final bool canApply;
   final VoidCallback onApply;
 
@@ -319,44 +341,30 @@ class _OfferCard extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(22),
               ),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Who is going', style: theme.textTheme.titleSmall),
-                        const SizedBox(height: 4),
-                        Text(
-                          offer.participantCount == 0
-                              ? 'Be the first traveler to join'
-                              : '${offer.participantCount} traveler${offer.participantCount == 1 ? '' : 's'} joined',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (offer.participants.isNotEmpty)
-                    AvatarGroup(participants: offer.participants)
-                  else
-                    Icon(Icons.groups_outlined, color: colorScheme.primary),
-                ],
+              child: ParticipantRoster(
+                participants: offer.participants,
+                title: 'Who is going',
+                countLabel: offer.participantCount == 0
+                    ? 'Be the first traveler to join'
+                    : '${offer.participantCount} traveler${offer.participantCount == 1 ? '' : 's'} joined',
               ),
             ),
             const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: isApplying ? null : onApply,
+                onPressed: isApplying || isJoined ? null : onApply,
                 icon: Icon(
-                  canApply
+                  isJoined
+                      ? Icons.check_circle_outline
+                      : canApply
                       ? Icons.event_available_outlined
                       : Icons.lock_outline,
                 ),
                 label: Text(
-                  isApplying
+                  isJoined
+                      ? 'Joined'
+                      : isApplying
                       ? 'Joining...'
                       : canApply
                       ? 'Join offer'

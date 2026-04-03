@@ -1,5 +1,6 @@
 import { prisma } from '../../config/database';
 import { BOOKING_STATUS } from '../../config/constants';
+import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
 import { BookingParticipantPreview, BookingResponse } from './bookings.types';
 
 const bookingInclude = {
@@ -25,6 +26,9 @@ const bookingInclude = {
           user: {
             select: {
               name: true,
+              dateOfBirth: true,
+              gender: true,
+              avatar: true,
             },
           },
         },
@@ -46,17 +50,55 @@ function buildInitials(name?: string | null): string {
     .join('');
 }
 
-function mapParticipant(booking: any): BookingParticipantPreview {
+function deriveAge(dateOfBirth?: Date | null): number | null {
+  if (!dateOfBirth) {
+    return null;
+  }
+
+  const now = new Date();
+  let age = now.getFullYear() - dateOfBirth.getFullYear();
+  const hasBirthdayPassed =
+    now.getMonth() > dateOfBirth.getMonth() ||
+    (now.getMonth() === dateOfBirth.getMonth() &&
+      now.getDate() >= dateOfBirth.getDate());
+
+  if (!hasBirthdayPassed) {
+    age -= 1;
+  }
+
+  return age >= 0 ? age : null;
+}
+
+async function resolveAvatarUrl(value?: string | null): Promise<string | null> {
+  if (!value) {
+    return null;
+  }
+
+  if (isHttpUrl(value)) {
+    return value;
+  }
+
+  try {
+    return await createSignedKycUrl(value);
+  } catch {
+    return null;
+  }
+}
+
+async function mapParticipant(booking: any): Promise<BookingParticipantPreview> {
   return {
     userId: booking.userId,
     travelerName: booking.user?.name?.trim() || 'Traveler',
     initials: buildInitials(booking.user?.name),
+    age: deriveAge(booking.user?.dateOfBirth),
+    gender: booking.user?.gender ?? null,
+    avatar: await resolveAvatarUrl(booking.user?.avatar),
     bookingStatus: booking.status,
     joinedAt: booking.createdAt,
   };
 }
 
-function mapBooking(booking: any): BookingResponse {
+async function mapBooking(booking: any): Promise<BookingResponse> {
   return {
     id: booking.id,
     userId: booking.userId,
@@ -77,7 +119,9 @@ function mapBooking(booking: any): BookingResponse {
     updatedAt: booking.updatedAt,
     destination: booking.tripRequest?.destination ?? booking.package?.name ?? undefined,
     packageTravelerCount: booking.package?.bookings?.length,
-    packageParticipants: booking.package?.bookings?.map(mapParticipant),
+    packageParticipants: booking.package?.bookings
+      ? await Promise.all(booking.package.bookings.map(mapParticipant))
+      : undefined,
   };
 }
 
@@ -111,7 +155,7 @@ export class BookingsService {
     ]);
 
     return {
-      bookings: bookings.map(mapBooking),
+      bookings: await Promise.all(bookings.map(mapBooking)),
       total,
       page,
       limit,
@@ -143,7 +187,7 @@ export class BookingsService {
     ]);
 
     return {
-      bookings: bookings.map(mapBooking),
+      bookings: await Promise.all(bookings.map(mapBooking)),
       total,
       page,
       limit,

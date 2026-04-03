@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import {
   normalizeTravelerKycStatus as normalizeTravelerKycStatusValue,
+  TRAVELER_GENDERS,
+  type TravelerGender,
   type TravelerKycStatus,
 } from '../../config/constants';
 
@@ -30,10 +32,17 @@ const dateStringSchema = z
   .refine((value) => !Number.isNaN(Date.parse(value)), 'Invalid date')
   .refine((value) => new Date(value) <= new Date(), 'Date of birth cannot be in the future');
 
+const travelerGenderSchema = z.enum([
+  TRAVELER_GENDERS.MALE,
+  TRAVELER_GENDERS.FEMALE,
+]);
+
 export const updateProfileSchema = z
   .object({
     name: optionalTrimmedString(120),
     phone: optionalTrimmedString(30),
+    residentialAddress: optionalTrimmedString(300),
+    gender: travelerGenderSchema.optional(),
     avatar: optionalTrimmedString(500),
   })
   .refine((data) => Object.keys(data).length > 0, {
@@ -66,6 +75,7 @@ export interface UserProfileResponse {
   email: string;
   name: string | null;
   phone: string | null;
+  gender: TravelerGender | null;
   cnic: string | null;
   cnicVerified: boolean;
   travelerKycStatus: TravelerKycStatus;

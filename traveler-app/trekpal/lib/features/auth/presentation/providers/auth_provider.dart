@@ -72,19 +72,31 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> registerTraveler({
-    required String name,
-    required String email,
-    required String password,
-    String? phone,
+    required TravelerRegistrationInput input,
   }) async {
     await _runBusy(() async {
-      _session = await _registerUseCase(
-        name: name,
-        email: email,
-        password: password,
-        phone: phone,
-      );
+      _session = await _registerUseCase(input: input);
       await _refreshProfile(silent: true);
+    });
+  }
+
+  Future<void> updateTravelerProfile(TravelerProfileUpdate update) async {
+    await _runBusy(() async {
+      final AuthUser profile = await _authRepository.updateProfile(update);
+      _session = _session?.copyWith(user: profile);
+      if (_session != null) {
+        await _authRepository.saveSession(_session!);
+      }
+    });
+  }
+
+  Future<void> uploadTravelerAvatar(ProfileImageUpload upload) async {
+    await _runBusy(() async {
+      final AuthUser profile = await _authRepository.uploadAvatar(upload);
+      _session = _session?.copyWith(user: profile);
+      if (_session != null) {
+        await _authRepository.saveSession(_session!);
+      }
     });
   }
 

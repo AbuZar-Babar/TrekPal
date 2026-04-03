@@ -28,16 +28,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthSession> registerTraveler({
-    required String name,
-    required String email,
-    required String password,
-    String? phone,
+    required TravelerRegistrationInput input,
   }) async {
     final AuthSession session = await _remoteDataSource.registerTraveler(
-      name: name,
-      email: email,
-      password: password,
-      phone: phone,
+      input: input,
     );
     await _localDataSource.saveSession(session);
     return session;
@@ -45,6 +39,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthUser> fetchProfile() => _remoteDataSource.fetchProfile();
+
+  @override
+  Future<AuthUser> updateProfile(TravelerProfileUpdate update) {
+    return _remoteDataSource.updateProfile(update);
+  }
+
+  @override
+  Future<AuthUser> uploadAvatar(ProfileImageUpload upload) {
+    return _remoteDataSource.uploadAvatar(upload);
+  }
 
   @override
   Future<void> submitTravelerKyc(TravelerKycSubmission submission) {

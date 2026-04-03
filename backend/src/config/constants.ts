@@ -53,6 +53,14 @@ export const TRAVELER_KYC_STATUS = {
 export type TravelerKycStatus =
   typeof TRAVELER_KYC_STATUS[keyof typeof TRAVELER_KYC_STATUS];
 
+export const TRAVELER_GENDERS = {
+  MALE: 'Male',
+  FEMALE: 'Female',
+} as const;
+
+export type TravelerGender =
+  typeof TRAVELER_GENDERS[keyof typeof TRAVELER_GENDERS];
+
 export const normalizeTravelerKycStatus = (
   value: unknown,
 ): TravelerKycStatus => {

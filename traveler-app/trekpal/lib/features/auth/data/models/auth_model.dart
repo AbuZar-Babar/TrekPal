@@ -16,6 +16,7 @@ class AuthUserModel extends AuthUser {
     required super.name,
     required super.role,
     super.phone,
+    super.gender,
     super.cnic,
     super.cnicVerified,
     super.travelerKycStatus,
@@ -24,6 +25,7 @@ class AuthUserModel extends AuthUser {
     super.residentialAddress,
     super.emergencyContactName,
     super.emergencyContactPhone,
+    super.avatar,
     super.kycSubmittedAt,
     super.kycVerifiedAt,
   });
@@ -36,6 +38,7 @@ class AuthUserModel extends AuthUser {
       name: user.name,
       role: user.role,
       phone: user.phone,
+      gender: user.gender,
       cnic: user.cnic,
       cnicVerified: user.cnicVerified,
       travelerKycStatus: user.travelerKycStatus,
@@ -44,6 +47,7 @@ class AuthUserModel extends AuthUser {
       residentialAddress: user.residentialAddress,
       emergencyContactName: user.emergencyContactName,
       emergencyContactPhone: user.emergencyContactPhone,
+      avatar: user.avatar,
       kycSubmittedAt: user.kycSubmittedAt,
       kycVerifiedAt: user.kycVerifiedAt,
     );
@@ -60,6 +64,9 @@ class AuthUserModel extends AuthUser {
       role: json['role'] as String? ?? 'TRAVELER',
       phone: (json['phone'] as String?)?.trim().isNotEmpty == true
           ? json['phone'] as String
+          : null,
+      gender: (json['gender'] as String?)?.trim().isNotEmpty == true
+          ? json['gender'] as String
           : null,
       cnic: (json['cnic'] as String?)?.trim().isNotEmpty == true
           ? json['cnic'] as String
@@ -83,6 +90,9 @@ class AuthUserModel extends AuthUser {
           (json['emergencyContactPhone'] as String?)?.trim().isNotEmpty == true
           ? json['emergencyContactPhone'] as String
           : null,
+      avatar: (json['avatar'] as String?)?.trim().isNotEmpty == true
+          ? json['avatar'] as String
+          : null,
       kycSubmittedAt: _readDate(json['kycSubmittedAt']),
       kycVerifiedAt: _readDate(json['kycVerifiedAt']),
     );
@@ -96,6 +106,7 @@ class AuthUserModel extends AuthUser {
       'name': name,
       'role': role,
       'phone': phone,
+      'gender': gender,
       'cnic': cnic,
       'cnicVerified': cnicVerified,
       'travelerKycStatus': travelerKycStatus,
@@ -104,6 +115,7 @@ class AuthUserModel extends AuthUser {
       'residentialAddress': residentialAddress,
       'emergencyContactName': emergencyContactName,
       'emergencyContactPhone': emergencyContactPhone,
+      'avatar': avatar,
       'kycSubmittedAt': kycSubmittedAt?.toIso8601String(),
       'kycVerifiedAt': kycVerifiedAt?.toIso8601String(),
     };
