@@ -29,6 +29,8 @@ export const packagesService = {
     description?: string;
     price: number;
     duration: number;
+    hotelId?: string | null;
+    vehicleId?: string | null;
     destinations: string[];
     images?: string[];
     isActive?: boolean;
@@ -44,6 +46,8 @@ export const packagesService = {
       description?: string;
       price?: number;
       duration?: number;
+      hotelId?: string | null;
+      vehicleId?: string | null;
       destinations?: string[];
       images?: string[];
       isActive?: boolean;

@@ -349,6 +349,35 @@ class _OfferCard extends StatelessWidget {
                     : '${offer.participantCount} traveler${offer.participantCount == 1 ? '' : 's'} joined',
               ),
             ),
+            if (offer.hotel != null || offer.vehicle != null) ...<Widget>[
+              const SizedBox(height: 16),
+              Column(
+                children: <Widget>[
+                  if (offer.hotel != null)
+                    _InventorySummaryCard(
+                      imageUrl: offer.hotel!.image,
+                      icon: Icons.hotel_outlined,
+                      title: offer.hotel!.name,
+                      subtitle:
+                          '${offer.hotel!.city}, ${offer.hotel!.country}',
+                      details: offer.hotel!.rating != null
+                          ? 'Stay · ${offer.hotel!.rating!.toStringAsFixed(1)} stars'
+                          : 'Stay',
+                    ),
+                  if (offer.hotel != null && offer.vehicle != null)
+                    const SizedBox(height: 12),
+                  if (offer.vehicle != null)
+                    _InventorySummaryCard(
+                      imageUrl: offer.vehicle!.image,
+                      icon: Icons.directions_car_filled_outlined,
+                      title:
+                          '${offer.vehicle!.make} ${offer.vehicle!.model}',
+                      subtitle: offer.vehicle!.type,
+                      details: '${offer.vehicle!.capacity} seats',
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,
@@ -374,6 +403,83 @@ class _OfferCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _InventorySummaryCard extends StatelessWidget {
+  const _InventorySummaryCard({
+    required this.imageUrl,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.details,
+  });
+
+  final String? imageUrl;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String details;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.22 : 0.48,
+        ),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(22),
+            ),
+            child: SizedBox(
+              width: 96,
+              height: 96,
+              child: imageUrl != null && imageUrl!.trim().isNotEmpty
+                  ? Image.network(imageUrl!, fit: BoxFit.cover)
+                  : Container(
+                      color: colorScheme.primary.withValues(alpha: 0.12),
+                      alignment: Alignment.center,
+                      child: Icon(icon, color: colorScheme.primary, size: 30),
+                    ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(title, style: theme.textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    details,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

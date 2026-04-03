@@ -138,6 +138,20 @@ const PackageList = () => {
                     <div className="mt-1 text-sm text-[var(--text-muted)]">
                       {tripPackage.duration} day(s)
                     </div>
+                    {(tripPackage.hotel || tripPackage.vehicle) && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {tripPackage.hotel && (
+                          <span className="app-pill app-pill-neutral">
+                            Hotel: {tripPackage.hotel.name}
+                          </span>
+                        )}
+                        {tripPackage.vehicle && (
+                          <span className="app-pill app-pill-neutral">
+                            Vehicle: {tripPackage.vehicle.make} {tripPackage.vehicle.model}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     {tripPackage.description && (
                       <div className="mt-2 line-clamp-2 text-sm text-[var(--text-muted)]">
                         {tripPackage.description}

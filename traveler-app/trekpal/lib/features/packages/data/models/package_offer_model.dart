@@ -14,6 +14,8 @@ class PackageOfferModel extends PackageOfferEntity {
     required super.id,
     required super.agencyId,
     required super.agencyName,
+    required super.hotelId,
+    required super.vehicleId,
     required super.name,
     required super.price,
     required super.duration,
@@ -22,6 +24,8 @@ class PackageOfferModel extends PackageOfferEntity {
     required super.isActive,
     required super.participantCount,
     required super.participants,
+    required super.hotel,
+    required super.vehicle,
     required super.createdAt,
     required super.updatedAt,
     super.description,
@@ -39,6 +43,8 @@ class PackageOfferModel extends PackageOfferEntity {
       id: json['id'] as String? ?? '',
       agencyId: json['agencyId'] as String? ?? '',
       agencyName: json['agencyName'] as String? ?? 'Agency',
+      hotelId: json['hotelId'] as String?,
+      vehicleId: json['vehicleId'] as String?,
       name: json['name'] as String? ?? '',
       description: json['description'] as String?,
       price: (json['price'] as num?)?.toDouble() ?? 0,
@@ -56,8 +62,44 @@ class PackageOfferModel extends PackageOfferEntity {
                 ParticipantPreview.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
+      hotel: _parseHotelSummary(json['hotel']),
+      vehicle: _parseVehicleSummary(json['vehicle']),
       createdAt: _parsePackageDate(json['createdAt']),
       updatedAt: _parsePackageDate(json['updatedAt']),
     );
   }
+}
+
+OfferHotelSummary? _parseHotelSummary(dynamic value) {
+  if (value is! Map<String, dynamic>) {
+    return null;
+  }
+
+  return OfferHotelSummary(
+    id: value['id'] as String? ?? '',
+    name: value['name'] as String? ?? 'Hotel',
+    city: value['city'] as String? ?? '',
+    country: value['country'] as String? ?? '',
+    rating: value['rating'] as num?,
+    image: (value['image'] as String?)?.trim().isNotEmpty == true
+        ? value['image'] as String
+        : null,
+  );
+}
+
+OfferVehicleSummary? _parseVehicleSummary(dynamic value) {
+  if (value is! Map<String, dynamic>) {
+    return null;
+  }
+
+  return OfferVehicleSummary(
+    id: value['id'] as String? ?? '',
+    type: value['type'] as String? ?? '',
+    make: value['make'] as String? ?? '',
+    model: value['model'] as String? ?? '',
+    capacity: value['capacity'] as int? ?? 0,
+    image: (value['image'] as String?)?.trim().isNotEmpty == true
+        ? value['image'] as String
+        : null,
+  );
 }

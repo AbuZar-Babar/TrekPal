@@ -1,6 +1,7 @@
 import { prisma } from '../../config/database';
 import { BOOKING_STATUS, ROLES } from '../../config/constants';
 import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
+import { resolveMediaUrls } from '../../services/media-storage.service';
 import {
   ApplyPackageInput,
   CreatePackageInput,
@@ -14,6 +15,26 @@ const packageInclude = {
   agency: {
     select: {
       name: true,
+    },
+  },
+  hotel: {
+    select: {
+      id: true,
+      name: true,
+      city: true,
+      country: true,
+      rating: true,
+      images: true,
+    },
+  },
+  vehicle: {
+    select: {
+      id: true,
+      type: true,
+      make: true,
+      model: true,
+      capacity: true,
+      images: true,
     },
   },
   bookings: {
@@ -97,10 +118,21 @@ const mapParticipant = async (booking: any): Promise<PackageParticipantPreview> 
   joinedAt: booking.createdAt,
 });
 
+const resolvePrimaryMediaUrl = async (images?: string[] | null): Promise<string | null> => {
+  if (!images || images.length === 0) {
+    return null;
+  }
+
+  const resolvedImages = await resolveMediaUrls(images.slice(0, 1));
+  return resolvedImages[0] ?? null;
+};
+
 const mapPackage = async (tripPackage: any): Promise<PackageResponse> => ({
   id: tripPackage.id,
   agencyId: tripPackage.agencyId,
   agencyName: tripPackage.agency.name,
+  hotelId: tripPackage.hotelId ?? null,
+  vehicleId: tripPackage.vehicleId ?? null,
   name: tripPackage.name,
   description: tripPackage.description,
   price: tripPackage.price,
@@ -110,11 +142,64 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => ({
   isActive: tripPackage.isActive,
   participantCount: tripPackage.bookings.length,
   participants: await Promise.all(tripPackage.bookings.map(mapParticipant)),
+  hotel: tripPackage.hotel
+      ? {
+          id: tripPackage.hotel.id,
+          name: tripPackage.hotel.name,
+          city: tripPackage.hotel.city,
+          country: tripPackage.hotel.country,
+          rating: tripPackage.hotel.rating ?? null,
+          image: await resolvePrimaryMediaUrl(tripPackage.hotel.images),
+        }
+      : null,
+  vehicle: tripPackage.vehicle
+      ? {
+          id: tripPackage.vehicle.id,
+          type: tripPackage.vehicle.type,
+          make: tripPackage.vehicle.make,
+          model: tripPackage.vehicle.model,
+          capacity: tripPackage.vehicle.capacity,
+          image: await resolvePrimaryMediaUrl(tripPackage.vehicle.images),
+        }
+      : null,
   createdAt: tripPackage.createdAt,
   updatedAt: tripPackage.updatedAt,
 });
 
 export class PackagesService {
+  private async assertInventoryOwnership(
+    agencyId: string,
+    inventory: { hotelId?: string | null; vehicleId?: string | null },
+  ): Promise<void> {
+    if (inventory.hotelId) {
+      const hotel = await prisma.hotel.findFirst({
+        where: {
+          id: inventory.hotelId,
+          agencyId,
+        },
+        select: { id: true },
+      });
+
+      if (!hotel) {
+        throw new Error('Selected hotel was not found in your inventory');
+      }
+    }
+
+    if (inventory.vehicleId) {
+      const vehicle = await prisma.vehicle.findFirst({
+        where: {
+          id: inventory.vehicleId,
+          agencyId,
+        },
+        select: { id: true },
+      });
+
+      if (!vehicle) {
+        throw new Error('Selected vehicle was not found in your inventory');
+      }
+    }
+  }
+
   async getPackages(
     filters: PackageFiltersInput,
     actor: { role: string; agencyId?: string },
@@ -183,9 +268,16 @@ export class PackagesService {
   }
 
   async createPackage(agencyId: string, input: CreatePackageInput): Promise<PackageResponse> {
+    await this.assertInventoryOwnership(agencyId, {
+      hotelId: input.hotelId ?? null,
+      vehicleId: input.vehicleId ?? null,
+    });
+
     const tripPackage = await prisma.package.create({
       data: {
         agencyId,
+        hotelId: input.hotelId ?? null,
+        vehicleId: input.vehicleId ?? null,
         name: input.name,
         description: input.description ?? null,
         price: input.price,
@@ -214,9 +306,16 @@ export class PackagesService {
       throw new Error('Trip offer not found');
     }
 
+    await this.assertInventoryOwnership(agencyId, {
+      hotelId: input.hotelId,
+      vehicleId: input.vehicleId,
+    });
+
     const tripPackage = await prisma.package.update({
       where: { id },
       data: {
+        ...(input.hotelId !== undefined ? { hotelId: input.hotelId ?? null } : {}),
+        ...(input.vehicleId !== undefined ? { vehicleId: input.vehicleId ?? null } : {}),
         ...(input.name !== undefined ? { name: input.name } : {}),
         ...(input.description !== undefined ? { description: input.description ?? null } : {}),
         ...(input.price !== undefined ? { price: input.price } : {}),

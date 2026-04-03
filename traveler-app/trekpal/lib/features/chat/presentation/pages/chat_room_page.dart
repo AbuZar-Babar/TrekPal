@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,13 +30,20 @@ class ChatRoomPage extends StatefulWidget {
 class _ChatRoomPageState extends State<ChatRoomPage> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  late final ChatProvider _chatProvider;
   bool _requestedLoad = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatProvider = context.read<ChatProvider>();
+  }
 
   @override
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
-    context.read<ChatProvider>().leaveSelectedRoom();
+    unawaited(_chatProvider.leaveSelectedRoom());
     super.dispose();
   }
 
@@ -45,13 +54,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
     _requestedLoad = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final ChatProvider provider = context.read<ChatProvider>();
-
       try {
         if (widget.packageId != null) {
-          await provider.openRoomByPackageId(widget.packageId!);
+          await _chatProvider.openRoomByPackageId(widget.packageId!);
         } else {
-          await provider.openRoomById(widget.roomId!);
+          await _chatProvider.openRoomById(widget.roomId!);
         }
         _scrollToBottom();
       } catch (_) {}
@@ -78,11 +85,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       return;
     }
 
-    final ChatProvider provider = context.read<ChatProvider>();
     final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
 
     try {
-      await provider.sendMessage(content);
+      await _chatProvider.sendMessage(content);
       _controller.clear();
       _scrollToBottom();
     } catch (_) {
@@ -91,7 +97,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       }
       messenger.showSnackBar(
         SnackBar(
-          content: Text(provider.errorMessage ?? 'Failed to send message'),
+          content: Text(
+            _chatProvider.errorMessage ?? 'Failed to send message',
+          ),
         ),
       );
     }
@@ -117,11 +125,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         body: TrekpalErrorState(
           message: provider.errorMessage!,
           onRetry: () async {
-            final ChatProvider retryProvider = context.read<ChatProvider>();
             if (widget.packageId != null) {
-              await retryProvider.openRoomByPackageId(widget.packageId!);
+              await _chatProvider.openRoomByPackageId(widget.packageId!);
             } else {
-              await retryProvider.openRoomById(widget.roomId!);
+              await _chatProvider.openRoomById(widget.roomId!);
             }
           },
         ),

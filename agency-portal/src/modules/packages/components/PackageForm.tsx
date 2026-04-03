@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import {
-  createPackage,
-  updatePackage,
-} from '../store/packagesSlice';
-import { packagesService } from '../services/packagesService';
+import { Hotel, Vehicle } from '../../../shared/types';
 import {
   validateMinLength,
   validatePositiveNumber,
 } from '../../../shared/utils/validators';
+import { hotelsService } from '../../hotels/services/hotelsService';
+import { createPackage, updatePackage } from '../store/packagesSlice';
+import { packagesService } from '../services/packagesService';
+import { transportService } from '../../transport/services/transportService';
 
 type FormErrors = Record<string, string>;
 
@@ -42,11 +42,55 @@ const PackageForm = () => {
   const [duration, setDuration] = useState('');
   const [destinations, setDestinations] = useState('');
   const [images, setImages] = useState('');
+  const [hotelId, setHotelId] = useState('');
+  const [vehicleId, setVehicleId] = useState('');
   const [isActive, setIsActive] = useState(true);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [inventoryError, setInventoryError] = useState<string | null>(null);
   const [loading, setLoading] = useState(isEditing);
   const [submitting, setSubmitting] = useState(false);
+
+  const selectedHotel = useMemo(
+    () => hotels.find((item) => item.id === hotelId) || null,
+    [hotelId, hotels],
+  );
+  const selectedVehicle = useMemo(
+    () => vehicles.find((item) => item.id === vehicleId) || null,
+    [vehicleId, vehicles],
+  );
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadInventory = async () => {
+      try {
+        const [hotelsResult, vehiclesResult] = await Promise.all([
+          hotelsService.getHotels({ limit: 100 }),
+          transportService.getVehicles({ limit: 100 }),
+        ]);
+
+        if (!mounted) {
+          return;
+        }
+
+        setHotels(hotelsResult.data);
+        setVehicles(vehiclesResult.data);
+      } catch (error: any) {
+        if (mounted) {
+          setInventoryError(error.message || 'Failed to load agency inventory');
+        }
+      }
+    };
+
+    loadInventory();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!isEditing || !id) {
@@ -66,6 +110,8 @@ const PackageForm = () => {
         setDescription(tripPackage.description || '');
         setPrice(String(tripPackage.price));
         setDuration(String(tripPackage.duration));
+        setHotelId(tripPackage.hotelId || '');
+        setVehicleId(tripPackage.vehicleId || '');
         setDestinations(tripPackage.destinations.join(', '));
         setImages(tripPackage.images.join(', '));
         setIsActive(tripPackage.isActive);
@@ -134,6 +180,8 @@ const PackageForm = () => {
       description: description.trim() || undefined,
       price: Number(price),
       duration: Number(duration),
+      hotelId: hotelId || null,
+      vehicleId: vehicleId || null,
       destinations: splitList(destinations),
       images: splitList(images),
       isActive,
@@ -171,7 +219,7 @@ const PackageForm = () => {
           {isEditing ? 'Edit trip offer' : 'Create trip offer'}
         </h1>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Keep it short. Add the route, price, duration, and whether it is published.
+          Keep it short. Add the route, price, duration, and the inventory you want to attach.
         </p>
       </div>
 
@@ -179,6 +227,12 @@ const PackageForm = () => {
         {formError && (
           <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
             {formError}
+          </div>
+        )}
+
+        {inventoryError && (
+          <div className="rounded-[22px] border border-[var(--warning-bg)] bg-[var(--warning-bg)] px-4 py-3 text-sm text-[var(--warning-text)]">
+            {inventoryError}
           </div>
         )}
 
@@ -241,6 +295,88 @@ const PackageForm = () => {
               placeholder="Short summary of what is included."
             />
           </div>
+
+          <div>
+            <label htmlFor="hotelId" className="mb-2 block text-sm font-semibold text-[var(--text)]">
+              Stay hotel
+            </label>
+            <select
+              id="hotelId"
+              value={hotelId}
+              onChange={(event) => setHotelId(event.target.value)}
+              className="app-field"
+            >
+              <option value="">No hotel selected</option>
+              {hotels.map((hotel) => (
+                <option key={hotel.id} value={hotel.id}>
+                  {hotel.name} - {hotel.city}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="vehicleId" className="mb-2 block text-sm font-semibold text-[var(--text)]">
+              Travel vehicle
+            </label>
+            <select
+              id="vehicleId"
+              value={vehicleId}
+              onChange={(event) => setVehicleId(event.target.value)}
+              className="app-field"
+            >
+              <option value="">No vehicle selected</option>
+              {vehicles.map((vehicle) => (
+                <option key={vehicle.id} value={vehicle.id}>
+                  {vehicle.make} {vehicle.model} - {vehicle.type}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {(selectedHotel || selectedVehicle) && (
+            <div className="md:col-span-2 grid gap-4 md:grid-cols-2">
+              {selectedHotel && (
+                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] p-4">
+                  <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
+                    Selected hotel
+                  </div>
+                  {selectedHotel.images[0] && (
+                    <img
+                      src={selectedHotel.images[0]}
+                      alt={selectedHotel.name}
+                      className="mb-3 h-32 w-full rounded-[18px] object-cover"
+                    />
+                  )}
+                  <div className="text-sm font-semibold text-[var(--text)]">{selectedHotel.name}</div>
+                  <div className="mt-1 text-sm text-[var(--text-muted)]">
+                    {selectedHotel.city}, {selectedHotel.country}
+                  </div>
+                </div>
+              )}
+
+              {selectedVehicle && (
+                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] p-4">
+                  <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
+                    Selected vehicle
+                  </div>
+                  {selectedVehicle.images[0] && (
+                    <img
+                      src={selectedVehicle.images[0]}
+                      alt={`${selectedVehicle.make} ${selectedVehicle.model}`}
+                      className="mb-3 h-32 w-full rounded-[18px] object-cover"
+                    />
+                  )}
+                  <div className="text-sm font-semibold text-[var(--text)]">
+                    {selectedVehicle.make} {selectedVehicle.model}
+                  </div>
+                  <div className="mt-1 text-sm text-[var(--text-muted)]">
+                    {selectedVehicle.type} - {selectedVehicle.capacity} seats
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="md:col-span-2">
             <label htmlFor="destinations" className="mb-2 block text-sm font-semibold text-[var(--text)]">

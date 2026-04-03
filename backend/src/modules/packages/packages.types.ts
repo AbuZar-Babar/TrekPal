@@ -16,6 +16,8 @@ export const createPackageSchema = z.object({
   description: z.string().trim().optional(),
   price: z.coerce.number().positive('Price must be greater than 0'),
   duration: z.coerce.number().int().min(1, 'Duration must be at least 1 day'),
+  hotelId: z.string().trim().min(1).nullable().optional(),
+  vehicleId: z.string().trim().min(1).nullable().optional(),
   destinations: z
     .array(z.string().trim().min(1, 'Destination cannot be empty'))
     .min(1, 'Add at least one destination'),
@@ -55,6 +57,8 @@ export interface PackageResponse {
   id: string;
   agencyId: string;
   agencyName: string;
+  hotelId: string | null;
+  vehicleId: string | null;
   name: string;
   description: string | null;
   price: number;
@@ -64,6 +68,22 @@ export interface PackageResponse {
   isActive: boolean;
   participantCount: number;
   participants: PackageParticipantPreview[];
+  hotel: {
+    id: string;
+    name: string;
+    city: string;
+    country: string;
+    rating: number | null;
+    image: string | null;
+  } | null;
+  vehicle: {
+    id: string;
+    type: string;
+    make: string;
+    model: string;
+    capacity: number;
+    image: string | null;
+  } | null;
   createdAt: Date;
   updatedAt: Date;
 }

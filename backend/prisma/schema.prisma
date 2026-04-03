@@ -123,6 +123,7 @@ model Hotel {
   rooms       Room[]
   bookings    Booking[]
   reviews     Review[]
+  packages    Package[]
 
   @@map("hotels")
 }
@@ -166,6 +167,7 @@ model Vehicle {
   // Relations
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   bookings    Booking[]
+  packages    Package[]
 
   @@map("vehicles")
 }
@@ -174,6 +176,8 @@ model Vehicle {
 model Package {
   id          String   @id @default(cuid())
   agencyId    String
+  hotelId     String?
+  vehicleId   String?
   name        String
   description String?
   price       Float
@@ -186,6 +190,8 @@ model Package {
 
   // Relations
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  hotel       Hotel?   @relation(fields: [hotelId], references: [id], onDelete: SetNull)
+  vehicle     Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   bookings    Booking[]
   chatRoom    TripGroup?
 
