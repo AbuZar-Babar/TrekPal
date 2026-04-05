@@ -27,6 +27,28 @@ class PackageOfferDetailsPage extends StatefulWidget {
 
 class _PackageOfferDetailsPageState extends State<PackageOfferDetailsPage> {
   bool _requestedInitialLoad = false;
+  late final PackagesProvider _packagesProvider;
+  late final BookingsProvider _bookingsProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _packagesProvider = context.read<PackagesProvider>();
+    _bookingsProvider = context.read<BookingsProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      _packagesProvider.setActivePackage(widget.offer.id);
+    });
+  }
+
+  @override
+  void dispose() {
+    _packagesProvider.setActivePackage(null);
+    super.dispose();
+  }
 
   void _ensureLoaded() {
     if (_requestedInitialLoad) {
@@ -41,11 +63,8 @@ class _PackageOfferDetailsPageState extends State<PackageOfferDetailsPage> {
 
   Future<void> _refreshData({bool force = false}) async {
     await Future.wait(<Future<void>>[
-      context.read<PackagesProvider>().fetchPackageById(
-            widget.offer.id,
-            force: force,
-          ),
-      context.read<BookingsProvider>().fetchBookings(force: force),
+      _packagesProvider.fetchPackageById(widget.offer.id, force: force),
+      _bookingsProvider.fetchBookings(force: force),
     ]);
   }
 

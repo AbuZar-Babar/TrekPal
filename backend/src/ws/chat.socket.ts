@@ -3,8 +3,11 @@ import { ROLES } from '../config/constants';
 import { chatService } from '../modules/chat/chat.service';
 import { ChatActor } from '../modules/chat/chat.types';
 import { verifyJWT } from '../utils/jwt.util';
-
-const chatRoomName = (roomId: string): string => `chat-room-${roomId}`;
+import {
+  chatRoomName,
+  offersRoomName,
+  travelerRoomName,
+} from './socket.rooms';
 
 const getSocketToken = (socket: Socket): string | null => {
   const authToken = socket.handshake.auth?.token;
@@ -64,6 +67,11 @@ export const initializeChatSocket = (io: SocketServer): void => {
     if (!actor) {
       socket.disconnect(true);
       return;
+    }
+
+    if (actor.role === ROLES.TRAVELER) {
+      socket.join(travelerRoomName(actor.travelerId));
+      socket.join(offersRoomName());
     }
 
     socket.on('chat:join-room', async (roomId: string) => {

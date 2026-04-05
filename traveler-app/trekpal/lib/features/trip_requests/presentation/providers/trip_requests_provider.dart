@@ -29,6 +29,8 @@ class TripRequestsProvider extends ChangeNotifier {
   List<TripRequestEntity> _tripRequests = <TripRequestEntity>[];
   List<BidEntity> _currentBids = <BidEntity>[];
   BidEntity? _selectedBidThread;
+  String? _activeTripRequestId;
+  String? _activeBidId;
   bool _isLoading = false;
   bool _isSubmitting = false;
   bool _isBidsLoading = false;
@@ -45,6 +47,14 @@ class TripRequestsProvider extends ChangeNotifier {
   bool get isBidThreadLoading => _isBidThreadLoading;
   bool get isNegotiating => _isNegotiating;
   String? get errorMessage => _errorMessage;
+
+  void setActiveTripRequest(String? tripRequestId) {
+    _activeTripRequestId = tripRequestId;
+  }
+
+  void setActiveBidThread(String? bidId) {
+    _activeBidId = bidId;
+  }
 
   TripRequestEntity? findTripRequestById(String tripRequestId) {
     for (final TripRequestEntity request in _tripRequests) {
@@ -177,6 +187,38 @@ class TripRequestsProvider extends ChangeNotifier {
   void clearSelectedBidThread() {
     _selectedBidThread = null;
     notifyListeners();
+  }
+
+  Future<void> refreshFromBidLiveEvent({
+    required String tripRequestId,
+    String? bidId,
+  }) async {
+    await fetchTripRequests(force: true);
+
+    if (_activeTripRequestId == tripRequestId) {
+      try {
+        await fetchBids(tripRequestId);
+      } catch (_) {}
+    }
+
+    final String? selectedBidId = _selectedBidThread?.id;
+    final bool shouldRefreshSelectedBid =
+        (bidId != null && _activeBidId == bidId) ||
+        (selectedBidId != null &&
+            _selectedBidThread?.tripRequestId == tripRequestId);
+
+    if (!shouldRefreshSelectedBid) {
+      return;
+    }
+
+    final String? targetBidId = _activeBidId ?? selectedBidId ?? bidId;
+    if (targetBidId == null) {
+      return;
+    }
+
+    try {
+      await fetchBidThread(targetBidId);
+    } catch (_) {}
   }
 
   void syncTripRequestStatus(

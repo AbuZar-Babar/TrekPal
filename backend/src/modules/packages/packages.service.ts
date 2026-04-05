@@ -2,6 +2,7 @@ import { prisma } from '../../config/database';
 import { BOOKING_STATUS, ROLES } from '../../config/constants';
 import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
 import { resolveMediaUrls } from '../../services/media-storage.service';
+import { emitOfferUpdated } from '../../ws/socket.emitter';
 import {
   ApplyPackageInput,
   CreatePackageInput,
@@ -296,6 +297,15 @@ export class PackagesService {
       include: packageInclude,
     });
 
+    emitOfferUpdated({
+      eventType: 'CREATED',
+      packageId: tripPackage.id,
+      agencyId: tripPackage.agencyId,
+      name: tripPackage.name,
+      isActive: tripPackage.isActive,
+      updatedAt: tripPackage.updatedAt.toISOString(),
+    });
+
     return mapPackage(tripPackage);
   }
 
@@ -334,13 +344,28 @@ export class PackagesService {
       include: packageInclude,
     });
 
+    emitOfferUpdated({
+      eventType: 'UPDATED',
+      packageId: tripPackage.id,
+      agencyId: tripPackage.agencyId,
+      name: tripPackage.name,
+      isActive: tripPackage.isActive,
+      updatedAt: tripPackage.updatedAt.toISOString(),
+    });
+
     return mapPackage(tripPackage);
   }
 
   async deletePackage(id: string, agencyId: string): Promise<void> {
     const existing = await prisma.package.findFirst({
       where: { id, agencyId },
-      select: { id: true },
+      select: {
+        id: true,
+        agencyId: true,
+        name: true,
+        isActive: true,
+        updatedAt: true,
+      },
     });
 
     if (!existing) {
@@ -349,6 +374,15 @@ export class PackagesService {
 
     await prisma.package.delete({
       where: { id },
+    });
+
+    emitOfferUpdated({
+      eventType: 'DELETED',
+      packageId: existing.id,
+      agencyId: existing.agencyId,
+      name: existing.name,
+      isActive: false,
+      updatedAt: new Date().toISOString(),
     });
   }
 

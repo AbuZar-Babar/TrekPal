@@ -20,6 +20,7 @@ class PackagesProvider extends ChangeNotifier {
 
   List<PackageOfferEntity> _packages = <PackageOfferEntity>[];
   PackageOfferEntity? _selectedPackage;
+  String? _activePackageId;
   bool _isLoading = false;
   String? _errorMessage;
   String? _applyingPackageId;
@@ -29,6 +30,10 @@ class PackagesProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get applyingPackageId => _applyingPackageId;
+
+  void setActivePackage(String? packageId) {
+    _activePackageId = packageId;
+  }
 
   Future<void> fetchPackages({bool force = false}) async {
     if (_packages.isNotEmpty && !force) {
@@ -117,6 +122,27 @@ class PackagesProvider extends ChangeNotifier {
       _applyingPackageId = null;
       notifyListeners();
     }
+  }
+
+  Future<void> refreshPackagesFromLiveEvent({String? packageId}) async {
+    await fetchPackages(force: true);
+
+    final String? targetPackageId = packageId ?? _activePackageId;
+    if (targetPackageId == null) {
+      return;
+    }
+
+    final bool shouldRefreshSelected =
+        _selectedPackage?.id == targetPackageId ||
+        _activePackageId == targetPackageId;
+
+    if (!shouldRefreshSelected) {
+      return;
+    }
+
+    try {
+      await fetchPackageById(targetPackageId, force: true);
+    } catch (_) {}
   }
 
   String _readableError(Object error) {

@@ -1,5 +1,6 @@
 import { prisma } from '../../config/database';
 import { BID_AWAITING_ACTION, BID_STATUS, BOOKING_STATUS, ROLES } from '../../config/constants';
+import { emitTravelerBidUpdated } from '../../ws/socket.emitter';
 import {
   AgencyBidFiltersInput,
   BidActorRole,
@@ -156,6 +157,17 @@ export class BidsService {
     if (!bid) {
       throw new Error('Failed to create bid');
     }
+
+    emitTravelerBidUpdated(tripRequest.userId, {
+      eventType: 'CREATED',
+      tripRequestId: bid.tripRequestId,
+      bidId: bid.id,
+      agencyId: bid.agencyId,
+      agencyName: bid.agency.name,
+      status: bid.status,
+      awaitingActionBy: normalizeAwaitingAction(bid.awaitingActionBy),
+      updatedAt: bid.updatedAt.toISOString(),
+    });
 
     return mapBid(bid);
   }
@@ -335,6 +347,19 @@ export class BidsService {
       });
     });
 
+    if (actor.role === ROLES.AGENCY) {
+      emitTravelerBidUpdated(bid.tripRequest.userId, {
+        eventType: 'COUNTEROFFERED',
+        tripRequestId: updatedBid.tripRequestId,
+        bidId: updatedBid.id,
+        agencyId: updatedBid.agencyId,
+        agencyName: updatedBid.agency.name,
+        status: updatedBid.status,
+        awaitingActionBy: normalizeAwaitingAction(updatedBid.awaitingActionBy),
+        updatedAt: updatedBid.updatedAt.toISOString(),
+      });
+    }
+
     return mapBid(updatedBid);
   }
 
@@ -351,6 +376,11 @@ export class BidsService {
     const bid = await prisma.bid.findUnique({
       where: { id: bidId },
       include: {
+        agency: {
+          select: {
+            name: true,
+          },
+        },
         tripRequest: true,
       },
     });
@@ -406,7 +436,9 @@ export class BidsService {
           agencyId: bid.agencyId,
           tripRequestId: bid.tripRequestId,
           bidId: bid.id,
-          status: BOOKING_STATUS.PENDING,
+          // Traveler-accepted custom trip bids are final and should appear
+          // in Trips immediately, unlike package offer requests.
+          status: BOOKING_STATUS.CONFIRMED,
           totalAmount: bid.price,
           startDate: bid.tripRequest.startDate,
           endDate: bid.tripRequest.endDate,
@@ -414,6 +446,17 @@ export class BidsService {
       });
 
       return { bidId: bid.id, bookingId: booking.id };
+    });
+
+    emitTravelerBidUpdated(userId, {
+      eventType: 'ACCEPTED',
+      tripRequestId: bid.tripRequestId,
+      bidId: bid.id,
+      agencyId: bid.agencyId,
+      agencyName: bid.agency.name,
+      status: BID_STATUS.ACCEPTED,
+      awaitingActionBy: BID_AWAITING_ACTION.NONE,
+      updatedAt: new Date().toISOString(),
     });
 
     return result;

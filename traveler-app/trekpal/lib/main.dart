@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/live/marketplace_live_service.dart';
+import 'core/live/marketplace_updates_coordinator.dart';
 import 'core/network/api_client.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
@@ -59,6 +61,9 @@ Future<void> main() async {
   final chatRepository = ChatRepositoryImpl(
     ChatRemoteDataSource(apiClient, tokenProvider: authLocalDataSource.getToken),
   );
+  final marketplaceLiveService = MarketplaceLiveService(
+    tokenProvider: authLocalDataSource.getToken,
+  );
   final packagesRepository = PackagesRepositoryImpl(
     PackagesRemoteDataSource(apiClient),
   );
@@ -92,6 +97,7 @@ Future<void> main() async {
         applyPackageUseCase: ApplyPackageUseCase(packagesRepository),
       ),
       chatProvider: ChatProvider(chatRepository: chatRepository),
+      marketplaceLiveService: marketplaceLiveService,
       themeController: themeController,
     ),
   );
@@ -105,6 +111,7 @@ class TrekPalApp extends StatelessWidget {
     required this.bookingsProvider,
     required this.packagesProvider,
     required this.chatProvider,
+    required this.marketplaceLiveService,
     required this.themeController,
   });
 
@@ -113,7 +120,10 @@ class TrekPalApp extends StatelessWidget {
   final BookingsProvider bookingsProvider;
   final PackagesProvider packagesProvider;
   final ChatProvider chatProvider;
+  final MarketplaceLiveService marketplaceLiveService;
   final ThemeController themeController;
+  static final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +143,14 @@ class TrekPalApp extends StatelessWidget {
           return MaterialApp(
             title: AppConstants.appName,
             debugShowCheckedModeBanner: false,
+            scaffoldMessengerKey: _scaffoldMessengerKey,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeController.themeMode,
-            home: const _AppRoot(),
+            home: _AppRoot(
+              marketplaceLiveService: marketplaceLiveService,
+              scaffoldMessengerKey: _scaffoldMessengerKey,
+            ),
           );
         },
       ),
@@ -145,7 +159,13 @@ class TrekPalApp extends StatelessWidget {
 }
 
 class _AppRoot extends StatelessWidget {
-  const _AppRoot();
+  const _AppRoot({
+    required this.marketplaceLiveService,
+    required this.scaffoldMessengerKey,
+  });
+
+  final MarketplaceLiveService marketplaceLiveService;
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +178,11 @@ class _AppRoot extends StatelessWidget {
         }
 
         if (authProvider.isAuthenticated) {
-          return const HomePage();
+          return MarketplaceUpdatesCoordinator(
+            liveService: marketplaceLiveService,
+            scaffoldMessengerKey: scaffoldMessengerKey,
+            child: const HomePage(),
+          );
         }
 
         return const LoginPage();

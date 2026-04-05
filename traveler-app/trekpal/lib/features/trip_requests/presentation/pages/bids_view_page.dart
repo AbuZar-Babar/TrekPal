@@ -19,16 +19,24 @@ class BidsViewPage extends StatefulWidget {
 }
 
 class _BidsViewPageState extends State<BidsViewPage> {
+  late final TripRequestsProvider _tripRequestsProvider;
+
   @override
   void initState() {
     super.initState();
+    _tripRequestsProvider = context.read<TripRequestsProvider>();
+    _tripRequestsProvider.setActiveTripRequest(widget.tripRequestId);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
-        await context.read<TripRequestsProvider>().fetchBids(
-          widget.tripRequestId,
-        );
+        await _tripRequestsProvider.fetchBids(widget.tripRequestId);
       } catch (_) {}
     });
+  }
+
+  @override
+  void dispose() {
+    _tripRequestsProvider.setActiveTripRequest(null);
+    super.dispose();
   }
 
   Widget _summaryPill(BuildContext context, IconData icon, String label) {

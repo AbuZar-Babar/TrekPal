@@ -2,6 +2,7 @@ import { Server as HTTPServer } from 'http';
 import { Server as SocketServer } from 'socket.io';
 import { env } from '../config/env';
 import { initializeChatSocket } from './chat.socket';
+import { registerSocketServer } from './socket.emitter';
 
 /**
  * Initialize WebSocket server
@@ -36,6 +37,8 @@ export const initializeSocketServer = (httpServer: HTTPServer): SocketServer => 
       credentials: true,
     },
   });
+
+  registerSocketServer(io);
 
   // Initialize chat socket handlers
   initializeChatSocket(io);

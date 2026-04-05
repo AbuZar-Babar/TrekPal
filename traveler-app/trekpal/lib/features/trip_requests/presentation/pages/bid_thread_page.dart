@@ -38,19 +38,23 @@ class _BidThreadPageState extends State<BidThreadPage> {
   bool _transportIncluded = false;
   bool _mealsIncluded = false;
   String? _seedSignature;
+  late final TripRequestsProvider _tripRequestsProvider;
 
   @override
   void initState() {
     super.initState();
+    _tripRequestsProvider = context.read<TripRequestsProvider>();
+    _tripRequestsProvider.setActiveBidThread(widget.bidId);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
-        await context.read<TripRequestsProvider>().fetchBidThread(widget.bidId);
+        await _tripRequestsProvider.fetchBidThread(widget.bidId);
       } catch (_) {}
     });
   }
 
   @override
   void dispose() {
+    _tripRequestsProvider.setActiveBidThread(null);
     _priceController.dispose();
     _descriptionController.dispose();
     _stayDetailsController.dispose();
@@ -178,7 +182,9 @@ class _BidThreadPageState extends State<BidThreadPage> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Offer accepted and booking created')),
+        const SnackBar(
+          content: Text('Offer accepted and added to your Trips'),
+        ),
       );
 
       Navigator.of(context).pushReplacement(
