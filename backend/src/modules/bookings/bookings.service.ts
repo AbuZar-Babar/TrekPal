@@ -12,9 +12,7 @@ const bookingInclude = {
       name: true,
       bookings: {
         where: {
-          status: {
-            not: BOOKING_STATUS.CANCELLED,
-          },
+          status: BOOKING_STATUS.CONFIRMED,
         },
         orderBy: {
           createdAt: 'asc' as const,

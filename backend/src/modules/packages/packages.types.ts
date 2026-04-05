@@ -75,6 +75,7 @@ export interface PackageResponse {
     country: string;
     rating: number | null;
     image: string | null;
+    images: string[];
   } | null;
   vehicle: {
     id: string;
@@ -83,6 +84,7 @@ export interface PackageResponse {
     model: string;
     capacity: number;
     image: string | null;
+    images: string[];
   } | null;
   createdAt: Date;
   updatedAt: Date;

@@ -51,10 +51,10 @@ const BookingList = () => {
     <div className="space-y-6">
       <section className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
         <div className="app-card px-6 py-6 md:px-8 md:py-8">
-          <div className="app-section-label">Accepted bookings</div>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">Operational follow-through after traveler acceptance</h1>
+          <div className="app-section-label">Booking requests</div>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">Traveler requests waiting for agency confirmation</h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
-            Once a traveler accepts your offer, the booking flows into this queue for confirmation, servicing, completion, or cancellation.
+            When a traveler confirms an offer, the request enters this queue. Confirm it here to move the trip into the traveler Trips tab and unlock offer chat.
           </p>
         </div>
 
@@ -103,7 +103,7 @@ const BookingList = () => {
         <div className="app-table-shell px-6 py-14 text-center">
           <div className="text-lg font-semibold tracking-tight text-[var(--text)]">No bookings in this queue</div>
           <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
-            Accepted traveler offers will automatically appear here for agency follow-up.
+            New traveler booking requests will appear here for agency follow-up.
           </p>
         </div>
       ) : (

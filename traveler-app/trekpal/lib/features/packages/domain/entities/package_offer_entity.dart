@@ -8,6 +8,7 @@ class OfferHotelSummary {
     required this.country,
     required this.rating,
     required this.image,
+    required this.images,
   });
 
   final String id;
@@ -16,6 +17,7 @@ class OfferHotelSummary {
   final String country;
   final num? rating;
   final String? image;
+  final List<String> images;
 }
 
 class OfferVehicleSummary {
@@ -26,6 +28,7 @@ class OfferVehicleSummary {
     required this.model,
     required this.capacity,
     required this.image,
+    required this.images,
   });
 
   final String id;
@@ -34,6 +37,7 @@ class OfferVehicleSummary {
   final String model;
   final int capacity;
   final String? image;
+  final List<String> images;
 }
 
 class PackageOfferEntity {

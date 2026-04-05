@@ -13,6 +13,11 @@ class PackagesRepositoryImpl implements PackagesRepository {
   }
 
   @override
+  Future<PackageOfferEntity> getPackageById(String packageId) {
+    return _remoteDataSource.getPackageById(packageId);
+  }
+
+  @override
   Future<String> applyToPackage({
     required String packageId,
     required DateTime startDate,

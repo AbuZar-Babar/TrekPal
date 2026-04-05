@@ -135,7 +135,7 @@ const ChatPage = () => {
       <section className="app-card overflow-hidden">
         <div className="border-b border-[var(--border)] px-5 py-4">
           <div className="text-sm font-semibold text-[var(--text)]">Offer chats</div>
-          <div className="mt-1 text-sm text-[var(--text-soft)]">Joined travelers and agency replies.</div>
+          <div className="mt-1 text-sm text-[var(--text-soft)]">Confirmed travelers and agency replies.</div>
         </div>
 
         {loading ? (
@@ -146,7 +146,7 @@ const ChatPage = () => {
         ) : sortedRooms.length === 0 ? (
           <div className="px-5 py-16 text-center">
             <div className="text-lg font-semibold tracking-tight text-[var(--text)]">No chats yet</div>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">Offer chat opens after a traveler joins one of your trips.</p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">Offer chat opens after you confirm at least one traveler request for an offer.</p>
           </div>
         ) : (
           <div className="max-h-[78vh] overflow-y-auto p-3">

@@ -65,7 +65,7 @@ class _ChatListPageState extends State<ChatListPage> {
                 Text('Chats', style: theme.textTheme.displaySmall),
                 const SizedBox(height: 8),
                 Text(
-                  'Talk to the agency and other travelers after you join an offer.',
+                  'Talk to the agency and other travelers after the agency confirms your booking.',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -89,7 +89,7 @@ class _ChatListPageState extends State<ChatListPage> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Join an agency offer first. Your chat room appears here after booking.',
+                            'Your offer chat appears here after the agency confirms your booking request.',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onSurfaceVariant,

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
-import '../../../../core/widgets/participant_roster.dart';
 import '../../../auth/presentation/pages/traveler_kyc_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/traveler_kyc_gate_card.dart';
+import '../../../bookings/domain/entities/booking_entities.dart';
 import '../../../bookings/presentation/providers/bookings_provider.dart';
 import '../../domain/entities/package_offer_entity.dart';
 import '../providers/packages_provider.dart';
+import 'package_offer_details_page.dart';
 
 class PackagesListPage extends StatefulWidget {
   const PackagesListPage({super.key});
@@ -19,72 +21,37 @@ class PackagesListPage extends StatefulWidget {
 }
 
 class _PackagesListPageState extends State<PackagesListPage> {
-  bool _hasRequestedInitialLoad = false;
+  bool _hasRequestedPackagesLoad = false;
+  bool _hasRequestedBookingsLoad = false;
 
-  void _ensureLoaded() {
-    if (_hasRequestedInitialLoad) {
-      return;
+  void _ensureLoaded(bool canUseMarketplace) {
+    if (!_hasRequestedPackagesLoad) {
+      _hasRequestedPackagesLoad = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<PackagesProvider>().fetchPackages().catchError((_) {});
+      });
     }
 
-    _hasRequestedInitialLoad = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PackagesProvider>().fetchPackages().catchError((_) {});
-    });
+    if (canUseMarketplace && !_hasRequestedBookingsLoad) {
+      _hasRequestedBookingsLoad = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<BookingsProvider>().fetchBookings().catchError((_) {});
+      });
+    }
   }
 
-  Future<void> _handleApply(PackageOfferEntity offer) async {
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final PackagesProvider packagesProvider = context.read<PackagesProvider>();
-    final BookingsProvider bookingsProvider = context.read<BookingsProvider>();
-    final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+  Future<void> _refresh({
+    required bool canUseMarketplace,
+  }) async {
+    final List<Future<void>> tasks = <Future<void>>[
+      context.read<PackagesProvider>().fetchPackages(force: true),
+    ];
 
-    if (!authProvider.canUseTravelerMarketplace) {
-      await Navigator.of(
-        context,
-      ).push(MaterialPageRoute<bool>(builder: (_) => const TravelerKycPage()));
-      return;
+    if (canUseMarketplace) {
+      tasks.add(context.read<BookingsProvider>().fetchBookings(force: true));
     }
 
-    final DateTime now = DateTime.now();
-    final DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: now.add(const Duration(days: 1)),
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365)),
-      helpText: 'Select start date',
-    );
-
-    if (selectedDate == null || !mounted) {
-      return;
-    }
-
-    try {
-      await packagesProvider.applyToPackage(
-        packageId: offer.id,
-        startDate: selectedDate,
-      );
-      await Future.wait(<Future<void>>[
-        packagesProvider.fetchPackages(force: true),
-        bookingsProvider.fetchBookings(force: true),
-      ]);
-      if (!mounted) {
-        return;
-      }
-      messenger.showSnackBar(
-        SnackBar(content: Text('${offer.name} booked. Check Trips.')),
-      );
-    } catch (_) {
-      if (!mounted) {
-        return;
-      }
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            packagesProvider.errorMessage ?? 'Failed to book trip offer.',
-          ),
-        ),
-      );
-    }
+    await Future.wait(tasks);
   }
 
   @override
@@ -93,25 +60,27 @@ class _PackagesListPageState extends State<PackagesListPage> {
     final ColorScheme colorScheme = theme.colorScheme;
     final AuthProvider authProvider = context.watch<AuthProvider>();
     final PackagesProvider provider = context.watch<PackagesProvider>();
-    final String? currentTravelerId = authProvider.currentUser?.id;
+    final BookingsProvider bookingsProvider = context.watch<BookingsProvider>();
 
-    _ensureLoaded();
+    _ensureLoaded(authProvider.canUseTravelerMarketplace);
 
     final List<PackageOfferEntity> offers = provider.packages;
     final int joinedOffers = offers
         .where(
           (PackageOfferEntity item) =>
-              currentTravelerId != null &&
-              item.participants.any(
-                (participant) => participant.userId == currentTravelerId,
-              ),
+              bookingsProvider.bookingForPackage(item.id)?.status ==
+                  'CONFIRMED' ||
+              bookingsProvider.bookingForPackage(item.id)?.status ==
+                  'COMPLETED',
         )
         .length;
 
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => provider.fetchPackages(force: true),
+          onRefresh: () => _refresh(
+            canUseMarketplace: authProvider.canUseTravelerMarketplace,
+          ),
           child: Builder(
             builder: (BuildContext context) {
               if (provider.isLoading && offers.isEmpty) {
@@ -123,7 +92,9 @@ class _PackagesListPageState extends State<PackagesListPage> {
               if (provider.errorMessage != null && offers.isEmpty) {
                 return TrekpalErrorState(
                   message: provider.errorMessage!,
-                  onRetry: () => provider.fetchPackages(force: true),
+                  onRetry: () => _refresh(
+                    canUseMarketplace: authProvider.canUseTravelerMarketplace,
+                  ),
                 );
               }
 
@@ -137,7 +108,7 @@ class _PackagesListPageState extends State<PackagesListPage> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Pick an agency offer and see who is already in.',
+                    'Open an offer, review what is included, then send a booking request.',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -155,8 +126,8 @@ class _PackagesListPageState extends State<PackagesListPage> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _MiniStat(
-                          icon: Icons.groups_2_outlined,
-                          label: 'Joined',
+                          icon: Icons.check_circle_outline,
+                          label: 'Confirmed',
                           value: '$joinedOffers',
                         ),
                       ),
@@ -165,9 +136,9 @@ class _PackagesListPageState extends State<PackagesListPage> {
                   const SizedBox(height: 18),
                   if (!authProvider.canUseTravelerMarketplace) ...<Widget>[
                     TravelerKycGateCard(
-                      title: 'Verify to join',
+                      title: 'Verify to book',
                       message:
-                          'Browse now. Booking unlocks after KYC approval.',
+                          'You can browse offers now. Booking unlocks after traveler KYC approval.',
                       actionLabel: 'Complete traveler KYC',
                       onPressed: () {
                         Navigator.of(context).push(
@@ -205,8 +176,10 @@ class _PackagesListPageState extends State<PackagesListPage> {
                             ),
                             const SizedBox(height: 18),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  provider.fetchPackages(force: true),
+                              onPressed: () => _refresh(
+                                canUseMarketplace:
+                                    authProvider.canUseTravelerMarketplace,
+                              ),
                               icon: const Icon(Icons.refresh_outlined),
                               label: const Text('Refresh offers'),
                             ),
@@ -215,23 +188,25 @@ class _PackagesListPageState extends State<PackagesListPage> {
                       ),
                     )
                   else
-                    ...offers.map(
-                      (PackageOfferEntity offer) => Padding(
+                    ...offers.map((PackageOfferEntity offer) {
+                      final BookingEntity? booking = bookingsProvider
+                          .bookingForPackage(offer.id);
+                      return Padding(
                         padding: const EdgeInsets.only(bottom: 14),
-                        child: _OfferCard(
+                        child: _OfferPreviewCard(
                           offer: offer,
-                          isApplying: provider.applyingPackageId == offer.id,
-                          isJoined:
-                              currentTravelerId != null &&
-                              offer.participants.any(
-                                (participant) =>
-                                    participant.userId == currentTravelerId,
+                          bookingStatus: booking?.status,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) =>
+                                    PackageOfferDetailsPage(offer: offer),
                               ),
-                          canApply: authProvider.canUseTravelerMarketplace,
-                          onApply: () => _handleApply(offer),
+                            );
+                          },
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                 ],
               );
             },
@@ -242,20 +217,16 @@ class _PackagesListPageState extends State<PackagesListPage> {
   }
 }
 
-class _OfferCard extends StatelessWidget {
-  const _OfferCard({
+class _OfferPreviewCard extends StatelessWidget {
+  const _OfferPreviewCard({
     required this.offer,
-    required this.isApplying,
-    required this.isJoined,
-    required this.canApply,
-    required this.onApply,
+    required this.bookingStatus,
+    required this.onTap,
   });
 
   final PackageOfferEntity offer;
-  final bool isApplying;
-  final bool isJoined;
-  final bool canApply;
-  final VoidCallback onApply;
+  final String? bookingStatus;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -263,223 +234,134 @@ class _OfferCard extends StatelessWidget {
     final ColorScheme colorScheme = theme.colorScheme;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(offer.name, style: theme.textTheme.headlineSmall),
-                      const SizedBox(height: 6),
-                      Text(
-                        offer.agencyName,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(offer.name, style: theme.textTheme.headlineSmall),
+                        const SizedBox(height: 6),
+                        Text(
+                          offer.agencyName,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                  _StatusPill(status: bookingStatus),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  _InfoChip(
+                    icon: Icons.payments_outlined,
+                    label: AppFormatters.currency(offer.price),
+                  ),
+                  _InfoChip(
+                    icon: Icons.today_outlined,
+                    label:
+                        '${offer.duration} day${offer.duration == 1 ? '' : 's'}',
+                  ),
+                  _InfoChip(
+                    icon: Icons.groups_2_outlined,
+                    label:
+                        '${offer.participantCount} confirmed traveler${offer.participantCount == 1 ? '' : 's'}',
+                  ),
+                ],
+              ),
+              if ((offer.description ?? '').trim().isNotEmpty) ...<Widget>[
+                const SizedBox(height: 12),
+                Text(
+                  offer.description!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
+              ],
+              const SizedBox(height: 14),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      offer.destinations.join(' | '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Text(
-                    'PKR ${offer.price.toStringAsFixed(0)}',
-                    style: theme.textTheme.titleMedium?.copyWith(
+                  const SizedBox(width: 12),
+                  Text(
+                    'View details',
+                    style: theme.textTheme.labelLarge?.copyWith(
                       color: colorScheme.primary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-              ],
-            ),
-            if ((offer.description ?? '').trim().isNotEmpty) ...<Widget>[
-              const SizedBox(height: 12),
-              Text(
-                offer.description!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-            const SizedBox(height: 14),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: <Widget>[
-                _InfoChip(
-                  icon: Icons.today_outlined,
-                  label:
-                      '${offer.duration} day${offer.duration == 1 ? '' : 's'}',
-                ),
-                ...offer.destinations.map(
-                  (String destination) =>
-                      _InfoChip(icon: Icons.place_outlined, label: destination),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(
-                  alpha: theme.brightness == Brightness.dark ? 0.26 : 0.56,
-                ),
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: ParticipantRoster(
-                participants: offer.participants,
-                title: 'Who is going',
-                countLabel: offer.participantCount == 0
-                    ? 'Be the first traveler to join'
-                    : '${offer.participantCount} traveler${offer.participantCount == 1 ? '' : 's'} joined',
-              ),
-            ),
-            if (offer.hotel != null || offer.vehicle != null) ...<Widget>[
-              const SizedBox(height: 16),
-              Column(
-                children: <Widget>[
-                  if (offer.hotel != null)
-                    _InventorySummaryCard(
-                      imageUrl: offer.hotel!.image,
-                      icon: Icons.hotel_outlined,
-                      title: offer.hotel!.name,
-                      subtitle:
-                          '${offer.hotel!.city}, ${offer.hotel!.country}',
-                      details: offer.hotel!.rating != null
-                          ? 'Stay · ${offer.hotel!.rating!.toStringAsFixed(1)} stars'
-                          : 'Stay',
-                    ),
-                  if (offer.hotel != null && offer.vehicle != null)
-                    const SizedBox(height: 12),
-                  if (offer.vehicle != null)
-                    _InventorySummaryCard(
-                      imageUrl: offer.vehicle!.image,
-                      icon: Icons.directions_car_filled_outlined,
-                      title:
-                          '${offer.vehicle!.make} ${offer.vehicle!.model}',
-                      subtitle: offer.vehicle!.type,
-                      details: '${offer.vehicle!.capacity} seats',
-                    ),
                 ],
               ),
             ],
-            const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: isApplying || isJoined ? null : onApply,
-                icon: Icon(
-                  isJoined
-                      ? Icons.check_circle_outline
-                      : canApply
-                      ? Icons.event_available_outlined
-                      : Icons.lock_outline,
-                ),
-                label: Text(
-                  isJoined
-                      ? 'Joined'
-                      : isApplying
-                      ? 'Joining...'
-                      : canApply
-                      ? 'Join offer'
-                      : 'Verify to join',
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _InventorySummaryCard extends StatelessWidget {
-  const _InventorySummaryCard({
-    required this.imageUrl,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.details,
-  });
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.status});
 
-  final String? imageUrl;
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final String details;
+  final String? status;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
+    String label = 'Open';
+    Color background = colorScheme.primary.withValues(alpha: 0.12);
+    Color foreground = colorScheme.primary;
+
+    if (status == 'PENDING') {
+      label = 'Waiting';
+      background = colorScheme.tertiary.withValues(alpha: 0.16);
+      foreground = colorScheme.tertiary;
+    } else if (status == 'CONFIRMED' || status == 'COMPLETED') {
+      label = 'Trip ready';
+      background = Colors.green.withValues(alpha: 0.14);
+      foreground = Colors.green.shade700;
+    }
+
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(
-          alpha: theme.brightness == Brightness.dark ? 0.22 : 0.48,
-        ),
-        borderRadius: BorderRadius.circular(22),
+        color: background,
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Row(
-        children: <Widget>[
-          ClipRRect(
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(22),
-            ),
-            child: SizedBox(
-              width: 96,
-              height: 96,
-              child: imageUrl != null && imageUrl!.trim().isNotEmpty
-                  ? Image.network(imageUrl!, fit: BoxFit.cover)
-                  : Container(
-                      color: colorScheme.primary.withValues(alpha: 0.12),
-                      alignment: Alignment.center,
-                      child: Icon(icon, color: colorScheme.primary, size: 30),
-                    ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(title, style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    details,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+      child: Text(
+        label,
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: foreground,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -545,7 +427,9 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(alpha: 0.9),
+        color: colorScheme.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.dark ? 0.26 : 0.5,
+        ),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(

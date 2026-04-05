@@ -21,6 +21,11 @@ class PackagesRemoteDataSource {
         .toList();
   }
 
+  Future<PackageOfferModel> getPackageById(String packageId) async {
+    final dynamic data = await _apiClient.get(ApiConstants.packageById(packageId));
+    return PackageOfferModel.fromJson(data as Map<String, dynamic>);
+  }
+
   Future<String> applyToPackage({
     required String packageId,
     required DateTime startDate,

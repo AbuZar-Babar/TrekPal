@@ -131,7 +131,7 @@ export class PackagesController {
 
       const input = applyPackageSchema.parse(req.body);
       const result = await packagesService.applyToPackage(req.params.id, traveler.id, input);
-      sendSuccess(res, result, 'Trip offer booked successfully', 201);
+      sendSuccess(res, result, 'Trip offer request sent successfully', 201);
     } catch (error: any) {
       const statusCode = error.message === 'Unauthorized' ? 401 : 400;
       sendError(res, error.message || 'Failed to apply to trip offer', statusCode);

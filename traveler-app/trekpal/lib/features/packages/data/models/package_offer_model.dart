@@ -84,6 +84,9 @@ OfferHotelSummary? _parseHotelSummary(dynamic value) {
     image: (value['image'] as String?)?.trim().isNotEmpty == true
         ? value['image'] as String
         : null,
+    images: (value['images'] as List<dynamic>? ?? <dynamic>[])
+        .map((dynamic item) => item.toString())
+        .toList(),
   );
 }
 
@@ -101,5 +104,8 @@ OfferVehicleSummary? _parseVehicleSummary(dynamic value) {
     image: (value['image'] as String?)?.trim().isNotEmpty == true
         ? value['image'] as String
         : null,
+    images: (value['images'] as List<dynamic>? ?? <dynamic>[])
+        .map((dynamic item) => item.toString())
+        .toList(),
   );
 }

@@ -13,9 +13,7 @@ import {
 } from './chat.types';
 
 const activeBookingFilter = {
-  status: {
-    not: BOOKING_STATUS.CANCELLED,
-  },
+  status: BOOKING_STATUS.CONFIRMED,
 } as const;
 
 const roomInclude = {
@@ -341,9 +339,7 @@ export class ChatService {
         where: {
           userId: actor.travelerId,
           packageId: { not: null },
-          status: {
-            not: BOOKING_STATUS.CANCELLED,
-          },
+          status: BOOKING_STATUS.CONFIRMED,
         },
         select: {
           packageId: true,

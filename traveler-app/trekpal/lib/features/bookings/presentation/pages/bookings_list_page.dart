@@ -40,7 +40,12 @@ class _BookingsListPageState extends State<BookingsListPage> {
     final String travelerKycStatus =
         authProvider.currentUser?.travelerKycStatus ?? 'NOT_SUBMITTED';
     final BookingsProvider provider = context.watch<BookingsProvider>();
-    final List<BookingEntity> bookings = provider.bookings;
+    final List<BookingEntity> bookings = provider.bookings
+        .where(
+          (BookingEntity item) =>
+              item.status == 'CONFIRMED' || item.status == 'COMPLETED',
+        )
+        .toList();
 
     if (authProvider.canUseTravelerMarketplace) {
       _ensureLoaded();
@@ -133,8 +138,8 @@ class _BookingsListPageState extends State<BookingsListPage> {
                                     style: theme.textTheme.headlineSmall,
                                   ),
                                   const SizedBox(height: 10),
-                                  Text(
-                                    'Accept an agency offer and it will show here.',
+                          Text(
+                                    'Confirmed agency trips show here after approval.',
                                     textAlign: TextAlign.center,
                                     style: theme.textTheme.bodyLarge?.copyWith(
                                       color: colorScheme.onSurfaceVariant,

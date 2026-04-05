@@ -28,6 +28,14 @@ class BookingsProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  BookingEntity? bookingForPackage(String packageId) {
+    return _bookings.cast<BookingEntity?>().firstWhere(
+      (BookingEntity? booking) =>
+          booking?.packageId == packageId && booking?.status != 'CANCELLED',
+      orElse: () => null,
+    );
+  }
+
   Future<void> fetchBookings({bool force = false}) async {
     if (_bookings.isNotEmpty && !force) {
       return;

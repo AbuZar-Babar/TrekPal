@@ -25,6 +25,7 @@ import 'features/home/presentation/pages/home_page.dart';
 import 'features/packages/data/datasources/packages_remote_datasource.dart';
 import 'features/packages/data/repositories/packages_repository_impl.dart';
 import 'features/packages/domain/usecases/apply_package_usecase.dart';
+import 'features/packages/domain/usecases/get_package_by_id_usecase.dart';
 import 'features/packages/domain/usecases/get_packages_usecase.dart';
 import 'features/packages/presentation/providers/packages_provider.dart';
 import 'features/trip_requests/data/datasources/trip_requests_remote_datasource.dart';
@@ -87,6 +88,7 @@ Future<void> main() async {
       ),
       packagesProvider: PackagesProvider(
         getPackagesUseCase: GetPackagesUseCase(packagesRepository),
+        getPackageByIdUseCase: GetPackageByIdUseCase(packagesRepository),
         applyPackageUseCase: ApplyPackageUseCase(packagesRepository),
       ),
       chatProvider: ChatProvider(chatRepository: chatRepository),

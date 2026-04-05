@@ -39,9 +39,7 @@ const packageInclude = {
   },
   bookings: {
     where: {
-      status: {
-        not: BOOKING_STATUS.CANCELLED,
-      },
+      status: BOOKING_STATUS.CONFIRMED,
     },
     orderBy: {
       createdAt: 'asc',
@@ -118,53 +116,62 @@ const mapParticipant = async (booking: any): Promise<PackageParticipantPreview> 
   joinedAt: booking.createdAt,
 });
 
-const resolvePrimaryMediaUrl = async (images?: string[] | null): Promise<string | null> => {
+const resolveMediaImageList = async (images?: string[] | null): Promise<string[]> => {
   if (!images || images.length === 0) {
-    return null;
+    return [];
   }
 
-  const resolvedImages = await resolveMediaUrls(images.slice(0, 1));
-  return resolvedImages[0] ?? null;
+  return resolveMediaUrls(images);
 };
 
-const mapPackage = async (tripPackage: any): Promise<PackageResponse> => ({
-  id: tripPackage.id,
-  agencyId: tripPackage.agencyId,
-  agencyName: tripPackage.agency.name,
-  hotelId: tripPackage.hotelId ?? null,
-  vehicleId: tripPackage.vehicleId ?? null,
-  name: tripPackage.name,
-  description: tripPackage.description,
-  price: tripPackage.price,
-  duration: tripPackage.duration,
-  destinations: tripPackage.destinations,
-  images: tripPackage.images,
-  isActive: tripPackage.isActive,
-  participantCount: tripPackage.bookings.length,
-  participants: await Promise.all(tripPackage.bookings.map(mapParticipant)),
-  hotel: tripPackage.hotel
-      ? {
-          id: tripPackage.hotel.id,
-          name: tripPackage.hotel.name,
-          city: tripPackage.hotel.city,
-          country: tripPackage.hotel.country,
-          rating: tripPackage.hotel.rating ?? null,
-          image: await resolvePrimaryMediaUrl(tripPackage.hotel.images),
-        }
-      : null,
-  vehicle: tripPackage.vehicle
-      ? {
-          id: tripPackage.vehicle.id,
-          type: tripPackage.vehicle.type,
-          make: tripPackage.vehicle.make,
-          model: tripPackage.vehicle.model,
-          capacity: tripPackage.vehicle.capacity,
-          image: await resolvePrimaryMediaUrl(tripPackage.vehicle.images),
-        }
-      : null,
-  createdAt: tripPackage.createdAt,
-  updatedAt: tripPackage.updatedAt,
-});
+const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
+  const [participants, hotelImages, vehicleImages] = await Promise.all([
+    Promise.all(tripPackage.bookings.map(mapParticipant)),
+    resolveMediaImageList(tripPackage.hotel?.images),
+    resolveMediaImageList(tripPackage.vehicle?.images),
+  ]);
+
+  return {
+    id: tripPackage.id,
+    agencyId: tripPackage.agencyId,
+    agencyName: tripPackage.agency.name,
+    hotelId: tripPackage.hotelId ?? null,
+    vehicleId: tripPackage.vehicleId ?? null,
+    name: tripPackage.name,
+    description: tripPackage.description,
+    price: tripPackage.price,
+    duration: tripPackage.duration,
+    destinations: tripPackage.destinations,
+    images: tripPackage.images,
+    isActive: tripPackage.isActive,
+    participantCount: participants.length,
+    participants,
+    hotel: tripPackage.hotel
+        ? {
+            id: tripPackage.hotel.id,
+            name: tripPackage.hotel.name,
+            city: tripPackage.hotel.city,
+            country: tripPackage.hotel.country,
+            rating: tripPackage.hotel.rating ?? null,
+            image: hotelImages.length > 0 ? hotelImages[0] : null,
+            images: hotelImages,
+          }
+        : null,
+    vehicle: tripPackage.vehicle
+        ? {
+            id: tripPackage.vehicle.id,
+            type: tripPackage.vehicle.type,
+            make: tripPackage.vehicle.make,
+            model: tripPackage.vehicle.model,
+            capacity: tripPackage.vehicle.capacity,
+            image: vehicleImages.length > 0 ? vehicleImages[0] : null,
+            images: vehicleImages,
+          }
+        : null,
+    createdAt: tripPackage.createdAt,
+    updatedAt: tripPackage.updatedAt,
+  };
+};
 
 export class PackagesService {
   private async assertInventoryOwnership(
