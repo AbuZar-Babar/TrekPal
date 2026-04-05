@@ -5,6 +5,10 @@ import { Hotel, PaginatedResponse } from '../../../shared/types';
  * Hotels Service - CRUD operations for hotel management
  */
 export const hotelsService = {
+    readError(error: any): string {
+        return error.response?.data?.message || error.response?.data?.error || error.message || 'Request failed';
+    },
+
     async uploadImage(file: File): Promise<string> {
         const formData = new FormData();
         formData.append('image', file);
@@ -13,8 +17,7 @@ export const hotelsService = {
             const response = await apiClient.post('/hotels/upload-image', formData);
             return response.data.data.url;
         } catch (error: any) {
-            const serverError = error.response?.data?.error || error.response?.data?.message;
-            throw new Error(serverError || 'Failed to upload hotel image');
+            throw new Error(this.readError(error) || 'Failed to upload hotel image');
         }
     },
 
@@ -59,8 +62,12 @@ export const hotelsService = {
         images?: string[];
         amenities?: string[];
     }): Promise<Hotel> {
-        const response = await apiClient.post('/hotels', data);
-        return response.data.data;
+        try {
+            const response = await apiClient.post('/hotels', data);
+            return response.data.data;
+        } catch (error: any) {
+            throw new Error(this.readError(error) || 'Failed to create hotel');
+        }
     },
 
     /**
@@ -80,8 +87,12 @@ export const hotelsService = {
             amenities?: string[];
         }
     ): Promise<Hotel> {
-        const response = await apiClient.put(`/hotels/${id}`, data);
-        return response.data.data;
+        try {
+            const response = await apiClient.put(`/hotels/${id}`, data);
+            return response.data.data;
+        } catch (error: any) {
+            throw new Error(this.readError(error) || 'Failed to update hotel');
+        }
     },
 
     /**

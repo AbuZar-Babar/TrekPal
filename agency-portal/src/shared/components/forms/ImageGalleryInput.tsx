@@ -18,19 +18,46 @@ const ImageGalleryInput = ({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addImage = (url: string) => {
-    const trimmedUrl = url.trim();
-    if (!trimmedUrl || images.includes(trimmedUrl)) {
-      return;
+  const parseImageUrl = (value: string): string | null => {
+    const trimmedUrl = value.trim();
+    if (!trimmedUrl) {
+      return null;
     }
 
-    onChange([...images, trimmedUrl]);
+    try {
+      const parsedUrl = new URL(trimmedUrl);
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+        return null;
+      }
+
+      return parsedUrl.toString();
+    } catch {
+      return null;
+    }
+  };
+
+  const addImage = (url: string) => {
+    const normalizedUrl = parseImageUrl(url);
+    if (!normalizedUrl) {
+      setError('Enter a valid image URL');
+      return false;
+    }
+
+    if (images.includes(normalizedUrl)) {
+      setError(null);
+      return false;
+    }
+
+    onChange([...images, normalizedUrl]);
+    setError(null);
+    return true;
   };
 
   const handleAddUrl = () => {
-    setError(null);
-    addImage(imageUrl);
-    setImageUrl('');
+    const added = addImage(imageUrl);
+    if (added) {
+      setImageUrl('');
+    }
   };
 
   const handleUploadFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,12 +90,12 @@ const ImageGalleryInput = ({
       <div className="app-section-label">{title}</div>
       <div className="mt-5 space-y-4">
         <div className="grid gap-3 lg:grid-cols-[1fr,auto]">
-          <input
-            type="url"
-            value={imageUrl}
-            onChange={(event) => setImageUrl(event.target.value)}
-            className="app-field"
-            placeholder="Paste an image URL"
+        <input
+          type="url"
+          value={imageUrl}
+          onChange={(event) => setImageUrl(event.target.value)}
+          className="app-field"
+          placeholder="Paste a full image URL"
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
                 event.preventDefault();
@@ -99,7 +126,7 @@ const ImageGalleryInput = ({
           onChange={handleUploadFile}
         />
 
-        <p className="text-xs text-[var(--text-soft)]">Use a direct URL or upload `JPG`, `PNG`, or `WebP`.</p>
+        <p className="text-xs text-[var(--text-soft)]">Use a full `http` or `https` image URL, or upload `JPG`, `PNG`, or `WebP`.</p>
 
         {error && (
           <div className="rounded-[18px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
