@@ -204,7 +204,7 @@ const PackageForm = () => {
 
   if (loading) {
     return (
-      <div className="app-card px-6 py-14 text-center">
+      <div className="surface px-6 py-14 text-center">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
         <p className="mt-4 text-sm text-[var(--text-muted)]">Loading trip offer...</p>
       </div>
@@ -213,17 +213,51 @@ const PackageForm = () => {
 
   return (
     <div className="space-y-6">
-      <div className="app-card px-6 py-6 md:px-8 md:py-8">
-        <div className="app-section-label">Trip offer</div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">
-          {isEditing ? 'Edit trip offer' : 'Create trip offer'}
-        </h1>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Keep it short. Add the route, price, duration, and the inventory you want to attach.
-        </p>
-      </div>
+      <section className="page-hero">
+        <div className="space-y-3">
+          <span className="app-pill app-pill-neutral">Trip offer</span>
+          <h1 className="page-title">
+            {isEditing ? 'Edit trip offer' : 'Create trip offer'}
+          </h1>
+          <p className="page-copy max-w-3xl">
+            Keep the offer simple and structured. Add the route, price, duration, and the inventory
+            you want to attach.
+          </p>
+        </div>
+        <div className="page-stats-grid">
+          <article className="stat-card">
+            <span>Status</span>
+            <strong>{isActive ? 'Live' : 'Draft'}</strong>
+            <p>Control whether the offer is visible to the agency workspace.</p>
+          </article>
+          <article className="stat-card">
+            <span>Destinations</span>
+            <strong>{splitList(destinations).length}</strong>
+            <p>Stops or places currently attached to the offer.</p>
+          </article>
+          <article className="stat-card">
+            <span>Media</span>
+            <strong>{splitList(images).length}</strong>
+            <p>Image URLs included for the offer presentation.</p>
+          </article>
+          <article className="stat-card">
+            <span>Inventory</span>
+            <strong>{selectedHotel || selectedVehicle ? 'Linked' : 'Open'}</strong>
+            <p>Hotel and vehicle can be attached as operational support.</p>
+          </article>
+        </div>
+      </section>
 
-      <form onSubmit={handleSubmit} className="app-card space-y-6 px-6 py-6 md:px-8 md:py-8">
+      <section className="surface">
+        <div className="surface-header">
+          <div>
+            <h2>{isEditing ? 'Edit trip offer' : 'Offer details'}</h2>
+            <p>Use clear pricing, route detail, and linked inventory.</p>
+          </div>
+        </div>
+      </section>
+
+      <form onSubmit={handleSubmit} className="surface space-y-6 px-6 py-6 md:px-8 md:py-8">
         {formError && (
           <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
             {formError}

@@ -49,30 +49,26 @@ const BookingList = () => {
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
-        <div className="app-card px-6 py-6 md:px-8 md:py-8">
-          <div className="app-section-label">Booking requests</div>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">Traveler requests waiting for agency confirmation</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
-            When a traveler confirms an offer, the request enters this queue. Confirm it here to move the trip into the traveler Trips tab and unlock offer chat.
+      <section className="page-hero">
+        <div>
+          <div className="page-eyebrow">Bookings</div>
+          <h1 className="page-title">Booking operations are clearer, faster, and less table-bound.</h1>
+          <p className="page-copy">
+            Confirm traveler requests, finish completed work, and review queue health from a cleaner booking surface that now works on mobile as well.
           </p>
         </div>
-
-        <div className="app-panel-dark px-6 py-6">
-          <div className="app-section-label text-white/55">Lifecycle status</div>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Booking pulse</h2>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {stats.map((stat) => (
-              <div key={stat.label} className="rounded-[22px] border border-white/8 bg-white/6 px-4 py-4">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">{stat.label}</div>
-                <div className="mt-2 text-3xl font-semibold tracking-tight text-white">{stat.value}</div>
-              </div>
-            ))}
-          </div>
+        <div className="page-stats-grid">
+          {stats.map((stat) => (
+            <div key={stat.label} className="stat-card">
+              <div className="stat-card-label">{stat.label}</div>
+              <div className="stat-card-value">{stat.value}</div>
+              <div className="stat-card-note">Current booking state count</div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="segmented-filters">
         {['', 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map((status) => (
           <button
             key={status || 'ALL'}
@@ -89,110 +85,186 @@ const BookingList = () => {
       </div>
 
       {error && (
-        <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+        <div className="rounded-[18px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="app-table-shell px-6 py-14 text-center">
+        <div className="surface loading-state">
           <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
           <p className="mt-4 text-sm text-[var(--text-muted)]">Loading bookings...</p>
         </div>
       ) : bookings.length === 0 ? (
-        <div className="app-table-shell px-6 py-14 text-center">
-          <div className="text-lg font-semibold tracking-tight text-[var(--text)]">No bookings in this queue</div>
-          <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
-            New traveler booking requests will appear here for agency follow-up.
-          </p>
+        <div className="surface empty-state">
+          <div className="empty-state-title">No bookings in this queue</div>
+          <div className="empty-state-copy">New traveler booking requests will appear here for agency follow-up.</div>
         </div>
       ) : (
-        <div className="app-table-shell overflow-x-auto">
-          <table className="app-table min-w-[1120px]">
-            <thead>
-              <tr>
-                <th>Booking</th>
-                <th>Traveler</th>
-                <th>Travel window</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => {
-                const actions =
-                  booking.status === 'PENDING'
+        <>
+          <div className="mobile-record-list lg:hidden">
+            {bookings.map((booking) => {
+              const actions =
+                booking.status === 'PENDING'
+                  ? [
+                      { label: 'Confirm', status: 'CONFIRMED' as const, classes: 'app-btn-primary' },
+                      { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
+                    ]
+                  : booking.status === 'CONFIRMED'
                     ? [
-                        { label: 'Confirm', status: 'CONFIRMED' as const, classes: 'app-btn-primary' },
+                        { label: 'Complete', status: 'COMPLETED' as const, classes: 'app-btn-primary' },
                         { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
                       ]
-                    : booking.status === 'CONFIRMED'
+                    : [];
+
+              return (
+                <div key={booking.id} className="record-card">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="record-title">{booking.destination || 'Trip booking'}</div>
+                      <div className="record-copy">{booking.userName || 'Traveler'} · ID {formatShortId(booking.id)}</div>
+                    </div>
+                    <span className={`app-pill ${
+                      booking.status === 'CONFIRMED'
+                        ? 'app-pill-success'
+                        : booking.status === 'CANCELLED'
+                          ? 'app-pill-danger'
+                          : booking.status === 'COMPLETED'
+                            ? 'app-pill-neutral'
+                            : 'app-pill-warning'
+                    }`}>
+                      {formatStatusLabel(booking.status)}
+                    </span>
+                  </div>
+
+                  <div className="record-grid">
+                    <div className="record-meta-block">
+                      <div className="record-meta-label">Window</div>
+                      <div className="record-meta-value">{formatDateRange(booking.startDate, booking.endDate)}</div>
+                    </div>
+                    <div className="record-meta-block">
+                      <div className="record-meta-label">Amount</div>
+                      <div className="record-meta-value">{formatCurrency(booking.totalAmount)}</div>
+                    </div>
+                    <div className="record-meta-block">
+                      <div className="record-meta-label">Created</div>
+                      <div className="record-meta-value">{formatDate(booking.createdAt)}</div>
+                    </div>
+                    <div className="record-meta-block">
+                      <div className="record-meta-label">Bid</div>
+                      <div className="record-meta-value">{booking.bidId ? formatShortId(booking.bidId) : '--'}</div>
+                    </div>
+                  </div>
+
+                  <div className="record-actions">
+                    {actions.length === 0 ? (
+                      <span className="text-sm text-[var(--text-muted)]">No further action</span>
+                    ) : (
+                      actions.map((action) => (
+                        <button
+                          key={action.status}
+                          type="button"
+                          disabled={updatingId === booking.id}
+                          onClick={() => handleUpdateStatus(booking.id, action.status)}
+                          className={`${action.classes} h-10 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-60`}
+                        >
+                          {updatingId === booking.id ? 'Updating...' : action.label}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="app-table-shell hidden overflow-x-auto lg:block">
+            <table className="app-table min-w-[1120px]">
+              <thead>
+                <tr>
+                  <th>Booking</th>
+                  <th>Traveler</th>
+                  <th>Travel window</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map((booking) => {
+                  const actions =
+                    booking.status === 'PENDING'
                       ? [
-                          { label: 'Complete', status: 'COMPLETED' as const, classes: 'app-btn-primary' },
+                          { label: 'Confirm', status: 'CONFIRMED' as const, classes: 'app-btn-primary' },
                           { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
                         ]
-                      : [];
+                      : booking.status === 'CONFIRMED'
+                        ? [
+                            { label: 'Complete', status: 'COMPLETED' as const, classes: 'app-btn-primary' },
+                            { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
+                          ]
+                        : [];
 
-                return (
-                  <tr key={booking.id}>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">{booking.destination || 'Trip booking'}</div>
-                      <div className="mt-1 text-sm text-[var(--text-muted)]">ID {formatShortId(booking.id)}</div>
-                    </td>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">{booking.userName || 'Traveler'}</div>
-                      <div className="mt-1 text-sm text-[var(--text-muted)]">Created {formatDate(booking.createdAt)}</div>
-                    </td>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">{formatDateRange(booking.startDate, booking.endDate)}</div>
-                    </td>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">{formatCurrency(booking.totalAmount)}</div>
-                      {booking.bidId && <div className="mt-1 text-sm text-[var(--text-muted)]">Bid {formatShortId(booking.bidId)}</div>}
-                    </td>
-                    <td>
-                      <span className={`app-pill ${
-                        booking.status === 'CONFIRMED'
-                          ? 'app-pill-success'
-                          : booking.status === 'CANCELLED'
-                            ? 'app-pill-danger'
-                            : booking.status === 'COMPLETED'
-                              ? 'app-pill-neutral'
-                              : 'app-pill-warning'
-                      }`}>
-                        {formatStatusLabel(booking.status)}
-                      </span>
-                    </td>
-                    <td>
-                      {actions.length === 0 ? (
-                        <span className="text-sm text-[var(--text-muted)]">No further action</span>
-                      ) : (
-                        <div className="flex flex-wrap gap-2">
-                          {actions.map((action) => (
-                            <button
-                              key={action.status}
-                              type="button"
-                              disabled={updatingId === booking.id}
-                              onClick={() => handleUpdateStatus(booking.id, action.status)}
-                              className={`${action.classes} h-10 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-60`}
-                            >
-                              {updatingId === booking.id ? 'Updating...' : action.label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                  return (
+                    <tr key={booking.id}>
+                      <td>
+                        <div className="font-semibold tracking-tight text-[var(--text)]">{booking.destination || 'Trip booking'}</div>
+                        <div className="mt-1 text-sm text-[var(--text-muted)]">ID {formatShortId(booking.id)}</div>
+                      </td>
+                      <td>
+                        <div className="font-semibold tracking-tight text-[var(--text)]">{booking.userName || 'Traveler'}</div>
+                        <div className="mt-1 text-sm text-[var(--text-muted)]">Created {formatDate(booking.createdAt)}</div>
+                      </td>
+                      <td>
+                        <div className="font-semibold tracking-tight text-[var(--text)]">{formatDateRange(booking.startDate, booking.endDate)}</div>
+                      </td>
+                      <td>
+                        <div className="font-semibold tracking-tight text-[var(--text)]">{formatCurrency(booking.totalAmount)}</div>
+                        {booking.bidId && <div className="mt-1 text-sm text-[var(--text-muted)]">Bid {formatShortId(booking.bidId)}</div>}
+                      </td>
+                      <td>
+                        <span className={`app-pill ${
+                          booking.status === 'CONFIRMED'
+                            ? 'app-pill-success'
+                            : booking.status === 'CANCELLED'
+                              ? 'app-pill-danger'
+                              : booking.status === 'COMPLETED'
+                                ? 'app-pill-neutral'
+                                : 'app-pill-warning'
+                        }`}>
+                          {formatStatusLabel(booking.status)}
+                        </span>
+                      </td>
+                      <td>
+                        {actions.length === 0 ? (
+                          <span className="text-sm text-[var(--text-muted)]">No further action</span>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {actions.map((action) => (
+                              <button
+                                key={action.status}
+                                type="button"
+                                disabled={updatingId === booking.id}
+                                onClick={() => handleUpdateStatus(booking.id, action.status)}
+                                className={`${action.classes} h-10 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-60`}
+                              >
+                                {updatingId === booking.id ? 'Updating...' : action.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {pagination.total > pagination.limit && (
-        <div className="flex items-center justify-center gap-4">
+        <div className="page-pagination">
           <button
             type="button"
             onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}

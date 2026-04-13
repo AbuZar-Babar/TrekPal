@@ -123,7 +123,7 @@ const HotelForm = () => {
 
   if (fetchingHotel) {
     return (
-      <div className="app-table-shell px-6 py-14 text-center">
+      <div className="surface px-6 py-14 text-center">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
         <p className="mt-4 text-sm text-[var(--text-muted)]">Loading hotel details...</p>
       </div>
@@ -132,21 +132,40 @@ const HotelForm = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="app-section-label">{isEditing ? 'Edit hotel' : 'New hotel'}</div>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">
+      <section className="page-hero">
+        <div className="space-y-3">
+          <span className="app-pill app-pill-neutral">{isEditing ? 'Edit hotel' : 'New hotel'}</span>
+          <h1 className="page-title">
             {isEditing ? 'Update hotel property details' : 'Create a hotel listing'}
           </h1>
+          <p className="page-copy max-w-3xl">
+            Keep the listing clean, visual, and searchable so it can be attached to traveler offers
+            without extra editing.
+          </p>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate('/hotels')}
-          className="app-btn-secondary h-11 px-4 text-sm"
-        >
-          Back to hotels
-        </button>
-      </div>
+        <div className="page-stats-grid">
+          <article className="stat-card">
+            <span>City</span>
+            <strong>{form.city || '--'}</strong>
+            <p>Primary destination coverage for this property.</p>
+          </article>
+          <article className="stat-card">
+            <span>Amenities</span>
+            <strong>{form.amenities.length}</strong>
+            <p>Features selected for the stay listing.</p>
+          </article>
+          <article className="stat-card">
+            <span>Images</span>
+            <strong>{form.images.length}</strong>
+            <p>Visual assets attached to the property.</p>
+          </article>
+          <article className="stat-card">
+            <span>Status</span>
+            <strong>Live</strong>
+            <p>Hotel inventory publishes immediately in the portal.</p>
+          </article>
+        </div>
+      </section>
 
       {error && (
         <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
@@ -156,8 +175,13 @@ const HotelForm = () => {
 
       <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
         <div className="space-y-6">
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Hotel information</div>
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Hotel information</h2>
+                <p>Core details travelers need to understand the property.</p>
+              </div>
+            </div>
             <div className="mt-5 grid gap-5">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Hotel name</label>
@@ -185,8 +209,13 @@ const HotelForm = () => {
             </div>
           </div>
 
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Location</div>
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Location</h2>
+                <p>Address details used in package assembly and traveler context.</p>
+              </div>
+            </div>
             <div className="mt-5 grid gap-5">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Address</label>
@@ -229,8 +258,13 @@ const HotelForm = () => {
             </div>
           </div>
 
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Amenities</div>
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Amenities</h2>
+                <p>Choose the features that matter most for conversion and package fit.</p>
+              </div>
+            </div>
             <div className="mt-5 flex flex-wrap gap-2">
               {AMENITY_OPTIONS.map((amenity) => {
                 const active = form.amenities.includes(amenity);
@@ -297,12 +331,24 @@ const HotelForm = () => {
             </div>
           </div>
 
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Publishing note</div>
-            <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Instant publishing</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
-              New or edited hotel records are available in the agency workspace immediately. No additional admin verification is required for hotel inventory.
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Publishing note</h2>
+                <p>What happens after you save the listing.</p>
+              </div>
+            </div>
+            <p className="text-sm leading-7 text-[var(--text-muted)]">
+              New or edited hotel records are available in the agency workspace immediately. No
+              additional admin verification is required for hotel inventory.
             </p>
+            <button
+              type="button"
+              onClick={() => navigate('/hotels')}
+              className="app-btn-secondary mt-4 h-11 px-4 text-sm"
+            >
+              Back to hotels
+            </button>
           </div>
         </div>
       </form>

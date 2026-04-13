@@ -111,7 +111,7 @@ const VehicleForm = () => {
 
   if (fetchingVehicle) {
     return (
-      <div className="app-table-shell px-6 py-14 text-center">
+      <div className="surface px-6 py-14 text-center">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
         <p className="mt-4 text-sm text-[var(--text-muted)]">Loading vehicle details...</p>
       </div>
@@ -120,21 +120,40 @@ const VehicleForm = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="app-section-label">{isEdit ? 'Edit vehicle' : 'New vehicle'}</div>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">
+      <section className="page-hero">
+        <div className="space-y-3">
+          <span className="app-pill app-pill-neutral">{isEdit ? 'Edit vehicle' : 'New vehicle'}</span>
+          <h1 className="page-title">
             {isEdit ? 'Update vehicle and driver details' : 'Create a fleet listing'}
           </h1>
+          <p className="page-copy max-w-3xl">
+            Keep transport records clear and operational so vehicles can be quoted, assigned, and
+            managed without back-and-forth.
+          </p>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate('/transport')}
-          className="app-btn-secondary h-11 px-4 text-sm"
-        >
-          Back to vehicles
-        </button>
-      </div>
+        <div className="page-stats-grid">
+          <article className="stat-card">
+            <span>Type</span>
+            <strong>{formData.type ? formatStatusLabel(formData.type) : '--'}</strong>
+            <p>Transport class used in quotes and offer summaries.</p>
+          </article>
+          <article className="stat-card">
+            <span>Seats</span>
+            <strong>{formData.capacity}</strong>
+            <p>Total passenger capacity on the listing.</p>
+          </article>
+          <article className="stat-card">
+            <span>Rate</span>
+            <strong>{formatCurrency(formData.pricePerDay, 'PKR 0')}</strong>
+            <p>Daily operational pricing used by the agency.</p>
+          </article>
+          <article className="stat-card">
+            <span>Status</span>
+            <strong>{formData.isAvailable ? 'Available' : 'Unavailable'}</strong>
+            <p>Controls whether the vehicle can be attached to new work.</p>
+          </article>
+        </div>
+      </section>
 
       {error && (
         <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
@@ -144,8 +163,13 @@ const VehicleForm = () => {
 
       <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
         <div className="space-y-6">
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Vehicle information</div>
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Vehicle information</h2>
+                <p>Core fleet data used in pricing and dispatch planning.</p>
+              </div>
+            </div>
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Vehicle type</label>
@@ -244,8 +268,13 @@ const VehicleForm = () => {
             </div>
           </div>
 
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Driver information</div>
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Driver information</h2>
+                <p>Attach the operator details needed for real bookings.</p>
+              </div>
+            </div>
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver name</label>
@@ -293,8 +322,13 @@ const VehicleForm = () => {
             onChange={(images) => setFormData((current) => ({ ...current, images }))}
           />
 
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Availability</div>
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Availability</h2>
+                <p>Set whether the vehicle should be assignable right now.</p>
+              </div>
+            </div>
             <div className="mt-5">
               <label className="flex items-center gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4">
                 <input
@@ -353,12 +387,24 @@ const VehicleForm = () => {
             </div>
           </div>
 
-          <div className="app-card px-6 py-6">
-            <div className="app-section-label">Publishing note</div>
-            <h3 className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Instant publishing</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
-              Newly created or updated vehicle records are available in the agency workspace immediately. No additional admin verification is required for vehicle inventory.
+          <div className="surface px-6 py-6">
+            <div className="surface-header px-0 pt-0">
+              <div>
+                <h2>Publishing note</h2>
+                <p>What changes after you save this record.</p>
+              </div>
+            </div>
+            <p className="text-sm leading-7 text-[var(--text-muted)]">
+              Newly created or updated vehicle records are available in the agency workspace
+              immediately. No additional admin verification is required for vehicle inventory.
             </p>
+            <button
+              type="button"
+              onClick={() => navigate('/transport')}
+              className="app-btn-secondary mt-4 h-11 px-4 text-sm"
+            >
+              Back to vehicles
+            </button>
           </div>
         </div>
       </form>
