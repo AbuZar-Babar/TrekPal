@@ -104,7 +104,6 @@ class PackagesProvider extends ChangeNotifier {
 
   Future<String> applyToPackage({
     required String packageId,
-    required DateTime startDate,
   }) async {
     _applyingPackageId = packageId;
     _errorMessage = null;
@@ -113,7 +112,6 @@ class PackagesProvider extends ChangeNotifier {
     try {
       return await _applyPackageUseCase(
         packageId: packageId,
-        startDate: startDate,
       );
     } catch (error) {
       _errorMessage = _readableError(error);

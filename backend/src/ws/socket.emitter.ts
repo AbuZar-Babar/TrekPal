@@ -5,6 +5,7 @@ import { offersRoomName, travelerRoomName } from './socket.rooms';
 export const MARKETPLACE_EVENTS = {
   OFFER_UPDATED: 'marketplace:offer-updated',
   BID_UPDATED: 'marketplace:bid-updated',
+  BOOKING_UPDATED: 'marketplace:booking-updated',
 } as const;
 
 export interface OfferUpdatedEventPayload {
@@ -27,6 +28,18 @@ export interface BidUpdatedEventPayload {
   updatedAt: string;
 }
 
+export interface BookingUpdatedEventPayload {
+  eventType: 'CREATED' | 'STATUS_CHANGED' | 'UPDATED';
+  bookingId: string;
+  userId: string;
+  agencyId?: string | null;
+  agencyName?: string | null;
+  packageId?: string | null;
+  tripRequestId?: string | null;
+  status: string;
+  updatedAt: string;
+}
+
 let socketServer: SocketServer | null = null;
 
 export const registerSocketServer = (io: SocketServer): void => {
@@ -46,4 +59,13 @@ export const emitTravelerBidUpdated = (
   socketServer
     ?.to(travelerRoomName(travelerId))
     .emit(MARKETPLACE_EVENTS.BID_UPDATED, payload);
+};
+
+export const emitTravelerBookingUpdated = (
+  travelerId: string,
+  payload: BookingUpdatedEventPayload,
+): void => {
+  socketServer
+    ?.to(travelerRoomName(travelerId))
+    .emit(MARKETPLACE_EVENTS.BOOKING_UPDATED, payload);
 };

@@ -85,6 +85,50 @@ class BidUpdatedEvent extends MarketplaceLiveEvent {
       'bid:$eventType:$bidId:${updatedAt.toIso8601String()}';
 }
 
+class BookingUpdatedEvent extends MarketplaceLiveEvent {
+  const BookingUpdatedEvent({
+    required this.eventType,
+    required this.bookingId,
+    required this.userId,
+    required this.agencyId,
+    required this.agencyName,
+    required this.packageId,
+    required this.tripRequestId,
+    required this.status,
+    required this.updatedAt,
+  });
+
+  factory BookingUpdatedEvent.fromJson(Map<String, dynamic> json) {
+    return BookingUpdatedEvent(
+      eventType: json['eventType'] as String? ?? 'UPDATED',
+      bookingId: json['bookingId'] as String? ?? '',
+      userId: json['userId'] as String? ?? '',
+      agencyId: json['agencyId'] as String?,
+      agencyName: json['agencyName'] as String?,
+      packageId: json['packageId'] as String?,
+      tripRequestId: json['tripRequestId'] as String?,
+      status: json['status'] as String? ?? 'PENDING',
+      updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
+          DateTime.now(),
+    );
+  }
+
+  final String eventType;
+  final String bookingId;
+  final String userId;
+  final String? agencyId;
+  final String? agencyName;
+  final String? packageId;
+  final String? tripRequestId;
+  final String status;
+  @override
+  final DateTime updatedAt;
+
+  @override
+  String get notificationKey =>
+      'booking:$eventType:$bookingId:${updatedAt.toIso8601String()}';
+}
+
 typedef MarketplaceEventListener = void Function(MarketplaceLiveEvent event);
 typedef MarketplaceErrorListener = void Function(String message);
 
@@ -105,6 +149,7 @@ class MarketplaceLiveService {
 
     socket.off('marketplace:offer-updated');
     socket.off('marketplace:bid-updated');
+    socket.off('marketplace:booking-updated');
     socket.off('connect_error');
 
     socket.on('marketplace:offer-updated', (dynamic payload) {
@@ -118,6 +163,14 @@ class MarketplaceLiveService {
     socket.on('marketplace:bid-updated', (dynamic payload) {
       if (payload is Map) {
         onEvent(BidUpdatedEvent.fromJson(Map<String, dynamic>.from(payload)));
+      }
+    });
+
+    socket.on('marketplace:booking-updated', (dynamic payload) {
+      if (payload is Map) {
+        onEvent(
+          BookingUpdatedEvent.fromJson(Map<String, dynamic>.from(payload)),
+        );
       }
     });
 

@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/bookings/presentation/providers/bookings_provider.dart';
 import '../../features/packages/presentation/providers/packages_provider.dart';
 import '../../features/trip_requests/presentation/providers/trip_requests_provider.dart';
+import '../notifications/notification_service.dart';
 import 'marketplace_live_service.dart';
 
 class MarketplaceUpdatesCoordinator extends StatefulWidget {
@@ -30,6 +32,7 @@ class _MarketplaceUpdatesCoordinatorState
     with WidgetsBindingObserver {
   final Map<String, DateTime> _recentNotifications = <String, DateTime>{};
   AuthProvider? _authProvider;
+  bool _isResumed = true;
 
   @override
   void initState() {
@@ -53,12 +56,18 @@ class _MarketplaceUpdatesCoordinatorState
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      _isResumed = true;
       unawaited(_syncConnection());
       return;
     }
 
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached) {
+    if (state == AppLifecycleState.paused) {
+      _isResumed = false;
+      return;
+    }
+
+    if (state == AppLifecycleState.detached) {
+      _isResumed = false;
       unawaited(widget.liveService.disconnect());
     }
   }
@@ -125,6 +134,17 @@ class _MarketplaceUpdatesCoordinatorState
           key: event.notificationKey,
           message: _bidMessage(event),
         );
+        return;
+      }
+
+      if (event is BookingUpdatedEvent) {
+        await context.read<BookingsProvider>().refreshFromBookingLiveEvent(
+              bookingId: event.bookingId,
+            );
+        _showSnackbar(
+          key: event.notificationKey,
+          message: _bookingMessage(event),
+        );
       }
     } catch (error) {
       debugPrint('Marketplace live update failed: $error');
@@ -146,8 +166,19 @@ class _MarketplaceUpdatesCoordinatorState
     }
 
     _recentNotifications[key] = now;
-    widget.scaffoldMessengerKey.currentState?.showSnackBar(
-      SnackBar(content: Text(message)),
+    if (_isResumed) {
+      widget.scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+      return;
+    }
+
+    unawaited(
+      NotificationService.show(
+        title: 'TrekPal update',
+        body: message,
+        key: key,
+      ),
     );
   }
 
@@ -174,6 +205,19 @@ class _MarketplaceUpdatesCoordinatorState
         return 'A bid thread was closed';
       default:
         return 'Your request has an update';
+    }
+  }
+
+  String _bookingMessage(BookingUpdatedEvent event) {
+    switch (event.status) {
+      case 'CONFIRMED':
+        return 'Booking confirmed';
+      case 'CANCELLED':
+        return 'Booking cancelled';
+      case 'COMPLETED':
+        return 'Trip completed';
+      default:
+        return 'Booking updated';
     }
   }
 

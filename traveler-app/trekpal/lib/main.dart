@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +7,7 @@ import 'core/constants/app_constants.dart';
 import 'core/live/marketplace_live_service.dart';
 import 'core/live/marketplace_updates_coordinator.dart';
 import 'core/network/api_client.dart';
+import 'core/notifications/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/widgets/loading_widget.dart';
@@ -14,6 +17,8 @@ import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/register_usecase.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/traveler_kyc_page.dart';
+import 'features/auth/presentation/pages/traveler_kyc_pending_page.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/bookings/data/datasources/bookings_remote_datasource.dart';
 import 'features/bookings/data/repositories/bookings_repository_impl.dart';
@@ -46,6 +51,7 @@ Future<void> main() async {
   final ApiClient apiClient = ApiClient(
     tokenProvider: authLocalDataSource.getToken,
   );
+  await NotificationService.init();
   final ThemeController themeController = await ThemeController.create();
 
   final authRepository = AuthRepositoryImpl(
@@ -158,7 +164,7 @@ class TrekPalApp extends StatelessWidget {
   }
 }
 
-class _AppRoot extends StatelessWidget {
+class _AppRoot extends StatefulWidget {
   const _AppRoot({
     required this.marketplaceLiveService,
     required this.scaffoldMessengerKey,
@@ -166,6 +172,120 @@ class _AppRoot extends StatelessWidget {
 
   final MarketplaceLiveService marketplaceLiveService;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+
+  @override
+  State<_AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<_AppRoot> with WidgetsBindingObserver {
+  AuthProvider? _authProvider;
+  bool _hasSeenAuthenticatedTraveler = false;
+  String? _lastTravelerKycStatus;
+  bool _isResumed = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final AuthProvider nextAuthProvider = context.read<AuthProvider>();
+    if (!identical(_authProvider, nextAuthProvider)) {
+      _authProvider?.removeListener(_handleAuthChanged);
+      _authProvider = nextAuthProvider;
+      _authProvider?.addListener(_handleAuthChanged);
+      _primeAuthSnapshot(nextAuthProvider);
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _authProvider?.removeListener(_handleAuthChanged);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _isResumed = state == AppLifecycleState.resumed;
+  }
+
+  void _primeAuthSnapshot(AuthProvider authProvider) {
+    if (!authProvider.isAuthenticated || !authProvider.isTraveler) {
+      _hasSeenAuthenticatedTraveler = false;
+      _lastTravelerKycStatus = null;
+      return;
+    }
+
+    _hasSeenAuthenticatedTraveler = true;
+    _lastTravelerKycStatus = authProvider.currentUser?.travelerKycStatus;
+  }
+
+  void _handleAuthChanged() {
+    final AuthProvider? authProvider = _authProvider;
+    if (!mounted || authProvider == null) {
+      return;
+    }
+
+    if (!authProvider.isAuthenticated || !authProvider.isTraveler) {
+      _hasSeenAuthenticatedTraveler = false;
+      _lastTravelerKycStatus = null;
+      return;
+    }
+
+    final String? nextStatus = authProvider.currentUser?.travelerKycStatus;
+    if (!_hasSeenAuthenticatedTraveler) {
+      _hasSeenAuthenticatedTraveler = true;
+      _lastTravelerKycStatus = nextStatus;
+      return;
+    }
+
+    final String? previousStatus = _lastTravelerKycStatus;
+    if (nextStatus == null || nextStatus == previousStatus) {
+      return;
+    }
+
+    _lastTravelerKycStatus = nextStatus;
+
+    if (nextStatus == 'VERIFIED') {
+      if (_isResumed) {
+        widget.scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(content: Text('KYC approved. Marketplace unlocked.')),
+        );
+      } else {
+        unawaited(
+          NotificationService.show(
+            title: 'KYC approved',
+            body: 'Marketplace unlocked. You can now book offers.',
+            key: 'kyc:VERIFIED',
+          ),
+        );
+      }
+      return;
+    }
+
+    if (nextStatus == 'REJECTED') {
+      if (_isResumed) {
+        widget.scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Text('KYC needs an update. Please review and resubmit.'),
+          ),
+        );
+      } else {
+        unawaited(
+          NotificationService.show(
+            title: 'KYC needs update',
+            body: 'Review your submission and resubmit to unlock booking.',
+            key: 'kyc:REJECTED',
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,9 +298,20 @@ class _AppRoot extends StatelessWidget {
         }
 
         if (authProvider.isAuthenticated) {
+          if (authProvider.isTraveler) {
+            final String kycStatus =
+                authProvider.currentUser!.travelerKycStatus;
+
+            if (kycStatus == 'PENDING') {
+              return const TravelerKycPendingPage();
+            } else if (kycStatus != 'VERIFIED') {
+              return const TravelerKycPage();
+            }
+          }
+
           return MarketplaceUpdatesCoordinator(
-            liveService: marketplaceLiveService,
-            scaffoldMessengerKey: scaffoldMessengerKey,
+            liveService: widget.marketplaceLiveService,
+            scaffoldMessengerKey: widget.scaffoldMessengerKey,
             child: const HomePage(),
           );
         }

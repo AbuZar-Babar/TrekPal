@@ -50,6 +50,7 @@ class PackageOfferEntity {
     required this.name,
     required this.price,
     required this.duration,
+    required this.startDate,
     required this.destinations,
     required this.images,
     required this.isActive,
@@ -71,6 +72,7 @@ class PackageOfferEntity {
   final String? description;
   final num price;
   final int duration;
+  final DateTime? startDate;
   final List<String> destinations;
   final List<String> images;
   final bool isActive;

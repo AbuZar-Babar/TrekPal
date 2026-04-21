@@ -32,4 +32,11 @@ class BookingsRemoteDataSource {
     final Map<String, dynamic> payload = data as Map<String, dynamic>;
     return payload['bookingId'] as String? ?? '';
   }
+
+  Future<BookingModel> cancelBooking(String bookingId) async {
+    final dynamic data = await _apiClient.post(
+      ApiConstants.cancelBooking(bookingId),
+    );
+    return BookingModel.fromJson(data as Map<String, dynamic>);
+  }
 }

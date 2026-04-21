@@ -129,7 +129,7 @@ export class PackagesController {
         return;
       }
 
-      const input = applyPackageSchema.parse(req.body);
+      const input = applyPackageSchema.parse(req.body ?? {});
       const result = await packagesService.applyToPackage(req.params.id, traveler.id, input);
       sendSuccess(res, result, 'Trip offer request sent successfully', 201);
     } catch (error: any) {

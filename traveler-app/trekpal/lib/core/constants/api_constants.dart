@@ -38,6 +38,7 @@ class ApiConstants {
   static String counterOffer(String bidId) => '$bids/$bidId/counteroffer';
   static String acceptBid(String bidId) => '$bids/$bidId/accept';
   static String bookingById(String bookingId) => '$bookings/$bookingId';
+  static String cancelBooking(String bookingId) => '$bookings/$bookingId/cancel';
   static String packageById(String packageId) => '$packages/$packageId';
   static String applyPackage(String packageId) => '$packages/$packageId/apply';
   static String get chatRooms => '$chat/rooms';

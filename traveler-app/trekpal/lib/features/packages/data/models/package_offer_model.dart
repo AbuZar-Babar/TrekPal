@@ -19,6 +19,7 @@ class PackageOfferModel extends PackageOfferEntity {
     required super.name,
     required super.price,
     required super.duration,
+    required super.startDate,
     required super.destinations,
     required super.images,
     required super.isActive,
@@ -49,6 +50,9 @@ class PackageOfferModel extends PackageOfferEntity {
       description: json['description'] as String?,
       price: (json['price'] as num?)?.toDouble() ?? 0,
       duration: json['duration'] as int? ?? 1,
+      startDate: json['startDate'] == null
+          ? null
+          : _parsePackageDate(json['startDate']),
       destinations: destinationList
           .map((dynamic item) => item.toString())
           .toList(),

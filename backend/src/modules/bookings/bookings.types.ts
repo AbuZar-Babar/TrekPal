@@ -19,6 +19,7 @@ export interface BookingResponse {
   userName?: string;
   agencyId: string | null;
   agencyName?: string;
+  agencyPhone: string | null;
   tripRequestId: string | null;
   bidId: string | null;
   hotelId: string | null;

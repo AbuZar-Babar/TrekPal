@@ -16,6 +16,7 @@ export const createPackageSchema = z.object({
   description: z.string().trim().optional(),
   price: z.coerce.number().positive('Price must be greater than 0'),
   duration: z.coerce.number().int().min(1, 'Duration must be at least 1 day'),
+  startDate: z.coerce.date(),
   hotelId: z.string().trim().min(1).nullable().optional(),
   vehicleId: z.string().trim().min(1).nullable().optional(),
   destinations: z
@@ -30,12 +31,7 @@ export const updatePackageSchema = createPackageSchema.partial().refine(
   { message: 'At least one field is required' },
 );
 
-export const applyPackageSchema = z.object({
-  startDate: z.string().refine(
-    (value) => !Number.isNaN(Date.parse(value)),
-    'A valid start date is required',
-  ),
-});
+export const applyPackageSchema = z.object({}).strict();
 
 export type PackageFiltersInput = z.infer<typeof packageFiltersSchema>;
 export type CreatePackageInput = z.infer<typeof createPackageSchema>;
@@ -63,6 +59,7 @@ export interface PackageResponse {
   description: string | null;
   price: number;
   duration: number;
+  startDate: Date | null;
   destinations: string[];
   images: string[];
   isActive: boolean;

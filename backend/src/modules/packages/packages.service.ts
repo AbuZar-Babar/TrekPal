@@ -142,6 +142,7 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
     description: tripPackage.description,
     price: tripPackage.price,
     duration: tripPackage.duration,
+    startDate: tripPackage.startDate ?? null,
     destinations: tripPackage.destinations,
     images: tripPackage.images,
     isActive: tripPackage.isActive,
@@ -290,6 +291,7 @@ export class PackagesService {
         description: input.description ?? null,
         price: input.price,
         duration: input.duration,
+        startDate: input.startDate,
         destinations: input.destinations,
         images: input.images ?? [],
         isActive: input.isActive ?? true,
@@ -337,6 +339,7 @@ export class PackagesService {
         ...(input.description !== undefined ? { description: input.description ?? null } : {}),
         ...(input.price !== undefined ? { price: input.price } : {}),
         ...(input.duration !== undefined ? { duration: input.duration } : {}),
+        ...(input.startDate !== undefined ? { startDate: input.startDate } : {}),
         ...(input.destinations !== undefined ? { destinations: input.destinations } : {}),
         ...(input.images !== undefined ? { images: input.images } : {}),
         ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
@@ -389,7 +392,7 @@ export class PackagesService {
   async applyToPackage(
     packageId: string,
     travelerId: string,
-    input: ApplyPackageInput,
+    _input: ApplyPackageInput,
   ): Promise<{ bookingId: string }> {
     const tripPackage = await prisma.package.findFirst({
       where: {
@@ -401,6 +404,7 @@ export class PackagesService {
         agencyId: true,
         price: true,
         duration: true,
+        startDate: true,
       },
     });
 
@@ -425,11 +429,11 @@ export class PackagesService {
       throw new Error('You already joined this trip offer');
     }
 
-    const startDate = new Date(input.startDate);
-    if (Number.isNaN(startDate.getTime())) {
-      throw new Error('A valid start date is required');
+    if (!tripPackage.startDate) {
+      throw new Error('Trip date is not set for this offer');
     }
 
+    const startDate = new Date(tripPackage.startDate);
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + Math.max(tripPackage.duration - 1, 0));
 

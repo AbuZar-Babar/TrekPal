@@ -15,6 +15,7 @@ class BookingEntity {
     this.userName,
     this.agencyId,
     this.agencyName,
+    this.agencyPhone,
     this.tripRequestId,
     this.bidId,
     this.hotelId,
@@ -29,6 +30,7 @@ class BookingEntity {
   final String? userName;
   final String? agencyId;
   final String? agencyName;
+  final String? agencyPhone;
   final String? tripRequestId;
   final String? bidId;
   final String? hotelId;

@@ -7,11 +7,9 @@ class ApplyPackageUseCase {
 
   Future<String> call({
     required String packageId,
-    required DateTime startDate,
   }) {
     return _repository.applyToPackage(
       packageId: packageId,
-      startDate: startDate,
     );
   }
 }

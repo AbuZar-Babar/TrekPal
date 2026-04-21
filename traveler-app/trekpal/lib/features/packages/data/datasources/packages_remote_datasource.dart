@@ -28,13 +28,9 @@ class PackagesRemoteDataSource {
 
   Future<String> applyToPackage({
     required String packageId,
-    required DateTime startDate,
   }) async {
     final dynamic data = await _apiClient.post(
       ApiConstants.applyPackage(packageId),
-      body: <String, dynamic>{
-        'startDate': startDate.toIso8601String(),
-      },
     );
 
     final Map<String, dynamic> payload = data as Map<String, dynamic>;

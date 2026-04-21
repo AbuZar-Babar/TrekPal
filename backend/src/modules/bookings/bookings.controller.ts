@@ -114,6 +114,44 @@ export class BookingsController {
       }
     }
   }
+
+  /**
+   * Cancel booking (traveler only)
+   * POST /api/bookings/:id/cancel
+   */
+  async cancelBooking(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'Unauthorized', 401);
+        return;
+      }
+
+      if (req.user.role !== ROLES.TRAVELER) {
+        sendError(res, 'Only travelers can cancel bookings', 403);
+        return;
+      }
+
+      const traveler = await prisma.user.findUnique({
+        where: { authUid: req.user.uid },
+        select: { id: true },
+      });
+
+      if (!traveler) {
+        sendError(res, 'User profile not found', 404);
+        return;
+      }
+
+      const { id } = req.params;
+      const result = await bookingsService.cancelTravelerBooking(id, traveler.id);
+      sendSuccess(res, result, 'Booking cancelled successfully');
+    } catch (error: any) {
+      if (error.message.includes('Unauthorized')) {
+        sendError(res, error.message, 403);
+      } else {
+        sendError(res, error.message || 'Failed to cancel booking', 400);
+      }
+    }
+  }
 }
 
 export const bookingsController = new BookingsController();

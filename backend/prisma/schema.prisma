@@ -182,6 +182,7 @@ model Package {
   description String?
   price       Float
   duration    Int      // Days
+  startDate   DateTime?
   destinations String[]
   images      String[]
   isActive    Boolean  @default(true)

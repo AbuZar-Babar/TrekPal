@@ -17,4 +17,9 @@ class BookingsRepositoryImpl implements BookingsRepository {
 
   @override
   Future<String> acceptBid(String bidId) => _remoteDataSource.acceptBid(bidId);
+
+  @override
+  Future<BookingEntity> cancelBooking(String bookingId) {
+    return _remoteDataSource.cancelBooking(bookingId);
+  }
 }

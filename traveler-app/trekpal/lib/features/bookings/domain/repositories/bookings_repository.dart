@@ -6,4 +6,6 @@ abstract class BookingsRepository {
   Future<BookingEntity> getBookingById(String bookingId);
 
   Future<String> acceptBid(String bidId);
+
+  Future<BookingEntity> cancelBooking(String bookingId);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/utils/formatters.dart';
@@ -116,6 +117,18 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           }
 
           final String destination = booking.destination ?? 'Trip booking';
+          final String? agencyPhone = booking.agencyPhone?.trim().isNotEmpty ==
+                  true
+              ? booking.agencyPhone!.trim()
+              : null;
+          final bool canCancelStatus =
+              booking.status == 'PENDING' || booking.status == 'CONFIRMED';
+          final DateTime cancelCutoff = booking.startDate.subtract(
+            const Duration(days: 3),
+          );
+          final DateTime now = DateTime.now();
+          final bool canCancelTime = !now.isAfter(cancelCutoff);
+          final bool canCancel = canCancelStatus && canCancelTime;
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: <Widget>[
@@ -168,6 +181,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   const SizedBox(height: 12),
                   _detailCard(
                     context,
+                    icon: Icons.phone_in_talk_outlined,
+                    label: 'Emergency contact',
+                    value: agencyPhone ?? 'Not provided',
+                  ),
+                  const SizedBox(height: 12),
+                  _detailCard(
+                    context,
                     icon: Icons.calendar_today_outlined,
                     label: 'Dates',
                     value: AppFormatters.dateRange(
@@ -213,6 +233,109 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 spacing: 12,
                 runSpacing: 12,
                 children: <Widget>[
+                  if (canCancelStatus)
+                    SizedBox(
+                      width: 156,
+                      child: _ActionCard(
+                        icon: Icons.cancel_outlined,
+                        label: 'Cancel trip',
+                        subtitle: canCancel
+                            ? 'Allowed'
+                            : 'Before ${AppFormatters.date(cancelCutoff)}',
+                        onTap: () async {
+                          final ScaffoldMessengerState messenger =
+                              ScaffoldMessenger.of(context);
+                          if (!canCancel) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Trips can only be cancelled 3 days before the start date (until ${AppFormatters.date(cancelCutoff)}).',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          final bool? confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return AlertDialog(
+                                title: const Text('Cancel this trip?'),
+                                content: const Text(
+                                  'You will opt out from this trip. This cannot be undone.',
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.of(
+                                      dialogContext,
+                                    ).pop(false),
+                                    child: const Text('Keep booking'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () => Navigator.of(
+                                      dialogContext,
+                                    ).pop(true),
+                                    child: const Text('Cancel trip'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirmed != true || !context.mounted) {
+                            return;
+                          }
+
+                          try {
+                            await context
+                                .read<BookingsProvider>()
+                                .cancelBooking(booking.id);
+                            if (!context.mounted) {
+                              return;
+                            }
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text('Trip cancelled successfully'),
+                              ),
+                            );
+                          } catch (_) {
+                            if (!context.mounted) {
+                              return;
+                            }
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  context.read<BookingsProvider>().errorMessage ??
+                                      'Unable to cancel this trip',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  if (agencyPhone != null)
+                    SizedBox(
+                      width: 156,
+                      child: _ActionCard(
+                        icon: Icons.content_copy_outlined,
+                        label: 'Copy number',
+                        subtitle: 'Emergency',
+                        onTap: () async {
+                          await Clipboard.setData(
+                            ClipboardData(text: agencyPhone),
+                          );
+                          if (!context.mounted) {
+                            return;
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Agency number copied'),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   SizedBox(
                     width: 156,
                     child: _ActionCard(

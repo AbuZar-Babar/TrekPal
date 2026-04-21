@@ -56,6 +56,18 @@ class BookingsProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshFromBookingLiveEvent({
+    required String bookingId,
+  }) async {
+    await fetchBookings(force: true);
+
+    if (_selectedBooking?.id == bookingId) {
+      try {
+        await fetchBookingById(bookingId);
+      } catch (_) {}
+    }
+  }
+
   Future<BookingEntity> fetchBookingById(String bookingId) async {
     _isLoading = true;
     _errorMessage = null;
@@ -91,6 +103,36 @@ class BookingsProvider extends ChangeNotifier {
       final String bookingId = await _acceptBidUseCase(bidId);
       _bookings = await _getBookingsUseCase();
       return bookingId;
+    } catch (error) {
+      _errorMessage = _readableError(error);
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<BookingEntity> cancelBooking(String bookingId) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final BookingEntity updated = await _bookingsRepository.cancelBooking(
+        bookingId,
+      );
+
+      _selectedBooking = updated;
+      final int index = _bookings.indexWhere(
+        (BookingEntity booking) => booking.id == bookingId,
+      );
+      if (index != -1) {
+        final List<BookingEntity> next = List<BookingEntity>.from(_bookings);
+        next[index] = updated;
+        _bookings = next;
+      }
+
+      return updated;
     } catch (error) {
       _errorMessage = _readableError(error);
       rethrow;

@@ -7,6 +7,5 @@ abstract class PackagesRepository {
 
   Future<String> applyToPackage({
     required String packageId,
-    required DateTime startDate,
   });
 }

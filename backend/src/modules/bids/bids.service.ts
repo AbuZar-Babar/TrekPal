@@ -1,6 +1,6 @@
 import { prisma } from '../../config/database';
 import { BID_AWAITING_ACTION, BID_STATUS, BOOKING_STATUS, ROLES } from '../../config/constants';
-import { emitTravelerBidUpdated } from '../../ws/socket.emitter';
+import { emitTravelerBidUpdated, emitTravelerBookingUpdated } from '../../ws/socket.emitter';
 import {
   AgencyBidFiltersInput,
   BidActorRole,
@@ -372,7 +372,10 @@ export class BidsService {
    * 3. Update the trip request status to ACCEPTED
    * 4. Create a booking from the accepted bid
    */
-  async acceptBid(bidId: string, userId: string): Promise<{ bidId: string; bookingId: string }> {
+  async acceptBid(
+    bidId: string,
+    userId: string,
+  ): Promise<{ bidId: string; bookingId: string; bookingUpdatedAt: Date }> {
     const bid = await prisma.bid.findUnique({
       where: { id: bidId },
       include: {
@@ -445,7 +448,7 @@ export class BidsService {
         },
       });
 
-      return { bidId: bid.id, bookingId: booking.id };
+      return { bidId: bid.id, bookingId: booking.id, bookingUpdatedAt: booking.updatedAt };
     });
 
     emitTravelerBidUpdated(userId, {
@@ -457,6 +460,18 @@ export class BidsService {
       status: BID_STATUS.ACCEPTED,
       awaitingActionBy: BID_AWAITING_ACTION.NONE,
       updatedAt: new Date().toISOString(),
+    });
+
+    emitTravelerBookingUpdated(userId, {
+      eventType: 'CREATED',
+      bookingId: result.bookingId,
+      userId,
+      agencyId: bid.agencyId,
+      agencyName: bid.agency.name,
+      tripRequestId: bid.tripRequestId,
+      packageId: null,
+      status: BOOKING_STATUS.CONFIRMED,
+      updatedAt: result.bookingUpdatedAt.toISOString(),
     });
 
     return result;

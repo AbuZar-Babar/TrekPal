@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { bookingsController } from './bookings.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
-import { requireAgencyOrAdmin } from '../../middlewares/roleGuard.middleware';
+import { requireAgencyOrAdmin, requireTraveler } from '../../middlewares/roleGuard.middleware';
 
 const router = Router();
 
@@ -21,6 +21,17 @@ router.get('/', bookingsController.getBookings.bind(bookingsController));
  * @access  Private (All authenticated roles)
  */
 router.get('/:id', bookingsController.getBookingById.bind(bookingsController));
+
+/**
+ * @route   POST /api/bookings/:id/cancel
+ * @desc    Cancel booking (traveler only, allowed until 3 days before start)
+ * @access  Private (Traveler)
+ */
+router.post(
+  '/:id/cancel',
+  requireTraveler,
+  bookingsController.cancelBooking.bind(bookingsController),
+);
 
 /**
  * @route   PUT /api/bookings/:id/status

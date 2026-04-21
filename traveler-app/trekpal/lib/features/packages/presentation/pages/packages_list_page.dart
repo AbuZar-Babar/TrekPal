@@ -232,6 +232,10 @@ class _OfferPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
+    final DateTime? startDate = offer.startDate;
+    final DateTime? endDate = startDate?.add(
+      Duration(days: offer.duration <= 1 ? 0 : offer.duration - 1),
+    );
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -271,6 +275,12 @@ class _OfferPreviewCard extends StatelessWidget {
                   _InfoChip(
                     icon: Icons.payments_outlined,
                     label: AppFormatters.currency(offer.price),
+                  ),
+                  _InfoChip(
+                    icon: Icons.event_outlined,
+                    label: startDate == null || endDate == null
+                        ? 'Date TBA'
+                        : AppFormatters.dateRange(startDate, endDate),
                   ),
                   _InfoChip(
                     icon: Icons.today_outlined,

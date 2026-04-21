@@ -1,11 +1,12 @@
 import { prisma } from '../../config/database';
 import { BOOKING_STATUS } from '../../config/constants';
 import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
+import { emitTravelerBookingUpdated } from '../../ws/socket.emitter';
 import { BookingParticipantPreview, BookingResponse } from './bookings.types';
 
 const bookingInclude = {
   user: { select: { name: true } },
-  agency: { select: { name: true } },
+  agency: { select: { name: true, phone: true } },
   tripRequest: { select: { destination: true } },
   package: {
     select: {
@@ -103,6 +104,7 @@ async function mapBooking(booking: any): Promise<BookingResponse> {
     userName: booking.user?.name ?? undefined,
     agencyId: booking.agencyId,
     agencyName: booking.agency?.name ?? undefined,
+    agencyPhone: booking.agency?.phone ?? null,
     tripRequestId: booking.tripRequestId,
     bidId: booking.bidId,
     hotelId: booking.hotelId,
@@ -237,6 +239,77 @@ export class BookingsService {
       where: { id },
       data: { status },
       include: bookingInclude,
+    });
+
+    emitTravelerBookingUpdated(updated.userId, {
+      eventType: 'STATUS_CHANGED',
+      bookingId: updated.id,
+      userId: updated.userId,
+      agencyId: updated.agencyId,
+      agencyName: updated.agency?.name ?? null,
+      packageId: updated.packageId ?? null,
+      tripRequestId: updated.tripRequestId ?? null,
+      status: updated.status,
+      updatedAt: updated.updatedAt.toISOString(),
+    });
+
+    return mapBooking(updated);
+  }
+
+  /**
+   * Cancel a booking (traveler only)
+   *
+   * Travelers can opt out only if the trip starts in >= 3 days.
+   */
+  async cancelTravelerBooking(
+    bookingId: string,
+    travelerId: string,
+  ): Promise<BookingResponse> {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: bookingInclude,
+    });
+
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+
+    if (booking.userId !== travelerId) {
+      throw new Error('Unauthorized: not your booking');
+    }
+
+    if (
+      booking.status !== BOOKING_STATUS.PENDING &&
+      booking.status !== BOOKING_STATUS.CONFIRMED
+    ) {
+      throw new Error('Only pending or confirmed bookings can be cancelled');
+    }
+
+    const now = Date.now();
+    const start = new Date(booking.startDate).getTime();
+    const msUntilStart = start - now;
+    const minLeadMs = 3 * 24 * 60 * 60 * 1000;
+
+    if (msUntilStart < minLeadMs) {
+      throw new Error('Trips can only be cancelled 3 days before the start date');
+    }
+
+    const updated = await prisma.booking.update({
+      where: { id: bookingId },
+      data: { status: BOOKING_STATUS.CANCELLED },
+      include: bookingInclude,
+    });
+
+    emitTravelerBookingUpdated(updated.userId, {
+      eventType: 'STATUS_CHANGED',
+      bookingId: updated.id,
+      userId: updated.userId,
+      agencyId: updated.agencyId,
+      agencyName: updated.agency?.name ?? null,
+      packageId: updated.packageId ?? null,
+      tripRequestId: updated.tripRequestId ?? null,
+      status: updated.status,
+      updatedAt: updated.updatedAt.toISOString(),
     });
 
     return mapBooking(updated);

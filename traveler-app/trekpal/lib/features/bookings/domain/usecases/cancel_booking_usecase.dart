@@ -1,9 +1,12 @@
-class CancelBookingUseCase {
-  const CancelBookingUseCase();
+import '../entities/booking_entities.dart';
+import '../repositories/bookings_repository.dart';
 
-  Never call(String bookingId) {
-    throw UnsupportedError(
-      'Traveler booking cancellation is not available in the current backend flow.',
-    );
+class CancelBookingUseCase {
+  const CancelBookingUseCase(this._repository);
+
+  final BookingsRepository _repository;
+
+  Future<BookingEntity> call(String bookingId) {
+    return _repository.cancelBooking(bookingId);
   }
 }

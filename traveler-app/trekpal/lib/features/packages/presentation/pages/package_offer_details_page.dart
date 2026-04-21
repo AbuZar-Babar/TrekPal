@@ -81,23 +81,9 @@ class _PackageOfferDetailsPageState extends State<PackageOfferDetailsPage> {
       return;
     }
 
-    final DateTime now = DateTime.now();
-    final DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: now.add(const Duration(days: 1)),
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365)),
-      helpText: 'Select start date',
-    );
-
-    if (selectedDate == null || !mounted) {
-      return;
-    }
-
     try {
       await packagesProvider.applyToPackage(
         packageId: offer.id,
-        startDate: selectedDate,
       );
       await Future.wait(<Future<void>>[
         packagesProvider.fetchPackages(force: true),
@@ -147,6 +133,10 @@ class _PackageOfferDetailsPageState extends State<PackageOfferDetailsPage> {
         packageBooking?.status == 'COMPLETED';
     final bool isPending = packageBooking?.status == 'PENDING';
     final bool isApplying = packagesProvider.applyingPackageId == offer.id;
+    final DateTime? startDate = offer.startDate;
+    final DateTime? endDate = startDate?.add(
+      Duration(days: offer.duration <= 1 ? 0 : offer.duration - 1),
+    );
 
     VoidCallback? primaryAction;
     String primaryLabel;
@@ -256,6 +246,12 @@ class _PackageOfferDetailsPageState extends State<PackageOfferDetailsPage> {
                     _InfoChip(
                       icon: Icons.payments_outlined,
                       label: AppFormatters.currency(offer.price),
+                    ),
+                    _InfoChip(
+                      icon: Icons.event_outlined,
+                      label: startDate == null || endDate == null
+                          ? 'Date TBA'
+                          : AppFormatters.dateRange(startDate, endDate),
                     ),
                     _InfoChip(
                       icon: Icons.today_outlined,

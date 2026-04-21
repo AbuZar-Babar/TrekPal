@@ -20,11 +20,9 @@ class PackagesRepositoryImpl implements PackagesRepository {
   @override
   Future<String> applyToPackage({
     required String packageId,
-    required DateTime startDate,
   }) {
     return _remoteDataSource.applyToPackage(
       packageId: packageId,
-      startDate: startDate,
     );
   }
 }
