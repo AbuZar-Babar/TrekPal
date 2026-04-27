@@ -164,6 +164,33 @@ export class AdminService {
     };
   }
 
+  private async mapHotelResponse(hotel: any): Promise<HotelResponse> {
+    const [businessDocUrl, locationImageUrl, images] = await Promise.all([
+      this.resolveKycUrl(hotel.businessDocUrl),
+      this.resolveKycUrl(hotel.locationImageUrl),
+      this.resolveMediaImages(hotel.images),
+    ]);
+
+    return {
+      id: hotel.id,
+      agencyId: hotel.agencyId,
+      agencyName: hotel.agencyName || null,
+      name: hotel.name,
+      description: hotel.description,
+      address: hotel.address,
+      city: hotel.city,
+      country: hotel.country,
+      rating: hotel.rating,
+      status: hotel.status,
+      images,
+      amenities: hotel.amenities,
+      createdAt: hotel.createdAt,
+      roomsCount: hotel.roomsCount || 0,
+      businessDocUrl,
+      locationImageUrl,
+    };
+  }
+
   private async getAgencyWithCounts(agencyId: string): Promise<any> {
     const agency = await prisma.agency.findUnique({
       where: { id: agencyId },
@@ -329,22 +356,7 @@ export class AdminService {
     ]);
 
     const hotelsResponse = await Promise.all(
-      hotels.map(async (hotel) => ({
-        id: hotel.id,
-        agencyId: hotel.agencyId,
-        agencyName: hotel.agencyName || '',
-        name: hotel.name,
-        description: hotel.description,
-        address: hotel.address,
-        city: hotel.city,
-        country: hotel.country,
-        rating: hotel.rating,
-        status: hotel.status,
-        images: await this.resolveMediaImages(hotel.images),
-        amenities: hotel.amenities,
-        createdAt: hotel.createdAt,
-        roomsCount: hotel.roomsCount || 0,
-      }))
+      hotels.map(async (hotel) => this.mapHotelResponse(hotel))
     );
 
     return {
@@ -359,56 +371,26 @@ export class AdminService {
    * Approve a hotel
    */
   async approveHotel(hotelId: string, _reason?: string): Promise<HotelResponse> {
-    const hotel = await this.hotelRepo.updateStatus(hotelId, APPROVAL_STATUS.APPROVED);
+    await this.hotelRepo.updateStatus(hotelId, APPROVAL_STATUS.APPROVED);
+    const hotel = await this.hotelRepo.findByIdWithRelations(hotelId);
+    if (!hotel) {
+      throw new Error('Hotel not found after update');
+    }
 
-    // Refetch with relations
-    const hotels = await this.hotelRepo.findMany({ page: 1, limit: 1 });
-    const hotelWithRelations = hotels.find(h => h.id === hotelId) || hotel;
-
-    return {
-      id: hotelWithRelations.id,
-      agencyId: hotelWithRelations.agencyId,
-      agencyName: (hotelWithRelations as any).agencyName || '',
-      name: hotelWithRelations.name,
-      description: hotelWithRelations.description,
-      address: hotelWithRelations.address,
-      city: hotelWithRelations.city,
-      country: hotelWithRelations.country,
-      rating: hotelWithRelations.rating,
-      status: hotelWithRelations.status,
-      images: await this.resolveMediaImages(hotelWithRelations.images),
-      amenities: hotelWithRelations.amenities,
-      createdAt: hotelWithRelations.createdAt,
-      roomsCount: (hotelWithRelations as any).roomsCount || 0,
-    };
+    return this.mapHotelResponse(hotel);
   }
 
   /**
    * Reject a hotel
    */
   async rejectHotel(hotelId: string, _reason?: string): Promise<HotelResponse> {
-    const hotel = await this.hotelRepo.updateStatus(hotelId, APPROVAL_STATUS.REJECTED);
+    await this.hotelRepo.updateStatus(hotelId, APPROVAL_STATUS.REJECTED);
+    const hotel = await this.hotelRepo.findByIdWithRelations(hotelId);
+    if (!hotel) {
+      throw new Error('Hotel not found after update');
+    }
 
-    // Refetch with relations
-    const hotels = await this.hotelRepo.findMany({ page: 1, limit: 1 });
-    const hotelWithRelations = hotels.find(h => h.id === hotelId) || hotel;
-
-    return {
-      id: hotelWithRelations.id,
-      agencyId: hotelWithRelations.agencyId,
-      agencyName: (hotelWithRelations as any).agencyName || '',
-      name: hotelWithRelations.name,
-      description: hotelWithRelations.description,
-      address: hotelWithRelations.address,
-      city: hotelWithRelations.city,
-      country: hotelWithRelations.country,
-      rating: hotelWithRelations.rating,
-      status: hotelWithRelations.status,
-      images: await this.resolveMediaImages(hotelWithRelations.images),
-      amenities: hotelWithRelations.amenities,
-      createdAt: hotelWithRelations.createdAt,
-      roomsCount: (hotelWithRelations as any).roomsCount || 0,
-    };
+    return this.mapHotelResponse(hotel);
   }
 
   /**

@@ -21,6 +21,9 @@ class TripRequestsRepositoryImpl implements TripRequestsRepository {
     required TripSpecsEntity tripSpecs,
     num? budget,
     String? description,
+    String? hotelId,
+    String? roomId,
+    String? vehicleId,
   }) {
     return _remoteDataSource.createTripRequest(
       destination: destination,
@@ -30,6 +33,9 @@ class TripRequestsRepositoryImpl implements TripRequestsRepository {
       tripSpecs: tripSpecs,
       budget: budget,
       description: description,
+      hotelId: hotelId,
+      roomId: roomId,
+      vehicleId: vehicleId,
     );
   }
 

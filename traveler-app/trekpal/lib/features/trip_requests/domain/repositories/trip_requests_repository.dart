@@ -11,6 +11,9 @@ abstract class TripRequestsRepository {
     required TripSpecsEntity tripSpecs,
     num? budget,
     String? description,
+    String? hotelId,
+    String? roomId,
+    String? vehicleId,
   });
 
   Future<List<BidEntity>> getBids(String tripRequestId);

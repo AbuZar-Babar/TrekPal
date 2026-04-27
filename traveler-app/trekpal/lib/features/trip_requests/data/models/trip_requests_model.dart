@@ -116,6 +116,12 @@ class TripRequestModel extends TripRequestEntity {
     super.userName,
     super.budget,
     super.description,
+    super.hotelId,
+    super.hotelName,
+    super.roomId,
+    super.roomType,
+    super.vehicleId,
+    super.vehicleModel,
   });
 
   factory TripRequestModel.fromJson(Map<String, dynamic> json) {
@@ -134,6 +140,12 @@ class TripRequestModel extends TripRequestEntity {
       bidsCount: json['bidsCount'] as int? ?? 0,
       createdAt: _parseTripDate(json['createdAt']),
       updatedAt: _parseTripDate(json['updatedAt']),
+      hotelId: json['hotel']?['id'] as String?,
+      hotelName: json['hotel']?['name'] as String?,
+      roomId: json['room']?['id'] as String?,
+      roomType: json['room']?['type'] as String?,
+      vehicleId: json['vehicle']?['id'] as String?,
+      vehicleModel: json['vehicle']?['model'] as String?,
     );
   }
 }

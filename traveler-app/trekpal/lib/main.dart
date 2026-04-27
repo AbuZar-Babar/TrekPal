@@ -43,6 +43,14 @@ import 'features/trip_requests/domain/usecases/get_trip_requests_usecase.dart';
 import 'features/trip_requests/domain/usecases/submit_counter_offer_usecase.dart';
 import 'features/trip_requests/domain/usecases/view_bids_usecase.dart';
 import 'features/trip_requests/presentation/providers/trip_requests_provider.dart';
+import 'features/hotels/data/datasources/hotels_remote_datasource.dart';
+import 'features/hotels/data/repositories/hotels_repository_impl.dart';
+import 'features/hotels/domain/usecases/get_hotels_usecase.dart';
+import 'features/hotels/presentation/providers/hotels_provider.dart';
+import 'features/transport/data/datasources/transport_remote_datasource.dart';
+import 'features/transport/data/repositories/transport_repository_impl.dart';
+import 'features/transport/domain/usecases/get_vehicles_usecase.dart';
+import 'features/transport/presentation/providers/transport_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,6 +80,12 @@ Future<void> main() async {
   );
   final packagesRepository = PackagesRepositoryImpl(
     PackagesRemoteDataSource(apiClient),
+  );
+  final hotelsRepository = HotelsRepositoryImpl(
+    remoteDataSource: HotelsRemoteDataSourceImpl(client: apiClient.client),
+  );
+  final transportRepository = TransportRepositoryImpl(
+    remoteDataSource: TransportRemoteDataSourceImpl(client: apiClient.client),
   );
 
   runApp(
@@ -103,6 +117,12 @@ Future<void> main() async {
         applyPackageUseCase: ApplyPackageUseCase(packagesRepository),
       ),
       chatProvider: ChatProvider(chatRepository: chatRepository),
+      hotelsProvider: HotelsProvider(
+        getHotelsUseCase: GetHotelsUseCase(hotelsRepository),
+      ),
+      transportProvider: TransportProvider(
+        getVehiclesUseCase: GetVehiclesUseCase(transportRepository),
+      ),
       marketplaceLiveService: marketplaceLiveService,
       themeController: themeController,
     ),
@@ -117,6 +137,8 @@ class TrekPalApp extends StatelessWidget {
     required this.bookingsProvider,
     required this.packagesProvider,
     required this.chatProvider,
+    required this.hotelsProvider,
+    required this.transportProvider,
     required this.marketplaceLiveService,
     required this.themeController,
   });
@@ -126,6 +148,8 @@ class TrekPalApp extends StatelessWidget {
   final BookingsProvider bookingsProvider;
   final PackagesProvider packagesProvider;
   final ChatProvider chatProvider;
+  final HotelsProvider hotelsProvider;
+  final TransportProvider transportProvider;
   final MarketplaceLiveService marketplaceLiveService;
   final ThemeController themeController;
   static final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
@@ -142,6 +166,8 @@ class TrekPalApp extends StatelessWidget {
         ChangeNotifierProvider<BookingsProvider>.value(value: bookingsProvider),
         ChangeNotifierProvider<PackagesProvider>.value(value: packagesProvider),
         ChangeNotifierProvider<ChatProvider>.value(value: chatProvider),
+        ChangeNotifierProvider<HotelsProvider>.value(value: hotelsProvider),
+        ChangeNotifierProvider<TransportProvider>.value(value: transportProvider),
         ChangeNotifierProvider<ThemeController>.value(value: themeController),
       ],
       child: Consumer<ThemeController>(

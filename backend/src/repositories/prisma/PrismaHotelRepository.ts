@@ -48,7 +48,7 @@ export class PrismaHotelRepository implements IHotelRepository {
 
         return hotels.map((hotel) => ({
             ...hotel,
-            agencyName: hotel.agency.name,
+            agencyName: hotel.agency?.name || null,
             roomsCount: hotel._count.rooms,
         }));
     }
@@ -99,5 +99,31 @@ export class PrismaHotelRepository implements IHotelRepository {
             where: { id },
             data: { status },
         });
+    }
+
+    async findByIdWithRelations(id: string): Promise<HotelWithRelations | null> {
+        const hotel = await prisma.hotel.findUnique({
+            where: { id },
+            include: {
+                agency: {
+                    select: {
+                        name: true,
+                    },
+                },
+                _count: {
+                    select: {
+                        rooms: true,
+                    },
+                },
+            },
+        });
+
+        if (!hotel) return null;
+
+        return {
+            ...hotel,
+            agencyName: hotel.agency?.name || null,
+            roomsCount: hotel._count.rooms,
+        };
     }
 }

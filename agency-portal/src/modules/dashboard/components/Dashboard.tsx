@@ -70,139 +70,31 @@ const Dashboard = () => {
         </h2>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="surface p-5">
-          <h3 className="mb-4 text-lg font-semibold text-[var(--text)]">Quick actions</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {actions.map((action) => (
-              <button
-                key={action.label}
-                type="button"
-                onClick={() => navigate(action.path)}
-                className="app-btn-secondary h-12 text-sm font-medium"
-              >
-                {action.label}
-              </button>
-            ))}
+      <section className="grid gap-4 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="surface flex flex-col items-center justify-center p-6 text-center">
+            <div className="text-3xl font-bold text-[var(--text)]">{stat.value}</div>
+            <div className="mt-2 text-sm font-medium text-[var(--text-soft)]">{stat.label}</div>
           </div>
-        </div>
+        ))}
+      </section>
 
-        <div className="surface p-5">
-          <h3 className="mb-4 text-lg font-semibold text-[var(--text)]">Overview</h3>
-          <div className="grid grid-cols-4 gap-3">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--panel-subtle)] p-3 text-center">
-                <div className="text-xl font-bold text-[var(--text)]">{stat.value}</div>
-                <div className="mt-1 text-xs text-[var(--text-soft)]">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+      <section className="surface p-6">
+        <h3 className="mb-6 text-lg font-semibold text-[var(--text)]">Quick Actions</h3>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {actions.map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              onClick={() => navigate(action.path)}
+              className="app-btn-secondary h-12 text-sm font-medium"
+            >
+              {action.label}
+            </button>
+          ))}
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="surface overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[var(--border)] p-4">
-            <h3 className="font-semibold text-[var(--text)]">Recent Bids</h3>
-            <button type="button" onClick={() => navigate('/trip-requests')} className="text-sm font-medium text-[var(--primary)] hover:underline">
-              View all
-            </button>
-          </div>
-          <div className="mobile-record-list p-4 md:p-5">
-            {recentBids.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state-title">No bid activity yet</div>
-                <div className="empty-state-copy">Traveler negotiations will appear here once your agency starts replying to requests.</div>
-              </div>
-            ) : (
-              recentBids.map((bid) => (
-                <div key={bid.id} className="record-card">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="record-title">{bid.tripDestination || 'Trip request'}</div>
-                      <div className="record-copy">{formatDateRange(bid.tripStartDate, bid.tripEndDate)}</div>
-                    </div>
-                    <span className={`app-pill ${
-                      bid.status === 'ACCEPTED'
-                        ? 'app-pill-success'
-                        : bid.status === 'REJECTED'
-                          ? 'app-pill-danger'
-                          : bid.awaitingActionBy === 'AGENCY'
-                            ? 'app-pill-warning'
-                            : 'app-pill-neutral'
-                    }`}>
-                      {bid.status === 'PENDING'
-                        ? (bid.awaitingActionBy === 'AGENCY' ? 'Agency turn' : 'Traveler review')
-                        : bid.status}
-                    </span>
-                  </div>
-                  <div className="record-grid">
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Quote</div>
-                      <div className="record-meta-value">{formatCurrency(bid.price)}</div>
-                    </div>
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Updated</div>
-                      <div className="record-meta-value">{formatDate(bid.updatedAt)}</div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="surface overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[var(--border)] p-4">
-            <h3 className="font-semibold text-[var(--text)]">Recent Bookings</h3>
-            <button type="button" onClick={() => navigate('/bookings')} className="text-sm font-medium text-[var(--primary)] hover:underline">
-              View all
-            </button>
-          </div>
-          <div className="mobile-record-list p-4 md:p-5">
-            {recentBookings.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state-title">No bookings yet</div>
-                <div className="empty-state-copy">Confirmed trips will show up here as travelers accept your offers.</div>
-              </div>
-            ) : (
-              recentBookings.map((booking) => (
-                <div key={booking.id} className="record-card">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="record-title">{booking.destination || 'Trip booking'}</div>
-                      <div className="record-copy">
-                        {booking.userName || 'Traveler'} · {formatDateRange(booking.startDate, booking.endDate)}
-                      </div>
-                    </div>
-                    <span className={`app-pill ${
-                      booking.status === 'CONFIRMED'
-                        ? 'app-pill-success'
-                        : booking.status === 'CANCELLED'
-                          ? 'app-pill-danger'
-                          : booking.status === 'COMPLETED'
-                            ? 'app-pill-neutral'
-                            : 'app-pill-warning'
-                    }`}>
-                      {booking.status}
-                    </span>
-                  </div>
-                  <div className="record-grid">
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Amount</div>
-                      <div className="record-meta-value">{formatCurrency(booking.totalAmount)}</div>
-                    </div>
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Updated</div>
-                      <div className="record-meta-value">{formatDate(booking.updatedAt)}</div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

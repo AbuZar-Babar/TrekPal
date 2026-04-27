@@ -5,6 +5,7 @@ export const hotelFiltersSchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
   search: z.string().trim().min(1).optional(),
+  discovery: z.coerce.boolean().optional(),
 });
 
 export const createHotelSchema = z.object({
@@ -15,7 +16,7 @@ export const createHotelSchema = z.object({
   country: z.string().trim().min(1, 'Country is required'),
   latitude: z.number().finite().optional(),
   longitude: z.number().finite().optional(),
-  images: z.array(z.string().url()).default([]),
+  images: z.array(z.string()).default([]),
   amenities: z.array(z.string().trim().min(1)).default([]),
 });
 
@@ -30,7 +31,7 @@ export type UpdateHotelInput = z.infer<typeof updateHotelSchema>;
 
 export interface HotelResponse {
   id: string;
-  agencyId: string;
+  agencyId: string | null;
   name: string;
   description: string | null;
   address: string;
@@ -42,6 +43,10 @@ export interface HotelResponse {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   images: string[];
   amenities: string[];
+  businessDocUrl?: string | null;
+  locationImageUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
+  rooms?: any[];
+  services?: any[];
 }

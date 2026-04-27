@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { RootState } from '../../../store';
-import { formatDate } from '../../../shared/utils/formatters';
+import { formatDate, formatCurrency } from '../../../shared/utils/formatters';
 import { deleteHotel, fetchHotels } from '../store/hotelsSlice';
 
 const HotelList = () => {
@@ -11,10 +11,14 @@ const HotelList = () => {
   const navigate = useNavigate();
   const { hotels, loading, error } = useSelector((state: RootState) => state.hotels);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'my' | 'marketplace'>('marketplace');
 
   useEffect(() => {
-    dispatch(fetchHotels({ limit: 100 }) as any);
-  }, [dispatch]);
+    dispatch(fetchHotels({ 
+      limit: 100, 
+      discovery: activeTab === 'marketplace' 
+    }) as any);
+  }, [dispatch, activeTab]);
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this hotel?')) {
@@ -23,19 +27,41 @@ const HotelList = () => {
   };
 
   const filtered = hotels.filter((hotel) => {
-    const matchesSearch =
-      hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      hotel.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      hotel.country?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+    const query = searchQuery.toLowerCase();
+    return (
+      hotel.name.toLowerCase().includes(query) ||
+      hotel.city?.toLowerCase().includes(query) ||
+      hotel.country?.toLowerCase().includes(query)
+    );
   });
-
-
 
   return (
     <div className="space-y-6">
-      <section className="mb-4">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">Hotel Inventory</h2>
+      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">Hotels</h2>
+        
+        <div className="flex rounded-xl bg-[var(--surface)] p-1 border border-[var(--border)]">
+          <button
+            onClick={() => setActiveTab('marketplace')}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+              activeTab === 'marketplace' 
+                ? 'bg-[var(--primary)] text-white shadow-sm' 
+                : 'text-[var(--text-soft)] hover:text-[var(--text)]'
+            }`}
+          >
+            Marketplace
+          </button>
+          <button
+            onClick={() => setActiveTab('my')}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+              activeTab === 'my' 
+                ? 'bg-[var(--primary)] text-white shadow-sm' 
+                : 'text-[var(--text-soft)] hover:text-[var(--text)]'
+            }`}
+          >
+            My Inventory
+          </button>
+        </div>
       </section>
 
       <section className="surface">
@@ -46,25 +72,27 @@ const HotelList = () => {
             </svg>
             <input
               type="text"
-              placeholder="Search by hotel, city, or country"
+              placeholder="Filter by hotel, city, or country"
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="border-0 bg-transparent p-0 text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:outline-none focus:ring-0"
             />
           </div>
 
-          <button
-            type="button"
-            onClick={() => navigate('/hotels/new')}
-            className="app-btn-primary h-11 px-5 text-sm"
-          >
-            Add hotel
-          </button>
+          {activeTab === 'my' && (
+            <button
+              type="button"
+              onClick={() => navigate('/hotels/new')}
+              className="app-btn-primary h-11 px-5 text-sm"
+            >
+              Add Property
+            </button>
+          )}
         </div>
       </section>
 
       {error && (
-        <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+        <div className="rounded-xl border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {error}
         </div>
       )}
@@ -72,145 +100,104 @@ const HotelList = () => {
       {loading ? (
         <div className="surface px-6 py-14 text-center">
           <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
-          <p className="mt-4 text-sm text-[var(--text-muted)]">Loading hotels...</p>
+          <p className="mt-4 text-sm text-[var(--text-muted)]">Fetching properties...</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="surface px-6 py-14 text-center">
           <div className="text-lg font-semibold tracking-tight text-[var(--text)]">
-            {searchQuery ? 'No hotels match the current search' : 'No hotels listed yet'}
+            {activeTab === 'my' ? 'No local inventory found' : 'No properties in marketplace'}
           </div>
-          <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
-            {searchQuery
-              ? 'Adjust the search terms to widen the result set.'
-              : 'Create your first property listing to start packaging stay-inclusive offers.'}
+          <p className="mt-2 text-sm text-[var(--text-muted)]">
+            {activeTab === 'my' 
+              ? 'List your properties to manage them here.' 
+              : 'Independent hotels will appear here once they are approved.'}
           </p>
         </div>
       ) : (
-        <>
-          <div className="mobile-record-list lg:hidden">
-            {filtered.map((hotel) => (
-              <article key={hotel.id} className="record-card">
-                <div className="record-grid">
-                  <div>
-                    <div className="text-base font-semibold tracking-tight text-[var(--text)]">
-                      {hotel.name}
-                    </div>
-                    <div className="mt-1 text-sm text-[var(--text-muted)]">
-                      {hotel.city}, {hotel.country}
-                    </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((hotel) => (
+            <article key={hotel.id} className="surface flex flex-col overflow-hidden">
+              <div className="aspect-video w-full bg-[var(--panel-subtle)]">
+                {hotel.images?.[0] ? (
+                  <img 
+                    src={hotel.images[0]} 
+                    alt={hotel.name} 
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-[var(--text-muted)]">
+                    No image
                   </div>
-                  <div className="text-right text-xs text-[var(--text-soft)]">
-                    Updated {formatDate(hotel.updatedAt)}
-                  </div>
-                </div>
-
-                {hotel.description && (
-                  <p className="text-sm leading-6 text-[var(--text-muted)]">{hotel.description}</p>
                 )}
-
-                <div className="space-y-2 text-sm text-[var(--text-muted)]">
-                  <div>{hotel.address}</div>
-                  <div>{hotel.images.length} image{hotel.images.length === 1 ? '' : 's'} attached</div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {hotel.amenities.slice(0, 4).map((amenity) => (
-                    <span key={amenity} className="app-pill app-pill-neutral">
-                      {amenity}
-                    </span>
-                  ))}
-                  {hotel.amenities.length > 4 && (
-                    <span className="app-pill app-pill-neutral">+{hotel.amenities.length - 4}</span>
+              </div>
+              
+              <div className="flex flex-1 flex-col p-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[var(--text)]">{hotel.name}</h3>
+                    <p className="text-sm text-[var(--text-soft)]">{hotel.city}, {hotel.country}</p>
+                  </div>
+                  {hotel.rating && (
+                    <div className="flex items-center gap-1 rounded-lg bg-[var(--panel-subtle)] px-2 py-1 text-xs font-bold text-[var(--text)]">
+                      <span>★</span>
+                      <span>{hotel.rating}</span>
+                    </div>
                   )}
                 </div>
 
-                <div className="record-actions">
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/hotels/${hotel.id}/edit`)}
-                    className="app-btn-secondary h-10 px-4 text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(hotel.id)}
-                    className="app-btn-secondary h-10 px-4 text-sm text-[var(--danger-text)]"
-                  >
-                    Delete
-                  </button>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {hotel.amenities.slice(0, 3).map((amenity) => (
+                    <span key={amenity} className="rounded-md bg-[var(--panel-subtle)] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--text-soft)]">
+                      {amenity}
+                    </span>
+                  ))}
+                  {hotel.amenities.length > 3 && (
+                    <span className="text-[10px] text-[var(--text-muted)]">+{hotel.amenities.length - 3} more</span>
+                  )}
                 </div>
-              </article>
-            ))}
-          </div>
 
-          <div className="surface hidden overflow-x-auto lg:block">
-            <table className="app-table min-w-[1100px]">
-              <thead>
-                <tr>
-                  <th>Property</th>
-                  <th>Location</th>
-                  <th>Amenities</th>
-                  <th>Images</th>
-                  <th>Updated</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((hotel) => (
-                  <tr key={hotel.id}>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">{hotel.name}</div>
-                      {hotel.description && (
-                        <div className="mt-1 text-sm leading-7 text-[var(--text-muted)]">
-                          {hotel.description}
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">
-                        {hotel.city}, {hotel.country}
+                <div className="mt-auto pt-6 flex items-center justify-between">
+                  <div>
+                    {hotel.rooms?.[0] && (
+                      <div className="text-xs text-[var(--text-muted)]">
+                        Starting from
+                        <span className="ml-1 text-sm font-bold text-[var(--text)]">
+                          {formatCurrency(hotel.rooms[0].price)}
+                        </span>
                       </div>
-                      <div className="mt-1 text-sm text-[var(--text-muted)]">{hotel.address}</div>
-                    </td>
-                    <td>
-                      <div className="flex flex-wrap gap-2">
-                        {hotel.amenities.slice(0, 4).map((amenity) => (
-                          <span key={amenity} className="app-pill app-pill-neutral">
-                            {amenity}
-                          </span>
-                        ))}
-                        {hotel.amenities.length > 4 && (
-                          <span className="app-pill app-pill-neutral">+{hotel.amenities.length - 4}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td>{hotel.images.length}</td>
-                    <td>{formatDate(hotel.updatedAt)}</td>
-                    <td>
-                      <div className="flex flex-wrap gap-2">
+                    )}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    {activeTab === 'my' ? (
+                      <>
                         <button
-                          type="button"
                           onClick={() => navigate(`/hotels/${hotel.id}/edit`)}
-                          className="app-btn-secondary h-10 px-4 text-sm"
+                          className="h-9 px-4 text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-subtle)] rounded-lg transition-colors"
                         >
                           Edit
                         </button>
                         <button
-                          type="button"
                           onClick={() => handleDelete(hotel.id)}
-                          className="app-btn-secondary h-10 px-4 text-sm text-[var(--danger-text)]"
+                          className="h-9 px-4 text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] rounded-lg transition-colors"
                         >
                           Delete
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => navigate(`/hotels/${hotel.id}`)}
+                        className="app-btn-secondary h-9 px-4 text-xs"
+                      >
+                        Details
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       )}
     </div>
   );

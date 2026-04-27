@@ -7,10 +7,12 @@ import {
   UpdateHotelInput,
 } from './hotels.types';
 import { normalizeMediaStoragePaths, resolveMediaUrls } from '../../services/media-storage.service';
+import { roomAvailabilityService } from './room-availability.service';
 
 const hotelSelect = {
   id: true,
   agencyId: true,
+  authUid: true,
   name: true,
   description: true,
   address: true,
@@ -22,13 +24,34 @@ const hotelSelect = {
   status: true,
   images: true,
   amenities: true,
+  businessDocUrl: true,
+  locationImageUrl: true,
   createdAt: true,
   updatedAt: true,
+  rooms: {
+    select: {
+      id: true,
+      type: true,
+      price: true,
+      capacity: true,
+      quantity: true,
+      amenities: true,
+      images: true,
+    },
+  },
+  services: {
+    select: {
+      id: true,
+      name: true,
+      price: true,
+    },
+  },
 } as const;
 
 const mapHotel = async (hotel: any): Promise<HotelResponse> => ({
   id: hotel.id,
   agencyId: hotel.agencyId,
+  authUid: hotel.authUid,
   name: hotel.name,
   description: hotel.description,
   address: hotel.address,
@@ -40,27 +63,39 @@ const mapHotel = async (hotel: any): Promise<HotelResponse> => ({
   status: hotel.status,
   images: await resolveMediaUrls(hotel.images),
   amenities: hotel.amenities,
+  businessDocUrl: hotel.businessDocUrl,
+  locationImageUrl: hotel.locationImageUrl,
   createdAt: hotel.createdAt,
   updatedAt: hotel.updatedAt,
+  rooms: hotel.rooms || [],
+  services: hotel.services || [],
 });
 
 export class HotelsService {
   async getHotels(
     filters: HotelFiltersInput,
-    actor: { role: string; agencyId?: string }
+    actor: { role: string; agencyId?: string; authUid?: string }
   ): Promise<{ hotels: HotelResponse[]; total: number; page: number; limit: number }> {
     const { page, limit, status, search } = filters;
     const skip = (page - 1) * limit;
 
     const where: any = {};
 
-    if (actor.role === 'AGENCY') {
+    // Logic for finding hotels:
+    // 1. If it's a HOTEL role, show only their own hotel
+    // 2. If it's an AGENCY role and not discovery, show only their own hotels
+    // 3. If discovery is true, show all APPROVED hotels
+    if (actor.role === 'HOTEL') {
+      where.authUid = actor.authUid;
+    } else if (actor.role === 'AGENCY' && !filters.discovery) {
       where.agencyId = actor.agencyId;
     }
 
-    if (status) {
+    if (filters.discovery) {
+      where.status = APPROVAL_STATUS.APPROVED;
+    } else if (status) {
       where.status = status;
-    } else if (actor.role !== 'AGENCY') {
+    } else if (actor.role !== 'AGENCY' && actor.role !== 'HOTEL') {
       where.status = APPROVAL_STATUS.APPROVED;
     }
 
@@ -91,11 +126,27 @@ export class HotelsService {
     };
   }
 
-  async getHotelById(id: string, actor: { role: string; agencyId?: string }): Promise<HotelResponse> {
+  async getHotelById(id: string, actor: { role: string; agencyId?: string; authUid?: string }): Promise<HotelResponse> {
     const where: any = { id };
 
     if (actor.role === 'AGENCY') {
-      where.agencyId = actor.agencyId;
+      // Agencies can see any hotel if it's approved (discovery) or if they own it
+      // But for "My Inventory", they should only see theirs. 
+      // This generic getById usually is for details, so we allow seeing any if approved.
+      const hotel = await prisma.hotel.findUnique({ where, select: hotelSelect });
+      if (!hotel) throw new Error('Hotel not found');
+      
+      const isOwner = hotel.agencyId === actor.agencyId;
+      const isApproved = hotel.status === APPROVAL_STATUS.APPROVED;
+      
+      if (!isOwner && !isApproved) {
+        throw new Error('Unauthorized');
+      }
+      return await mapHotel(hotel);
+    }
+
+    if (actor.role === 'HOTEL') {
+      where.authUid = actor.authUid;
     }
 
     const hotel = await prisma.hotel.findFirst({
@@ -110,10 +161,11 @@ export class HotelsService {
     return await mapHotel(hotel);
   }
 
-  async createHotel(agencyId: string, input: CreateHotelInput): Promise<HotelResponse> {
+  async createHotel(agencyId: string | null, input: CreateHotelInput, authUid?: string): Promise<HotelResponse> {
     const hotel = await prisma.hotel.create({
       data: {
-        agencyId,
+        agencyId: agencyId || null,
+        authUid: authUid || null,
         name: input.name,
         description: input.description ?? null,
         address: input.address,
@@ -123,7 +175,9 @@ export class HotelsService {
         longitude: input.longitude ?? null,
         images: normalizeMediaStoragePaths(input.images ?? []),
         amenities: input.amenities ?? [],
-        status: APPROVAL_STATUS.APPROVED,
+        businessDocUrl: input.businessDocUrl ?? null,
+        locationImageUrl: input.locationImageUrl ?? null,
+        status: agencyId ? APPROVAL_STATUS.APPROVED : APPROVAL_STATUS.PENDING, // Hotels signed up by self need admin approval
       },
       select: hotelSelect,
     });
@@ -131,16 +185,7 @@ export class HotelsService {
     return await mapHotel(hotel);
   }
 
-  async updateHotel(id: string, agencyId: string, input: UpdateHotelInput): Promise<HotelResponse> {
-    const existing = await prisma.hotel.findFirst({
-      where: { id, agencyId },
-      select: { id: true },
-    });
-
-    if (!existing) {
-      throw new Error('Hotel not found');
-    }
-
+  async updateHotel(id: string, input: UpdateHotelInput): Promise<HotelResponse> {
     const hotel = await prisma.hotel.update({
       where: { id },
       data: {
@@ -153,7 +198,7 @@ export class HotelsService {
         ...(input.longitude !== undefined ? { longitude: input.longitude ?? null } : {}),
         ...(input.images !== undefined ? { images: normalizeMediaStoragePaths(input.images) } : {}),
         ...(input.amenities !== undefined ? { amenities: input.amenities } : {}),
-        status: APPROVAL_STATUS.APPROVED,
+        ...(input.status !== undefined ? { status: input.status } : {}),
       },
       select: hotelSelect,
     });
@@ -161,19 +206,86 @@ export class HotelsService {
     return await mapHotel(hotel);
   }
 
-  async deleteHotel(id: string, agencyId: string): Promise<void> {
-    const existing = await prisma.hotel.findFirst({
-      where: { id, agencyId },
-      select: { id: true },
-    });
-
-    if (!existing) {
-      throw new Error('Hotel not found');
-    }
-
+  async deleteHotel(id: string): Promise<void> {
     await prisma.hotel.delete({
       where: { id },
     });
+  }
+
+  // --- Room Management ---
+
+  async addRoom(hotelId: string, input: any) {
+    const room = await prisma.room.create({
+      data: {
+        hotelId,
+        type: input.type,
+        price: input.price,
+        capacity: input.capacity,
+        quantity: input.quantity,
+        amenities: input.amenities ?? [],
+        images: normalizeMediaStoragePaths(input.images ?? []),
+      },
+    });
+
+    // Initialize availability
+    await roomAvailabilityService.initializeAvailability(room.id, room.quantity);
+    return room;
+  }
+
+  async updateRoom(roomId: string, input: any) {
+    const oldRoom = await prisma.room.findUnique({ where: { id: roomId } });
+    if (!oldRoom) throw new Error('Room not found');
+
+    const room = await prisma.room.update({
+      where: { id: roomId },
+      data: {
+        ...(input.type !== undefined ? { type: input.type } : {}),
+        ...(input.price !== undefined ? { price: input.price } : {}),
+        ...(input.capacity !== undefined ? { capacity: input.capacity } : {}),
+        ...(input.quantity !== undefined ? { quantity: input.quantity } : {}),
+        ...(input.amenities !== undefined ? { amenities: input.amenities } : {}),
+        ...(input.images !== undefined ? { images: normalizeMediaStoragePaths(input.images) } : {}),
+      },
+    });
+
+    // If quantity changed, re-initialize availability
+    // Note: In a production app, we'd need to be careful not to overwrite booked slots
+    // For now, we'll just update the total available count for future dates
+    if (input.quantity !== undefined && input.quantity !== oldRoom.quantity) {
+      await roomAvailabilityService.initializeAvailability(room.id, room.quantity);
+    }
+
+    return room;
+  }
+
+  async deleteRoom(roomId: string) {
+    await prisma.room.delete({ where: { id: roomId } });
+  }
+
+  // --- Service Management ---
+
+  async addService(hotelId: string, input: any) {
+    return await prisma.hotelService.create({
+      data: {
+        hotelId,
+        name: input.name,
+        price: input.price ?? 0,
+      },
+    });
+  }
+
+  async updateService(serviceId: string, input: any) {
+    return await prisma.hotelService.update({
+      where: { id: serviceId },
+      data: {
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.price !== undefined ? { price: input.price } : {}),
+      },
+    });
+  }
+
+  async deleteService(serviceId: string) {
+    await prisma.hotelService.delete({ where: { id: serviceId } });
   }
 }
 

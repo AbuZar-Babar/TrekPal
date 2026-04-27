@@ -15,7 +15,7 @@ export interface HotelFilters {
  * Hotel with additional computed fields
  */
 export interface HotelWithRelations extends Hotel {
-    agencyName?: string;
+    agencyName?: string | null;
     roomsCount?: number;
 }
 
@@ -38,4 +38,9 @@ export interface IHotelRepository extends IRepository<Hotel> {
      * Update hotel status (approve/reject)
      */
     updateStatus(id: string, status: 'APPROVED' | 'REJECTED'): Promise<Hotel>;
+
+    /**
+     * Find a single hotel by ID with relations
+     */
+    findByIdWithRelations(id: string): Promise<HotelWithRelations | null>;
 }

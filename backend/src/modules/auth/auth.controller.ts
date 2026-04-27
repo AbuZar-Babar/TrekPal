@@ -43,6 +43,18 @@ const agencyApplicationFileFields: AgencyApplicationFileField[] = [
   'additionalSupportingDocument',
 ];
 
+type HotelRegistrationFileField = 'locationImage' | 'businessDoc';
+
+const hotelDocumentLabels: Record<HotelRegistrationFileField, string> = {
+  locationImage: 'location image',
+  businessDoc: 'business documentation',
+};
+
+const hotelRegistrationFileFields: HotelRegistrationFileField[] = [
+  'locationImage',
+  'businessDoc',
+];
+
 const requiredAgencyFileFields = (input: AgencyRegisterInput): AgencyApplicationFileField[] => {
   const required: AgencyApplicationFileField[] = [
     'cnicImage',
@@ -205,6 +217,90 @@ export class AuthController {
         // Prisma unique constraint violation
         const field = error.meta?.target?.[0] || 'field';
         sendError(res, `A record with this ${field} already exists`, 409);
+      } else {
+        sendError(res, error.message || 'Registration failed', 400);
+      }
+    }
+  }
+
+  /**
+   * Login user, agency, or admin
+   * POST /api/auth/login
+   * 
+   * Option 1: Send Supabase token
+   * Request body: { "supabaseToken": "supabase_access_token" }
+   * 
+   * Option 2: Send email/password
+   * Request body: { "email": "user@example.com", "password": "password123" }
+   * 
+   * @example
+   * Request body (with Supabase token):
+   * {
+   *   "supabaseToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   * }
+   */
+  async registerHotel(req: AuthRequest, res: Response): Promise<void> {
+    const uploadedObjectPaths: string[] = [];
+    try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const input = req.body;
+      
+      const requiredFiles: HotelRegistrationFileField[] = ['locationImage', 'businessDoc'];
+      const missingRequiredFiles = requiredFiles.filter(
+        (fieldName) => !files?.[fieldName]?.[0]
+      );
+
+      if (missingRequiredFiles.length > 0) {
+        sendError(
+          res,
+          `Missing required documents: ${missingRequiredFiles.map((field) => hotelDocumentLabels[field]).join(', ')}`,
+          400
+        );
+        return;
+      }
+
+      const uploadBatchId = `hotels-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const uploadedDocuments: Partial<Record<HotelRegistrationFileField, string>> = {};
+
+      for (const fieldName of hotelRegistrationFileFields) {
+        const file = files?.[fieldName]?.[0];
+        if (!file) continue;
+
+        const originalExt = path.extname(file.originalname || '').toLowerCase();
+        const extension = originalExt || inferKycExtensionFromMimeType(file.mimetype);
+        const objectPath = `hotels/pending/${uploadBatchId}/${fieldName}${extension}`;
+
+        await uploadKycFile(
+          file.buffer,
+          resolveKycMimeType(file.mimetype, file.originalname),
+          objectPath,
+        );
+        uploadedObjectPaths.push(objectPath);
+        uploadedDocuments[fieldName] = objectPath;
+      }
+
+      const result = await authService.registerHotel({
+        ...input,
+        locationImageUrl: uploadedDocuments.locationImage,
+        businessDocUrl: uploadedDocuments.businessDoc,
+      });
+
+      sendSuccess(
+        res,
+        result,
+        'Hotel registered successfully. Pending admin approval.',
+        201
+      );
+    } catch (error: any) {
+      if (uploadedObjectPaths.length > 0) {
+        await Promise.allSettled(
+          uploadedObjectPaths.map((objectPath) => deleteKycFile(objectPath))
+        );
+      }
+
+      console.error('[Auth Controller] registerHotel error:', error.message || error);
+      if (error.code === 'auth/email-already-exists') {
+        sendError(res, 'Email already registered', 409);
       } else {
         sendError(res, error.message || 'Registration failed', 400);
       }

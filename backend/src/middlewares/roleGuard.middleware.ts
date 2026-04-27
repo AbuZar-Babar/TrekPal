@@ -43,7 +43,16 @@ export const requireAgency = requireRole(ROLES.AGENCY);
 export const requireAdmin = requireRole(ROLES.ADMIN);
 
 /**
+ * Require hotel role
+ */
+export const requireHotel = requireRole(ROLES.HOTEL);
+
+/**
  * Require agency or admin role
  */
 export const requireAgencyOrAdmin = requireRole(ROLES.AGENCY, ROLES.ADMIN);
 
+/**
+ * Require hotel, agency, or admin role
+ */
+export const requireHotelAgencyOrAdmin = requireRole(ROLES.HOTEL, ROLES.AGENCY, ROLES.ADMIN);

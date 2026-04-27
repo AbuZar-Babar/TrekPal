@@ -12,33 +12,77 @@ import {
 
 const tripRequestInclude = {
   user: { select: { name: true } },
+  hotel: { select: { id: true, name: true, city: true } },
+  room: { select: { id: true, type: true, price: true } },
+  vehicle: {
+    select: {
+      id: true,
+      type: true,
+      make: true,
+      model: true,
+      pricePerDay: true,
+    },
+  },
   _count: { select: { bids: true } },
 };
-
-function mapTripRequest(tripRequest: any): TripRequestResponse {
-  return {
-    id: tripRequest.id,
-    userId: tripRequest.userId,
-    userName: tripRequest.user.name ?? undefined,
-    destination: tripRequest.destination,
-    startDate: tripRequest.startDate,
-    endDate: tripRequest.endDate,
-    budget: tripRequest.budget,
-    travelers: tripRequest.travelers,
-    description: tripRequest.description,
-    tripSpecs: normalizeTripSpecs(tripRequest.tripSpecs),
-    status: tripRequest.status,
-    bidsCount: tripRequest._count.bids,
-    createdAt: tripRequest.createdAt,
-    updatedAt: tripRequest.updatedAt,
-  };
-}
 
 /**
  * Trip Requests Service
  * Handles trip request business logic
  */
 export class TripRequestsService {
+  private async mapTripRequest(tripRequest: any): Promise<TripRequestResponse> {
+    let roomAvailabilityCount: number | undefined;
+
+    if (tripRequest.roomId && tripRequest.startDate && tripRequest.endDate) {
+      const availabilities = await prisma.roomAvailability.findMany({
+        where: {
+          roomId: tripRequest.roomId,
+          date: {
+            gte: tripRequest.startDate,
+            lte: tripRequest.endDate,
+          },
+        },
+      });
+
+      if (availabilities.length === 0) {
+        const room = await prisma.room.findUnique({
+          where: { id: tripRequest.roomId },
+          select: { quantity: true },
+        });
+        roomAvailabilityCount = room?.quantity ?? 0;
+      } else {
+        roomAvailabilityCount = Math.min(
+          ...availabilities.map((a) => a.available),
+        );
+      }
+    }
+
+    return {
+      id: tripRequest.id,
+      userId: tripRequest.userId,
+      userName: tripRequest.user.name ?? undefined,
+      hotelId: tripRequest.hotelId,
+      roomId: tripRequest.roomId,
+      vehicleId: tripRequest.vehicleId,
+      hotel: tripRequest.hotel,
+      room: tripRequest.room,
+      roomAvailabilityCount,
+      vehicle: tripRequest.vehicle,
+      destination: tripRequest.destination,
+      startDate: tripRequest.startDate,
+      endDate: tripRequest.endDate,
+      budget: tripRequest.budget,
+      travelers: tripRequest.travelers,
+      description: tripRequest.description,
+      tripSpecs: normalizeTripSpecs(tripRequest.tripSpecs),
+      status: tripRequest.status,
+      bidsCount: tripRequest._count.bids,
+      createdAt: tripRequest.createdAt,
+      updatedAt: tripRequest.updatedAt,
+    };
+  }
+
   /**
    * Create a new trip request (traveler only)
    */
@@ -60,12 +104,15 @@ export class TripRequestsService {
         travelers: input.travelers ?? 1,
         description: input.description ?? null,
         tripSpecs: tripSpecsToJson(input.tripSpecs),
+        hotelId: input.hotelId ?? null,
+        roomId: input.roomId ?? null,
+        vehicleId: input.vehicleId ?? null,
         status: 'PENDING',
       },
       include: tripRequestInclude,
     });
 
-    return mapTripRequest(tripRequest);
+    return await this.mapTripRequest(tripRequest);
   }
 
   /**
@@ -120,7 +167,9 @@ export class TripRequestsService {
     ]);
 
     return {
-      tripRequests: tripRequests.map(mapTripRequest),
+      tripRequests: await Promise.all(
+        tripRequests.map((tr) => this.mapTripRequest(tr)),
+      ),
       total,
       page,
       limit,
@@ -140,7 +189,7 @@ export class TripRequestsService {
       throw new Error('Trip request not found');
     }
 
-    return mapTripRequest(tripRequest);
+    return this.mapTripRequest(tripRequest);
   }
 
   /**

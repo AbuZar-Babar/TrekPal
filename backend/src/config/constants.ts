@@ -5,6 +5,8 @@ export const ROLES = {
   TRAVELER: 'TRAVELER',
   AGENCY: 'AGENCY',
   ADMIN: 'ADMIN',
+  HOTEL: 'HOTEL',
+
 } as const;
 
 export type UserRole = typeof ROLES[keyof typeof ROLES];

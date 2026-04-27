@@ -274,6 +274,36 @@ const BidForm = ({
                     <span>Bid competition</span>
                     <span className="text-right font-semibold text-white">{tripRequest.bidsCount} thread(s)</span>
                   </div>
+                  {tripRequest.hotel && (
+                    <div className="mt-4 border-t border-white/10 pt-4 space-y-3">
+                      <div className="app-section-label text-white/40 text-[10px]">Hotel Base Pricing</div>
+                      <div className="flex justify-between gap-4 text-white/72">
+                        <span>Hotel</span>
+                        <span className="text-right font-semibold text-white">{tripRequest.hotel.name}</span>
+                      </div>
+                      <div className="flex justify-between gap-4 text-white/72">
+                        <span>Room Type</span>
+                        <span className="text-right font-semibold text-white">{tripRequest.room?.type || 'Standard'}</span>
+                      </div>
+                      <div className="flex justify-between gap-4 text-white/72">
+                        <span>Base Price/Night</span>
+                        <span className="text-right font-semibold text-white">{formatCurrency(tripRequest.room?.price || 0)}</span>
+                      </div>
+                      <div className="flex justify-between gap-4 pt-1 text-white/90 border-t border-white/5">
+                        <span>Total Hotel Cost</span>
+                        <span className="text-right font-bold text-[var(--primary)]">
+                          {formatCurrency(
+                            (tripRequest.room?.price || 0) * 
+                            (tripRequest.tripSpecs.roomCount || 1) * 
+                            Math.max(1, Math.ceil((new Date(tripRequest.endDate).getTime() - new Date(tripRequest.startDate).getTime()) / (1000 * 60 * 60 * 24)))
+                          )}
+                        </span>
+                      </div>
+                      <p className="text-[10px] leading-relaxed text-white/40 italic">
+                        * This is the hotel's direct rate. Add your agency service fee on top when submitting your offer.
+                      </p>
+                    </div>
+                  )}
                   {existingBid && (
                     <>
                       <div className="flex justify-between gap-4 text-white/72">

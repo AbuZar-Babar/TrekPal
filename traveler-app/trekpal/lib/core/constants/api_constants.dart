@@ -30,6 +30,8 @@ class ApiConstants {
   static const String bookings = '/bookings';
   static const String packages = '/packages';
   static const String chat = '/chat';
+  static const String hotels = '/hotels';
+  static const String transport = '/transport';
 
   static String tripRequestById(String id) => '$tripRequests/$id';
   static String tripRequestBids(String tripRequestId) =>

@@ -51,8 +51,8 @@ export interface Agency {
 
 export interface Hotel {
   id: string;
-  agencyId: string;
-  agencyName: string;
+  agencyId: string | null;
+  agencyName: string | null;
   name: string;
   description: string | null;
   address: string;
@@ -64,6 +64,8 @@ export interface Hotel {
   amenities: string[];
   createdAt: string;
   roomsCount?: number;
+  businessDocUrl?: string | null;
+  locationImageUrl?: string | null;
 }
 
 export interface Vehicle {

@@ -83,23 +83,6 @@ export class TransportController {
       }
 
       const result = await transportService.createVehicle(agency.id, req.body);
-      sendSuccess(res, result, 'Vehicle created successfully', 201);
-    } catch (error: any) {
-      sendError(res, error.message || 'Failed to create vehicle', 400);
-    }
-  }
-
-  /**
-   * Get all vehicles for the agency
-   * GET /api/transport
-   */
-  async getAgencyVehicles(req: AuthRequest, res: Response): Promise<void> {
-    try {
-      if (!req.user) {
-        sendError(res, 'Unauthorized', 401);
-        return;
-      }
-
       // Get agency ID from user
       let agency = await prisma.agency.findUnique({
         where: { authUid: req.user.uid },

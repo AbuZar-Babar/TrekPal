@@ -1,1 +1,19 @@
-// TODO: Implement traveler-app/lib/features/hotels/data/repositories/hotels_repository_impl.dart
+import '../../data/datasources/hotels_remote_datasource.dart';
+import '../entities/hotel_entities.dart';
+import 'hotels_repository.dart';
+
+class HotelsRepositoryImpl implements HotelsRepository {
+  final HotelsRemoteDataSource remoteDataSource;
+
+  HotelsRepositoryImpl({required this.remoteDataSource});
+
+  @override
+  Future<List<HotelEntity>> getHotels({String? search, String? city}) {
+    return remoteDataSource.getHotels(search: search, city: city);
+  }
+
+  @override
+  Future<HotelEntity> getHotelById(String id) {
+    return remoteDataSource.getHotelById(id);
+  }
+}

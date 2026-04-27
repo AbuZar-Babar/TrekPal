@@ -14,6 +14,9 @@ class CreateTripRequestUseCase {
     required TripSpecsEntity tripSpecs,
     num? budget,
     String? description,
+    String? hotelId,
+    String? roomId,
+    String? vehicleId,
   }) {
     return _repository.createTripRequest(
       destination: destination,
@@ -23,6 +26,9 @@ class CreateTripRequestUseCase {
       tripSpecs: tripSpecs,
       budget: budget,
       description: description,
+      hotelId: hotelId,
+      roomId: roomId,
+      vehicleId: vehicleId,
     );
   }
 }

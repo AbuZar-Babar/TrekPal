@@ -3,6 +3,7 @@ import { BOOKING_STATUS } from '../../config/constants';
 import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
 import { emitTravelerBookingUpdated } from '../../ws/socket.emitter';
 import { BookingParticipantPreview, BookingResponse } from './bookings.types';
+import { roomAvailabilityService } from '../hotels/room-availability.service';
 
 const bookingInclude = {
   user: { select: { name: true } },
@@ -131,6 +132,36 @@ async function mapBooking(booking: any): Promise<BookingResponse> {
  */
 export class BookingsService {
   /**
+   * Helper to manage room inventory based on status changes
+   */
+  async handleInventory(booking: any, oldStatus: string, newStatus: string) {
+    if (!booking.roomId) return;
+
+    // Transitioning to CONFIRMED or COMPLETED -> Deduct (if not already deducted)
+    // Actually, only CONFIRMED matters for inventory hold.
+    const isNowConfirmed = newStatus === BOOKING_STATUS.CONFIRMED;
+    const wasConfirmed = oldStatus === BOOKING_STATUS.CONFIRMED;
+
+    if (isNowConfirmed && !wasConfirmed) {
+      await roomAvailabilityService.deductAvailability(
+        booking.roomId,
+        booking.startDate,
+        booking.endDate,
+        1 // Deduct 1 room. In future, booking could have roomCount
+      );
+    } 
+    // Transitioning FROM Confirmed TO Cancelled -> Restore
+    else if (wasConfirmed && newStatus === BOOKING_STATUS.CANCELLED) {
+      await roomAvailabilityService.restoreAvailability(
+        booking.roomId,
+        booking.startDate,
+        booking.endDate,
+        1
+      );
+    }
+  }
+
+  /**
    * Get bookings for a traveler
    */
   async getUserBookings(
@@ -235,6 +266,9 @@ export class BookingsService {
       throw new Error(`Cannot transition booking from ${booking.status} to ${status}`);
     }
 
+    // Handle inventory deduction/restoration
+    await this.handleInventory(booking, booking.status, status);
+
     const updated = await prisma.booking.update({
       where: { id },
       data: { status },
@@ -293,6 +327,9 @@ export class BookingsService {
     if (msUntilStart < minLeadMs) {
       throw new Error('Trips can only be cancelled 3 days before the start date');
     }
+
+    // Handle inventory restoration if it was confirmed
+    await this.handleInventory(booking, booking.status, BOOKING_STATUS.CANCELLED);
 
     const updated = await prisma.booking.update({
       where: { id: bookingId },

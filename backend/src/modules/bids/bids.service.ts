@@ -439,6 +439,9 @@ export class BidsService {
           agencyId: bid.agencyId,
           tripRequestId: bid.tripRequestId,
           bidId: bid.id,
+          hotelId: bid.tripRequest.hotelId,
+          roomId: bid.tripRequest.roomId,
+          vehicleId: bid.tripRequest.vehicleId,
           // Traveler-accepted custom trip bids are final and should appear
           // in Trips immediately, unlike package offer requests.
           status: BOOKING_STATUS.CONFIRMED,

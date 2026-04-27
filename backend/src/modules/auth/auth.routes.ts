@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import { authController } from './auth.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
-import { uploadKycDocuments } from '../../middlewares/upload.middleware';
+import { uploadKycDocuments, uploadHotelDocuments } from '../../middlewares/upload.middleware';
 import {
   validateBody,
 } from '../../middlewares/validation.middleware';
 import {
   userRegisterSchema,
   agencyRegisterSchema,
+  hotelRegisterSchema,
   loginSchema,
   verifyCnicSchema,
 } from './auth.types';
@@ -23,6 +24,18 @@ router.post(
   '/register/user',
   validateBody(userRegisterSchema.shape.body),
   authController.registerUser.bind(authController)
+);
+
+/**
+ * @route   POST /api/auth/register/hotel
+ * @desc    Register a new independent hotel
+ * @access  Public
+ */
+router.post(
+  '/register/hotel',
+  uploadHotelDocuments as any,
+  validateBody(hotelRegisterSchema.shape.body),
+  authController.registerHotel.bind(authController)
 );
 
 /**

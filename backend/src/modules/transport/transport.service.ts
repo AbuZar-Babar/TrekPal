@@ -67,6 +67,12 @@ export class TransportService {
             name: true,
           },
         },
+      include: {
+        agency: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -83,11 +89,25 @@ export class TransportService {
     status?: string,
     search?: string
   ): Promise<{ vehicles: VehicleResponse[]; total: number; page: number; limit: number }> {
+    return this.getVehicles(page, limit, status, search, agencyId);
+  }
+
+  /**
+   * Get all vehicles (discovery)
+   */
+  async getVehicles(
+    page: number = 1,
+    limit: number = 20,
+    status?: string,
+    search?: string,
+    agencyId?: string
+  ): Promise<{ vehicles: VehicleResponse[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
 
-    const where: any = {
-      agencyId,
-    };
+    const where: any = {};
+    if (agencyId) {
+      where.agencyId = agencyId;
+    }
 
     if (status) {
       where.status = status;
@@ -121,20 +141,6 @@ export class TransportService {
     const vehiclesResponse = await Promise.all(
       vehicles.map((vehicle) => this.mapVehicleResponse(vehicle)),
     );
-
-    return {
-      vehicles: vehiclesResponse,
-      total,
-      page,
-      limit,
-    };
-  }
-
-  /**
-   * Get vehicle by ID
-   */
-  async getVehicleById(vehicleId: string, agencyId?: string): Promise<VehicleResponse> {
-    const where: any = { id: vehicleId };
     if (agencyId) {
       where.agencyId = agencyId;
     }

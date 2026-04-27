@@ -93,6 +93,9 @@ class TripRequestsProvider extends ChangeNotifier {
     required TripSpecsEntity tripSpecs,
     num? budget,
     String? description,
+    String? hotelId,
+    String? roomId,
+    String? vehicleId,
   }) async {
     _isSubmitting = true;
     _errorMessage = null;
@@ -107,6 +110,9 @@ class TripRequestsProvider extends ChangeNotifier {
         tripSpecs: tripSpecs,
         budget: budget,
         description: description,
+        hotelId: hotelId,
+        roomId: roomId,
+        vehicleId: vehicleId,
       );
       _tripRequests = <TripRequestEntity>[created, ..._tripRequests];
       return created;

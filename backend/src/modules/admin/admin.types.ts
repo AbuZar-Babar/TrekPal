@@ -151,8 +151,8 @@ export interface AgencyResponse {
 // Hotel Response Type
 export interface HotelResponse {
   id: string;
-  agencyId: string;
-  agencyName: string;
+  agencyId: string | null;
+  agencyName: string | null;
   name: string;
   description: string | null;
   address: string;
@@ -164,6 +164,8 @@ export interface HotelResponse {
   amenities: string[];
   createdAt: Date;
   roomsCount?: number;
+  businessDocUrl?: string | null;
+  locationImageUrl?: string | null;
 }
 
 // Vehicle Response Type
@@ -178,6 +180,7 @@ export interface VehicleResponse {
   capacity: number;
   pricePerDay: number;
   status: string;
+
   isAvailable: boolean;
   images: string[];
   createdAt: Date;

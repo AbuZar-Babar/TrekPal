@@ -134,6 +134,12 @@ class TripRequestEntity {
     this.userName,
     this.budget,
     this.description,
+    this.hotelId,
+    this.hotelName,
+    this.roomId,
+    this.roomType,
+    this.vehicleId,
+    this.vehicleModel,
   });
 
   final String id;
@@ -145,6 +151,12 @@ class TripRequestEntity {
   final num? budget;
   final int travelers;
   final String? description;
+  final String? hotelId;
+  final String? hotelName;
+  final String? roomId;
+  final String? roomType;
+  final String? vehicleId;
+  final String? vehicleModel;
   final TripSpecsEntity tripSpecs;
   final String status;
   final int bidsCount;
@@ -168,6 +180,15 @@ class TripRequestEntity {
     int? bidsCount,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? hotelId,
+    String? hotelName,
+    String? roomId,
+    String? roomType,
+    String? vehicleId,
+    String? vehicleModel,
+    bool clearHotel = false,
+    bool clearRoom = false,
+    bool clearVehicle = false,
   }) {
     return TripRequestEntity(
       id: id ?? this.id,
@@ -184,6 +205,12 @@ class TripRequestEntity {
       bidsCount: bidsCount ?? this.bidsCount,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      hotelId: clearHotel ? null : (hotelId ?? this.hotelId),
+      hotelName: clearHotel ? null : (hotelName ?? this.hotelName),
+      roomId: clearRoom ? null : (roomId ?? this.roomId),
+      roomType: clearRoom ? null : (roomType ?? this.roomType),
+      vehicleId: clearVehicle ? null : (vehicleId ?? this.vehicleId),
+      vehicleModel: clearVehicle ? null : (vehicleModel ?? this.vehicleModel),
     );
   }
 }

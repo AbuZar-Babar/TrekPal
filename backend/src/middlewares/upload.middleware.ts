@@ -49,6 +49,14 @@ export const uploadTravelerKycDocuments = upload.fields([
     { name: 'selfieImage', maxCount: 1 },
 ]);
 
+/**
+ * Middleware for hotel registration upload
+ */
+export const uploadHotelDocuments = upload.fields([
+    { name: 'locationImage', maxCount: 1 },
+    { name: 'businessDoc', maxCount: 1 },
+]);
+
 const ALLOWED_MEDIA_IMAGE_MIME_TYPES = new Set<string>([
   'image/jpeg',
   'image/png',

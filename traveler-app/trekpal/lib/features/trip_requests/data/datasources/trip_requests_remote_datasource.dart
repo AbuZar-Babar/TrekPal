@@ -55,6 +55,9 @@ class TripRequestsRemoteDataSource {
     required TripSpecsEntity tripSpecs,
     num? budget,
     String? description,
+    String? hotelId,
+    String? roomId,
+    String? vehicleId,
   }) async {
     final String? cleanedDescription = description?.trim();
     final Map<String, dynamic> requestBody = <String, dynamic>{
@@ -63,6 +66,9 @@ class TripRequestsRemoteDataSource {
       'endDate': endDate.toApiDate(),
       'travelers': travelers,
       'tripSpecs': _tripSpecsJson(tripSpecs),
+      if (hotelId != null) 'hotelId': hotelId,
+      if (roomId != null) 'roomId': roomId,
+      if (vehicleId != null) 'vehicleId': vehicleId,
     };
     if (budget != null) {
       requestBody['budget'] = budget;

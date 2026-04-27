@@ -29,6 +29,7 @@ export const hotelsService = {
         limit?: number;
         status?: string;
         search?: string;
+        discovery?: boolean;
     }): Promise<PaginatedResponse<Hotel>> {
         const response = await apiClient.get('/hotels', { params });
         const result = response.data.data;

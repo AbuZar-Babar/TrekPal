@@ -15,221 +15,122 @@ const PackageList = () => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(
-      fetchPackages({
-        page,
-        limit: 20,
-        search: search || undefined,
-      }) as any,
-    );
+    dispatch(fetchPackages({ page, limit: 20, search: search || undefined }) as any);
   }, [dispatch, page, search]);
 
-
-
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this trip offer?')) {
-      return;
+    if (window.confirm('Delete this trip offer?')) {
+      await dispatch(deletePackage(id) as any);
+      dispatch(fetchPackages({ page, limit: 20, search: search || undefined }) as any);
     }
-
-    await dispatch(deletePackage(id) as any);
-    dispatch(
-      fetchPackages({
-        page,
-        limit: 20,
-        search: search || undefined,
-      }) as any,
-    );
   };
 
   return (
     <div className="space-y-6">
-      <section className="mb-4">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">Offer Management</h2>
-      </section>
-
-      <div className="page-toolbar">
-        <div className="search-shell">
-          <input
-            type="text"
-            value={search}
-            onChange={(event) => {
-              setPage(1);
-              setSearch(event.target.value);
-            }}
-            placeholder="Search trip offers..."
-            className="app-field pl-11"
-          />
-          <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-
+      <section className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">Offers</h2>
         <button
-          type="button"
           onClick={() => navigate('/packages/new')}
           className="app-btn-primary h-11 px-5 text-sm"
         >
-          New trip offer
+          New Offer
         </button>
+      </section>
+
+      <div className="page-toolbar surface">
+        <div className="search-shell">
+          <svg className="h-5 w-5 text-[var(--text-soft)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+            placeholder="Filter offers..."
+            className="border-0 bg-transparent p-0 text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:outline-none focus:ring-0"
+          />
+        </div>
       </div>
 
       {error && (
-        <div className="rounded-[18px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+        <div className="rounded-xl border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="surface loading-state">
+        <div className="surface py-20 text-center">
           <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
-          <p className="mt-4 text-sm text-[var(--text-muted)]">Loading trip offers...</p>
         </div>
       ) : packages.length === 0 ? (
-        <div className="surface empty-state">
-          <div className="empty-state-title">
-            {search ? 'No trip offers match the search' : 'No trip offers yet'}
-          </div>
-          <div className="empty-state-copy">
-            {search ? 'Try a broader search.' : 'Create your first offer to start publishing agency packages.'}
-          </div>
+        <div className="surface py-20 text-center">
+          <p className="text-[var(--text-soft)]">No offers found.</p>
         </div>
       ) : (
-        <>
-          <div className="mobile-record-list lg:hidden">
-            {packages.map((tripPackage) => (
-              <div key={tripPackage.id} className="record-card">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="record-title">{tripPackage.name}</div>
-                    <div className="record-copy">{tripPackage.duration} day(s)</div>
-                  </div>
-                  <span className={`app-pill ${tripPackage.isActive ? 'app-pill-success' : 'app-pill-neutral'}`}>
-                    {tripPackage.isActive ? 'Published' : 'Hidden'}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {packages.map((pkg) => (
+            <article key={pkg.id} className="surface flex flex-col p-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-[var(--text)]">{pkg.name}</h3>
+                  <p className="text-sm text-[var(--text-soft)]">{pkg.duration} Days</p>
+                </div>
+                <span className={`app-pill ${pkg.isActive ? 'app-pill-success' : 'app-pill-neutral'}`}>
+                  {pkg.isActive ? 'Active' : 'Draft'}
+                </span>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {pkg.destinations.map((dest) => (
+                  <span key={dest} className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] bg-[var(--panel-subtle)] px-2 py-1 rounded">
+                    {dest}
                   </span>
+                ))}
+              </div>
+
+              <div className="mt-auto pt-6 flex items-center justify-between border-t border-[var(--border)]">
+                <div className="text-sm font-bold text-[var(--text)]">
+                  {formatCurrency(pkg.price)}
                 </div>
-
-                {tripPackage.description && <div className="record-copy">{tripPackage.description}</div>}
-
-                <div className="chip-row">
-                  {tripPackage.destinations.slice(0, 3).map((destination) => (
-                    <span key={destination} className="app-pill app-pill-neutral">{destination}</span>
-                  ))}
-                  {tripPackage.destinations.length > 3 && (
-                    <span className="app-pill app-pill-neutral">+{tripPackage.destinations.length - 3}</span>
-                  )}
-                </div>
-
-                {(tripPackage.hotel || tripPackage.vehicle) && (
-                  <div className="chip-row">
-                    {tripPackage.hotel && <span className="app-pill app-pill-neutral">Hotel: {tripPackage.hotel.name}</span>}
-                    {tripPackage.vehicle && <span className="app-pill app-pill-neutral">Vehicle: {tripPackage.vehicle.make} {tripPackage.vehicle.model}</span>}
-                  </div>
-                )}
-
-                <div className="record-grid">
-                  <div className="record-meta-block">
-                    <div className="record-meta-label">Price</div>
-                    <div className="record-meta-value">{formatCurrency(tripPackage.price)}</div>
-                  </div>
-                  <div className="record-meta-block">
-                    <div className="record-meta-label">Updated</div>
-                    <div className="record-meta-value">{formatDate(tripPackage.updatedAt)}</div>
-                  </div>
-                </div>
-
-                <div className="record-actions">
-                  <button type="button" onClick={() => navigate(`/packages/${tripPackage.id}/edit`)} className="app-btn-secondary h-10 px-4 text-sm">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate(`/packages/${pkg.id}/edit`)}
+                    className="h-9 px-4 text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-subtle)] rounded-lg"
+                  >
                     Edit
                   </button>
-                  <button type="button" onClick={() => handleDelete(tripPackage.id)} className="app-btn-secondary h-10 px-4 text-sm text-[var(--danger-text)]">
+                  <button
+                    onClick={() => handleDelete(pkg.id)}
+                    className="h-9 px-4 text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] rounded-lg"
+                  >
                     Delete
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-
-          <div className="app-table-shell hidden overflow-x-auto lg:block">
-            <table className="app-table min-w-[980px]">
-              <thead>
-                <tr>
-                  <th>Offer</th>
-                  <th>Destinations</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th>Updated</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {packages.map((tripPackage) => (
-                  <tr key={tripPackage.id}>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">{tripPackage.name}</div>
-                      <div className="mt-1 text-sm text-[var(--text-muted)]">{tripPackage.duration} day(s)</div>
-                      {(tripPackage.hotel || tripPackage.vehicle) && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {tripPackage.hotel && <span className="app-pill app-pill-neutral">Hotel: {tripPackage.hotel.name}</span>}
-                          {tripPackage.vehicle && <span className="app-pill app-pill-neutral">Vehicle: {tripPackage.vehicle.make} {tripPackage.vehicle.model}</span>}
-                        </div>
-                      )}
-                      {tripPackage.description && (
-                        <div className="mt-2 line-clamp-2 text-sm text-[var(--text-muted)]">{tripPackage.description}</div>
-                      )}
-                    </td>
-                    <td>
-                      <div className="flex flex-wrap gap-2">
-                        {tripPackage.destinations.slice(0, 3).map((destination) => (
-                          <span key={destination} className="app-pill app-pill-neutral">{destination}</span>
-                        ))}
-                        {tripPackage.destinations.length > 3 && <span className="app-pill app-pill-neutral">+{tripPackage.destinations.length - 3}</span>}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">{formatCurrency(tripPackage.price)}</div>
-                    </td>
-                    <td>
-                      <span className={`app-pill ${tripPackage.isActive ? 'app-pill-success' : 'app-pill-neutral'}`}>
-                        {tripPackage.isActive ? 'Published' : 'Hidden'}
-                      </span>
-                    </td>
-                    <td>{formatDate(tripPackage.updatedAt)}</td>
-                    <td>
-                      <div className="flex flex-wrap gap-2">
-                        <button type="button" onClick={() => navigate(`/packages/${tripPackage.id}/edit`)} className="app-btn-secondary h-10 px-4 text-sm">
-                          Edit
-                        </button>
-                        <button type="button" onClick={() => handleDelete(tripPackage.id)} className="app-btn-secondary h-10 px-4 text-sm text-[var(--danger-text)]">
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+            </article>
+          ))}
+        </div>
       )}
 
       {pagination.total > pagination.limit && (
-        <div className="page-pagination">
+        <div className="flex items-center justify-center gap-4 mt-8">
           <button
-            type="button"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary h-10 px-4 text-xs disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-sm font-medium text-[var(--text-muted)]">
+          <span className="text-xs font-medium text-[var(--text-soft)]">
             Page {page} of {Math.ceil(pagination.total / pagination.limit)}
           </span>
           <button
-            type="button"
-            onClick={() => setPage((current) => current + 1)}
+            onClick={() => setPage((p) => p + 1)}
             disabled={page >= Math.ceil(pagination.total / pagination.limit)}
-            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary h-10 px-4 text-xs disabled:opacity-50"
           >
             Next
           </button>

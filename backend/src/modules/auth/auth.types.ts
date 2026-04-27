@@ -125,6 +125,23 @@ export type AgencyRegisterInput = z.infer<typeof agencyRegisterSchema>['body'] &
   additionalSupportingDocumentUrl?: string;
 };
 
+// Hotel Registration Schema
+export const hotelRegisterSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    name: z.string().trim().min(2, 'Hotel name must be at least 2 characters'),
+    phone: z.string().trim().min(5, 'Phone number is required'),
+    address: z.string().trim().min(5, 'Address is required'),
+    location: z.string().trim().min(2, 'Location is required'),
+  }),
+});
+
+export type HotelRegisterInput = z.infer<typeof hotelRegisterSchema>['body'] & {
+  locationImageUrl?: string;
+  businessDocUrl?: string;
+};
+
 // Login Schema (for both user and agency)
 // Supports both Supabase token and email/password
 export const loginSchema = z.object({

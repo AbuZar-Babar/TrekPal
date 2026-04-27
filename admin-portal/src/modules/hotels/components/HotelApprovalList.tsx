@@ -201,7 +201,7 @@ const HotelApprovalList = () => {
                         </div>
                       </td>
                       <td>
-                        <div className="font-medium text-[var(--text)]">{hotel.agencyName}</div>
+                        <div className="font-medium text-[var(--text)]">{hotel.agencyName || 'Independent'}</div>
                         <div className="mt-1 text-xs text-[var(--text-soft)]">
                           {hotel.roomsCount ?? 0} rooms
                         </div>
@@ -264,7 +264,7 @@ const HotelApprovalList = () => {
                   <h3 className="mt-2 font-headline text-2xl font-bold tracking-tight text-[var(--text)]">
                     {selectedHotel.name}
                   </h3>
-                  <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedHotel.agencyName}</p>
+                  <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedHotel.agencyName || 'Independent Hotel'}</p>
                 </div>
                 <span className={statusClassMap[selectedHotel.status] || 'sovereign-pill sovereign-pill-neutral'}>
                   {selectedHotel.status}
@@ -305,6 +305,70 @@ const HotelApprovalList = () => {
                     <span className="font-semibold text-[var(--text)]">
                       {selectedHotel.roomsCount ?? 0}
                     </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+                <div className="sovereign-label">Verification documents</div>
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-[var(--text-soft)]">Business doc</span>
+                    {selectedHotel.businessDocUrl ? (
+                      <a
+                        href={selectedHotel.businessDocUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 block rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 transition-colors hover:border-[var(--primary)]"
+                      >
+                        <div className="flex h-20 items-center justify-center">
+                          <svg
+                            className="h-8 w-8 text-[var(--primary)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </div>
+                        <span className="mt-1 block text-center text-[10px] font-medium text-[var(--text-soft)]">
+                          View doc
+                        </span>
+                      </a>
+                    ) : (
+                      <div className="mt-2 flex h-24 items-center justify-center rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-high)] text-[10px] text-[var(--text-muted)]">
+                        No doc provided
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-xs text-[var(--text-soft)]">Location Image</span>
+                    {selectedHotel.locationImageUrl ? (
+                      <a
+                        href={selectedHotel.locationImageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 block rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 transition-colors hover:border-[var(--primary)]"
+                      >
+                        <img
+                          src={selectedHotel.locationImageUrl}
+                          alt="Location"
+                          className="h-20 w-full rounded-lg object-cover"
+                        />
+                        <span className="mt-1 block text-center text-[10px] font-medium text-[var(--text-soft)]">
+                          View image
+                        </span>
+                      </a>
+                    ) : (
+                      <div className="mt-2 flex h-24 items-center justify-center rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-high)] text-[10px] text-[var(--text-muted)]">
+                        No image provided
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

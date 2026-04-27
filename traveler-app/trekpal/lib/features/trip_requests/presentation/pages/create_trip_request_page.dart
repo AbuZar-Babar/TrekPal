@@ -6,6 +6,10 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/validators.dart';
 import '../../domain/entities/trip_request_entities.dart';
 import '../providers/trip_requests_provider.dart';
+import '../../../hotels/presentation/providers/hotels_provider.dart';
+import '../../../transport/presentation/providers/transport_provider.dart';
+import '../../../hotels/domain/entities/hotel_entities.dart';
+import '../../../transport/domain/entities/vehicle_entities.dart';
 
 class CreateTripRequestPage extends StatefulWidget {
   const CreateTripRequestPage({super.key});
@@ -31,6 +35,11 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
   bool _transportRequired = true;
   String _transportType = 'CAR';
   String _mealPlan = 'BREAKFAST_ONLY';
+  String? _selectedHotelId;
+  String? _selectedRoomId;
+  String? _selectedVehicleId;
+  String? _selectedHotelName;
+  String? _selectedVehicleName;
 
   @override
   void dispose() {
@@ -130,7 +139,8 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
           return false;
         }
         return true;
-      case 3:
+        return true;
+      case 4:
         final String? descriptionError = AppValidators.maxLength(
           _descriptionController.text,
           max: 1000,
@@ -187,6 +197,9 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
             ? null
             : num.tryParse(_budgetController.text.trim()),
         description: _descriptionController.text.trim(),
+        hotelId: _selectedHotelId,
+        roomId: _selectedRoomId,
+        vehicleId: _selectedVehicleId,
       );
       if (!mounted) {
         return;
@@ -207,7 +220,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
   }
 
   void _continue() {
-    if (_currentStep == 3) {
+    if (_currentStep == 4) {
       _submit();
       return;
     }
@@ -360,6 +373,45 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _pickHotel() async {
+    final HotelsProvider provider = context.read<HotelsProvider>();
+    provider.fetchHotels();
+
+    final Map<String, dynamic>? result =
+        await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) => _HotelPicker(provider: provider),
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedHotelId = result['hotelId'] as String;
+        _selectedRoomId = result['roomId'] as String;
+        _selectedHotelName = result['name'] as String;
+      });
+    }
+  }
+
+  Future<void> _pickVehicle() async {
+    final TransportProvider provider = context.read<TransportProvider>();
+    provider.fetchVehicles();
+
+    final Map<String, dynamic>? result =
+        await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) => _VehiclePicker(provider: provider),
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedVehicleId = result['id'] as String;
+        _selectedVehicleName = result['name'] as String;
+      });
+    }
   }
 
   Widget _buildStepContent() {
@@ -559,9 +611,67 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
             ),
           ],
         );
-      default:
+      case 3:
         return Column(
           key: const ValueKey<int>(3),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _SelectionTile(
+              icon: Icons.hotel_outlined,
+              label: 'Selected Hotel',
+              value: _selectedHotelName ?? 'Optional: Choose a hotel',
+              onTap: _pickHotel,
+              onClear: _selectedHotelId != null
+                  ? () {
+                      setState(() {
+                        _selectedHotelId = null;
+                        _selectedRoomId = null;
+                        _selectedHotelName = null;
+                      });
+                    }
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            _SelectionTile(
+              icon: Icons.directions_car_outlined,
+              label: 'Selected Vehicle',
+              value: _selectedVehicleName ?? 'Optional: Choose a vehicle',
+              onTap: _pickVehicle,
+              onClear: _selectedVehicleId != null
+                  ? () {
+                      setState(() {
+                        _selectedVehicleId = null;
+                        _selectedVehicleName = null;
+                      });
+                    }
+                  : null,
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _descriptionController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Trip notes',
+                hintText: 'Trip style, pace, or expectations',
+                prefixIcon: Icon(Icons.notes_outlined),
+              ),
+            ),
+            const SizedBox(height: 18),
+            TextField(
+              controller: _specialRequirementsController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Special requirements',
+                hintText:
+                    'Kids, elderly travelers, luggage, food restrictions...',
+                prefixIcon: Icon(Icons.info_outline),
+              ),
+            ),
+          ],
+        );
+      case 4:
+        return Column(
+          key: const ValueKey<int>(4),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextField(
@@ -606,6 +716,24 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                         : _destinationController.text.trim(),
                   ),
                 ),
+                if (_selectedHotelName != null)
+                  _buildReviewItem(
+                    'Preferred Hotel',
+                    _selectedHotelName!,
+                    Icons.hotel_outlined,
+                  ),
+                if (_selectedVehicleName != null)
+                  _buildReviewItem(
+                    'Preferred Vehicle',
+                    _selectedVehicleName!,
+                    Icons.directions_car_outlined,
+                  ),
+                if (_descriptionController.text.isNotEmpty)
+                  _buildReviewItem(
+                    'Notes',
+                    _descriptionController.text,
+                    Icons.notes_outlined,
+                  ),
                 SizedBox(
                   width: double.infinity,
                   child: _buildOverviewItem(
@@ -681,18 +809,21 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
       'Where',
       'People',
       'Services',
+      'Specifics',
       'Review',
     ];
     const List<String> prompts = <String>[
       'Where are you going?',
       'Who is going?',
       'What should be included?',
+      'Specific Preferences?',
       'Review your request',
     ];
     const List<String> descriptions = <String>[
       'Choose the destination and travel dates.',
       'Set the people count and an optional budget.',
       'Pick stay, rooms, transport, and meal plan.',
+      'Select specific hotel or vehicle (optional).',
       'Check the request before agencies see it.',
     ];
 
@@ -839,7 +970,7 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                         child: Text(
                           isSubmitting
                               ? 'Publishing...'
-                              : _currentStep == 3
+                              : _currentStep == 4
                               ? 'Publish request'
                               : 'Continue',
                         ),
@@ -959,4 +1090,210 @@ class _VisualOption {
   final String value;
   final String label;
   final IconData icon;
+}
+
+class _SelectionTile extends StatelessWidget {
+  const _SelectionTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onTap,
+    this.onClear,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+  final VoidCallback? onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: colorScheme.outlineVariant),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: colorScheme.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Text(
+                    value,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: onClear != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (onClear != null)
+              IconButton(
+                icon: const Icon(Icons.clear_rounded, size: 20),
+                onPressed: onClear,
+              )
+            else
+              const Icon(Icons.chevron_right_rounded),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HotelPicker extends StatelessWidget {
+  const _HotelPicker({required this.provider});
+  final HotelsProvider provider;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.outlineVariant,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text('Select a Hotel', style: theme.textTheme.titleLarge),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: provider,
+              builder: (context, _) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (provider.hotels.isEmpty) {
+                  return const Center(child: Text('No hotels available'));
+                }
+                return ListView.separated(
+                  itemCount: provider.hotels.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final hotel = provider.hotels[index];
+                    return ExpansionTile(
+                      leading: hotel.imageUrl != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(hotel.imageUrl!, width: 50, height: 50, fit: BoxFit.cover),
+                            )
+                          : const Icon(Icons.hotel),
+                      title: Text(hotel.name),
+                      subtitle: Text(hotel.location),
+                      children: hotel.rooms.map((room) {
+                        return ListTile(
+                          title: Text(room.type),
+                          subtitle: Text('PKR ${room.basePrice} / night'),
+                          trailing: const Icon(Icons.add_circle_outline),
+                          onTap: () {
+                            Navigator.pop(context, {
+                              'hotelId': hotel.id,
+                              'roomId': room.id,
+                              'name': '${hotel.name} (${room.type})',
+                            });
+                          },
+                        );
+                      }).toList(),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+}
+
+class _VehiclePicker extends StatelessWidget {
+  const _VehiclePicker({required this.provider});
+  final TransportProvider provider;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.outlineVariant,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text('Select a Vehicle', style: theme.textTheme.titleLarge),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: provider,
+              builder: (context, _) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (provider.vehicles.isEmpty) {
+                  return const Center(child: Text('No vehicles available'));
+                }
+                return ListView.separated(
+                  itemCount: provider.vehicles.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final vehicle = provider.vehicles[index];
+                    return ListTile(
+                      leading: const Icon(Icons.directions_car),
+                      title: Text(vehicle.name),
+                      subtitle: Text('${vehicle.type} • PKR ${vehicle.basePricePerDay}/day'),
+                      trailing: const Icon(Icons.add_circle_outline),
+                      onTap: () {
+                        Navigator.pop(context, {
+                          'id': vehicle.id,
+                          'name': '${vehicle.name} (${vehicle.type})',
+                        });
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
 }

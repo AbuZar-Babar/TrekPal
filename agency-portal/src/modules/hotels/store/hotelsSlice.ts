@@ -29,7 +29,7 @@ const initialState: HotelsState = {
  */
 export const fetchHotels = createAsyncThunk(
     'hotels/fetchHotels',
-    async (params?: { page?: number; limit?: number; status?: string; search?: string }) => {
+    async (params?: { page?: number; limit?: number; status?: string; search?: string; discovery?: boolean }) => {
         return await hotelsService.getHotels(params);
     }
 );

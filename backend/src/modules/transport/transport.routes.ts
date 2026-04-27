@@ -6,8 +6,12 @@ import { createMediaImageUpload } from '../../middlewares/upload.middleware';
 
 const router = Router();
 
-// All transport routes require authentication and agency role
+// Discovery routes (Publicly available for all logged-in users)
 router.use(authenticate);
+router.get('/', transportController.getVehicles.bind(transportController));
+router.get('/:id', transportController.getVehicleById.bind(transportController));
+
+// Management routes (Agency only)
 router.use(requireAgency);
 
 /**
@@ -25,18 +29,11 @@ router.post('/', transportController.createVehicle.bind(transportController));
 router.post('/upload-image', createMediaImageUpload('vehicles') as any, transportController.uploadImage.bind(transportController));
 
 /**
- * @route   GET /api/transport
+ * @route   GET /api/transport/my-vehicles
  * @desc    Get all vehicles for the agency
  * @access  Private (Agency only)
  */
-router.get('/', transportController.getAgencyVehicles.bind(transportController));
-
-/**
- * @route   GET /api/transport/:id
- * @desc    Get vehicle by ID
- * @access  Private (Agency only)
- */
-router.get('/:id', transportController.getVehicleById.bind(transportController));
+router.get('/my-vehicles', transportController.getAgencyVehicles.bind(transportController));
 
 /**
  * @route   PUT /api/transport/:id
@@ -51,5 +48,6 @@ router.put('/:id', transportController.updateVehicle.bind(transportController));
  * @access  Private (Agency only)
  */
 router.delete('/:id', transportController.deleteVehicle.bind(transportController));
+
 
 export default router;

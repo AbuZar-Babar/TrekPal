@@ -103,7 +103,9 @@ model Admin {
 // Hotel model
 model Hotel {
   id          String   @id @default(cuid())
-  agencyId    String
+  agencyId    String?
+  email       String?  @unique
+  authUid     String?  @unique
   name        String
   description String?
   address     String
@@ -115,15 +117,19 @@ model Hotel {
   status      String   @default("APPROVED") // PENDING, APPROVED, REJECTED
   images      String[] // Array of image URLs
   amenities   String[] // Array of amenities
+  businessDocUrl     String?
+  locationImageUrl   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agency      Agency?  @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+  services    HotelService[]
   rooms       Room[]
   bookings    Booking[]
   reviews     Review[]
   packages    Package[]
+  tripRequests TripRequest[]
 
   @@map("hotels")
 }
@@ -135,6 +141,7 @@ model Room {
   type        String   // SINGLE, DOUBLE, SUITE, etc.
   price       Float
   capacity    Int
+  quantity    Int      @default(1)
   amenities   String[]
   images      String[]
   isAvailable Boolean  @default(true)
@@ -144,6 +151,8 @@ model Room {
   // Relations
   hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   bookings    Booking[]
+  availabilities RoomAvailability[]
+  tripRequests TripRequest[]
 
   @@map("rooms")
 }
@@ -157,6 +166,7 @@ model Vehicle {
   model       String
   year        Int
   capacity    Int
+  quantity    Int      @default(1)
   pricePerDay Float
   images      String[]
   status      String   @default("APPROVED") // PENDING, APPROVED, REJECTED
@@ -168,6 +178,7 @@ model Vehicle {
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   bookings    Booking[]
   packages    Package[]
+  tripRequests TripRequest[]
 
   @@map("vehicles")
 }
@@ -203,6 +214,9 @@ model Package {
 model TripRequest {
   id          String   @id @default(cuid())
   userId      String
+  hotelId     String?
+  roomId      String?
+  vehicleId   String?
   destination String
   startDate   DateTime
   endDate     DateTime
@@ -216,6 +230,9 @@ model TripRequest {
 
   // Relations
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hotel       Hotel?   @relation(fields: [hotelId], references: [id], onDelete: SetNull)
+  room        Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  vehicle     Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   bids        Bid[]
   booking     Booking?
 
@@ -362,3 +379,24 @@ model Message {
   @@map("messages")
 }
 
+
+model RoomAvailability {
+  id        String   @id @default(cuid())
+  roomId    String
+  date      DateTime
+  available Int      // Number of rooms free on this specific night
+  
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  @@unique([roomId, date])
+  @@map("room_availabilities")
+}
+
+model HotelService {
+  id        String   @id @default(cuid())
+  hotelId   String
+  name      String   // e.g., WiFi, Breakfast, Pool
+  price     Float    @default(0)
+  
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  @@map("hotel_services")
+}

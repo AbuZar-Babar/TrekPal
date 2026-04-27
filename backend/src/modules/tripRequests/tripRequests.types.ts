@@ -104,6 +104,9 @@ export const createTripRequestSchema = z
       .default(1),
     description: descriptionSchema,
     tripSpecs: tripSpecsSchema.default(defaultTripSpecs),
+    hotelId: z.string().optional(),
+    roomId: z.string().optional(),
+    vehicleId: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (new Date(data.endDate) < new Date(data.startDate)) {
@@ -165,6 +168,27 @@ export interface TripRequestResponse {
   id: string;
   userId: string;
   userName?: string;
+  hotelId?: string | null;
+  roomId?: string | null;
+  vehicleId?: string | null;
+  hotel?: {
+    id: string;
+    name: string;
+    city: string;
+  } | null;
+  room?: {
+    id: string;
+    type: string;
+    price: number;
+  } | null;
+  roomAvailabilityCount?: number;
+  vehicle?: {
+    id: string;
+    type: string;
+    make: string;
+    model: string;
+    pricePerDay: number;
+  } | null;
   destination: string;
   startDate: Date;
   endDate: Date;

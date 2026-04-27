@@ -37,6 +37,7 @@ export class AuthService {
   private userRepo: IUserRepository;
   private agencyRepo: IAgencyRepository;
   private adminRepo: IAdminRepository;
+  private hotelRepo: IHotelRepository;
 
   constructor(
     userRepo?: IUserRepository,
@@ -46,6 +47,7 @@ export class AuthService {
     this.userRepo = userRepo || new PrismaUserRepository();
     this.agencyRepo = agencyRepo || new PrismaAgencyRepository();
     this.adminRepo = adminRepo || new PrismaAdminRepository();
+    this.hotelRepo = new PrismaHotelRepository();
   }
 
   private normalizeRole(role: unknown): string {
@@ -54,7 +56,12 @@ export class AuthService {
     }
 
     const normalizedRole = role.toUpperCase();
-    if (normalizedRole === ROLES.TRAVELER || normalizedRole === ROLES.AGENCY || normalizedRole === ROLES.ADMIN) {
+    if (
+      normalizedRole === ROLES.TRAVELER ||
+      normalizedRole === ROLES.AGENCY ||
+      normalizedRole === ROLES.ADMIN ||
+      normalizedRole === ROLES.HOTEL
+    ) {
       return normalizedRole;
     }
 
@@ -137,6 +144,23 @@ export class AuthService {
     };
   }
 
+  private mapHotel(hotel: {
+    id: string;
+    authUid: string;
+    email: string;
+    name: string;
+    status?: string;
+  }): AuthResponse['user'] {
+    return {
+      id: hotel.id,
+      authUid: hotel.authUid,
+      email: hotel.email,
+      name: hotel.name,
+      status: hotel.status,
+      role: ROLES.HOTEL,
+    };
+  }
+
   private mapAdmin(admin: { id: string; authUid: string; email: string; name: string }): AuthResponse['user'] {
     return {
       id: admin.id,
@@ -155,9 +179,23 @@ export class AuthService {
     return 'Agency account is pending approval';
   }
 
+  private getHotelApprovalErrorMessage(status: string): string {
+    if (status === APPROVAL_STATUS.REJECTED) {
+      return 'Hotel account was rejected';
+    }
+
+    return 'Hotel account is pending approval';
+  }
+
   private assertAgencyApproved(agency: { status: string }): void {
     if (agency.status !== APPROVAL_STATUS.APPROVED) {
       throw new Error(this.getAgencyApprovalErrorMessage(agency.status));
+    }
+  }
+
+  private assertHotelApproved(hotel: { status: string }): void {
+    if (hotel.status !== APPROVAL_STATUS.APPROVED) {
+      throw new Error(this.getHotelApprovalErrorMessage(hotel.status));
     }
   }
 
@@ -173,6 +211,14 @@ export class AuthService {
         throw new Error(this.getAgencyApprovalErrorMessage(agency.status));
       }
       return this.mapAgency(agency);
+    }
+
+    const hotel = await this.hotelRepo.findByEmail(email);
+    if (hotel) {
+      if (enforceAgencyApproval && hotel.status !== APPROVAL_STATUS.APPROVED) {
+        throw new Error(this.getHotelApprovalErrorMessage(hotel.status));
+      }
+      return this.mapHotel(hotel);
     }
 
     const admin = await this.adminRepo.findByEmail(email);
@@ -199,6 +245,15 @@ export class AuthService {
         : await this.agencyRepo.update(agency.id, { authUid });
       this.assertAgencyApproved(updatedAgency);
       return this.mapAgency(updatedAgency);
+    }
+
+    const hotel = await this.hotelRepo.findByEmail(email);
+    if (hotel) {
+      const updatedHotel = hotel.authUid === authUid
+        ? hotel
+        : await this.hotelRepo.update(hotel.id, { authUid });
+      this.assertHotelApproved(updatedHotel);
+      return this.mapHotel(updatedHotel);
     }
 
     const admin = await this.adminRepo.findByEmail(email);
@@ -314,6 +369,47 @@ export class AuthService {
   }
 
   /**
+   * Register a new independent hotel
+   */
+  async registerHotel(input: HotelRegisterInput): Promise<AuthResponse> {
+    let authUid: string;
+
+    if (isSupabaseConfigured()) {
+      const supabaseUser = await createSupabaseAuthUser({
+        email: input.email,
+        password: input.password,
+        name: input.name,
+        role: ROLES.HOTEL,
+      });
+      authUid = supabaseUser.id;
+    } else if (process.env.NODE_ENV === 'development') {
+      authUid = this.buildDevelopmentAuthUid();
+      console.warn('Supabase auth is not configured, using development mode UID');
+    } else {
+      throw new Error('Supabase auth is not configured');
+    }
+
+    const hotel = await this.hotelRepo.create({
+      authUid,
+      email: input.email,
+      name: input.name,
+      phone: input.phone,
+      address: input.address,
+      location: input.location,
+      locationImageUrl: input.locationImageUrl,
+      businessDocUrl: input.businessDocUrl,
+      status: APPROVAL_STATUS.PENDING,
+    });
+
+    const profile = this.mapHotel(hotel);
+
+    return {
+      user: profile,
+      token: this.buildToken(profile),
+    };
+  }
+
+  /**
    * Login user, agency, or admin using Supabase email/password
    */
   async login(input: LoginInput): Promise<AuthResponse> {
@@ -395,6 +491,12 @@ export class AuthService {
     if (agency) {
       this.assertAgencyApproved(agency);
       return this.mapAgency(agency);
+    }
+
+    const hotel = await this.hotelRepo.findByAuthUid(authUid);
+    if (hotel) {
+      this.assertHotelApproved(hotel);
+      return this.mapHotel(hotel);
     }
 
     const admin = await this.adminRepo.findByAuthUid(authUid);

@@ -40,11 +40,9 @@ const BookingList = () => {
     }
   };
 
-
-
   return (
     <div className="space-y-6">
-      <section className="mb-4">
+      <section className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-[var(--text)]">Bookings</h2>
       </section>
 
@@ -57,7 +55,7 @@ const BookingList = () => {
               setPage(1);
               setStatusFilter(status);
             }}
-            className={`${statusFilter === status ? 'app-btn-primary' : 'app-btn-secondary'} h-11 px-4 text-sm`}
+            className={`${statusFilter === status ? 'app-btn-primary' : 'app-btn-secondary'} h-11 px-5 text-sm`}
           >
             {status || 'All'}
           </button>
@@ -65,202 +63,111 @@ const BookingList = () => {
       </div>
 
       {error && (
-        <div className="rounded-[18px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+        <div className="rounded-xl border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="surface loading-state">
+        <div className="surface py-20 text-center">
           <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
-          <p className="mt-4 text-sm text-[var(--text-muted)]">Loading bookings...</p>
         </div>
       ) : bookings.length === 0 ? (
-        <div className="surface empty-state">
-          <div className="empty-state-title">No bookings in this queue</div>
-          <div className="empty-state-copy">New traveler booking requests will appear here for agency follow-up.</div>
+        <div className="surface py-20 text-center">
+          <p className="text-[var(--text-soft)]">No bookings found.</p>
         </div>
       ) : (
-        <>
-          <div className="mobile-record-list lg:hidden">
-            {bookings.map((booking) => {
-              const actions =
-                booking.status === 'PENDING'
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {bookings.map((booking) => {
+            const actions =
+              booking.status === 'PENDING'
+                ? [
+                    { label: 'Confirm', status: 'CONFIRMED' as const, classes: 'text-[var(--primary)] hover:bg-[var(--primary-subtle)]' },
+                    { label: 'Cancel', status: 'CANCELLED' as const, classes: 'text-[var(--danger-text)] hover:bg-[var(--danger-bg)]' },
+                  ]
+                : booking.status === 'CONFIRMED'
                   ? [
-                      { label: 'Confirm', status: 'CONFIRMED' as const, classes: 'app-btn-primary' },
-                      { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
+                      { label: 'Complete', status: 'COMPLETED' as const, classes: 'text-[var(--primary)] hover:bg-[var(--primary-subtle)]' },
+                      { label: 'Cancel', status: 'CANCELLED' as const, classes: 'text-[var(--danger-text)] hover:bg-[var(--danger-bg)]' },
                     ]
-                  : booking.status === 'CONFIRMED'
-                    ? [
-                        { label: 'Complete', status: 'COMPLETED' as const, classes: 'app-btn-primary' },
-                        { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
-                      ]
-                    : [];
+                  : [];
 
-              return (
-                <div key={booking.id} className="record-card">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="record-title">{booking.destination || 'Trip booking'}</div>
-                      <div className="record-copy">{booking.userName || 'Traveler'} · ID {formatShortId(booking.id)}</div>
-                    </div>
-                    <span className={`app-pill ${
-                      booking.status === 'CONFIRMED'
-                        ? 'app-pill-success'
-                        : booking.status === 'CANCELLED'
-                          ? 'app-pill-danger'
-                          : booking.status === 'COMPLETED'
-                            ? 'app-pill-neutral'
-                            : 'app-pill-warning'
-                    }`}>
-                      {formatStatusLabel(booking.status)}
-                    </span>
+            return (
+              <article key={booking.id} className="surface flex flex-col p-6">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[var(--text)]">
+                      {booking.destination || 'Trip booking'}
+                    </h3>
+                    <p className="text-sm text-[var(--text-soft)]">ID {formatShortId(booking.id)}</p>
                   </div>
+                  <span className={`app-pill ${
+                    booking.status === 'CONFIRMED'
+                      ? 'app-pill-success'
+                      : booking.status === 'CANCELLED'
+                        ? 'app-pill-danger'
+                        : booking.status === 'COMPLETED'
+                          ? 'app-pill-neutral'
+                          : 'app-pill-warning'
+                  }`}>
+                    {formatStatusLabel(booking.status)}
+                  </span>
+                </div>
 
-                  <div className="record-grid">
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Window</div>
-                      <div className="record-meta-value">{formatDateRange(booking.startDate, booking.endDate)}</div>
-                    </div>
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Amount</div>
-                      <div className="record-meta-value">{formatCurrency(booking.totalAmount)}</div>
-                    </div>
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Created</div>
-                      <div className="record-meta-value">{formatDate(booking.createdAt)}</div>
-                    </div>
-                    <div className="record-meta-block">
-                      <div className="record-meta-label">Bid</div>
-                      <div className="record-meta-value">{booking.bidId ? formatShortId(booking.bidId) : '--'}</div>
-                    </div>
+                <div className="mt-4 grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-4">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Traveler</div>
+                    <div className="text-sm font-medium text-[var(--text)]">{booking.userName || 'Guest'}</div>
                   </div>
-
-                  <div className="record-actions">
-                    {actions.length === 0 ? (
-                      <span className="text-sm text-[var(--text-muted)]">No further action</span>
-                    ) : (
-                      actions.map((action) => (
-                        <button
-                          key={action.status}
-                          type="button"
-                          disabled={updatingId === booking.id}
-                          onClick={() => handleUpdateStatus(booking.id, action.status)}
-                          className={`${action.classes} h-10 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-60`}
-                        >
-                          {updatingId === booking.id ? 'Updating...' : action.label}
-                        </button>
-                      ))
-                    )}
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Amount</div>
+                    <div className="text-sm font-medium text-[var(--text)]">{formatCurrency(booking.totalAmount)}</div>
+                  </div>
+                  <div className="col-span-2">
+                    <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Dates</div>
+                    <div className="text-sm font-medium text-[var(--text)]">{formatDateRange(booking.startDate, booking.endDate)}</div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          <div className="app-table-shell hidden overflow-x-auto lg:block">
-            <table className="app-table min-w-[1120px]">
-              <thead>
-                <tr>
-                  <th>Booking</th>
-                  <th>Traveler</th>
-                  <th>Travel window</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking) => {
-                  const actions =
-                    booking.status === 'PENDING'
-                      ? [
-                          { label: 'Confirm', status: 'CONFIRMED' as const, classes: 'app-btn-primary' },
-                          { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
-                        ]
-                      : booking.status === 'CONFIRMED'
-                        ? [
-                            { label: 'Complete', status: 'COMPLETED' as const, classes: 'app-btn-primary' },
-                            { label: 'Cancel', status: 'CANCELLED' as const, classes: 'app-btn-secondary' },
-                          ]
-                        : [];
-
-                  return (
-                    <tr key={booking.id}>
-                      <td>
-                        <div className="font-semibold tracking-tight text-[var(--text)]">{booking.destination || 'Trip booking'}</div>
-                        <div className="mt-1 text-sm text-[var(--text-muted)]">ID {formatShortId(booking.id)}</div>
-                      </td>
-                      <td>
-                        <div className="font-semibold tracking-tight text-[var(--text)]">{booking.userName || 'Traveler'}</div>
-                        <div className="mt-1 text-sm text-[var(--text-muted)]">Created {formatDate(booking.createdAt)}</div>
-                      </td>
-                      <td>
-                        <div className="font-semibold tracking-tight text-[var(--text)]">{formatDateRange(booking.startDate, booking.endDate)}</div>
-                      </td>
-                      <td>
-                        <div className="font-semibold tracking-tight text-[var(--text)]">{formatCurrency(booking.totalAmount)}</div>
-                        {booking.bidId && <div className="mt-1 text-sm text-[var(--text-muted)]">Bid {formatShortId(booking.bidId)}</div>}
-                      </td>
-                      <td>
-                        <span className={`app-pill ${
-                          booking.status === 'CONFIRMED'
-                            ? 'app-pill-success'
-                            : booking.status === 'CANCELLED'
-                              ? 'app-pill-danger'
-                              : booking.status === 'COMPLETED'
-                                ? 'app-pill-neutral'
-                                : 'app-pill-warning'
-                        }`}>
-                          {formatStatusLabel(booking.status)}
-                        </span>
-                      </td>
-                      <td>
-                        {actions.length === 0 ? (
-                          <span className="text-sm text-[var(--text-muted)]">No further action</span>
-                        ) : (
-                          <div className="flex flex-wrap gap-2">
-                            {actions.map((action) => (
-                              <button
-                                key={action.status}
-                                type="button"
-                                disabled={updatingId === booking.id}
-                                onClick={() => handleUpdateStatus(booking.id, action.status)}
-                                className={`${action.classes} h-10 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-60`}
-                              >
-                                {updatingId === booking.id ? 'Updating...' : action.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </>
+                {actions.length > 0 && (
+                  <div className="mt-6 flex gap-2 border-t border-[var(--border)] pt-4">
+                    {actions.map((action) => (
+                      <button
+                        key={action.status}
+                        type="button"
+                        disabled={updatingId === booking.id}
+                        onClick={() => handleUpdateStatus(booking.id, action.status)}
+                        className={`h-9 flex-1 rounded-lg px-2 text-xs font-medium transition-colors ${action.classes} disabled:opacity-50`}
+                      >
+                        {updatingId === booking.id ? '...' : action.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
       )}
 
       {pagination.total > pagination.limit && (
-        <div className="page-pagination">
+        <div className="flex items-center justify-center gap-4 mt-8">
           <button
             type="button"
-            onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary h-10 px-4 text-xs disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-sm font-medium text-[var(--text-muted)]">
+          <span className="text-xs font-medium text-[var(--text-soft)]">
             Page {page} of {Math.ceil(pagination.total / pagination.limit)}
           </span>
           <button
             type="button"
-            onClick={() => setPage((currentPage) => currentPage + 1)}
+            onClick={() => setPage((p) => p + 1)}
             disabled={page >= Math.ceil(pagination.total / pagination.limit)}
-            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary h-10 px-4 text-xs disabled:opacity-50"
           >
             Next
           </button>
