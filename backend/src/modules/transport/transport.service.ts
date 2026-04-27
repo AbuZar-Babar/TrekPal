@@ -135,26 +135,13 @@ export class TransportService {
     const vehiclesResponse = await Promise.all(
       vehicles.map((vehicle) => this.mapVehicleResponse(vehicle)),
     );
-    if (agencyId) {
-      where.agencyId = agencyId;
-    }
 
-    const vehicle = await prisma.vehicle.findUnique({
-      where,
-      include: {
-        agency: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-
-    if (!vehicle) {
-      throw new Error('Vehicle not found');
-    }
-
-    return await this.mapVehicleResponse(vehicle);
+    return {
+      vehicles: vehiclesResponse,
+      total,
+      page,
+      limit,
+    };
   }
 
   /**

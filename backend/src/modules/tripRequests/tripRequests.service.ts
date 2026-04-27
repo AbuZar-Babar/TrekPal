@@ -270,7 +270,7 @@ export class TripRequestsService {
       include: tripRequestInclude,
     });
 
-    return mapTripRequest(tripRequest);
+    return this.mapTripRequest(tripRequest);
   }
 
   /**
