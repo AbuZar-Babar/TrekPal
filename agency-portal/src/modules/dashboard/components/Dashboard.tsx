@@ -16,8 +16,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const { user } = useSelector((state: RootState) => state.auth);
-  const { vehicles, loading: vehiclesLoading } = useSelector((state: RootState) => state.transport);
-  const { hotels, loading: hotelsLoading } = useSelector((state: RootState) => state.hotels);
+  const { vehicles } = useSelector((state: RootState) => state.transport);
+  const { hotels } = useSelector((state: RootState) => state.hotels);
   const { packages } = useSelector((state: RootState) => state.packages);
   const { bids } = useSelector((state: RootState) => state.bids);
   const { bookings } = useSelector((state: RootState) => state.bookings);
