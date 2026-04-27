@@ -71,16 +71,12 @@ const LoginForm = () => {
 
   return (
     <AuthShell
-      badge="Agency sign in"
+      badge="Agency Portal"
       title="Sign in"
-      subtitle="Use your approved agency account."
-      panelTitle="Run your agency from one place."
-      panelText="Sign in after approval to manage trip offers, traveler requests, hotels, vehicles, and bookings."
-      panelPoints={[
-        'Create your own trip offers.',
-        'Review traveler requests and place bids.',
-        'Manage hotels, vehicles, and bookings.',
-      ]}
+      subtitle="Access your agency dashboard."
+      panelTitle="Manage your agency"
+      panelText="Sign in to view trip requests and manage your inventory."
+      panelPoints={[]}
     >
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>

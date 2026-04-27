@@ -66,12 +66,11 @@ const Dashboard = () => {
     <div className="space-y-6">
       <section className="page-hero">
         <div>
-          <div className="page-eyebrow">Agency overview</div>
-          <h2 className="page-title">
-            {user?.name || 'Agency'} can review demand, ship offers, and manage inventory from one clean workspace.
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--text)]">
+            Welcome back, {user?.name || 'Agency'}
           </h2>
-          <p className="page-copy">
-            The dashboard is now focused on the next action: respond to active traveler demand, keep offer inventory current, and monitor confirmed work without scanning dense admin tables.
+          <p className="mt-1 text-sm text-[var(--text-soft)]">
+            Here's what's happening with your inventory and bookings today.
           </p>
         </div>
 

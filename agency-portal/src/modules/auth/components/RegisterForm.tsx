@@ -548,16 +548,12 @@ const RegisterForm = () => {
 
   return (
     <AuthShell
-      badge="Agency sign up"
+      badge="Agency Portal"
       title="Register agency"
-      subtitle="Add your business details and documents for review."
-      panelTitle="Register once. Start after approval."
-      panelText="Submit the agency details, representative identity, and core documents. Admin approval unlocks login."
-      panelPoints={[
-        'Business and representative details.',
-        'Required KYC and registration documents.',
-        'Pending review before portal access.',
-      ]}
+      subtitle="Submit details for review."
+      panelTitle="Join as an Agency"
+      panelText="Register your agency to start offering trips and bidding on requests."
+      panelPoints={[]}
     >
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <StepIndicator currentStep={step} />
