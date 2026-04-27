@@ -50,9 +50,6 @@ const AuthShell = ({
             </div>
           </div>
 
-          <div className="app-card-subtle px-4 py-4 text-sm text-[var(--text-muted)]">
-            Agencies can sign in only after admin approval and document review.
-          </div>
         </aside>
 
         <main className="auth-main">
@@ -65,11 +62,9 @@ const AuthShell = ({
               </div>
               <div>
                 <div className="text-sm font-semibold tracking-tight">TrekPal Agency</div>
-                <div className="text-xs text-[var(--text-soft)]">Minimal workspace</div>
               </div>
             </Link>
 
-            <div className="auth-chip hidden md:inline-flex">Review based access</div>
           </div>
 
           <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-10">
