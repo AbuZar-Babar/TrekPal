@@ -24,17 +24,7 @@ const PackageList = () => {
     );
   }, [dispatch, page, search]);
 
-  const uniqueDestinations = useMemo(
-    () => new Set(packages.flatMap((item) => item.destinations.map((destination) => destination.toLowerCase()))).size,
-    [packages],
-  );
 
-  const stats = [
-    { label: 'Trip offers', value: packages.length, note: 'Visible in the current result set' },
-    { label: 'Active', value: packages.filter((item) => item.isActive).length, note: 'Published to travelers' },
-    { label: 'Hidden', value: packages.filter((item) => !item.isActive).length, note: 'Saved but not visible' },
-    { label: 'Destinations', value: uniqueDestinations, note: 'Coverage across your routes' },
-  ];
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Delete this trip offer?')) {
@@ -53,24 +43,8 @@ const PackageList = () => {
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div>
-          <div className="page-eyebrow">Offer management</div>
-          <h1 className="page-title">Minimal, readable trip offers built for fast editing and cleaner review.</h1>
-          <p className="page-copy">
-            Search quickly, scan inventory attachments without noise, and jump into edits from a layout that stays readable on mobile and desktop.
-          </p>
-        </div>
-
-        <div className="page-stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat-card">
-              <div className="stat-card-label">{stat.label}</div>
-              <div className="stat-card-value">{stat.value}</div>
-              <div className="stat-card-note">{stat.note}</div>
-            </div>
-          ))}
-        </div>
+      <section className="mb-4">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">Offer Management</h2>
       </section>
 
       <div className="page-toolbar">

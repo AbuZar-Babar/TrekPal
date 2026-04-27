@@ -40,32 +40,12 @@ const BookingList = () => {
     }
   };
 
-  const stats = [
-    { label: 'Pending', value: bookings.filter((booking) => booking.status === 'PENDING').length },
-    { label: 'Confirmed', value: bookings.filter((booking) => booking.status === 'CONFIRMED').length },
-    { label: 'Completed', value: bookings.filter((booking) => booking.status === 'COMPLETED').length },
-    { label: 'Cancelled', value: bookings.filter((booking) => booking.status === 'CANCELLED').length },
-  ];
+
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div>
-          <div className="page-eyebrow">Bookings</div>
-          <h1 className="page-title">Booking operations are clearer, faster, and less table-bound.</h1>
-          <p className="page-copy">
-            Confirm traveler requests, finish completed work, and review queue health from a cleaner booking surface that now works on mobile as well.
-          </p>
-        </div>
-        <div className="page-stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat-card">
-              <div className="stat-card-label">{stat.label}</div>
-              <div className="stat-card-value">{stat.value}</div>
-              <div className="stat-card-note">Current booking state count</div>
-            </div>
-          ))}
-        </div>
+      <section className="mb-4">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">Bookings</h2>
       </section>
 
       <div className="segmented-filters">

@@ -133,33 +133,12 @@ const TripRequestList = () => {
     }
   };
 
-  const stats = [
-    { label: 'Traveler briefs', value: tripRequests.length, note: 'Visible in the open queue' },
-    { label: 'Live offers', value: bids.filter((bid) => bid.status === 'PENDING').length, note: 'Negotiations still active' },
-    { label: 'Agency action', value: bids.filter((bid) => bid.awaitingActionBy === 'AGENCY' && bid.status === 'PENDING').length, note: 'Needs your follow-up' },
-    { label: 'Accepted', value: bids.filter((bid) => bid.status === 'ACCEPTED').length, note: 'Traveler approvals secured' },
-  ];
+
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div>
-          <div className="page-eyebrow">Marketplace</div>
-          <h1 className="page-title">Traveler requests are now easier to scan, quote, and revise on every screen size.</h1>
-          <p className="page-copy">
-            The page focuses on demand quality, commercial fit, and negotiation state without relying on a dense desktop-only table.
-          </p>
-        </div>
-
-        <div className="page-stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat-card">
-              <div className="stat-card-label">{stat.label}</div>
-              <div className="stat-card-value">{stat.value}</div>
-              <div className="stat-card-note">{stat.note}</div>
-            </div>
-          ))}
-        </div>
+      <section className="mb-4">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">Marketplace</h2>
       </section>
 
       <div className="page-toolbar">

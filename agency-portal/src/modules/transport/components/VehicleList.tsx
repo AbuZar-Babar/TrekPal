@@ -30,47 +30,14 @@ const VehicleList = () => {
     }
   };
 
-  const stats = [
-    { label: 'Fleet', value: pagination.total || vehicles.length, hint: 'Vehicles managed by the agency' },
-    {
-      label: 'Available',
-      value: vehicles.filter((vehicle) => vehicle.isAvailable).length,
-      hint: 'Ready to attach to traveler offers',
-    },
-    {
-      label: 'Unavailable',
-      value: vehicles.filter((vehicle) => !vehicle.isAvailable).length,
-      hint: 'Currently off rotation',
-    },
-    {
-      label: 'Visual ready',
-      value: vehicles.filter((vehicle) => vehicle.images.length > 0).length,
-      hint: 'Listings with image coverage',
-    },
-  ];
+
 
   const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.limit || 1));
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div className="space-y-3">
-          <span className="app-pill app-pill-neutral">Transport</span>
-          <h1 className="page-title">Minimal fleet management for traveler operations</h1>
-          <p className="page-copy max-w-3xl">
-            Keep transport listings clean, current, and bookable so trip requests can be quoted with
-            credible logistics in a single workflow.
-          </p>
-        </div>
-        <div className="page-stats-grid">
-          {stats.map((stat) => (
-            <article key={stat.label} className="stat-card">
-              <span>{stat.label}</span>
-              <strong>{stat.value}</strong>
-              <p>{stat.hint}</p>
-            </article>
-          ))}
-        </div>
+      <section className="mb-4">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">Fleet Management</h2>
       </section>
 
       <section className="surface">

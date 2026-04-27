@@ -30,45 +30,12 @@ const HotelList = () => {
     return matchesSearch;
   });
 
-  const stats = [
-    { label: 'Properties', value: hotels.length, hint: 'Total hotel listings in inventory' },
-    {
-      label: 'Amenity rich',
-      value: hotels.filter((hotel) => hotel.amenities.length >= 4).length,
-      hint: 'Listings with stronger stay detail',
-    },
-    {
-      label: 'Visual ready',
-      value: hotels.filter((hotel) => hotel.images.length > 0).length,
-      hint: 'Properties with at least one image',
-    },
-    {
-      label: 'Cities',
-      value: new Set(hotels.map((hotel) => hotel.city).filter(Boolean)).size,
-      hint: 'Destination coverage across listings',
-    },
-  ];
+
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div className="space-y-3">
-          <span className="app-pill app-pill-neutral">Hotels</span>
-          <h1 className="page-title">Clean stay inventory for offer packaging</h1>
-          <p className="page-copy max-w-3xl">
-            Keep hotel listings current so your agency can attach credible stay options to every
-            offer without switching tools or asking admin for manual cleanup.
-          </p>
-        </div>
-        <div className="page-stats-grid">
-          {stats.map((stat) => (
-            <article key={stat.label} className="stat-card">
-              <span>{stat.label}</span>
-              <strong>{stat.value}</strong>
-              <p>{stat.hint}</p>
-            </article>
-          ))}
-        </div>
+      <section className="mb-4">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">Hotel Inventory</h2>
       </section>
 
       <section className="surface">
