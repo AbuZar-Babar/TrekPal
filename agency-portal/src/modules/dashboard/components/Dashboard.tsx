@@ -48,10 +48,10 @@ const Dashboard = () => {
   ];
 
   const actions = [
-    { label: 'Create trip offer', copy: 'Publish a new itinerary.', path: '/packages/new' },
-    { label: 'Review requests', copy: 'Reply to traveler demand.', path: '/trip-requests' },
-    { label: 'Add hotel', copy: 'Expand stay inventory.', path: '/hotels/new' },
-    { label: 'Add vehicle', copy: 'Keep fleet coverage ready.', path: '/transport/new' },
+    { label: 'Create trip', path: '/packages/new' },
+    { label: 'View requests', path: '/trip-requests' },
+    { label: 'Add hotel', path: '/hotels/new' },
+    { label: 'Add vehicle', path: '/transport/new' },
   ];
 
   const recentBids = [...bids]
@@ -64,89 +64,48 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-[var(--text)]">
-            Welcome back, {user?.name || 'Agency'}
-          </h2>
-          <p className="mt-1 text-sm text-[var(--text-soft)]">
-            Here's what's happening with your inventory and bookings today.
-          </p>
-        </div>
-
-        <div className="page-stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat-card">
-              <div className="stat-card-label">{stat.label}</div>
-              <div className="stat-card-value">{stat.value}</div>
-              <div className="stat-card-note">{stat.note}</div>
-            </div>
-          ))}
-        </div>
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold text-[var(--text)]">
+          Welcome back, {user?.name || 'Agency'}
+        </h2>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-        <div className="surface px-5 py-5 md:px-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="app-section-label">Quick actions</div>
-              <h3 className="mt-2 text-xl font-semibold tracking-tight text-[var(--text)]">Keep the pipeline moving</h3>
-            </div>
-            <div className="app-pill app-pill-success">Approved access</div>
-          </div>
-
-          <div className="mt-5 grid gap-3 md:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="surface p-5">
+          <h3 className="mb-4 text-lg font-semibold text-[var(--text)]">Quick actions</h3>
+          <div className="grid grid-cols-2 gap-3">
             {actions.map((action) => (
               <button
                 key={action.label}
                 type="button"
                 onClick={() => navigate(action.path)}
-                className="record-card text-left"
+                className="app-btn-secondary h-12 text-sm font-medium"
               >
-                <div className="record-title">{action.label}</div>
-                <div className="record-copy">{action.copy}</div>
+                {action.label}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="app-panel-dark px-5 py-5 md:px-6">
-          <div className="app-section-label">Readiness</div>
-          <h3 className="mt-2 text-xl font-semibold tracking-tight text-[var(--text)]">Inventory snapshot</h3>
-          <div className="mt-5 mobile-record-list">
-            <div className="record-card">
-              <div className="record-title">Hotels</div>
-              <div className="record-copy">
-                {hotelsLoading ? 'Loading hotel inventory...' : `${hotels.length} listings available for packaging.`}
+        <div className="surface p-5">
+          <h3 className="mb-4 text-lg font-semibold text-[var(--text)]">Overview</h3>
+          <div className="grid grid-cols-4 gap-3">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--panel-subtle)] p-3 text-center">
+                <div className="text-xl font-bold text-[var(--text)]">{stat.value}</div>
+                <div className="mt-1 text-xs text-[var(--text-soft)]">{stat.label}</div>
               </div>
-            </div>
-            <div className="record-card">
-              <div className="record-title">Vehicles</div>
-              <div className="record-copy">
-                {vehiclesLoading ? 'Loading fleet inventory...' : `${availableVehicles.length} available out of ${vehicles.length} total.`}
-              </div>
-            </div>
-            <div className="record-card">
-              <div className="record-title">Urgent negotiations</div>
-              <div className="record-copy">
-                {urgentNegotiations.length > 0
-                  ? `${urgentNegotiations.length} active threads are waiting on agency follow-up.`
-                  : 'No traveler threads are currently blocked on agency action.'}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-2">
         <div className="surface overflow-hidden">
-          <div className="surface-header">
-            <div>
-              <div className="app-section-label">Negotiations</div>
-              <div className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Recent bid activity</div>
-            </div>
-            <button type="button" onClick={() => navigate('/trip-requests')} className="app-btn-secondary h-10 px-4 text-sm">
-              Open requests
+          <div className="flex items-center justify-between border-b border-[var(--border)] p-4">
+            <h3 className="font-semibold text-[var(--text)]">Recent Bids</h3>
+            <button type="button" onClick={() => navigate('/trip-requests')} className="text-sm font-medium text-[var(--primary)] hover:underline">
+              View all
             </button>
           </div>
           <div className="mobile-record-list p-4 md:p-5">
@@ -194,13 +153,10 @@ const Dashboard = () => {
         </div>
 
         <div className="surface overflow-hidden">
-          <div className="surface-header">
-            <div>
-              <div className="app-section-label">Bookings</div>
-              <div className="mt-2 text-lg font-semibold tracking-tight text-[var(--text)]">Recent confirmed work</div>
-            </div>
-            <button type="button" onClick={() => navigate('/bookings')} className="app-btn-secondary h-10 px-4 text-sm">
-              Open bookings
+          <div className="flex items-center justify-between border-b border-[var(--border)] p-4">
+            <h3 className="font-semibold text-[var(--text)]">Recent Bookings</h3>
+            <button type="button" onClick={() => navigate('/bookings')} className="text-sm font-medium text-[var(--primary)] hover:underline">
+              View all
             </button>
           </div>
           <div className="mobile-record-list p-4 md:p-5">
