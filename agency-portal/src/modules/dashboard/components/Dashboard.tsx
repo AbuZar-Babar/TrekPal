@@ -9,7 +9,7 @@ import { fetchPackages } from '../../packages/store/packagesSlice';
 import { fetchTripRequests } from '../../tripRequests/store/tripRequestsSlice';
 import { fetchVehicles } from '../../transport/store/transportSlice';
 import { RootState } from '../../../store';
-import { formatCurrency, formatDate, formatDateRange } from '../../../shared/utils/formatters';
+import { formatCurrency } from '../../../shared/utils/formatters';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -53,14 +53,6 @@ const Dashboard = () => {
     { label: 'Add hotel', path: '/hotels/new' },
     { label: 'Add vehicle', path: '/transport/new' },
   ];
-
-  const recentBids = [...bids]
-    .sort((left, right) => new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime())
-    .slice(0, 3);
-
-  const recentBookings = [...bookings]
-    .sort((left, right) => new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime())
-    .slice(0, 3);
 
   return (
     <div className="space-y-6">

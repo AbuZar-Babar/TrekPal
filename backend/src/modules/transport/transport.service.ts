@@ -67,12 +67,6 @@ export class TransportService {
             name: true,
           },
         },
-      include: {
-        agency: {
-          select: {
-            name: true,
-          },
-        },
       },
     });
 

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { RootState } from '../../../store';
-import { formatCurrency, formatDate } from '../../../shared/utils/formatters';
+import { formatCurrency } from '../../../shared/utils/formatters';
 import { deletePackage, fetchPackages } from '../store/packagesSlice';
 
 const PackageList = () => {

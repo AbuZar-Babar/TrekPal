@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { RootState } from '../../../store';
-import { formatDate, formatCurrency } from '../../../shared/utils/formatters';
+import { formatCurrency } from '../../../shared/utils/formatters';
 import { deleteHotel, fetchHotels } from '../store/hotelsSlice';
 
 const HotelList = () => {
@@ -158,14 +158,6 @@ const HotelList = () => {
 
                 <div className="mt-auto pt-6 flex items-center justify-between">
                   <div>
-                    {hotel.rooms?.[0] && (
-                      <div className="text-xs text-[var(--text-muted)]">
-                        Starting from
-                        <span className="ml-1 text-sm font-bold text-[var(--text)]">
-                          {formatCurrency(hotel.rooms[0].price)}
-                        </span>
-                      </div>
-                    )}
                   </div>
                   
                   <div className="flex gap-2">
