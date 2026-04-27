@@ -551,9 +551,6 @@ const RegisterForm = () => {
       badge="Agency Portal"
       title="Register agency"
       subtitle="Submit details for review."
-      panelTitle="Join as an Agency"
-      panelText="Register your agency to start offering trips and bidding on requests."
-      panelPoints={[]}
     >
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <StepIndicator currentStep={step} />
