@@ -17,13 +17,6 @@ const PendingApproval = () => {
       badge="Pending review"
       title="Application under review"
       subtitle="Your agency stays in the waiting queue until admin approval."
-      panelTitle="Submitted successfully."
-      panelText="You can sign in only after the admin reviews the business details and uploaded documents."
-      panelPoints={[
-        'Business details received.',
-        'Documents sent for review.',
-        'Login opens after approval.',
-      ]}
     >
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <div className="space-y-6">
