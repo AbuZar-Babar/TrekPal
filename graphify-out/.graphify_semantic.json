@@ -1,0 +1,492 @@
+{
+  "nodes": [
+    {
+      "id": "app_protectedroute",
+      "label": "Protected Route",
+      "file_type": "code",
+      "source_file": "admin-portal/src/App.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_routingconfig",
+      "label": "App Routing Config",
+      "file_type": "code",
+      "source_file": "admin-portal/src/App.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "apiclient_axiosinstance",
+      "label": "API Client (Axios)",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/services/apiClient.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "apiclient_authtokeninterceptor",
+      "label": "Auth Token Interceptor",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/services/apiClient.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "apiclient_401redirect",
+      "label": "401 Unauthorized Redirect",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/services/apiClient.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "store_reduxstore",
+      "label": "Redux Store",
+      "file_type": "code",
+      "source_file": "admin-portal/src/store/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "store_rootstate",
+      "label": "Root State Type",
+      "file_type": "code",
+      "source_file": "admin-portal/src/store/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_user",
+      "label": "User Interface",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_agency",
+      "label": "Agency Interface",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_hotel",
+      "label": "Hotel Interface",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_vehicle",
+      "label": "Vehicle Interface",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_userprofile",
+      "label": "User Profile Interface",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_dashboardstats",
+      "label": "Dashboard Stats Interface",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_paginatedresponse",
+      "label": "Paginated Response Generic",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "types_travelerkycstatus",
+      "label": "Traveler KYC Status",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "useapiquery_standardfetching",
+      "label": "useApiQuery Hook",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/hooks/useApiQuery.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "useapimutation_mutations",
+      "label": "useApiMutation Hook",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/hooks/useApiMutation.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "useapipagination_paginationhook",
+      "label": "useApiPagination Hook",
+      "file_type": "code",
+      "source_file": "admin-portal/src/shared/hooks/useApiPagination.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "architecture_datafloworderedpattern",
+      "label": "Component-Hook-Service-API Data Flow",
+      "file_type": "document",
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "architecture_modulestructure",
+      "label": "Standardized Module Structure",
+      "file_type": "document",
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "architecture_antipatterns",
+      "label": "Anti-Patterns to Avoid",
+      "file_type": "document",
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "architecture_errorhandlingpattern",
+      "label": "Error Handling Pattern",
+      "file_type": "document",
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "architecture_servicelayerpattern",
+      "label": "Service Layer Pattern",
+      "file_type": "document",
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "app_protectedroute",
+      "target": "store_rootstate",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/App.tsx",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "app_routingconfig",
+      "target": "app_protectedroute",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/App.tsx",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "apiclient_authtokeninterceptor",
+      "target": "apiclient_axiosinstance",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/shared/services/apiClient.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "apiclient_401redirect",
+      "target": "apiclient_axiosinstance",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/shared/services/apiClient.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "apiclient_401redirect",
+      "target": "app_protectedroute",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal/src/shared/services/apiClient.ts",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "store_reduxstore",
+      "target": "store_rootstate",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/store/index.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "types_agency",
+      "target": "types_hotel",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "types_agency",
+      "target": "types_vehicle",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "types_userprofile",
+      "target": "types_travelerkycstatus",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "types_dashboardstats",
+      "target": "types_agency",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "admin-portal/src/shared/types/index.ts",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "useapipagination_paginationhook",
+      "target": "useapiquery_standardfetching",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/shared/hooks/useApiPagination.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "useapipagination_paginationhook",
+      "target": "types_paginatedresponse",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/src/shared/hooks/useApiPagination.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_datafloworderedpattern",
+      "target": "useapiquery_standardfetching",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_datafloworderedpattern",
+      "target": "useapimutation_mutations",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_servicelayerpattern",
+      "target": "apiclient_axiosinstance",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "architecture_errorhandlingpattern",
+      "target": "apiclient_401redirect",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "architecture_modulestructure",
+      "target": "architecture_datafloworderedpattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "useapiquery_standardfetching",
+      "target": "apiclient_axiosinstance",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "admin-portal/src/shared/hooks/useApiQuery.ts",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "useapimutation_mutations",
+      "target": "apiclient_axiosinstance",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "admin-portal/src/shared/hooks/useApiMutation.ts",
+      "source_location": null,
+      "weight": 0.9
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "shared_hooks_triad",
+      "label": "Shared API Hook Layer",
+      "nodes": [
+        "useapiquery_standardfetching",
+        "useapimutation_mutations",
+        "useapipagination_paginationhook"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "admin-portal/docs/ARCHITECTURE_PATTERNS.md"
+    },
+    {
+      "id": "approval_entities",
+      "label": "Approvable Entities (Agency/Hotel/Vehicle)",
+      "nodes": [
+        "types_agency",
+        "types_hotel",
+        "types_vehicle"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "admin-portal/src/shared/types/index.ts"
+    },
+    {
+      "id": "auth_guard_system",
+      "label": "Authentication Guard System",
+      "nodes": [
+        "app_protectedroute",
+        "apiclient_authtokeninterceptor",
+        "apiclient_401redirect"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "admin-portal/src/App.tsx"
+    }
+  ],
+  "input_tokens": 8200,
+  "output_tokens": 1400
+}

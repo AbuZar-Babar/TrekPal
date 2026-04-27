@@ -1,0 +1,25 @@
+{
+  "runs": [
+    {
+      "date": "2026-04-27T09:30:57.688181+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 92
+    },
+    {
+      "date": "2026-04-27T10:19:50.403322+00:00",
+      "input_tokens": 8200,
+      "output_tokens": 1400,
+      "files": 66
+    },
+    {
+      "date": "2026-04-27T10:28:22.205815+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 92,
+      "target": "backend"
+    }
+  ],
+  "total_input_tokens": 8200,
+  "total_output_tokens": 1400
+}

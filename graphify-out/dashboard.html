@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrekPal | Ecosystem Knowledge Graphs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0c10;
+            --card-bg: #161b22;
+            --accent: #2f81f7;
+            --accent-glow: rgba(47, 129, 247, 0.4);
+            --text: #c9d1d9;
+            --text-bold: #f0f6fc;
+            --text-dim: #8b949e;
+            --border: #30363d;
+            --card-hover: #1c2128;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 4rem 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-bold);
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f0f6fc 0%, #2f81f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            font-weight: 300;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            background: var(--card-hover);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow);
+        }
+
+        .card h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            color: var(--text-bold);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .card .stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            margin-top: auto;
+            padding-top: 4rem;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        /* Hover Glow Effect */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top right, var(--accent-glow), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TrekPal Ecosystem</h1>
+        <p class="subtitle">Complete architectural knowledge graph dashboard.</p>
+    </header>
+
+    <div class="grid">
+        <a href="graph_backend.html" class="card">
+            <div class="badge">API & Core</div>
+            <div class="icon">⚙️</div>
+            <h2>Backend</h2>
+            <p>Node.js, Express, and Prisma repository layer mapping. Core data models and authentication logic.</p>
+            <div class="stats">
+                <span>586 Nodes</span>
+                <span>1038 Edges</span>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--accent); text-decoration: underline;">
+                <object><a href="wiki_backend/index.md">Open Architecture Wiki</a></object>
+            </div>
+        </a>
+
+        <a href="graph_traveler.html" class="card">
+            <div class="badge">Mobile</div>
+            <div class="icon">📱</div>
+            <h2>Traveler App</h2>
+            <p>Flutter Clean Architecture mapping. Features, real-time sync, and KYC gating workflows.</p>
+            <div class="stats">
+                <span>774 Nodes</span>
+                <span>852 Edges</span>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--accent); text-decoration: underline;">
+                <object><a href="wiki_traveler/index.md">Open Architecture Wiki</a></object>
+            </div>
+        </a>
+
+        <a href="graph_admin.html" class="card">
+            <div class="badge">Web</div>
+            <div class="icon">🛡️</div>
+            <h2>Admin Portal</h2>
+            <p>React/Vite management dashboard. User verification, reporting, and ecosystem oversight.</p>
+            <div class="stats">
+                <span>156 Nodes</span>
+                <span>113 Edges</span>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--accent); text-decoration: underline;">
+                <object><a href="wiki_admin/index.md">Open Architecture Wiki</a></object>
+            </div>
+        </a>
+
+        <a href="graph_agency.html" class="card">
+            <div class="badge">Web</div>
+            <div class="icon">💼</div>
+            <h2>Agency Portal</h2>
+            <p>React/Redux portal for agencies. Inventory management, bidding, and booking operations.</p>
+            <div class="stats">
+                <span>153 Nodes</span>
+                <span>104 Edges</span>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--accent); text-decoration: underline;">
+                <object><a href="wiki_agency/index.md">Open Architecture Wiki</a></object>
+            </div>
+        </a>
+    </div>
+
+    <footer>
+        Generated by Antigravity Graphify Workflow &copy; 2026
+    </footer>
+</body>
+</html>

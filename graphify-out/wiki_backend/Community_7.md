@@ -1,0 +1,29 @@
+# Community 7
+
+## Nodes
+
+- admin_controller_request_orchestrator
+- admin_routes_admin_surface
+- admin_service_repository_orchestrator
+- admin_types_contract_schemas
+- auth_middleware_dual_token_verifier
+- constants_role_and_status_taxonomy
+- create_env_env_template
+- database_prisma_singleton
+- db_counts_table_inventory
+- ensure_kyc_bucket_private_bucket
+- env_validated_runtime_config
+- error_middleware_unified_error_mapping
+- manual_admin_creation_single_admin_policy
+- manual_admin_creation_supabase_auth_reference
+- migrate_kyc_local_urls_migration
+- provision_frontend_auth_sync
+- repository_pattern_admin_poc
+- repository_pattern_dependency_injection
+- role_guard_rbac_enforcer
+- seed_data_pipeline
+- seed_supabase_auth_upsert
+- server_http_api_composition
+- supabase_admin_client_factory
+- upload_middleware_kyc_media_filters
+- validation_middleware_zod_request_guards

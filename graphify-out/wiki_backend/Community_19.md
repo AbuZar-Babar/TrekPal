@@ -1,0 +1,13 @@
+# Community 19
+
+## Nodes
+
+- backend_src_repositories_prisma_prismauserrepository_ts
+- prismauserrepository_prismauserrepository
+- prismauserrepository_prismauserrepository_count
+- prismauserrepository_prismauserrepository_countrecentregistrations
+- prismauserrepository_prismauserrepository_create
+- prismauserrepository_prismauserrepository_delete
+- prismauserrepository_prismauserrepository_findbyid
+- prismauserrepository_prismauserrepository_findmany
+- prismauserrepository_prismauserrepository_update

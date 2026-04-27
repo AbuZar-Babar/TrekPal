@@ -1,0 +1,2 @@
+backend\uploads\kyc\cnicImage-1771423869440-679715696.jpg
+backend\uploads\kyc\ownerPhoto-1771423869440-843341475.jpg

@@ -1,0 +1,42 @@
+# Community 3
+
+## Nodes
+
+- backend_src_modules_bids_bids_service_ts
+- backend_src_modules_bids_bids_types_ts
+- backend_src_modules_bookings_bookings_service_ts
+- backend_src_ws_chat_socket_ts
+- backend_src_ws_socket_emitter_ts
+- backend_src_ws_socket_rooms_ts
+- backend_src_ws_socket_server_ts
+- bids_service_bidsservice
+- bids_service_bidsservice_acceptbid
+- bids_service_bidsservice_createbid
+- bids_service_bidsservice_createcounteroffer
+- bids_service_bidsservice_getbidbyid
+- bids_service_bidsservice_getbidsfortriprequest
+- bids_service_getcounterofferstate
+- bids_service_mapbid
+- bids_service_mapbidrevision
+- bids_types_normalizeawaitingaction
+- bids_types_normalizeofferdetails
+- bids_types_offerdetailstojson
+- bookings_service_bookingsservice
+- bookings_service_bookingsservice_canceltravelerbooking
+- bookings_service_bookingsservice_getbookingbyid
+- bookings_service_bookingsservice_updatebookingstatus
+- bookings_service_buildinitials
+- bookings_service_deriveage
+- bookings_service_mapbooking
+- bookings_service_mapparticipant
+- bookings_service_resolveavatarurl
+- chat_socket_emitchaterror
+- chat_socket_getsockettoken
+- chat_socket_initializechatsocket
+- socket_emitter_emittravelerbidupdated
+- socket_emitter_emittravelerbookingupdated
+- socket_emitter_registersocketserver
+- socket_rooms_chatroomname
+- socket_rooms_offersroomname
+- socket_rooms_travelerroomname
+- socket_server_initializesocketserver

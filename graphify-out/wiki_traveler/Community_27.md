@@ -1,0 +1,8 @@
+# Community 27
+
+## Nodes
+
+- traveler_app_trekpal_lib_features_chat_domain_entities_chat_entities_dart
+- traveler_app_trekpal_lib_features_chat_domain_entities_chat_entities_dart_chatmessageentity
+- traveler_app_trekpal_lib_features_chat_domain_entities_chat_entities_dart_chatparticipantentity
+- traveler_app_trekpal_lib_features_chat_domain_entities_chat_entities_dart_chatroomentity

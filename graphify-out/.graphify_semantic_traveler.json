@@ -1,0 +1,1436 @@
+{
+  "nodes": [
+    {
+      "id": "traveler-app_trekpal_lib_main_dart",
+      "label": "Main (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/main.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_constants_api_constants_dart",
+      "label": "Api Constants (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/constants/api_constants.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_constants_app_constants_dart",
+      "label": "App Constants (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/constants/app_constants.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_constants_route_constants_dart",
+      "label": "Route Constants (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/constants/route_constants.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_error_exceptions_dart",
+      "label": "Exceptions (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/error/exceptions.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_error_failures_dart",
+      "label": "Failures (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/error/failures.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_live_marketplace_live_service_dart",
+      "label": "Marketplace Live Service (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/live/marketplace_live_service.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_live_marketplace_updates_coordinator_dart",
+      "label": "Marketplace Updates Coordinator (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/live/marketplace_updates_coordinator.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_models_participant_preview_dart",
+      "label": "Participant Preview (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/models/participant_preview.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_network_api_client_dart",
+      "label": "Api Client (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/network/api_client.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_network_api_interceptor_dart",
+      "label": "Api Interceptor (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/network/api_interceptor.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_network_network_info_dart",
+      "label": "Network Info (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/network/network_info.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_notifications_notification_service_dart",
+      "label": "Notification Service (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/notifications/notification_service.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_theme_app_colors_dart",
+      "label": "App Colors (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/theme/app_colors.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_theme_app_theme_dart",
+      "label": "App Theme (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/theme/app_theme.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_theme_theme_controller_dart",
+      "label": "Theme Controller (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/theme/theme_controller.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_utils_extensions_dart",
+      "label": "Extensions (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/utils/extensions.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_utils_formatters_dart",
+      "label": "Formatters (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/utils/formatters.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_utils_validators_dart",
+      "label": "Validators (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/utils/validators.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_widgets_avatar_group_dart",
+      "label": "Avatar Group (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/widgets/avatar_group.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_widgets_destination_artwork_dart",
+      "label": "Destination Artwork (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/widgets/destination_artwork.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_widgets_error_widget_dart",
+      "label": "Error Widget (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/widgets/error_widget.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_widgets_loading_widget_dart",
+      "label": "Loading Widget (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/widgets/loading_widget.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_widgets_participant_roster_dart",
+      "label": "Participant Roster (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/widgets/participant_roster.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_core_widgets_user_avatar_dart",
+      "label": "User Avatar (Core)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/core/widgets/user_avatar.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_data_datasources_auth_local_datasource_dart",
+      "label": "Auth Local Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/data/datasources/auth_local_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_data_datasources_auth_remote_datasource_dart",
+      "label": "Auth Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/data/datasources/auth_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_data_models_auth_model_dart",
+      "label": "Auth Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/data/models/auth_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_data_repositories_auth_repository_impl_dart",
+      "label": "Auth Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/data/repositories/auth_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_domain_entities_auth_entities_dart",
+      "label": "Auth Entities (Entity)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/domain/entities/auth_entities.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_domain_repositories_auth_repository_dart",
+      "label": "Auth Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/domain/repositories/auth_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_domain_usecases_login_usecase_dart",
+      "label": "Login Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/domain/usecases/login_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_domain_usecases_register_usecase_dart",
+      "label": "Register Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/domain/usecases/register_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_presentation_pages_login_page_dart",
+      "label": "Login Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/presentation/pages/login_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_presentation_pages_register_page_dart",
+      "label": "Register Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/presentation/pages/register_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_presentation_pages_traveler_kyc_page_dart",
+      "label": "Traveler Kyc Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/presentation/pages/traveler_kyc_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_presentation_pages_traveler_kyc_pending_page_dart",
+      "label": "Traveler Kyc Pending Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/presentation/pages/traveler_kyc_pending_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_presentation_providers_auth_provider_dart",
+      "label": "Auth Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/presentation/providers/auth_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_presentation_widgets_auth_form_widget_dart",
+      "label": "Auth Form Widget (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/presentation/widgets/auth_form_widget.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_auth_presentation_widgets_traveler_kyc_gate_card_dart",
+      "label": "Traveler Kyc Gate Card (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/auth/presentation/widgets/traveler_kyc_gate_card.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_booking_presentation_widgets_booking_card_dart",
+      "label": "Booking Card (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/booking/presentation/widgets/booking_card.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_data_datasources_bookings_remote_datasource_dart",
+      "label": "Bookings Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/data/datasources/bookings_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_data_models_bookings_model_dart",
+      "label": "Bookings Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/data/models/bookings_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_data_repositories_bookings_repository_impl_dart",
+      "label": "Bookings Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/data/repositories/bookings_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_domain_entities_booking_entities_dart",
+      "label": "Booking Entities (Entity)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/domain/entities/booking_entities.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_domain_repositories_bookings_repository_dart",
+      "label": "Bookings Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/domain/repositories/bookings_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_domain_usecases_accept_bid_usecase_dart",
+      "label": "Accept Bid Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/domain/usecases/accept_bid_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_domain_usecases_cancel_booking_usecase_dart",
+      "label": "Cancel Booking Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/domain/usecases/cancel_booking_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_domain_usecases_get_bookings_usecase_dart",
+      "label": "Get Bookings Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/domain/usecases/get_bookings_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_presentation_pages_bookings_list_page_dart",
+      "label": "Bookings List Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/presentation/pages/bookings_list_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_presentation_pages_booking_details_page_dart",
+      "label": "Booking Details Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/presentation/pages/booking_details_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_bookings_presentation_providers_bookings_provider_dart",
+      "label": "Bookings Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/bookings/presentation/providers/bookings_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_data_datasources_chat_remote_datasource_dart",
+      "label": "Chat Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/data/datasources/chat_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_data_models_chat_model_dart",
+      "label": "Chat Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/data/models/chat_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_data_repositories_chat_repository_impl_dart",
+      "label": "Chat Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/data/repositories/chat_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_domain_entities_chat_entities_dart",
+      "label": "Chat Entities (Entity)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/domain/entities/chat_entities.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_domain_repositories_chat_repository_dart",
+      "label": "Chat Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/domain/repositories/chat_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_domain_usecases_get_messages_usecase_dart",
+      "label": "Get Messages Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/domain/usecases/get_messages_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_domain_usecases_send_message_usecase_dart",
+      "label": "Send Message Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/domain/usecases/send_message_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_presentation_pages_chat_list_page_dart",
+      "label": "Chat List Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/presentation/pages/chat_list_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_presentation_pages_chat_room_page_dart",
+      "label": "Chat Room Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/presentation/pages/chat_room_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_chat_presentation_providers_chat_provider_dart",
+      "label": "Chat Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/chat/presentation/providers/chat_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_complaints_presentation_pages_complaint_form_page_dart",
+      "label": "Complaint Form Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/complaints/presentation/pages/complaint_form_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_group_presentation_widgets_group_card_dart",
+      "label": "Group Card (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/group/presentation/widgets/group_card.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_home_presentation_pages_home_page_dart",
+      "label": "Home Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/home/presentation/pages/home_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotel_presentation_widgets_hotel_card_dart",
+      "label": "Hotel Card (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotel/presentation/widgets/hotel_card.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_data_datasources_hotels_remote_datasource_dart",
+      "label": "Hotels Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/data/datasources/hotels_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_data_models_hotels_model_dart",
+      "label": "Hotels Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/data/models/hotels_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_data_repositories_hotels_repository_impl_dart",
+      "label": "Hotels Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/data/repositories/hotels_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_domain_repositories_hotels_repository_dart",
+      "label": "Hotels Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/domain/repositories/hotels_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_domain_usecases_book_hotel_usecase_dart",
+      "label": "Book Hotel Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/domain/usecases/book_hotel_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_domain_usecases_search_hotels_usecase_dart",
+      "label": "Search Hotels Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/domain/usecases/search_hotels_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_presentation_pages_hotel_booking_page_dart",
+      "label": "Hotel Booking Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/presentation/pages/hotel_booking_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_presentation_pages_hotel_details_page_dart",
+      "label": "Hotel Details Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/presentation/pages/hotel_details_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_presentation_pages_hotel_search_page_dart",
+      "label": "Hotel Search Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/presentation/pages/hotel_search_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_hotels_presentation_providers_hotels_provider_dart",
+      "label": "Hotels Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/hotels/presentation/providers/hotels_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_message_presentation_widgets_message_bubble_dart",
+      "label": "Message Bubble (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/message/presentation/widgets/message_bubble.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_data_datasources_packages_remote_datasource_dart",
+      "label": "Packages Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/data/datasources/packages_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_data_models_package_offer_model_dart",
+      "label": "Package Offer Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/data/models/package_offer_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_data_repositories_packages_repository_impl_dart",
+      "label": "Packages Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/data/repositories/packages_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_domain_entities_package_offer_entity_dart",
+      "label": "Package Offer Entity (Entity)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/domain/entities/package_offer_entity.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_domain_repositories_packages_repository_dart",
+      "label": "Packages Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/domain/repositories/packages_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_domain_usecases_apply_package_usecase_dart",
+      "label": "Apply Package Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/domain/usecases/apply_package_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_domain_usecases_get_packages_usecase_dart",
+      "label": "Get Packages Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/domain/usecases/get_packages_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_domain_usecases_get_package_by_id_usecase_dart",
+      "label": "Get Package By Id Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/domain/usecases/get_package_by_id_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_presentation_pages_packages_list_page_dart",
+      "label": "Packages List Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/presentation/pages/packages_list_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_presentation_pages_package_offer_details_page_dart",
+      "label": "Package Offer Details Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/presentation/pages/package_offer_details_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_packages_presentation_providers_packages_provider_dart",
+      "label": "Packages Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/packages/presentation/providers/packages_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_data_datasources_profile_remote_datasource_dart",
+      "label": "Profile Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/data/datasources/profile_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_data_models_profile_model_dart",
+      "label": "Profile Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/data/models/profile_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_data_repositories_profile_repository_impl_dart",
+      "label": "Profile Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/data/repositories/profile_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_domain_repositories_profile_repository_dart",
+      "label": "Profile Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/domain/repositories/profile_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_domain_usecases_get_profile_usecase_dart",
+      "label": "Get Profile Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/domain/usecases/get_profile_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_domain_usecases_update_profile_usecase_dart",
+      "label": "Update Profile Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/domain/usecases/update_profile_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_presentation_pages_profile_page_dart",
+      "label": "Profile Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/presentation/pages/profile_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_presentation_providers_profile_provider_dart",
+      "label": "Profile Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/presentation/providers/profile_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_profile_presentation_widgets_profile_form_widget_dart",
+      "label": "Profile Form Widget (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/profile/presentation/widgets/profile_form_widget.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_review_presentation_widgets_review_card_dart",
+      "label": "Review Card (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/review/presentation/widgets/review_card.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_data_datasources_reviews_remote_datasource_dart",
+      "label": "Reviews Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/data/datasources/reviews_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_data_models_reviews_model_dart",
+      "label": "Reviews Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/data/models/reviews_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_data_repositories_reviews_repository_impl_dart",
+      "label": "Reviews Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/data/repositories/reviews_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_domain_repositories_reviews_repository_dart",
+      "label": "Reviews Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/domain/repositories/reviews_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_domain_usecases_create_review_usecase_dart",
+      "label": "Create Review Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/domain/usecases/create_review_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_domain_usecases_get_reviews_usecase_dart",
+      "label": "Get Reviews Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/domain/usecases/get_reviews_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_presentation_pages_review_form_page_dart",
+      "label": "Review Form Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/presentation/pages/review_form_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_reviews_presentation_providers_reviews_provider_dart",
+      "label": "Reviews Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/reviews/presentation/providers/reviews_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_data_datasources_transport_remote_datasource_dart",
+      "label": "Transport Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/data/datasources/transport_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_data_models_transport_model_dart",
+      "label": "Transport Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/data/models/transport_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_data_repositories_transport_repository_impl_dart",
+      "label": "Transport Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/data/repositories/transport_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_domain_repositories_transport_repository_dart",
+      "label": "Transport Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/domain/repositories/transport_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_domain_usecases_book_transport_usecase_dart",
+      "label": "Book Transport Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/domain/usecases/book_transport_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_domain_usecases_search_transport_usecase_dart",
+      "label": "Search Transport Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/domain/usecases/search_transport_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_presentation_pages_transport_booking_page_dart",
+      "label": "Transport Booking Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/presentation/pages/transport_booking_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_presentation_pages_transport_search_page_dart",
+      "label": "Transport Search Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/presentation/pages/transport_search_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_presentation_providers_transport_provider_dart",
+      "label": "Transport Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/presentation/providers/transport_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_transport_presentation_widgets_transport_card_dart",
+      "label": "Transport Card (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/transport/presentation/widgets/transport_card.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_data_datasources_trip_groups_remote_datasource_dart",
+      "label": "Trip Groups Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/data/datasources/trip_groups_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_data_models_trip_groups_model_dart",
+      "label": "Trip Groups Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/data/models/trip_groups_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_data_repositories_trip_groups_repository_impl_dart",
+      "label": "Trip Groups Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/data/repositories/trip_groups_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_domain_repositories_trip_groups_repository_dart",
+      "label": "Trip Groups Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/domain/repositories/trip_groups_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_domain_usecases_create_group_usecase_dart",
+      "label": "Create Group Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/domain/usecases/create_group_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_domain_usecases_join_group_usecase_dart",
+      "label": "Join Group Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/domain/usecases/join_group_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_presentation_pages_trip_groups_page_dart",
+      "label": "Trip Groups Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/presentation/pages/trip_groups_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_groups_presentation_providers_trip_groups_provider_dart",
+      "label": "Trip Groups Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_groups/presentation/providers/trip_groups_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_data_datasources_trip_requests_remote_datasource_dart",
+      "label": "Trip Requests Remote Datasource (DataSource)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/data/datasources/trip_requests_remote_datasource.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_data_models_trip_requests_model_dart",
+      "label": "Trip Requests Model (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/data/models/trip_requests_model.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_data_repositories_trip_requests_repository_impl_dart",
+      "label": "Trip Requests Repository Impl (Repository Impl)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/data/repositories/trip_requests_repository_impl.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_domain_entities_trip_request_entities_dart",
+      "label": "Trip Request Entities (Entity)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/domain/entities/trip_request_entities.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_domain_repositories_trip_requests_repository_dart",
+      "label": "Trip Requests Repository (Repository Interface)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/domain/repositories/trip_requests_repository.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_create_trip_request_usecase_dart",
+      "label": "Create Trip Request Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/domain/usecases/create_trip_request_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_get_bid_thread_usecase_dart",
+      "label": "Get Bid Thread Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/domain/usecases/get_bid_thread_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_get_trip_requests_usecase_dart",
+      "label": "Get Trip Requests Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/domain/usecases/get_trip_requests_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_submit_counter_offer_usecase_dart",
+      "label": "Submit Counter Offer Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/domain/usecases/submit_counter_offer_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_view_bids_usecase_dart",
+      "label": "View Bids Usecase (UseCase)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/domain/usecases/view_bids_usecase.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_bids_view_page_dart",
+      "label": "Bids View Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/presentation/pages/bids_view_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_bid_thread_page_dart",
+      "label": "Bid Thread Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/presentation/pages/bid_thread_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_create_trip_request_page_dart",
+      "label": "Create Trip Request Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/presentation/pages/create_trip_request_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_trip_requests_list_page_dart",
+      "label": "Trip Requests List Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/presentation/pages/trip_requests_list_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_trip_request_details_page_dart",
+      "label": "Trip Request Details Page (Page)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/presentation/pages/trip_request_details_page.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "label": "Trip Requests Provider (Provider)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/presentation/providers/trip_requests_provider.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_lib_features_trip_requests_presentation_widgets_trip_request_card_dart",
+      "label": "Trip Request Card (UI Widget)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/lib/features/trip_requests/presentation/widgets/trip_request_card.dart"
+    },
+    {
+      "id": "traveler-app_trekpal_readme_md",
+      "label": "Readme.Md (Doc)",
+      "file_type": "document",
+      "source_file": "traveler-app/trekpal/README.md"
+    },
+    {
+      "id": "traveler-app_trekpal_ios_runner_assets_xcassets_launchimage_imageset_readme_md",
+      "label": "Readme.Md (Doc)",
+      "file_type": "document",
+      "source_file": "traveler-app/trekpal/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md"
+    },
+    {
+      "id": "traveler-app_trekpal_web_index_html",
+      "label": "Index.Html (Module)",
+      "file_type": "code",
+      "source_file": "traveler-app/trekpal/web/index.html"
+    }
+  ],
+  "edges": [
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_data_repositories_auth_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_data_datasources_auth_local_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_data_repositories_auth_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_data_datasources_auth_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_data_repositories_auth_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_domain_repositories_auth_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_domain_usecases_login_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_domain_repositories_auth_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_domain_usecases_register_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_domain_repositories_auth_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_presentation_pages_login_page_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_presentation_providers_auth_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_presentation_pages_register_page_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_presentation_providers_auth_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_presentation_pages_traveler_kyc_page_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_presentation_providers_auth_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_presentation_pages_traveler_kyc_pending_page_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_presentation_providers_auth_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_presentation_providers_auth_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_domain_usecases_login_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_auth_presentation_providers_auth_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_auth_domain_usecases_register_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_data_repositories_bookings_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_data_datasources_bookings_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_data_repositories_bookings_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_domain_repositories_bookings_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_domain_usecases_accept_bid_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_domain_repositories_bookings_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_domain_usecases_cancel_booking_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_domain_repositories_bookings_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_domain_usecases_get_bookings_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_domain_repositories_bookings_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_presentation_pages_bookings_list_page_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_presentation_providers_bookings_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_presentation_pages_booking_details_page_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_presentation_providers_bookings_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_presentation_providers_bookings_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_domain_usecases_accept_bid_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_presentation_providers_bookings_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_domain_usecases_cancel_booking_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_bookings_presentation_providers_bookings_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_bookings_domain_usecases_get_bookings_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_data_repositories_chat_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_data_datasources_chat_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_data_repositories_chat_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_domain_repositories_chat_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_domain_usecases_get_messages_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_domain_repositories_chat_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_domain_usecases_send_message_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_domain_repositories_chat_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_presentation_pages_chat_list_page_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_presentation_providers_chat_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_presentation_pages_chat_room_page_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_presentation_providers_chat_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_presentation_providers_chat_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_domain_usecases_get_messages_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_chat_presentation_providers_chat_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_chat_domain_usecases_send_message_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_data_repositories_hotels_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_data_datasources_hotels_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_data_repositories_hotels_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_domain_repositories_hotels_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_domain_usecases_book_hotel_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_domain_repositories_hotels_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_domain_usecases_search_hotels_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_domain_repositories_hotels_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_presentation_pages_hotel_booking_page_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_presentation_providers_hotels_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_presentation_pages_hotel_details_page_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_presentation_providers_hotels_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_presentation_pages_hotel_search_page_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_presentation_providers_hotels_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_presentation_providers_hotels_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_domain_usecases_book_hotel_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_hotels_presentation_providers_hotels_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_hotels_domain_usecases_search_hotels_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_data_repositories_packages_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_data_datasources_packages_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_data_repositories_packages_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_domain_repositories_packages_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_domain_usecases_apply_package_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_domain_repositories_packages_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_domain_usecases_get_packages_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_domain_repositories_packages_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_domain_usecases_get_package_by_id_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_domain_repositories_packages_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_presentation_pages_packages_list_page_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_presentation_providers_packages_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_presentation_pages_package_offer_details_page_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_presentation_providers_packages_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_presentation_providers_packages_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_domain_usecases_apply_package_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_presentation_providers_packages_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_domain_usecases_get_packages_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_packages_presentation_providers_packages_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_packages_domain_usecases_get_package_by_id_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_profile_data_repositories_profile_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_profile_data_datasources_profile_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_profile_data_repositories_profile_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_profile_domain_repositories_profile_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_profile_domain_usecases_get_profile_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_profile_domain_repositories_profile_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_profile_domain_usecases_update_profile_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_profile_domain_repositories_profile_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_profile_presentation_pages_profile_page_dart",
+      "target": "traveler-app_trekpal_lib_features_profile_presentation_providers_profile_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_profile_presentation_providers_profile_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_profile_domain_usecases_get_profile_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_profile_presentation_providers_profile_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_profile_domain_usecases_update_profile_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_reviews_data_repositories_reviews_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_reviews_data_datasources_reviews_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_reviews_data_repositories_reviews_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_reviews_domain_repositories_reviews_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_reviews_domain_usecases_create_review_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_reviews_domain_repositories_reviews_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_reviews_domain_usecases_get_reviews_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_reviews_domain_repositories_reviews_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_reviews_presentation_pages_review_form_page_dart",
+      "target": "traveler-app_trekpal_lib_features_reviews_presentation_providers_reviews_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_reviews_presentation_providers_reviews_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_reviews_domain_usecases_create_review_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_reviews_presentation_providers_reviews_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_reviews_domain_usecases_get_reviews_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_data_repositories_transport_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_data_datasources_transport_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_data_repositories_transport_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_domain_repositories_transport_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_domain_usecases_book_transport_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_domain_repositories_transport_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_domain_usecases_search_transport_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_domain_repositories_transport_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_presentation_pages_transport_booking_page_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_presentation_providers_transport_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_presentation_pages_transport_search_page_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_presentation_providers_transport_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_presentation_providers_transport_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_domain_usecases_book_transport_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_transport_presentation_providers_transport_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_transport_domain_usecases_search_transport_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_groups_data_repositories_trip_groups_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_groups_data_datasources_trip_groups_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_groups_data_repositories_trip_groups_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_groups_domain_repositories_trip_groups_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_groups_domain_usecases_create_group_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_groups_domain_repositories_trip_groups_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_groups_domain_usecases_join_group_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_groups_domain_repositories_trip_groups_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_groups_presentation_pages_trip_groups_page_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_groups_presentation_providers_trip_groups_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_groups_presentation_providers_trip_groups_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_groups_domain_usecases_create_group_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_groups_presentation_providers_trip_groups_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_groups_domain_usecases_join_group_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_data_repositories_trip_requests_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_data_datasources_trip_requests_remote_datasource_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_data_repositories_trip_requests_repository_impl_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_repositories_trip_requests_repository_dart",
+      "label": "implements",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_create_trip_request_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_repositories_trip_requests_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_get_bid_thread_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_repositories_trip_requests_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_get_trip_requests_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_repositories_trip_requests_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_submit_counter_offer_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_repositories_trip_requests_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_view_bids_usecase_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_repositories_trip_requests_repository_dart",
+      "label": "uses",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_bids_view_page_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_bid_thread_page_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_create_trip_request_page_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_trip_requests_list_page_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_pages_trip_request_details_page_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "label": "watches",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_create_trip_request_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_get_bid_thread_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_get_trip_requests_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_submit_counter_offer_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    },
+    {
+      "source": "traveler-app_trekpal_lib_features_trip_requests_presentation_providers_trip_requests_provider_dart",
+      "target": "traveler-app_trekpal_lib_features_trip_requests_domain_usecases_view_bids_usecase_dart",
+      "label": "executes",
+      "type": "semantic"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

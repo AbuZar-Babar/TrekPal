@@ -1,0 +1,3134 @@
+{
+  "nodes": [
+    {
+      "id": "admin_portal_postcss_config_js",
+      "label": "postcss.config.js",
+      "file_type": "code",
+      "source_file": "admin-portal\\postcss.config.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_tailwind_config_js",
+      "label": "tailwind.config.js",
+      "file_type": "code",
+      "source_file": "admin-portal\\tailwind.config.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_vite_config_ts",
+      "label": "vite.config.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\vite.config.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_app_tsx",
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_protectedroute",
+      "label": "ProtectedRoute()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "app_app",
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "admin_portal_src_main_tsx",
+      "label": "main.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_vite_env_d_ts",
+      "label": "vite-env.d.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\vite-env.d.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_activity_components_activitydashboard_tsx",
+      "label": "ActivityDashboard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\activity\\components\\ActivityDashboard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_agencies_components_agencycard_tsx",
+      "label": "AgencyCard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agencycard_formatlegalentitytype",
+      "label": "formatLegalEntityType()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L17"
+    },
+    {
+      "id": "agencycard_urllookslikeimage",
+      "label": "urlLooksLikeImage()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L29"
+    },
+    {
+      "id": "agencycard_handledeleteconfirm",
+      "label": "handleDeleteConfirm()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L80"
+    },
+    {
+      "id": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "label": "AgencyList.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agencylist_refreshagencies",
+      "label": "refreshAgencies()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L50"
+    },
+    {
+      "id": "agencylist_openeditmodal",
+      "label": "openEditModal()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L104"
+    },
+    {
+      "id": "agencylist_handleapprove",
+      "label": "handleApprove()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L122"
+    },
+    {
+      "id": "agencylist_handlereject",
+      "label": "handleReject()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L136"
+    },
+    {
+      "id": "agencylist_handlesave",
+      "label": "handleSave()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L150"
+    },
+    {
+      "id": "admin_portal_src_modules_agencies_hooks_useagencies_ts",
+      "label": "useAgencies.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "useagencies_useagencies",
+      "label": "useAgencies()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "admin_portal_src_modules_agencies_services_agencyservice_ts",
+      "label": "agencyService.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\services\\agencyService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_agencies_store_agencyslice_ts",
+      "label": "agencySlice.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\agencies\\store\\agencySlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "label": "AdminLoginForm.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "adminloginform_handlesubmit",
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L18"
+    },
+    {
+      "id": "admin_portal_src_modules_auth_hooks_useauth_ts",
+      "label": "useAuth.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "useauth_useauth",
+      "label": "useAuth()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "admin_portal_src_modules_auth_services_authservice_ts",
+      "label": "authService.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\auth\\services\\authService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_auth_store_authslice_ts",
+      "label": "authSlice.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "authslice_checkauthentication",
+      "label": "checkAuthentication()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "admin_portal_src_modules_dashboard_components_dashboard_tsx",
+      "label": "Dashboard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "label": "useDashboard.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "usedashboard_usedashboardstats",
+      "label": "useDashboardStats()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "usedashboard_userevenuechart",
+      "label": "useRevenueChart()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "usedashboard_usebookingschart",
+      "label": "useBookingsChart()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L21"
+    },
+    {
+      "id": "usedashboard_useusergrowth",
+      "label": "useUserGrowth()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L29"
+    },
+    {
+      "id": "admin_portal_src_modules_dashboard_services_dashboardservice_ts",
+      "label": "dashboardService.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\services\\dashboardService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "label": "HotelApprovalList.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "hotelapprovallist_refreshlist",
+      "label": "refreshList()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L55"
+    },
+    {
+      "id": "hotelapprovallist_handleapprove",
+      "label": "handleApprove()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L65"
+    },
+    {
+      "id": "hotelapprovallist_handlereject",
+      "label": "handleReject()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L72"
+    },
+    {
+      "id": "admin_portal_src_modules_hotels_components_hotelcard_tsx",
+      "label": "HotelCard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_hotels_hooks_usehotels_ts",
+      "label": "useHotels.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "usehotels_usehotels",
+      "label": "useHotels()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "admin_portal_src_modules_hotels_services_hotelservice_ts",
+      "label": "hotelService.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\services\\hotelService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_hotels_store_hotelslice_ts",
+      "label": "hotelSlice.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\hotels\\store\\hotelSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "label": "InventoryPage.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "inventorypage_switchtype",
+      "label": "switchType()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L73"
+    },
+    {
+      "id": "admin_portal_src_modules_reports_components_reportcharts_tsx",
+      "label": "ReportCharts.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportCharts.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "reportcharts_chartcard",
+      "label": "ChartCard()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportCharts.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "admin_portal_src_modules_reports_components_reportdashboard_tsx",
+      "label": "ReportDashboard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportDashboard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_reports_hooks_usereports_ts",
+      "label": "useReports.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "usereports_usereports",
+      "label": "useReports()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "admin_portal_src_modules_reports_services_reportsservice_ts",
+      "label": "reportsService.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\reports\\services\\reportsService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_reports_store_reportsslice_ts",
+      "label": "reportsSlice.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\reports\\store\\reportsSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_users_components_userlist_tsx",
+      "label": "UserList.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "userlist_tonetoclass",
+      "label": "toneToClass()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L19"
+    },
+    {
+      "id": "userlist_getdateinputvalue",
+      "label": "getDateInputValue()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L50"
+    },
+    {
+      "id": "userlist_refreshusers",
+      "label": "refreshUsers()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L77"
+    },
+    {
+      "id": "userlist_openeditmodal",
+      "label": "openEditModal()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L136"
+    },
+    {
+      "id": "userlist_handleapprove",
+      "label": "handleApprove()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L153"
+    },
+    {
+      "id": "userlist_handlereject",
+      "label": "handleReject()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L167"
+    },
+    {
+      "id": "userlist_handlesave",
+      "label": "handleSave()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L181"
+    },
+    {
+      "id": "admin_portal_src_modules_users_hooks_useusers_ts",
+      "label": "useUsers.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "useusers_useusers",
+      "label": "useUsers()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "admin_portal_src_modules_users_services_usersservice_ts",
+      "label": "usersService.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\services\\usersService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_users_store_usersslice_ts",
+      "label": "usersSlice.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\users\\store\\usersSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "label": "VehicleApprovalList.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "vehicleapprovallist_refreshlist",
+      "label": "refreshList()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L57"
+    },
+    {
+      "id": "vehicleapprovallist_handleapprove",
+      "label": "handleApprove()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L67"
+    },
+    {
+      "id": "vehicleapprovallist_handlereject",
+      "label": "handleReject()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L74"
+    },
+    {
+      "id": "admin_portal_src_modules_vehicles_components_vehiclecard_tsx",
+      "label": "VehicleCard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_vehicles_hooks_usevehicles_ts",
+      "label": "useVehicles.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "usevehicles_usevehicles",
+      "label": "useVehicles()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "admin_portal_src_modules_vehicles_services_vehiclesservice_ts",
+      "label": "vehiclesService.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\services\\vehiclesService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_modules_vehicles_store_vehiclesslice_ts",
+      "label": "vehiclesSlice.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\store\\vehiclesSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_components_comingsoon_tsx",
+      "label": "ComingSoon.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\ComingSoon.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "comingsoon_comingsoon",
+      "label": "ComingSoon()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\ComingSoon.tsx",
+      "source_location": "L11"
+    },
+    {
+      "id": "admin_portal_src_shared_components_errorboundary_tsx",
+      "label": "ErrorBoundary.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "errorboundary_constructor",
+      "label": "constructor()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "errorboundary_getderivedstatefromerror",
+      "label": "getDerivedStateFromError()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L31"
+    },
+    {
+      "id": "errorboundary_componentdidcatch",
+      "label": "componentDidCatch()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L38"
+    },
+    {
+      "id": "admin_portal_src_shared_components_errorpopup_tsx",
+      "label": "ErrorPopup.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorPopup.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_components_analytics_metriccard_tsx",
+      "label": "MetricCard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\analytics\\MetricCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "metriccard_metriccard",
+      "label": "MetricCard()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\analytics\\MetricCard.tsx",
+      "source_location": "L11"
+    },
+    {
+      "id": "admin_portal_src_shared_components_analytics_simplechartcard_tsx",
+      "label": "SimpleChartCard.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\analytics\\SimpleChartCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "simplechartcard_simplechartcard",
+      "label": "SimpleChartCard()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\analytics\\SimpleChartCard.tsx",
+      "source_location": "L14"
+    },
+    {
+      "id": "admin_portal_src_shared_components_layout_header_tsx",
+      "label": "Header.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_components_layout_layout_tsx",
+      "label": "Layout.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "layout_layout",
+      "label": "Layout()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "admin_portal_src_shared_components_layout_sidebar_tsx",
+      "label": "Sidebar.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Sidebar.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_components_management_documentgrid_tsx",
+      "label": "DocumentGrid.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\management\\DocumentGrid.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "documentgrid_lookslikeimage",
+      "label": "looksLikeImage()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\management\\DocumentGrid.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "admin_portal_src_shared_components_management_entityeditmodal_tsx",
+      "label": "EntityEditModal.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\management\\EntityEditModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_components_management_managementpageshell_tsx",
+      "label": "ManagementPageShell.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\management\\ManagementPageShell.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_components_ui_button_tsx",
+      "label": "Button.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\UI\\Button.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_components_ui_input_tsx",
+      "label": "Input.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\components\\UI\\Input.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_hooks_index_ts",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\hooks\\index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_hooks_useapimutation_ts",
+      "label": "useApiMutation.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiMutation.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "useapimutation_useapimutation",
+      "label": "useApiMutation()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiMutation.ts",
+      "source_location": "L22"
+    },
+    {
+      "id": "admin_portal_src_shared_hooks_useapipagination_ts",
+      "label": "useApiPagination.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiPagination.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "useapipagination_useapipagination",
+      "label": "useApiPagination()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiPagination.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "admin_portal_src_shared_hooks_useapiquery_ts",
+      "label": "useApiQuery.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiQuery.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "useapiquery_useapiquery",
+      "label": "useApiQuery()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiQuery.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "admin_portal_src_shared_services_apiclient_ts",
+      "label": "apiClient.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\services\\apiClient.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_theme_themeprovider_tsx",
+      "label": "ThemeProvider.tsx",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "themeprovider_getinitialtheme",
+      "label": "getInitialTheme()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L15"
+    },
+    {
+      "id": "admin_portal_src_shared_types_index_ts",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\types\\index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_utils_errorhandler_ts",
+      "label": "errorHandler.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "errorhandler_handleapierror",
+      "label": "handleApiError()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+      "source_location": "L28"
+    },
+    {
+      "id": "errorhandler_geterrormessage",
+      "label": "getErrorMessage()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+      "source_location": "L107"
+    },
+    {
+      "id": "admin_portal_src_shared_utils_errors_ts",
+      "label": "errors.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\errors.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "errors_extracterrormessage",
+      "label": "extractErrorMessage()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\errors.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_shared_utils_formatters_ts",
+      "label": "formatters.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "formatters_formatcurrency",
+      "label": "formatCurrency()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "formatters_formatdate",
+      "label": "formatDate()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "formatters_formatdatetime",
+      "label": "formatDateTime()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L34"
+    },
+    {
+      "id": "formatters_totitlecase",
+      "label": "toTitleCase()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L53"
+    },
+    {
+      "id": "formatters_maskcnic",
+      "label": "maskCnic()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L65"
+    },
+    {
+      "id": "formatters_getinitials",
+      "label": "getInitials()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L74"
+    },
+    {
+      "id": "formatters_formattravelerkycstatus",
+      "label": "formatTravelerKycStatus()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L90"
+    },
+    {
+      "id": "formatters_gettravelerkyctone",
+      "label": "getTravelerKycTone()",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L105"
+    },
+    {
+      "id": "admin_portal_src_store_index_ts",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "admin_portal_src_store_rootreducer_ts",
+      "label": "rootReducer.ts",
+      "file_type": "code",
+      "source_file": "admin-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "admin_portal_vite_config_ts",
+      "target": "vite",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\vite.config.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_vite_config_ts",
+      "target": "plugin_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\vite.config.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_vite_config_ts",
+      "target": "path",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\vite.config.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_shared_components_layout_layout",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_modules_auth_components_adminloginform",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_modules_dashboard_components_dashboard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_modules_agencies_components_agencylist",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_modules_users_components_userlist",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_modules_reports_components_reportdashboard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "admin_portal_src_modules_inventory_components_inventorypage",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "app_protectedroute",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_app_tsx",
+      "target": "app_app",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\App.tsx",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "react_query",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "admin_portal_src_app",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "admin_portal_src_index_css",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_main_tsx",
+      "target": "admin_portal_src_shared_theme_themeprovider",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\main.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_activity_components_activitydashboard_tsx",
+      "target": "admin_portal_src_modules_dashboard_hooks_usedashboard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\activity\\components\\ActivityDashboard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_activity_components_activitydashboard_tsx",
+      "target": "admin_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\activity\\components\\ActivityDashboard.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencycard_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencycard_tsx",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencycard_tsx",
+      "target": "agencycard_formatlegalentitytype",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencycard_tsx",
+      "target": "agencycard_urllookslikeimage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencycard_tsx",
+      "target": "agencycard_handledeleteconfirm",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "admin_portal_src_shared_components_management_entityeditmodal",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "admin_portal_src_shared_components_management_documentgrid",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "admin_portal_src_shared_components_management_managementpageshell",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "admin_portal_src_shared_utils_errors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "admin_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "admin_portal_src_modules_agencies_store_agencyslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "agencylist_refreshagencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "agencylist_openeditmodal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "agencylist_handleapprove",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "agencylist_handlereject",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_components_agencylist_tsx",
+      "target": "agencylist_handlesave",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "agencylist_handleapprove",
+      "target": "agencylist_refreshagencies",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "agencylist_handlereject",
+      "target": "agencylist_refreshagencies",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L144",
+      "weight": 1.0
+    },
+    {
+      "source": "agencylist_handlesave",
+      "target": "agencylist_refreshagencies",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_hooks_useagencies_ts",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_hooks_useagencies_ts",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_hooks_useagencies_ts",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_hooks_useagencies_ts",
+      "target": "admin_portal_src_modules_agencies_store_agencyslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_hooks_useagencies_ts",
+      "target": "useagencies_useagencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_services_agencyservice_ts",
+      "target": "admin_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\services\\agencyService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_services_agencyservice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\services\\agencyService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_store_agencyslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\store\\agencySlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_store_agencyslice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\store\\agencySlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_agencies_store_agencyslice_ts",
+      "target": "admin_portal_src_modules_agencies_services_agencyservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\agencies\\store\\agencySlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "target": "admin_portal_src_shared_components_errorpopup",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "target": "admin_portal_src_shared_theme_themeprovider",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "target": "admin_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_components_adminloginform_tsx",
+      "target": "adminloginform_handlesubmit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_hooks_useauth_ts",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_hooks_useauth_ts",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_hooks_useauth_ts",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_hooks_useauth_ts",
+      "target": "admin_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_hooks_useauth_ts",
+      "target": "useauth_useauth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_services_authservice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\services\\authService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_services_authservice_ts",
+      "target": "admin_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\services\\authService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_store_authslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_store_authslice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_store_authslice_ts",
+      "target": "admin_portal_src_modules_auth_services_authservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_auth_store_authslice_ts",
+      "target": "authslice_checkauthentication",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "admin_portal_src_shared_components_analytics_metriccard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "admin_portal_src_modules_dashboard_hooks_usedashboard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "target": "react_query",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "target": "admin_portal_src_modules_dashboard_services_dashboardservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "target": "usedashboard_usedashboardstats",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "target": "usedashboard_userevenuechart",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "target": "usedashboard_usebookingschart",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "target": "usedashboard_useusergrowth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_services_dashboardservice_ts",
+      "target": "admin_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\services\\dashboardService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_dashboard_services_dashboardservice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\dashboard\\services\\dashboardService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "admin_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "admin_portal_src_modules_hotels_store_hotelslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "hotelapprovallist_refreshlist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "hotelapprovallist_handleapprove",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelapprovallist_tsx",
+      "target": "hotelapprovallist_handlereject",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "hotelapprovallist_handleapprove",
+      "target": "hotelapprovallist_refreshlist",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "hotelapprovallist_handlereject",
+      "target": "hotelapprovallist_refreshlist",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_components_hotelcard_tsx",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\components\\HotelCard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_hooks_usehotels_ts",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_hooks_usehotels_ts",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_hooks_usehotels_ts",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_hooks_usehotels_ts",
+      "target": "admin_portal_src_modules_hotels_store_hotelslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_hooks_usehotels_ts",
+      "target": "usehotels_usehotels",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_services_hotelservice_ts",
+      "target": "admin_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\services\\hotelService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_services_hotelservice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\services\\hotelService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_store_hotelslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\store\\hotelSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_store_hotelslice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\store\\hotelSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_hotels_store_hotelslice_ts",
+      "target": "admin_portal_src_modules_hotels_services_hotelservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\hotels\\store\\hotelSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "target": "admin_portal_src_shared_components_management_managementpageshell",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "target": "admin_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "target": "admin_portal_src_modules_hotels_hooks_usehotels",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "target": "admin_portal_src_modules_vehicles_hooks_usevehicles",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_inventory_components_inventorypage_tsx",
+      "target": "inventorypage_switchtype",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_components_reportcharts_tsx",
+      "target": "admin_portal_src_modules_reports_services_reportsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportCharts.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_components_reportcharts_tsx",
+      "target": "reportcharts_chartcard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportCharts.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_components_reportdashboard_tsx",
+      "target": "admin_portal_src_shared_components_analytics_metriccard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportDashboard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_components_reportdashboard_tsx",
+      "target": "admin_portal_src_shared_components_analytics_simplechartcard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportDashboard.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_components_reportdashboard_tsx",
+      "target": "admin_portal_src_modules_dashboard_hooks_usedashboard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\components\\ReportDashboard.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_hooks_usereports_ts",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_hooks_usereports_ts",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_hooks_usereports_ts",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_hooks_usereports_ts",
+      "target": "admin_portal_src_modules_reports_store_reportsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_hooks_usereports_ts",
+      "target": "usereports_usereports",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_services_reportsservice_ts",
+      "target": "admin_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\services\\reportsService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_services_reportsservice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\services\\reportsService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_store_reportsslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\store\\reportsSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_store_reportsslice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\store\\reportsSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_reports_store_reportsslice_ts",
+      "target": "admin_portal_src_modules_reports_services_reportsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\reports\\store\\reportsSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_shared_components_analytics_metriccard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_shared_components_management_entityeditmodal",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_shared_components_management_documentgrid",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_shared_components_management_managementpageshell",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_shared_utils_errors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "admin_portal_src_modules_users_store_usersslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_tonetoclass",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_getdateinputvalue",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_refreshusers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_openeditmodal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_handleapprove",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_handlereject",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_handlesave",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_components_userlist_tsx",
+      "target": "userlist_tonetoclass",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_openeditmodal",
+      "target": "userlist_getdateinputvalue",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_handleapprove",
+      "target": "userlist_refreshusers",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_handlereject",
+      "target": "userlist_refreshusers",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_handlesave",
+      "target": "userlist_refreshusers",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L206",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_hooks_useusers_ts",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_hooks_useusers_ts",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_hooks_useusers_ts",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_hooks_useusers_ts",
+      "target": "admin_portal_src_modules_users_store_usersslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_hooks_useusers_ts",
+      "target": "useusers_useusers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_services_usersservice_ts",
+      "target": "admin_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\services\\usersService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_services_usersservice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\services\\usersService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_store_usersslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\store\\usersSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_store_usersslice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\store\\usersSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_users_store_usersslice_ts",
+      "target": "admin_portal_src_modules_users_services_usersservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\users\\store\\usersSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "admin_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "admin_portal_src_modules_vehicles_store_vehiclesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "vehicleapprovallist_refreshlist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "vehicleapprovallist_handleapprove",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehicleapprovallist_tsx",
+      "target": "vehicleapprovallist_handlereject",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "vehicleapprovallist_handleapprove",
+      "target": "vehicleapprovallist_refreshlist",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "vehicleapprovallist_handlereject",
+      "target": "vehicleapprovallist_refreshlist",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_components_vehiclecard_tsx",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleCard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_hooks_usevehicles_ts",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_hooks_usevehicles_ts",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_hooks_usevehicles_ts",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_hooks_usevehicles_ts",
+      "target": "admin_portal_src_modules_vehicles_store_vehiclesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_hooks_usevehicles_ts",
+      "target": "usevehicles_usevehicles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_services_vehiclesservice_ts",
+      "target": "admin_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\services\\vehiclesService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_services_vehiclesservice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\services\\vehiclesService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_store_vehiclesslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\store\\vehiclesSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_store_vehiclesslice_ts",
+      "target": "admin_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\store\\vehiclesSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_modules_vehicles_store_vehiclesslice_ts",
+      "target": "admin_portal_src_modules_vehicles_services_vehiclesservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\modules\\vehicles\\store\\vehiclesSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_comingsoon_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\ComingSoon.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_comingsoon_tsx",
+      "target": "comingsoon_comingsoon",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\ComingSoon.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_errorboundary_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_errorboundary_tsx",
+      "target": "errorboundary_constructor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_errorboundary_tsx",
+      "target": "errorboundary_getderivedstatefromerror",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_errorboundary_tsx",
+      "target": "errorboundary_componentdidcatch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_errorpopup_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\ErrorPopup.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_analytics_metriccard_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\analytics\\MetricCard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_analytics_metriccard_tsx",
+      "target": "metriccard_metriccard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\analytics\\MetricCard.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_analytics_simplechartcard_tsx",
+      "target": "simplechartcard_simplechartcard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\analytics\\SimpleChartCard.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_header_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_header_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_header_tsx",
+      "target": "admin_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_header_tsx",
+      "target": "admin_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_header_tsx",
+      "target": "admin_portal_src_shared_theme_themeprovider",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_header_tsx",
+      "target": "admin_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_layout_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_layout_tsx",
+      "target": "admin_portal_src_shared_components_layout_sidebar",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_layout_tsx",
+      "target": "admin_portal_src_shared_components_layout_header",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_layout_tsx",
+      "target": "layout_layout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_layout_sidebar_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\Layout\\Sidebar.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_management_documentgrid_tsx",
+      "target": "documentgrid_lookslikeimage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\management\\DocumentGrid.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_management_managementpageshell_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\management\\ManagementPageShell.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_ui_button_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\UI\\Button.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_components_ui_input_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\components\\UI\\Input.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_hooks_useapimutation_ts",
+      "target": "react_query",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiMutation.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_hooks_useapimutation_ts",
+      "target": "useapimutation_useapimutation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiMutation.ts",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_hooks_useapipagination_ts",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiPagination.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_hooks_useapipagination_ts",
+      "target": "admin_portal_src_shared_hooks_useapiquery",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiPagination.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_hooks_useapipagination_ts",
+      "target": "useapipagination_useapipagination",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiPagination.ts",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_hooks_useapiquery_ts",
+      "target": "react_query",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiQuery.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_hooks_useapiquery_ts",
+      "target": "useapiquery_useapiquery",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiQuery.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_services_apiclient_ts",
+      "target": "axios",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\services\\apiClient.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_theme_themeprovider_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_theme_themeprovider_tsx",
+      "target": "themeprovider_getinitialtheme",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_errorhandler_ts",
+      "target": "axios",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_errorhandler_ts",
+      "target": "errorhandler_handleapierror",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_errorhandler_ts",
+      "target": "errorhandler_geterrormessage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "errorhandler_geterrormessage",
+      "target": "errorhandler_handleapierror",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_errors_ts",
+      "target": "errors_extracterrormessage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\errors.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatcurrency",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatdate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatdatetime",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_totitlecase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_maskcnic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_getinitials",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formattravelerkycstatus",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_gettravelerkyctone",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "formatters_formattravelerkycstatus",
+      "target": "formatters_totitlecase",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_store_index_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_store_index_ts",
+      "target": "admin_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_store_index_ts",
+      "target": "admin_portal_src_modules_agencies_store_agencyslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_store_index_ts",
+      "target": "admin_portal_src_modules_hotels_store_hotelslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_store_index_ts",
+      "target": "admin_portal_src_modules_vehicles_store_vehiclesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_store_index_ts",
+      "target": "admin_portal_src_modules_users_store_usersslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "admin_portal_src_store_index_ts",
+      "target": "admin_portal_src_modules_reports_store_reportsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "admin-portal\\src\\store\\index.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agencylist_handleapprove",
+      "target": "errors_extracterrormessage",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "agencylist_handlereject",
+      "target": "errors_extracterrormessage",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "agencylist_handlesave",
+      "target": "errors_extracterrormessage",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+      "source_location": "L176",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_handleapprove",
+      "target": "errors_extracterrormessage",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_handlereject",
+      "target": "errors_extracterrormessage",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_handlesave",
+      "target": "errors_extracterrormessage",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L209",
+      "weight": 1.0
+    },
+    {
+      "source": "userlist_tonetoclass",
+      "target": "formatters_formattravelerkycstatus",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+      "source_location": "L320",
+      "weight": 1.0
+    },
+    {
+      "source": "useapipagination_useapipagination",
+      "target": "useapiquery_useapiquery",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "admin-portal\\src\\shared\\hooks\\useApiPagination.ts",
+      "source_location": "L48",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

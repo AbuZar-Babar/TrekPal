@@ -1,0 +1,13 @@
+# Community 18
+
+## Nodes
+
+- backend_src_repositories_prisma_prismahotelrepository_ts
+- prismahotelrepository_prismahotelrepository
+- prismahotelrepository_prismahotelrepository_count
+- prismahotelrepository_prismahotelrepository_create
+- prismahotelrepository_prismahotelrepository_delete
+- prismahotelrepository_prismahotelrepository_findbyid
+- prismahotelrepository_prismahotelrepository_findmany
+- prismahotelrepository_prismahotelrepository_update
+- prismahotelrepository_prismahotelrepository_updatestatus

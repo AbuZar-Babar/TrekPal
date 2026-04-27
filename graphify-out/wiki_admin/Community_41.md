@@ -1,0 +1,5 @@
+# Community 41
+
+## Nodes
+
+- admin_portal_src_modules_hotels_components_hotelcard_tsx

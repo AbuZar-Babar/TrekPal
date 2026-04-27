@@ -1,0 +1,3873 @@
+{
+  "nodes": [
+    {
+      "id": "shared_services_api_client",
+      "label": "Axios API Client",
+      "file_type": "code",
+      "source_file": "agency-portal/src/shared/services/apiClient.ts"
+    },
+    {
+      "id": "store_root_store",
+      "label": "Redux Root Store",
+      "file_type": "code",
+      "source_file": "agency-portal/src/store/index.ts"
+    },
+    {
+      "id": "app_root",
+      "label": "App Root (Router & Guards)",
+      "file_type": "code",
+      "source_file": "agency-portal/src/App.tsx"
+    },
+    {
+      "id": "modules_auth_pending_approval",
+      "label": "Agency Pending Approval Gate",
+      "file_type": "code",
+      "source_file": "agency-portal/src/modules/auth/components/PendingApproval.tsx"
+    },
+    {
+      "id": "shared_layout_shell",
+      "label": "Universal Layout Shell",
+      "file_type": "code",
+      "source_file": "agency-portal/src/shared/components/Layout/Layout.tsx"
+    },
+    {
+      "id": "modules_bids_service",
+      "label": "Bidding Service",
+      "file_type": "code",
+      "source_file": "agency-portal/src/modules/bids/services/bidsService.ts"
+    },
+    {
+      "id": "modules_packages_service",
+      "label": "Package Management Service",
+      "file_type": "code",
+      "source_file": "agency-portal/src/modules/packages/services/packagesService.ts"
+    },
+    {
+      "id": "agency_portal_postcss_config_js",
+      "label": "postcss.config.js",
+      "file_type": "code",
+      "source_file": "agency-portal\\postcss.config.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_tailwind_config_js",
+      "label": "tailwind.config.js",
+      "file_type": "code",
+      "source_file": "agency-portal\\tailwind.config.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_vite_config_ts",
+      "label": "vite.config.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\vite.config.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_app_tsx",
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_main_tsx",
+      "label": "main.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_vite_env_d_ts",
+      "label": "vite-env.d.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\vite-env.d.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_auth_components_authshell_tsx",
+      "label": "AuthShell.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\AuthShell.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "authshell_authshell",
+      "label": "AuthShell()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\AuthShell.tsx",
+      "source_location": "L14"
+    },
+    {
+      "id": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "label": "LoginForm.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "loginform_validateform",
+      "label": "validateForm()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "loginform_handlesubmit",
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L40"
+    },
+    {
+      "id": "agency_portal_src_modules_auth_components_pendingapproval_tsx",
+      "label": "PendingApproval.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\PendingApproval.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "pendingapproval_pendingapproval",
+      "label": "PendingApproval()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\PendingApproval.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "label": "RegisterForm.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "registerform_labelforjurisdiction",
+      "label": "labelForJurisdiction()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L112"
+    },
+    {
+      "id": "registerform_filelookslikeimage",
+      "label": "fileLooksLikeImage()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L115"
+    },
+    {
+      "id": "agency_portal_src_modules_auth_hooks_useauth_ts",
+      "label": "useAuth.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_auth_services_authservice_ts",
+      "label": "authService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\services\\authService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_auth_store_authslice_ts",
+      "label": "authSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_bids_components_bidcard_tsx",
+      "label": "BidCard.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_bids_components_bidform_tsx",
+      "label": "BidForm.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "bidform_handlesubmit",
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidForm.tsx",
+      "source_location": "L94"
+    },
+    {
+      "id": "agency_portal_src_modules_bids_components_bidlist_tsx",
+      "label": "BidList.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_bids_hooks_usebids_ts",
+      "label": "useBids.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\hooks\\useBids.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_bids_services_bidsservice_ts",
+      "label": "bidsService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\services\\bidsService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_bids_store_bidsslice_ts",
+      "label": "bidsSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\store\\bidsSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "bidsslice_mergebid",
+      "label": "mergeBid()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bids\\store\\bidsSlice.ts",
+      "source_location": "L30"
+    },
+    {
+      "id": "agency_portal_src_modules_bookings_components_bookingcard_tsx",
+      "label": "BookingCard.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "bookingcard_bookingcard",
+      "label": "BookingCard()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingCard.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "agency_portal_src_modules_bookings_components_bookinglist_tsx",
+      "label": "BookingList.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "bookinglist_handleupdatestatus",
+      "label": "handleUpdateStatus()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L32"
+    },
+    {
+      "id": "agency_portal_src_modules_bookings_hooks_usebookings_ts",
+      "label": "useBookings.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bookings\\hooks\\useBookings.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_bookings_services_bookingsservice_ts",
+      "label": "bookingsService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bookings\\services\\bookingsService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_bookings_store_bookingsslice_ts",
+      "label": "bookingsSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\bookings\\store\\bookingsSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "label": "ChatPage.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "chatpage_loadrooms",
+      "label": "loadRooms()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L38"
+    },
+    {
+      "id": "chatpage_openroom",
+      "label": "openRoom()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L59"
+    },
+    {
+      "id": "chatpage_handlesend",
+      "label": "handleSend()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L115"
+    },
+    {
+      "id": "agency_portal_src_modules_chat_services_chatservice_ts",
+      "label": "chatService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "chatservice_resolvesocketbaseurl",
+      "label": "resolveSocketBaseUrl()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "chatservice_chatservice",
+      "label": "ChatService",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L25"
+    },
+    {
+      "id": "chatservice_chatservice_getrooms",
+      "label": ".getRooms()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L28"
+    },
+    {
+      "id": "chatservice_chatservice_getroom",
+      "label": ".getRoom()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L33"
+    },
+    {
+      "id": "chatservice_chatservice_getmessages",
+      "label": ".getMessages()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L38"
+    },
+    {
+      "id": "chatservice_chatservice_joinroom",
+      "label": ".joinRoom()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L43"
+    },
+    {
+      "id": "chatservice_chatservice_leaveroom",
+      "label": ".leaveRoom()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L75"
+    },
+    {
+      "id": "chatservice_chatservice_sendmessage",
+      "label": ".sendMessage()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L79"
+    },
+    {
+      "id": "chatservice_chatservice_dispose",
+      "label": ".dispose()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L88"
+    },
+    {
+      "id": "chatservice_chatservice_ensuresocket",
+      "label": ".ensureSocket()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L93"
+    },
+    {
+      "id": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "label": "Dashboard.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_dashboard_components_dashboardcharts_tsx",
+      "label": "DashboardCharts.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\DashboardCharts.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_dashboard_components_dashboardstats_tsx",
+      "label": "DashboardStats.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\DashboardStats.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_dashboard_hooks_usedashboard_ts",
+      "label": "useDashboard.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_dashboard_services_dashboardservice_ts",
+      "label": "dashboardService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\services\\dashboardService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_dashboard_store_dashboardslice_ts",
+      "label": "dashboardSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\store\\dashboardSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_hotels_components_hotelcard_tsx",
+      "label": "HotelCard.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "label": "HotelForm.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "hotelform_handlechange",
+      "label": "handleChange()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L77"
+    },
+    {
+      "id": "hotelform_toggleamenity",
+      "label": "toggleAmenity()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L82"
+    },
+    {
+      "id": "hotelform_handlesubmit",
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L91"
+    },
+    {
+      "id": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "label": "HotelList.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "hotellist_handledelete",
+      "label": "handleDelete()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L19"
+    },
+    {
+      "id": "agency_portal_src_modules_hotels_hooks_usehotels_ts",
+      "label": "useHotels.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_hotels_services_hotelsservice_ts",
+      "label": "hotelsService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\services\\hotelsService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_hotels_store_hotelsslice_ts",
+      "label": "hotelsSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\hotels\\store\\hotelsSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "label": "PackageForm.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "packageform_splitlist",
+      "label": "splitList()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L17"
+    },
+    {
+      "id": "packageform_isvalidurl",
+      "label": "isValidUrl()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "packageform_loadinventory",
+      "label": "loadInventory()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L68"
+    },
+    {
+      "id": "packageform_loadpackage",
+      "label": "loadPackage()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L102"
+    },
+    {
+      "id": "packageform_validateform",
+      "label": "validateForm()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L136"
+    },
+    {
+      "id": "packageform_handlesubmit",
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L168"
+    },
+    {
+      "id": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "label": "PackageList.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "packagelist_handledelete",
+      "label": "handleDelete()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "agency_portal_src_modules_packages_hooks_usepackages_ts",
+      "label": "usePackages.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\hooks\\usePackages.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "usepackages_usepackages",
+      "label": "usePackages()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\hooks\\usePackages.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "agency_portal_src_modules_packages_services_packagesservice_ts",
+      "label": "packagesService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\services\\packagesService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_packages_store_packagesslice_ts",
+      "label": "packagesSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\packages\\store\\packagesSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "label": "AgencyProfile.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agencyprofile_agencyprofile",
+      "label": "AgencyProfile()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L11"
+    },
+    {
+      "id": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "label": "BusinessStatus.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_rooms_components_roomform_tsx",
+      "label": "RoomForm.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\rooms\\components\\RoomForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_rooms_components_roomlist_tsx",
+      "label": "RoomList.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\rooms\\components\\RoomList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_rooms_hooks_userooms_ts",
+      "label": "useRooms.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\rooms\\hooks\\useRooms.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_rooms_services_roomsservice_ts",
+      "label": "roomsService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\rooms\\services\\roomsService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_rooms_store_roomsslice_ts",
+      "label": "roomsSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\rooms\\store\\roomsSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "label": "VehicleForm.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "vehicleform_handlechange",
+      "label": "handleChange()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L79"
+    },
+    {
+      "id": "vehicleform_handlesubmit",
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L92"
+    },
+    {
+      "id": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "label": "VehicleList.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "vehiclelist_handledelete",
+      "label": "handleDelete()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "agency_portal_src_modules_transport_hooks_usetransport_ts",
+      "label": "useTransport.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\hooks\\useTransport.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_transport_services_transportservice_ts",
+      "label": "transportService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\services\\transportService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_transport_store_transportslice_ts",
+      "label": "transportSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\transport\\store\\transportSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_triprequests_components_triprequestcard_tsx",
+      "label": "TripRequestCard.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "triprequestcard_prettylabel",
+      "label": "prettyLabel()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestCard.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "label": "TripRequestList.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "triprequestlist_refreshmarketplace",
+      "label": "refreshMarketplace()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L67"
+    },
+    {
+      "id": "triprequestlist_handleopenoffer",
+      "label": "handleOpenOffer()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L78"
+    },
+    {
+      "id": "triprequestlist_handlebidsubmit",
+      "label": "handleBidSubmit()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L94"
+    },
+    {
+      "id": "agency_portal_src_modules_triprequests_hooks_usetriprequests_ts",
+      "label": "useTripRequests.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\hooks\\useTripRequests.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_triprequests_services_triprequestsservice_ts",
+      "label": "tripRequestsService.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\services\\tripRequestsService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_modules_triprequests_store_triprequestsslice_ts",
+      "label": "tripRequestsSlice.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\store\\tripRequestsSlice.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_components_comingsoon_tsx",
+      "label": "ComingSoon.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\ComingSoon.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_components_errorpopup_tsx",
+      "label": "ErrorPopup.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\ErrorPopup.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_components_forms_imagegalleryinput_tsx",
+      "label": "ImageGalleryInput.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "imagegalleryinput_parseimageurl",
+      "label": "parseImageUrl()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L21"
+    },
+    {
+      "id": "imagegalleryinput_addimage",
+      "label": "addImage()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "imagegalleryinput_handleaddurl",
+      "label": "handleAddUrl()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L56"
+    },
+    {
+      "id": "imagegalleryinput_handleuploadfile",
+      "label": "handleUploadFile()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L63"
+    },
+    {
+      "id": "imagegalleryinput_handleremoveimage",
+      "label": "handleRemoveImage()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L84"
+    },
+    {
+      "id": "agency_portal_src_shared_components_layout_header_tsx",
+      "label": "Header.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "header_handlelogout",
+      "label": "handleLogout()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L15"
+    },
+    {
+      "id": "agency_portal_src_shared_components_layout_layout_tsx",
+      "label": "Layout.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "layout_layout",
+      "label": "Layout()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L10"
+    },
+    {
+      "id": "agency_portal_src_shared_components_layout_sidebar_tsx",
+      "label": "Sidebar.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Sidebar.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "sidebar_sidebar",
+      "label": "Sidebar()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Sidebar.tsx",
+      "source_location": "L76"
+    },
+    {
+      "id": "agency_portal_src_shared_components_loading_spinner_tsx",
+      "label": "Spinner.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\Loading\\Spinner.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_components_ui_button_tsx",
+      "label": "Button.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\UI\\Button.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_components_ui_input_tsx",
+      "label": "Input.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\UI\\Input.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_components_ui_modal_tsx",
+      "label": "Modal.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\components\\UI\\Modal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_hooks_useapi_ts",
+      "label": "useApi.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\hooks\\useApi.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_services_apiclient_ts",
+      "label": "apiClient.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\services\\apiClient.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_theme_themeprovider_tsx",
+      "label": "ThemeProvider.tsx",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "themeprovider_getinitialtheme",
+      "label": "getInitialTheme()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L15"
+    },
+    {
+      "id": "agency_portal_src_shared_types_index_ts",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\types\\index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_shared_utils_formatters_ts",
+      "label": "formatters.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "formatters_formatcurrency",
+      "label": "formatCurrency()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "formatters_formatcompactnumber",
+      "label": "formatCompactNumber()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "formatters_formatdate",
+      "label": "formatDate()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "formatters_formatdatetime",
+      "label": "formatDateTime()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L40"
+    },
+    {
+      "id": "formatters_formatdaterange",
+      "label": "formatDateRange()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L50"
+    },
+    {
+      "id": "formatters_formatstatuslabel",
+      "label": "formatStatusLabel()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L57"
+    },
+    {
+      "id": "formatters_formatshortid",
+      "label": "formatShortId()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L69"
+    },
+    {
+      "id": "agency_portal_src_shared_utils_validators_ts",
+      "label": "validators.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "validators_isblank",
+      "label": "isBlank()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "validators_validaterequired",
+      "label": "validateRequired()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "validators_validateemail",
+      "label": "validateEmail()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "validators_validatepassword",
+      "label": "validatePassword()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L27"
+    },
+    {
+      "id": "validators_validatephone",
+      "label": "validatePhone()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "validators_validatecnic",
+      "label": "validateCnic()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L52"
+    },
+    {
+      "id": "validators_validateminlength",
+      "label": "validateMinLength()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L64"
+    },
+    {
+      "id": "validators_validatepositivenumber",
+      "label": "validatePositiveNumber()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L80"
+    },
+    {
+      "id": "validators_validatefilepresent",
+      "label": "validateFilePresent()",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L98"
+    },
+    {
+      "id": "agency_portal_src_store_index_ts",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agency_portal_src_store_rootreducer_ts",
+      "label": "rootReducer.ts",
+      "file_type": "code",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "app_root",
+      "target": "store_root_store",
+      "label": "reads_state",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "app_root",
+      "target": "modules_auth_pending_approval",
+      "label": "redirects_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "store_root_store",
+      "target": "modules_bids_service",
+      "label": "triggers_calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9
+    },
+    {
+      "source": "modules_bids_service",
+      "target": "shared_services_api_client",
+      "label": "uses",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "modules_packages_service",
+      "target": "shared_services_api_client",
+      "label": "uses",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agency_portal_vite_config_ts",
+      "target": "vite",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\vite.config.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_vite_config_ts",
+      "target": "plugin_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\vite.config.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_vite_config_ts",
+      "target": "path",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\vite.config.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_auth_components_loginform",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_auth_components_pendingapproval",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_auth_components_registerform",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_bookings_components_bookinglist",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_chat_components_chatpage",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_dashboard_components_dashboard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_hotels_components_hotelform",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_hotels_components_hotellist",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_packages_components_packageform",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_packages_components_packagelist",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_triprequests_components_triprequestlist",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_transport_components_vehicleform",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_modules_transport_components_vehiclelist",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_shared_components_layout_layout",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_app_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\App.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "agency_portal_src_app",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "agency_portal_src_index_css",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_main_tsx",
+      "target": "agency_portal_src_shared_theme_themeprovider",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\main.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_authshell_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\AuthShell.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_authshell_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\AuthShell.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_authshell_tsx",
+      "target": "authshell_authshell",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\AuthShell.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "agency_portal_src_modules_auth_components_authshell",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "agency_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "agency_portal_src_shared_utils_validators",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "loginform_validateform",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_loginform_tsx",
+      "target": "loginform_handlesubmit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "loginform_handlesubmit",
+      "target": "loginform_validateform",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_pendingapproval_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\PendingApproval.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_pendingapproval_tsx",
+      "target": "agency_portal_src_modules_auth_components_authshell",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\PendingApproval.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_pendingapproval_tsx",
+      "target": "pendingapproval_pendingapproval",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\PendingApproval.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "agency_portal_src_modules_auth_components_authshell",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "agency_portal_src_modules_auth_components_passwordstrengthindicator",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "agency_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "agency_portal_src_shared_utils_validators",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "registerform_labelforjurisdiction",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_components_registerform_tsx",
+      "target": "registerform_filelookslikeimage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_services_authservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\services\\authService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_services_authservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\services\\authService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_store_authslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_store_authslice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_auth_store_authslice_ts",
+      "target": "agency_portal_src_modules_auth_services_authservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\auth\\store\\authSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_components_bidform_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidForm.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_components_bidform_tsx",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_components_bidform_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidForm.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_components_bidform_tsx",
+      "target": "bidform_handlesubmit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\components\\BidForm.tsx",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_services_bidsservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\services\\bidsService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_services_bidsservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\services\\bidsService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_store_bidsslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\store\\bidsSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_store_bidsslice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\store\\bidsSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_store_bidsslice_ts",
+      "target": "agency_portal_src_modules_bids_services_bidsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\store\\bidsSlice.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bids_store_bidsslice_ts",
+      "target": "bidsslice_mergebid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bids\\store\\bidsSlice.ts",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookingcard_tsx",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingCard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookingcard_tsx",
+      "target": "bookingcard_bookingcard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingCard.tsx",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookinglist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookinglist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookinglist_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookinglist_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookinglist_tsx",
+      "target": "agency_portal_src_modules_bookings_store_bookingsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_components_bookinglist_tsx",
+      "target": "bookinglist_handleupdatestatus",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_services_bookingsservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\services\\bookingsService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_services_bookingsservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\services\\bookingsService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_store_bookingsslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\store\\bookingsSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_store_bookingsslice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\store\\bookingsSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_bookings_store_bookingsslice_ts",
+      "target": "agency_portal_src_modules_bookings_services_bookingsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\bookings\\store\\bookingsSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "target": "agency_portal_src_modules_chat_services_chatservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "target": "chatpage_loadrooms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "target": "chatpage_openroom",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_components_chatpage_tsx",
+      "target": "chatpage_handlesend",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "chatpage_loadrooms",
+      "target": "chatpage_openroom",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_services_chatservice_ts",
+      "target": "socket_io_client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_services_chatservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_services_chatservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_services_chatservice_ts",
+      "target": "chatservice_resolvesocketbaseurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_chat_services_chatservice_ts",
+      "target": "chatservice_chatservice",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_getrooms",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_getroom",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_getmessages",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_joinroom",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_leaveroom",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_sendmessage",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_dispose",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice",
+      "target": "chatservice_chatservice_ensuresocket",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice_joinroom",
+      "target": "chatservice_chatservice_ensuresocket",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice_sendmessage",
+      "target": "chatservice_chatservice_ensuresocket",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "chatservice_chatservice_ensuresocket",
+      "target": "chatservice_resolvesocketbaseurl",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\chat\\services\\chatService.ts",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_modules_bids_store_bidsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_modules_bookings_store_bookingsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_modules_hotels_store_hotelsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_modules_packages_store_packagesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_modules_triprequests_store_triprequestsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_modules_transport_store_transportslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_dashboard_components_dashboard_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "agency_portal_src_modules_hotels_store_hotelsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "agency_portal_src_modules_hotels_services_hotelsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "agency_portal_src_shared_components_forms_imagegalleryinput",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "hotelform_handlechange",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "hotelform_toggleamenity",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotelform_tsx",
+      "target": "hotelform_handlesubmit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelForm.tsx",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "target": "agency_portal_src_modules_hotels_store_hotelsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_components_hotellist_tsx",
+      "target": "hotellist_handledelete",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\components\\HotelList.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_services_hotelsservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\services\\hotelsService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_services_hotelsservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\services\\hotelsService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_store_hotelsslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\store\\hotelsSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_store_hotelsslice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\store\\hotelsSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_hotels_store_hotelsslice_ts",
+      "target": "agency_portal_src_modules_hotels_services_hotelsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\hotels\\store\\hotelsSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "agency_portal_src_shared_utils_validators",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "agency_portal_src_modules_hotels_services_hotelsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "agency_portal_src_modules_packages_store_packagesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "agency_portal_src_modules_packages_services_packagesservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "agency_portal_src_modules_transport_services_transportservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "packageform_splitlist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "packageform_isvalidurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "packageform_loadinventory",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "packageform_loadpackage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "packageform_validateform",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packageform_tsx",
+      "target": "packageform_handlesubmit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "packageform_validateform",
+      "target": "packageform_splitlist",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "packageform_handlesubmit",
+      "target": "packageform_validateform",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L172",
+      "weight": 1.0
+    },
+    {
+      "source": "packageform_handlesubmit",
+      "target": "packageform_splitlist",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "target": "agency_portal_src_modules_packages_store_packagesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_components_packagelist_tsx",
+      "target": "packagelist_handledelete",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageList.tsx",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_hooks_usepackages_ts",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\hooks\\usePackages.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_hooks_usepackages_ts",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\hooks\\usePackages.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_hooks_usepackages_ts",
+      "target": "usepackages_usepackages",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\hooks\\usePackages.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_services_packagesservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\services\\packagesService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_services_packagesservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\services\\packagesService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_store_packagesslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\store\\packagesSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_store_packagesslice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\store\\packagesSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_packages_store_packagesslice_ts",
+      "target": "agency_portal_src_modules_packages_services_packagesservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\packages\\store\\packagesSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "agency_portal_src_modules_bids_store_bidsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "agency_portal_src_modules_bookings_store_bookingsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "agency_portal_src_modules_hotels_store_hotelsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "agency_portal_src_modules_transport_store_transportslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_agencyprofile_tsx",
+      "target": "agencyprofile_agencyprofile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "agency_portal_src_modules_bids_store_bidsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "agency_portal_src_modules_bookings_store_bookingsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "agency_portal_src_modules_hotels_store_hotelsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "agency_portal_src_modules_transport_store_transportslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_profile_components_businessstatus_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\BusinessStatus.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "agency_portal_src_modules_transport_store_transportslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "agency_portal_src_modules_transport_services_transportservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "agency_portal_src_shared_components_forms_imagegalleryinput",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "vehicleform_handlechange",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehicleform_tsx",
+      "target": "vehicleform_handlesubmit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleForm.tsx",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "target": "agency_portal_src_modules_transport_store_transportslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_components_vehiclelist_tsx",
+      "target": "vehiclelist_handledelete",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\components\\VehicleList.tsx",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_services_transportservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\services\\transportService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_services_transportservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\services\\transportService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_store_transportslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\store\\transportSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_store_transportslice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\store\\transportSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_transport_store_transportslice_ts",
+      "target": "agency_portal_src_modules_transport_services_transportservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\transport\\store\\transportSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestcard_tsx",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestCard.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestcard_tsx",
+      "target": "triprequestcard_prettylabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestCard.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "agency_portal_src_modules_bids_components_bidform",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "agency_portal_src_modules_bids_store_bidsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "agency_portal_src_modules_triprequests_store_triprequestsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "triprequestlist_refreshmarketplace",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "triprequestlist_handleopenoffer",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_components_triprequestlist_tsx",
+      "target": "triprequestlist_handlebidsubmit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "triprequestlist_handlebidsubmit",
+      "target": "triprequestlist_refreshmarketplace",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\components\\TripRequestList.tsx",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_services_triprequestsservice_ts",
+      "target": "agency_portal_src_shared_services_apiclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\services\\tripRequestsService.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_services_triprequestsservice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\services\\tripRequestsService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_store_triprequestsslice_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\store\\tripRequestsSlice.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_store_triprequestsslice_ts",
+      "target": "agency_portal_src_shared_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\store\\tripRequestsSlice.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_modules_triprequests_store_triprequestsslice_ts",
+      "target": "agency_portal_src_modules_triprequests_services_triprequestsservice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\modules\\tripRequests\\store\\tripRequestsSlice.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_comingsoon_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\ComingSoon.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_errorpopup_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\ErrorPopup.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_forms_imagegalleryinput_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_forms_imagegalleryinput_tsx",
+      "target": "imagegalleryinput_parseimageurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_forms_imagegalleryinput_tsx",
+      "target": "imagegalleryinput_addimage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_forms_imagegalleryinput_tsx",
+      "target": "imagegalleryinput_handleaddurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_forms_imagegalleryinput_tsx",
+      "target": "imagegalleryinput_handleuploadfile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_forms_imagegalleryinput_tsx",
+      "target": "imagegalleryinput_handleremoveimage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "imagegalleryinput_addimage",
+      "target": "imagegalleryinput_parseimageurl",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "imagegalleryinput_handleaddurl",
+      "target": "imagegalleryinput_addimage",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "imagegalleryinput_handleuploadfile",
+      "target": "imagegalleryinput_addimage",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\forms\\ImageGalleryInput.tsx",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_header_tsx",
+      "target": "react_redux",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_header_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_header_tsx",
+      "target": "agency_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_header_tsx",
+      "target": "agency_portal_src_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_header_tsx",
+      "target": "agency_portal_src_shared_theme_themeprovider",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_header_tsx",
+      "target": "agency_portal_src_shared_utils_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_header_tsx",
+      "target": "header_handlelogout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Header.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_layout_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_layout_tsx",
+      "target": "agency_portal_src_shared_components_layout_header",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_layout_tsx",
+      "target": "agency_portal_src_shared_components_layout_sidebar",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_layout_tsx",
+      "target": "layout_layout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_sidebar_tsx",
+      "target": "react_router_dom",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Sidebar.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_components_layout_sidebar_tsx",
+      "target": "sidebar_sidebar",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\components\\Layout\\Sidebar.tsx",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_services_apiclient_ts",
+      "target": "axios",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\services\\apiClient.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_theme_themeprovider_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_theme_themeprovider_tsx",
+      "target": "themeprovider_getinitialtheme",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatcurrency",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatcompactnumber",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatdate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatdatetime",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatdaterange",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatstatuslabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_formatters_ts",
+      "target": "formatters_formatshortid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "formatters_formatdatetime",
+      "target": "formatters_formatdate",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "formatters_formatdaterange",
+      "target": "formatters_formatdate",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\formatters.ts",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_isblank",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validaterequired",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validateemail",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validatepassword",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validatephone",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validatecnic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validateminlength",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validatepositivenumber",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_shared_utils_validators_ts",
+      "target": "validators_validatefilepresent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "validators_validaterequired",
+      "target": "validators_isblank",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "validators_validateemail",
+      "target": "validators_isblank",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "validators_validatephone",
+      "target": "validators_isblank",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "validators_validatecnic",
+      "target": "validators_isblank",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "validators_validateminlength",
+      "target": "validators_isblank",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\shared\\utils\\validators.ts",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "agency_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "agency_portal_src_modules_transport_store_transportslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "agency_portal_src_modules_hotels_store_hotelsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "agency_portal_src_modules_packages_store_packagesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "agency_portal_src_modules_triprequests_store_triprequestsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "agency_portal_src_modules_bids_store_bidsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_index_ts",
+      "target": "agency_portal_src_modules_bookings_store_bookingsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\index.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "toolkit",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "agency_portal_src_modules_auth_store_authslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "agency_portal_src_modules_transport_store_transportslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "agency_portal_src_modules_hotels_store_hotelsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "agency_portal_src_modules_packages_store_packagesslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "agency_portal_src_modules_triprequests_store_triprequestsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "agency_portal_src_modules_bids_store_bidsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "agency_portal_src_store_rootreducer_ts",
+      "target": "agency_portal_src_modules_bookings_store_bookingsslice",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "agency-portal\\src\\store\\rootReducer.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "loginform_validateform",
+      "target": "validators_validateemail",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "loginform_validateform",
+      "target": "validators_validatepassword",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "chatpage_loadrooms",
+      "target": "chatservice_chatservice_getrooms",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "chatpage_openroom",
+      "target": "chatservice_chatservice_leaveroom",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "chatpage_openroom",
+      "target": "chatservice_chatservice_getroom",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "chatpage_openroom",
+      "target": "chatservice_chatservice_getmessages",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "chatpage_openroom",
+      "target": "chatservice_chatservice_joinroom",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "chatpage_handlesend",
+      "target": "chatservice_chatservice_sendmessage",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "packageform_validateform",
+      "target": "validators_validateminlength",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "packageform_validateform",
+      "target": "validators_validatepositivenumber",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\packages\\components\\PackageForm.tsx",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "agencyprofile_agencyprofile",
+      "target": "formatters_formatcompactnumber",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "agencyprofile_agencyprofile",
+      "target": "formatters_formatdate",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "agency-portal\\src\\modules\\profile\\components\\AgencyProfile.tsx",
+      "source_location": "L110",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

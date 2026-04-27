@@ -1,0 +1,36 @@
+# Community 6
+
+## Nodes
+
+- backend_src_modules_hotels_hotels_service_ts
+- backend_src_modules_packages_packages_service_ts
+- backend_src_modules_transport_transport_service_ts
+- hotels_service_hotelsservice
+- hotels_service_hotelsservice_createhotel
+- hotels_service_hotelsservice_deletehotel
+- hotels_service_hotelsservice_gethotelbyid
+- hotels_service_hotelsservice_updatehotel
+- hotels_service_maphotel
+- media_storage_service_normalizemediastoragepaths
+- media_storage_service_resolvemediaurls
+- packages_service_buildinitials
+- packages_service_deriveage
+- packages_service_mappackage
+- packages_service_mapparticipant
+- packages_service_packagesservice
+- packages_service_packagesservice_applytopackage
+- packages_service_packagesservice_assertinventoryownership
+- packages_service_packagesservice_createpackage
+- packages_service_packagesservice_deletepackage
+- packages_service_packagesservice_getpackagebyid
+- packages_service_packagesservice_updatepackage
+- packages_service_resolveavatarurl
+- packages_service_resolvemediaimagelist
+- prismavehiclerepository_prismavehiclerepository_delete
+- socket_emitter_emitofferupdated
+- transport_service_transportservice
+- transport_service_transportservice_createvehicle
+- transport_service_transportservice_deletevehicle
+- transport_service_transportservice_getvehiclebyid
+- transport_service_transportservice_mapvehicleresponse
+- transport_service_transportservice_updatevehicle
