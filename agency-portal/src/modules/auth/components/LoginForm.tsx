@@ -74,9 +74,6 @@ const LoginForm = () => {
       badge="Agency Portal"
       title="Sign in"
       subtitle="Access your agency dashboard."
-      panelTitle="Manage your agency"
-      panelText="Sign in to view trip requests and manage your inventory."
-      panelPoints={[]}
     >
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>

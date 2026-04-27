@@ -5,9 +5,6 @@ interface AuthShellProps {
   badge: string;
   title: string;
   subtitle: string;
-  panelTitle: string;
-  panelText: string;
-  panelPoints: string[];
   children: ReactNode;
 }
 
@@ -16,7 +13,7 @@ const AuthShell = ({
   title,
   subtitle,
   children,
-}: Omit<AuthShellProps, 'panelTitle' | 'panelText' | 'panelPoints'>) => {
+}: AuthShellProps) => {
   return (
     <div className="min-h-screen bg-[var(--bg)] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-md">
