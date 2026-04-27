@@ -1,0 +1,1893 @@
+[
+  {
+    "file": "README.md",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": true
+  },
+  {
+    "file": "admin-portal\\docs\\ARCHITECTURE_PATTERNS.md",
+    "localImports": [],
+    "endpoints": [
+      "/admin/agencies",
+      "/admin/reports/dashboard"
+    ],
+    "uses": [
+      "useAgencies",
+      "useApiQuery",
+      "useApiMutation",
+      "useApiPagination"
+    ],
+    "services": [
+      "agencyService",
+      "dashboardService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\index.html",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\postcss.config.js",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\App.tsx",
+    "localImports": [
+      "./store",
+      "./shared/components/Layout/Layout",
+      "./modules/auth/components/AdminLoginForm",
+      "./modules/dashboard/components/Dashboard",
+      "./modules/agencies/components/AgencyList",
+      "./modules/users/components/UserList",
+      "./modules/reports/components/ReportDashboard",
+      "./modules/inventory/components/InventoryPage"
+    ],
+    "endpoints": [
+      "/agencies",
+      "/inventory",
+      "/users",
+      "/hotels",
+      "/inventory?type=hotels",
+      "/vehicles",
+      "/inventory?type=vehicles",
+      "/reports"
+    ],
+    "uses": [
+      "useSelector"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [
+      "/login",
+      "/dashboard",
+      "/agencies",
+      "/travelers",
+      "/inventory",
+      "/analytics",
+      "/users",
+      "/hotels",
+      "/vehicles",
+      "/reports",
+      "/activity",
+      "/"
+    ],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\main.tsx",
+    "localImports": [
+      "./store",
+      "./App",
+      "./shared/theme/ThemeProvider"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": true,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\activity\\components\\ActivityDashboard.tsx",
+    "localImports": [
+      "../../dashboard/hooks/useDashboard",
+      "../../../shared/utils/formatters"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useDashboardStats",
+      "useDashboard"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\agencies\\components\\AgencyCard.tsx",
+    "localImports": [
+      "../../../shared/types"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useState"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\agencies\\components\\AgencyList.tsx",
+    "localImports": [
+      "../../../shared/components/management/EntityEditModal",
+      "../../../shared/components/management/DocumentGrid",
+      "../../../shared/components/management/ManagementPageShell",
+      "../../../store",
+      "../../../shared/utils/errors",
+      "../../../shared/utils/formatters",
+      "../store/agencySlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useMemo",
+      "useState",
+      "useDispatch",
+      "useSelector",
+      "useSearchParams"
+    ],
+    "services": [],
+    "slices": [
+      "agencySlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\agencies\\hooks\\useAgencies.ts",
+    "localImports": [
+      "../../../store",
+      "../store/agencySlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useCallback",
+      "useDispatch",
+      "useSelector",
+      "useAgencies"
+    ],
+    "services": [],
+    "slices": [
+      "agencySlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\agencies\\services\\agencyService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/admin/agencies",
+      "/admin/agencies/${id}/approve",
+      "/admin/agencies/${id}/reject",
+      "/admin/agencies/${id}"
+    ],
+    "uses": [],
+    "services": [
+      "agencyService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\agencies\\store\\agencySlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/agencyService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "agencyService"
+    ],
+    "slices": [
+      "createSlice",
+      "agencySlice"
+    ],
+    "thunks": [
+      "thunk_1(params?: { page?: number; limit?: number; status?: string; search?: string })",
+      "thunk_2({ id, reason }: { id: string; reason?: string })",
+      "thunk_3({ id, reason }: { id: string; reason?: string })",
+      "thunk_4({ id, payload }: { id: string; payload: AgencyUpdateInput })",
+      "thunk_5(id: string)"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\auth\\components\\AdminLoginForm.tsx",
+    "localImports": [
+      "../../../shared/components/ErrorPopup",
+      "../../../shared/theme/ThemeProvider",
+      "../store/authSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useState",
+      "useDispatch",
+      "useNavigate",
+      "useTheme"
+    ],
+    "services": [],
+    "slices": [
+      "authSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+    "localImports": [
+      "../../../store",
+      "../store/authSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useCallback",
+      "useDispatch",
+      "useSelector",
+      "useAuth"
+    ],
+    "services": [],
+    "slices": [
+      "authSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\auth\\services\\authService.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../../../shared/services/apiClient"
+    ],
+    "endpoints": [
+      "/auth/login"
+    ],
+    "uses": [],
+    "services": [
+      "authService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\auth\\store\\authSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/authService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "authService"
+    ],
+    "slices": [
+      "createSlice",
+      "authSlice"
+    ],
+    "thunks": [
+      "thunk_1({ email, password }: { email: string; password: string })",
+      "thunk_2()"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\dashboard\\components\\Dashboard.tsx",
+    "localImports": [
+      "../../../shared/components/analytics/MetricCard",
+      "../hooks/useDashboard"
+    ],
+    "endpoints": [
+      "/agencies?status=PENDING",
+      "/inventory?type=hotels",
+      "/inventory?type=vehicles",
+      "/inventory"
+    ],
+    "uses": [
+      "useNavigate",
+      "useDashboardStats",
+      "useDashboard"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\dashboard\\hooks\\useDashboard.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/dashboardService"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useQuery",
+      "useDashboardStats",
+      "useRevenueChart",
+      "useBookingsChart",
+      "useUserGrowth"
+    ],
+    "services": [
+      "dashboardService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\dashboard\\services\\dashboardService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/admin/reports/dashboard",
+      "/admin/reports/revenue",
+      "/admin/reports/bookings",
+      "/admin/reports/user-growth"
+    ],
+    "uses": [],
+    "services": [
+      "dashboardService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\hotels\\components\\HotelApprovalList.tsx",
+    "localImports": [
+      "../../../store",
+      "../../../shared/utils/formatters",
+      "../store/hotelSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useMemo",
+      "useState",
+      "useDispatch",
+      "useSelector"
+    ],
+    "services": [],
+    "slices": [
+      "hotelSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\hotels\\components\\HotelCard.tsx",
+    "localImports": [
+      "../../../shared/types"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\hotels\\hooks\\useHotels.ts",
+    "localImports": [
+      "../../../store",
+      "../store/hotelSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useCallback",
+      "useDispatch",
+      "useSelector",
+      "useHotels"
+    ],
+    "services": [],
+    "slices": [
+      "hotelSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\hotels\\services\\hotelService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/admin/hotels",
+      "/admin/hotels/${id}/approve",
+      "/admin/hotels/${id}/reject"
+    ],
+    "uses": [],
+    "services": [
+      "hotelService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\hotels\\store\\hotelSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/hotelService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "hotelService"
+    ],
+    "slices": [
+      "createSlice",
+      "hotelSlice"
+    ],
+    "thunks": [
+      "thunk_1(params?: { page?: number; limit?: number; status?: string; search?: string })",
+      "thunk_2({ id, reason }: { id: string; reason?: string })",
+      "thunk_3({ id, reason }: { id: string; reason?: string })"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\inventory\\components\\InventoryPage.tsx",
+    "localImports": [
+      "../../../shared/components/management/ManagementPageShell",
+      "../../../shared/utils/formatters",
+      "../../hotels/hooks/useHotels",
+      "../../vehicles/hooks/useVehicles"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useMemo",
+      "useState",
+      "useSearchParams",
+      "useHotels",
+      "useVehicles"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\reports\\components\\ReportCharts.tsx",
+    "localImports": [
+      "../services/reportsService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "reportsService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\reports\\components\\ReportDashboard.tsx",
+    "localImports": [
+      "../../../shared/components/analytics/MetricCard",
+      "../../../shared/components/analytics/SimpleChartCard",
+      "../../dashboard/hooks/useDashboard"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useBookingsChart",
+      "useDashboardStats",
+      "useUserGrowth",
+      "useDashboard"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\reports\\hooks\\useReports.ts",
+    "localImports": [
+      "../../../store",
+      "../store/reportsSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useCallback",
+      "useDispatch",
+      "useSelector",
+      "useReports"
+    ],
+    "services": [],
+    "slices": [
+      "reportsSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\reports\\services\\reportsService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/admin/reports/dashboard",
+      "/admin/reports/revenue",
+      "/admin/reports/bookings",
+      "/admin/reports/user-growth"
+    ],
+    "uses": [],
+    "services": [
+      "reportsService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\reports\\store\\reportsSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/reportsService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "reportsService"
+    ],
+    "slices": [
+      "createSlice",
+      "reportsSlice"
+    ],
+    "thunks": [
+      "thunk_1()",
+      "thunk_2(range: ReportRange = '6months')",
+      "thunk_3(range: ReportRange = '6months')",
+      "thunk_4(range: ReportRange = '6months')",
+      "thunk_5(range: ReportRange = '6months')"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\users\\components\\UserList.tsx",
+    "localImports": [
+      "../../../shared/components/analytics/MetricCard",
+      "../../../shared/components/management/EntityEditModal",
+      "../../../shared/components/management/DocumentGrid",
+      "../../../shared/components/management/ManagementPageShell",
+      "../../../store",
+      "../../../shared/utils/errors",
+      "../../../shared/utils/formatters",
+      "../store/usersSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useMemo",
+      "useState",
+      "useDispatch",
+      "useSelector",
+      "useSearchParams"
+    ],
+    "services": [],
+    "slices": [
+      "usersSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\users\\hooks\\useUsers.ts",
+    "localImports": [
+      "../../../store",
+      "../store/usersSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useCallback",
+      "useDispatch",
+      "useSelector",
+      "useUsers"
+    ],
+    "services": [],
+    "slices": [
+      "usersSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\users\\services\\usersService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/admin/users",
+      "/admin/users/${id}/approve",
+      "/admin/users/${id}/reject",
+      "/admin/users/${id}"
+    ],
+    "uses": [],
+    "services": [
+      "usersService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\users\\store\\usersSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/usersService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "usersService"
+    ],
+    "slices": [
+      "createSlice",
+      "usersSlice"
+    ],
+    "thunks": [
+      "thunk_1(params?: {\n    page?: number;\n    limit?: number;\n    status?: string;\n    search?: string;\n  })",
+      "thunk_2({ id, reason }: { id: string; reason?: string })",
+      "thunk_3({ id, reason }: { id: string; reason?: string })",
+      "thunk_4({ id, payload }: { id: string; payload: TravelerUpdateInput })"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleApprovalList.tsx",
+    "localImports": [
+      "../../../store",
+      "../../../shared/utils/formatters",
+      "../store/vehiclesSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useMemo",
+      "useState",
+      "useDispatch",
+      "useSelector"
+    ],
+    "services": [],
+    "slices": [
+      "vehiclesSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\vehicles\\components\\VehicleCard.tsx",
+    "localImports": [
+      "../../../shared/types"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\vehicles\\hooks\\useVehicles.ts",
+    "localImports": [
+      "../../../store",
+      "../store/vehiclesSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useCallback",
+      "useDispatch",
+      "useSelector",
+      "useVehicles"
+    ],
+    "services": [],
+    "slices": [
+      "vehiclesSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\vehicles\\services\\vehiclesService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/admin/vehicles",
+      "/admin/vehicles/${id}/approve",
+      "/admin/vehicles/${id}/reject"
+    ],
+    "uses": [],
+    "services": [
+      "vehiclesService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\modules\\vehicles\\store\\vehiclesSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/vehiclesService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "vehiclesService"
+    ],
+    "slices": [
+      "createSlice",
+      "vehiclesSlice"
+    ],
+    "thunks": [
+      "thunk_1(params?: { page?: number; limit?: number; status?: string; search?: string })",
+      "thunk_2({ id, reason }: { id: string; reason?: string })",
+      "thunk_3({ id, reason }: { id: string; reason?: string })"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\ComingSoon.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useNavigate"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\ErrorBoundary.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\ErrorPopup.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useState"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\Layout\\Header.tsx",
+    "localImports": [
+      "../../../modules/auth/store/authSlice",
+      "../../../store",
+      "../../theme/ThemeProvider",
+      "../../utils/formatters"
+    ],
+    "endpoints": [
+      "/agencies",
+      "/inventory"
+    ],
+    "uses": [
+      "useDispatch",
+      "useSelector",
+      "useLocation",
+      "useTheme"
+    ],
+    "services": [],
+    "slices": [
+      "authSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\Layout\\Layout.tsx",
+    "localImports": [
+      "./Sidebar",
+      "./Header"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\Layout\\Sidebar.tsx",
+    "localImports": [],
+    "endpoints": [
+      "/agencies",
+      "/inventory"
+    ],
+    "uses": [
+      "useLocation"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\UI\\Button.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\UI\\Input.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\analytics\\MetricCard.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\analytics\\SimpleChartCard.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\management\\DocumentGrid.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\management\\EntityEditModal.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\components\\management\\ManagementPageShell.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\hooks\\index.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useApiQuery",
+      "useApiMutation",
+      "useApiPagination"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\hooks\\useApiMutation.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useMutation",
+      "useApiMutation"
+    ],
+    "services": [
+      "agencyService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\hooks\\useApiPagination.ts",
+    "localImports": [
+      "./useApiQuery"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useState",
+      "useCallback",
+      "useApiQuery",
+      "useApiPagination"
+    ],
+    "services": [
+      "agencyService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\hooks\\useApiQuery.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useQuery",
+      "useApiQuery"
+    ],
+    "services": [
+      "agencyService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\services\\apiClient.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\theme\\ThemeProvider.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useContext",
+      "useEffect",
+      "useState",
+      "useTheme"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\types\\index.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\utils\\errorHandler.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "agencyService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\utils\\errors.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\shared\\utils\\formatters.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\store\\index.ts",
+    "localImports": [
+      "../modules/auth/store/authSlice",
+      "../modules/agencies/store/agencySlice",
+      "../modules/hotels/store/hotelSlice",
+      "../modules/vehicles/store/vehiclesSlice",
+      "../modules/users/store/usersSlice",
+      "../modules/reports/store/reportsSlice"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [
+      "authSlice",
+      "agencySlice",
+      "hotelSlice",
+      "vehiclesSlice",
+      "usersSlice",
+      "reportsSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\store\\rootReducer.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\src\\vite-env.d.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\tailwind.config.js",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "admin-portal\\vite.config.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\index.html",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\postcss.config.js",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\App.tsx",
+    "localImports": [
+      "./modules/auth/components/LoginForm",
+      "./modules/auth/components/PendingApproval",
+      "./modules/auth/components/RegisterForm",
+      "./modules/auth/store/authSlice",
+      "./modules/bookings/components/BookingList",
+      "./modules/chat/components/ChatPage",
+      "./modules/dashboard/components/Dashboard",
+      "./modules/hotels/components/HotelForm",
+      "./modules/hotels/components/HotelList",
+      "./modules/packages/components/PackageForm",
+      "./modules/packages/components/PackageList",
+      "./modules/tripRequests/components/TripRequestList",
+      "./modules/transport/components/VehicleForm",
+      "./modules/transport/components/VehicleList",
+      "./shared/components/Layout/Layout",
+      "./store"
+    ],
+    "endpoints": [
+      "/bookings",
+      "/chat",
+      "/hotels",
+      "/hotels/new",
+      "/hotels/:id/edit"
+    ],
+    "uses": [
+      "useEffect",
+      "useDispatch",
+      "useSelector"
+    ],
+    "services": [],
+    "slices": [
+      "authSlice"
+    ],
+    "thunks": [],
+    "routes": [
+      "/login",
+      "/signup",
+      "/pending-approval",
+      "/dashboard",
+      "/packages",
+      "/packages/new",
+      "/packages/:id/edit",
+      "/trip-requests",
+      "/bookings",
+      "/chat",
+      "/hotels",
+      "/hotels/new",
+      "/hotels/:id/edit",
+      "/transport",
+      "/transport/new",
+      "/transport/:id/edit",
+      "/profile",
+      "/status",
+      "/",
+      "*"
+    ],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\main.tsx",
+    "localImports": [
+      "./App",
+      "./store",
+      "./shared/theme/ThemeProvider"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\auth\\components\\AuthShell.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\auth\\components\\LoginForm.tsx",
+    "localImports": [
+      "./AuthShell",
+      "../store/authSlice",
+      "../../../shared/utils/validators"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useState",
+      "useDispatch",
+      "useNavigate"
+    ],
+    "services": [],
+    "slices": [
+      "authSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\auth\\components\\PendingApproval.tsx",
+    "localImports": [
+      "./AuthShell"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useLocation"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\auth\\components\\RegisterForm.tsx",
+    "localImports": [
+      "./AuthShell",
+      "./PasswordStrengthIndicator",
+      "../store/authSlice",
+      "../../../shared/utils/validators"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useMemo",
+      "useState",
+      "useDispatch",
+      "useNavigate"
+    ],
+    "services": [],
+    "slices": [
+      "authSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\auth\\hooks\\useAuth.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useAuth"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\auth\\services\\authService.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../../../shared/services/apiClient"
+    ],
+    "endpoints": [
+      "/auth/login",
+      "/auth/register/agency",
+      "/auth/profile"
+    ],
+    "uses": [],
+    "services": [
+      "authService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\auth\\store\\authSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/authService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "authService"
+    ],
+    "slices": [
+      "createSlice",
+      "authSlice"
+    ],
+    "thunks": [
+      "thunk_1({ email, password }: { email: string; password: string })",
+      "thunk_2(data: {\n    email: string;\n    password: string;\n    name: string;\n    phone: string;\n    address: string;\n    officeCity: string;\n    jurisdiction: 'ICT' | 'Punjab' | 'Sindh' | 'KPK' | 'Balochistan' | 'AJK' | 'Gilgit-Baltistan';\n    legalEntityType: 'SOLE_PROPRIETOR' | 'PARTNERSHIP' | 'COMPANY';\n    license: string;\n    ntn: string;\n    ownerName: string;\n    cnic: string;\n    fieldOfOperations: string[];\n    capitalAvailablePkr: number;\n    cnicImage: File;\n    ownerPhoto: File;\n    licenseCertificate: File;\n    ntnCertificate: File;\n    officeProof: File;\n    bankCertificate: File;\n    businessRegistrationProof?: File;\n    additionalSupportingDocument?: File;\n    secpRegistrationNumber?: string;\n    partnershipRegistrationNumber?: string;\n  })",
+      "thunk_3()"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bids\\components\\BidCard.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bids\\components\\BidForm.tsx",
+    "localImports": [
+      "../../../shared/types",
+      "../../../shared/utils/formatters"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useMemo",
+      "useState"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bids\\components\\BidList.tsx",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bids\\hooks\\useBids.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useBids"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bids\\services\\bidsService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/bids",
+      "/bids/${bidId}",
+      "/bids/${data.bidId}/counteroffer"
+    ],
+    "uses": [],
+    "services": [
+      "bidsService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bids\\store\\bidsSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/bidsService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "bidsService"
+    ],
+    "slices": [
+      "createSlice",
+      "bidsSlice"
+    ],
+    "thunks": [
+      "thunk_1(params?: { page?: number; limit?: number; status?: string })",
+      "thunk_2(bidId: string)",
+      "thunk_3(data: {\n    tripRequestId: string;\n    price: number;\n    description?: string;\n    offerDetails: OfferDetails;\n  })",
+      "thunk_4(data: {\n    bidId: string;\n    price: number;\n    description?: string;\n    offerDetails: OfferDetails;\n  })"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bookings\\components\\BookingCard.tsx",
+    "localImports": [
+      "../../../shared/types"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bookings\\components\\BookingList.tsx",
+    "localImports": [
+      "../../../store",
+      "../../../shared/utils/formatters",
+      "../store/bookingsSlice"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useState",
+      "useDispatch",
+      "useSelector"
+    ],
+    "services": [],
+    "slices": [
+      "bookingsSlice"
+    ],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bookings\\hooks\\useBookings.ts",
+    "localImports": [],
+    "endpoints": [],
+    "uses": [
+      "useBookings"
+    ],
+    "services": [],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bookings\\services\\bookingsService.ts",
+    "localImports": [
+      "../../../shared/services/apiClient",
+      "../../../shared/types"
+    ],
+    "endpoints": [
+      "/bookings",
+      "/bookings/${id}/status"
+    ],
+    "uses": [],
+    "services": [
+      "bookingsService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\bookings\\store\\bookingsSlice.ts",
+    "localImports": [
+      "../../../shared/types",
+      "../services/bookingsService"
+    ],
+    "endpoints": [],
+    "uses": [],
+    "services": [
+      "bookingsService"
+    ],
+    "slices": [
+      "createSlice",
+      "bookingsSlice"
+    ],
+    "thunks": [
+      "thunk_1(params?: { page?: number; limit?: number; status?: string })",
+      "thunk_2({\n    id,\n    status,\n  }: {\n    id: string;\n    status: 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';\n  })"
+    ],
+    "routes": [],
+    "hasCreateSlice": true,
+    "hasReducer": true,
+    "hasQueryClient": false,
+    "hasSocket": false
+  },
+  {
+    "file": "agency-portal\\src\\modules\\chat\\components\\ChatPage.tsx",
+    "localImports": [
+      "../../../shared/utils/formatters",
+      "../../../shared/types",
+      "../services/chatService"
+    ],
+    "endpoints": [],
+    "uses": [
+      "useEffect",
+      "useMemo",
+      "useState"
+    ],
+    "services": [
+      "chatService"
+    ],
+    "slices": [],
+    "thunks": [],
+    "routes": [],
+    "hasCreateSlice": false,
+    "hasReducer": false,
+    "hasQueryClient": false,
+    "hasSocket": true
+  }
+]
