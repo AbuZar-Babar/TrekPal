@@ -1,14 +1,12 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
-  Users, 
   BedDouble, 
   TrendingUp, 
   Calendar, 
   ArrowUpRight, 
   Star,
   Clock,
-  CheckCircle2,
   AlertCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -19,7 +17,7 @@ const DashboardPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
   const hotelId = user?.hotel?.id;
 
-  const { data: hotel, isLoading } = useQuery({
+  const { data: hotel } = useQuery({
     queryKey: ['hotel-dashboard', hotelId],
     queryFn: async () => {
       const response = await api.get(`/hotels/${hotelId}`);

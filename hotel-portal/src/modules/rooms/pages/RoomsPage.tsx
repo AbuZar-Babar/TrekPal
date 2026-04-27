@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { BedDouble, Plus, Loader2, Edit2, Trash2, Check, X, Info, Image as ImageIcon } from 'lucide-react';
+import { BedDouble, Plus, Loader2, Edit2, Trash2, X, Info, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';

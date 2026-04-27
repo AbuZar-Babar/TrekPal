@@ -102,7 +102,7 @@ const LoginPage: React.FC = () => {
             <div>
               <div className="flex items-center justify-between">
                 <label className="label">Password</label>
-                <Link to="/forgot-password" size="sm" className="text-xs font-semibold text-primary-600 hover:text-primary-500">
+                <Link to="/forgot-password" title="Forgot password?" className="text-xs font-semibold text-primary-600 hover:text-primary-500">
                   Forgot password?
                 </Link>
               </div>
