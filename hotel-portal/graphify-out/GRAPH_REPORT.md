@@ -1,7 +1,7 @@
 # Graph Report - C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal  (2026-04-28)
 
 ## Corpus Check
-- 16 files · ~6,855 words
+- 16 files · ~9,885 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -32,10 +32,10 @@
 4. `handleSubmit()` - 2 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `handleSubmit()` --calls--> `onSubmit()`  [INFERRED]
-  C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\services\pages\ServicesPage.tsx → C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\auth\pages\RegisterPage.tsx
-- `handleSubmit()` --calls--> `onSubmit()`  [INFERRED]
-  C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\rooms\pages\RoomsPage.tsx → C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\auth\pages\RegisterPage.tsx
+- `onSubmit()` --calls--> `handleSubmit()`  [INFERRED]
+  C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\auth\pages\RegisterPage.tsx → C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\services\pages\ServicesPage.tsx
+- `onSubmit()` --calls--> `handleSubmit()`  [INFERRED]
+  C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\auth\pages\RegisterPage.tsx → C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\rooms\pages\RoomsPage.tsx
 
 ## Communities
 

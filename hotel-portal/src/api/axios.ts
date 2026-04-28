@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const DEFAULT_API_BASE_URL = 'https://trekpal-backend-api.onrender.com/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL?.trim() || '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL,
 });
 
 // Add a request interceptor to include the auth token

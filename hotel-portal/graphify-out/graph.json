@@ -354,8 +354,8 @@
       "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\rooms\\pages\\RoomsPage.tsx",
       "source_location": "L192",
       "weight": 1.0,
-      "_src": "roomspage_handlesubmit",
-      "_tgt": "registerpage_onsubmit",
+      "_src": "registerpage_onsubmit",
+      "_tgt": "roomspage_handlesubmit",
       "source": "registerpage_onsubmit",
       "target": "roomspage_handlesubmit"
     },
@@ -366,8 +366,8 @@
       "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\services\\pages\\ServicesPage.tsx",
       "source_location": "L165",
       "weight": 1.0,
-      "_src": "servicespage_handlesubmit",
-      "_tgt": "registerpage_onsubmit",
+      "_src": "registerpage_onsubmit",
+      "_tgt": "servicespage_handlesubmit",
       "source": "registerpage_onsubmit",
       "target": "servicespage_handlesubmit"
     },
