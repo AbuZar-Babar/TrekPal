@@ -3,27 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { RootState } from '../../../store';
-import { deleteHotel, fetchHotels } from '../store/hotelsSlice';
+import { fetchHotels } from '../store/hotelsSlice';
 
 const HotelList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { hotels, loading, error } = useSelector((state: RootState) => state.hotels);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'my' | 'marketplace'>('marketplace');
 
   useEffect(() => {
-    dispatch(fetchHotels({ 
-      limit: 100, 
-      discovery: activeTab === 'marketplace' 
+    dispatch(fetchHotels({
+      limit: 100,
+      discovery: true,
     }) as any);
-  }, [dispatch, activeTab]);
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this hotel?')) {
-      await dispatch(deleteHotel(id) as any);
-    }
-  };
+  }, [dispatch]);
 
   const filtered = hotels.filter((hotel) => {
     const query = searchQuery.toLowerCase();
@@ -38,29 +31,6 @@ const HotelList = () => {
     <div className="space-y-6">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-semibold text-[var(--text)]">Hotels</h2>
-        
-        <div className="flex rounded-xl bg-[var(--surface)] p-1 border border-[var(--border)]">
-          <button
-            onClick={() => setActiveTab('marketplace')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-              activeTab === 'marketplace' 
-                ? 'bg-[var(--primary)] text-white shadow-sm' 
-                : 'text-[var(--text-soft)] hover:text-[var(--text)]'
-            }`}
-          >
-            Marketplace
-          </button>
-          <button
-            onClick={() => setActiveTab('my')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-              activeTab === 'my' 
-                ? 'bg-[var(--primary)] text-white shadow-sm' 
-                : 'text-[var(--text-soft)] hover:text-[var(--text)]'
-            }`}
-          >
-            My Inventory
-          </button>
-        </div>
       </section>
 
       <section className="surface">
@@ -78,15 +48,6 @@ const HotelList = () => {
             />
           </div>
 
-          {activeTab === 'my' && (
-            <button
-              type="button"
-              onClick={() => navigate('/hotels/new')}
-              className="app-btn-primary h-11 px-5 text-sm"
-            >
-              Add Property
-            </button>
-          )}
         </div>
       </section>
 
@@ -104,12 +65,10 @@ const HotelList = () => {
       ) : filtered.length === 0 ? (
         <div className="surface px-6 py-14 text-center">
           <div className="text-lg font-semibold tracking-tight text-[var(--text)]">
-            {activeTab === 'my' ? 'No local inventory found' : 'No properties in marketplace'}
+            No properties in marketplace
           </div>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
-            {activeTab === 'my' 
-              ? 'List your properties to manage them here.' 
-              : 'Independent hotels will appear here once they are approved.'}
+            Independent hotels will appear here once they are approved.
           </p>
         </div>
       ) : (
@@ -160,29 +119,12 @@ const HotelList = () => {
                   </div>
                   
                   <div className="flex gap-2">
-                    {activeTab === 'my' ? (
-                      <>
-                        <button
-                          onClick={() => navigate(`/hotels/${hotel.id}/edit`)}
-                          className="h-9 px-4 text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-subtle)] rounded-lg transition-colors"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(hotel.id)}
-                          className="h-9 px-4 text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] rounded-lg transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => navigate(`/hotels/${hotel.id}`)}
-                        className="app-btn-secondary h-9 px-4 text-xs"
-                      >
-                        Details
-                      </button>
-                    )}
+                    <button
+                      onClick={() => navigate(`/hotels/${hotel.id}`)}
+                      className="app-btn-secondary h-9 px-4 text-xs"
+                    >
+                      Details
+                    </button>
                   </div>
                 </div>
               </div>

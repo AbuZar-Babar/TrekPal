@@ -50,7 +50,6 @@ const Dashboard = () => {
   const actions = [
     { label: 'Create trip', path: '/packages/new' },
     { label: 'View requests', path: '/trip-requests' },
-    { label: 'Add hotel', path: '/hotels/new' },
     { label: 'Add vehicle', path: '/transport/new' },
   ];
 
@@ -73,7 +72,7 @@ const Dashboard = () => {
 
       <section className="surface p-6">
         <h3 className="mb-6 text-lg font-semibold text-[var(--text)]">Quick Actions</h3>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
           {actions.map((action) => (
             <button
               key={action.label}

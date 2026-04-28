@@ -9,7 +9,6 @@ import { getProfile } from './modules/auth/store/authSlice';
 import BookingList from './modules/bookings/components/BookingList';
 import ChatPage from './modules/chat/components/ChatPage';
 import Dashboard from './modules/dashboard/components/Dashboard';
-import HotelForm from './modules/hotels/components/HotelForm';
 import HotelList from './modules/hotels/components/HotelList';
 import PackageForm from './modules/packages/components/PackageForm';
 import PackageList from './modules/packages/components/PackageList';
@@ -151,23 +150,11 @@ function App() {
       />
       <Route
         path="/hotels/new"
-        element={(
-          <ProtectedRoute>
-            <Layout>
-              <HotelForm />
-            </Layout>
-          </ProtectedRoute>
-        )}
+        element={<Navigate to="/hotels" replace />}
       />
       <Route
         path="/hotels/:id/edit"
-        element={(
-          <ProtectedRoute>
-            <Layout>
-              <HotelForm />
-            </Layout>
-          </ProtectedRoute>
-        )}
+        element={<Navigate to="/hotels" replace />}
       />
       <Route
         path="/transport"
