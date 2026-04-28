@@ -50,30 +50,56 @@ const hotelSelect = {
   },
 } as const;
 
-const mapHotel = async (hotel: any): Promise<HotelResponse> => ({
-  id: hotel.id,
-  agencyId: hotel.agencyId,
-  authUid: hotel.authUid,
-  name: hotel.name,
-  description: hotel.description,
-  address: hotel.address,
-  city: hotel.city,
-  country: hotel.country,
-  latitude: hotel.latitude,
-  longitude: hotel.longitude,
-  rating: hotel.rating,
-  status: hotel.status,
-  images: await resolveMediaUrls(hotel.images),
-  amenities: hotel.amenities,
-  businessDocUrl: hotel.businessDocUrl,
-  locationImageUrl: hotel.locationImageUrl,
-  email: hotel.email,
-  phone: hotel.phone,
-  createdAt: hotel.createdAt,
-  updatedAt: hotel.updatedAt,
-  rooms: hotel.rooms || [],
-  services: hotel.services || [],
-});
+const mapHotel = async (hotel: any): Promise<HotelResponse> => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const roomsWithAvailability = await Promise.all(
+    (hotel.rooms || []).map(async (room: any) => {
+      const availability = await prisma.roomAvailability.findUnique({
+        where: {
+          roomId_date: {
+            roomId: room.id,
+            date: today,
+          },
+        },
+        select: {
+          available: true,
+        },
+      });
+
+      return {
+        ...room,
+        availableQuantity: availability?.available ?? room.quantity ?? 0,
+      };
+    })
+  );
+
+  return {
+    id: hotel.id,
+    agencyId: hotel.agencyId,
+    authUid: hotel.authUid,
+    name: hotel.name,
+    description: hotel.description,
+    address: hotel.address,
+    city: hotel.city,
+    country: hotel.country,
+    latitude: hotel.latitude,
+    longitude: hotel.longitude,
+    rating: hotel.rating,
+    status: hotel.status,
+    images: await resolveMediaUrls(hotel.images),
+    amenities: hotel.amenities,
+    businessDocUrl: hotel.businessDocUrl,
+    locationImageUrl: hotel.locationImageUrl,
+    email: hotel.email,
+    phone: hotel.phone,
+    createdAt: hotel.createdAt,
+    updatedAt: hotel.updatedAt,
+    rooms: roomsWithAvailability,
+    services: hotel.services || [],
+  };
+};
 
 export class HotelsService {
   async getHotels(

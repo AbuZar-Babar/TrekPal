@@ -409,6 +409,59 @@ export class BidsService {
     }
 
     const result = await prisma.$transaction(async (tx: any) => {
+      const roomId = bid.tripRequest.roomId;
+      const startDate = bid.tripRequest.startDate;
+      const endDate = bid.tripRequest.endDate;
+
+      if (roomId && startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(endDate);
+        end.setHours(0, 0, 0, 0);
+        const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (nights > 0) {
+          const availableSlots = await tx.roomAvailability.findMany({
+            where: {
+              roomId,
+              date: {
+                gte: start,
+                lt: end,
+              },
+            },
+            select: {
+              available: true,
+            },
+          });
+
+          if (availableSlots.length < nights || availableSlots.some((slot: any) => slot.available < 1)) {
+            throw new Error('Selected room is no longer available for the requested dates');
+          }
+
+          const updated = await tx.roomAvailability.updateMany({
+            where: {
+              roomId,
+              date: {
+                gte: start,
+                lt: end,
+              },
+              available: {
+                gte: 1,
+              },
+            },
+            data: {
+              available: {
+                decrement: 1,
+              },
+            },
+          });
+
+          if (updated.count < nights) {
+            throw new Error('Selected room availability changed during confirmation. Please retry.');
+          }
+        }
+      }
+
       await tx.bid.update({
         where: { id: bidId },
         data: {

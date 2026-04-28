@@ -76,6 +76,16 @@ export interface Hotel {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   images: string[];
   amenities: string[];
+  rooms?: {
+    id: string;
+    type: string;
+    price: number;
+    capacity: number;
+    quantity: number;
+    availableQuantity?: number;
+    amenities?: string[];
+    images?: string[];
+  }[];
   createdAt: string;
   updatedAt: string;
 }
