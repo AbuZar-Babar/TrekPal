@@ -8,17 +8,17 @@ import { useAuthStore } from '../../../store/useAuthStore';
 interface Room {
   id: string;
   type: string;
-  description: string;
-  pricePerNight: number;
-  totalRooms: number;
+  price: number;
+  capacity: number;
+  quantity: number;
   amenities: string[];
-  imageUrl?: string;
+  images?: string[];
 }
 
 const RoomsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
-  const hotelId = user?.hotel?.id;
+  const hotelId = user?.id;
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
@@ -28,7 +28,7 @@ const RoomsPage: React.FC = () => {
     queryKey: ['hotel', hotelId],
     queryFn: async () => {
       const response = await api.get(`/hotels/${hotelId}`);
-      return response.data;
+      return response.data.data;
     },
     enabled: !!hotelId,
   });
@@ -102,8 +102,8 @@ const RoomsPage: React.FC = () => {
               className="card group hover:border-primary-200 transition-colors"
             >
               <div className="h-48 bg-slate-100 relative overflow-hidden">
-                {room.imageUrl ? (
-                  <img src={room.imageUrl} alt={room.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  {room.images?.[0] ? (
+                  <img src={room.images[0]} alt={room.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
                     <ImageIcon className="w-10 h-10 mb-2" />
@@ -130,18 +130,18 @@ const RoomsPage: React.FC = () => {
                 </div>
                 <div className="absolute bottom-4 left-4">
                   <span className="px-3 py-1 bg-white/90 backdrop-blur rounded-full text-xs font-bold text-primary-700 shadow-sm">
-                    ${room.pricePerNight}/night
+                    ${room.price}/night
                   </span>
                 </div>
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-bold text-slate-900 mb-2">{room.type}</h3>
-                <p className="text-sm text-slate-500 mb-4 line-clamp-2">{room.description}</p>
+                <p className="text-sm text-slate-500 mb-4 line-clamp-2">Capacity: {room.capacity} guests</p>
                 
                 <div className="flex items-center gap-4 text-sm text-slate-600 mb-4">
                   <div className="flex items-center gap-1.5">
                     <BedDouble className="w-4 h-4 text-slate-400" />
-                    <span>{room.totalRooms} Rooms Total</span>
+                    <span>{room.quantity} Rooms Total</span>
                   </div>
                 </div>
 
@@ -180,20 +180,22 @@ interface RoomFormProps {
 const RoomForm: React.FC<RoomFormProps> = ({ room, onClose, onSubmit, isLoading }) => {
   const [formData, setFormData] = useState({
     type: room?.type || '',
-    description: room?.description || '',
-    pricePerNight: room?.pricePerNight || 0,
-    totalRooms: room?.totalRooms || 1,
+    price: room?.price || 0,
+    capacity: room?.capacity || 1,
+    quantity: room?.quantity || 1,
     amenities: room?.amenities?.join(', ') || '',
-    imageUrl: room?.imageUrl || '',
+    image: room?.images?.[0] || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
       ...formData,
-      pricePerNight: Number(formData.pricePerNight),
-      totalRooms: Number(formData.totalRooms),
+      price: Number(formData.price),
+      capacity: Number(formData.capacity),
+      quantity: Number(formData.quantity),
       amenities: formData.amenities.split(',').map(s => s.trim()).filter(Boolean),
+      images: formData.image ? [formData.image] : [],
     });
   };
 
@@ -229,10 +231,22 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, onClose, onSubmit, isLoading 
                 type="number" 
                 className="input-field" 
                 placeholder="0.00"
-                value={formData.pricePerNight}
-                onChange={e => setFormData({...formData, pricePerNight: Number(e.target.value)})}
+                value={formData.price}
+                onChange={e => setFormData({...formData, price: Number(e.target.value)})}
               />
             </div>
+          </div>
+
+          <div>
+            <label className="label">Room Capacity</label>
+            <input 
+              required
+              type="number" 
+              className="input-field" 
+              placeholder="2"
+              value={formData.capacity}
+              onChange={e => setFormData({...formData, capacity: Number(e.target.value)})}
+            />
           </div>
 
           <div>
@@ -242,23 +256,12 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, onClose, onSubmit, isLoading 
               type="number" 
               className="input-field" 
               placeholder="1"
-              value={formData.totalRooms}
-              onChange={e => setFormData({...formData, totalRooms: Number(e.target.value)})}
+              value={formData.quantity}
+              onChange={e => setFormData({...formData, quantity: Number(e.target.value)})}
             />
             <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
               <Info className="w-3 h-3" /> This will be used to track daily availability
             </p>
-          </div>
-
-          <div>
-            <label className="label">Description</label>
-            <textarea 
-              required
-              className="input-field min-h-[80px]" 
-              placeholder="Describe the room features..."
-              value={formData.description}
-              onChange={e => setFormData({...formData, description: e.target.value})}
-            />
           </div>
 
           <div>
@@ -276,8 +279,8 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, onClose, onSubmit, isLoading 
             <input 
               className="input-field" 
               placeholder="https://example.com/room.jpg"
-              value={formData.imageUrl}
-              onChange={e => setFormData({...formData, imageUrl: e.target.value})}
+              value={formData.image}
+              onChange={e => setFormData({...formData, image: e.target.value})}
             />
           </div>
 

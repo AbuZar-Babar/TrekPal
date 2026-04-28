@@ -75,7 +75,7 @@ const Sidebar: React.FC = () => {
 
       <div className="p-4 border-t border-slate-50">
         <div className="bg-slate-50 p-4 rounded-2xl mb-4">
-          <p className="text-xs text-slate-500 font-medium truncate">{user?.hotel?.name || 'My Hotel'}</p>
+          <p className="text-xs text-slate-500 font-medium truncate">{user?.name || 'My Hotel'}</p>
           <p className="text-[10px] text-green-600 font-bold flex items-center gap-1 mt-1">
             <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
             ACTIVE PARTNER

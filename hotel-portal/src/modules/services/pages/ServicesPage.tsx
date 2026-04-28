@@ -8,7 +8,6 @@ import { useAuthStore } from '../../../store/useAuthStore';
 interface HotelService {
   id: string;
   name: string;
-  description: string;
   price?: number;
 }
 
@@ -23,7 +22,7 @@ const serviceIcons: Record<string, any> = {
 const ServicesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
-  const hotelId = user?.hotel?.id;
+  const hotelId = user?.id;
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingService, setEditingService] = useState<HotelService | null>(null);
@@ -32,7 +31,7 @@ const ServicesPage: React.FC = () => {
     queryKey: ['hotel-services', hotelId],
     queryFn: async () => {
       const response = await api.get(`/hotels/${hotelId}`);
-      return response.data;
+      return response.data.data;
     },
     enabled: !!hotelId,
   });
@@ -120,7 +119,7 @@ const ServicesPage: React.FC = () => {
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500 mb-3">{service.description}</p>
+                  <p className="text-sm text-slate-500 mb-3">Additional service</p>
                   <div className="flex items-center justify-between mt-auto">
                     <span className="text-sm font-bold text-slate-900">
                       {service.price && service.price > 0 ? `$${service.price}` : 'Free'}
@@ -158,7 +157,6 @@ interface ServiceFormProps {
 const ServiceForm: React.FC<ServiceFormProps> = ({ service, onClose, onSubmit, isLoading }) => {
   const [formData, setFormData] = useState({
     name: service?.name || '',
-    description: service?.description || '',
     price: service?.price || 0,
   });
 
@@ -204,17 +202,6 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onClose, onSubmit, i
               placeholder="0.00"
               value={formData.price}
               onChange={e => setFormData({...formData, price: Number(e.target.value)})}
-            />
-          </div>
-
-          <div>
-            <label className="label">Description</label>
-            <textarea 
-              required
-              className="input-field min-h-[100px]" 
-              placeholder="Describe what's included in this service..."
-              value={formData.description}
-              onChange={e => setFormData({...formData, description: e.target.value})}
             />
           </div>
 

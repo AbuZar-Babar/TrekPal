@@ -21,7 +21,12 @@ const normalizeRole = (role: unknown): string => {
   }
 
   const normalizedRole = role.toUpperCase();
-  if (normalizedRole === ROLES.TRAVELER || normalizedRole === ROLES.AGENCY || normalizedRole === ROLES.ADMIN) {
+  if (
+    normalizedRole === ROLES.TRAVELER
+    || normalizedRole === ROLES.AGENCY
+    || normalizedRole === ROLES.ADMIN
+    || normalizedRole === ROLES.HOTEL
+  ) {
     return normalizedRole;
   }
 

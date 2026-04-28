@@ -5,11 +5,7 @@ interface User {
   email: string;
   name: string;
   role: 'HOTEL';
-  hotel?: {
-    id: string;
-    name: string;
-    status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  };
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
 interface AuthState {

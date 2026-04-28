@@ -35,19 +35,19 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await api.post('/auth/login', data);
-      const { user, token } = response.data;
+      const { user, token } = response.data.data;
       
       if (user.role !== 'HOTEL') {
         setError('Only hotel accounts can access this portal.');
         return;
       }
 
-      if (user.hotel?.status === 'PENDING') {
+      if (user.status === 'PENDING') {
         setError('Your hotel account is pending approval from the admin.');
         return;
       }
 
-      if (user.hotel?.status === 'REJECTED') {
+      if (user.status === 'REJECTED') {
         setError('Your hotel registration was rejected. Please contact support.');
         return;
       }

@@ -15,13 +15,13 @@ import { useAuthStore } from '../../../store/useAuthStore';
 
 const DashboardPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
-  const hotelId = user?.hotel?.id;
+  const hotelId = user?.id;
 
   const { data: hotel } = useQuery({
     queryKey: ['hotel-dashboard', hotelId],
     queryFn: async () => {
       const response = await api.get(`/hotels/${hotelId}`);
-      return response.data;
+      return response.data.data;
     },
     enabled: !!hotelId,
   });
