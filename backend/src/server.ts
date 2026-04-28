@@ -37,7 +37,7 @@ const configuredOrigins = env.CORS_ORIGIN
 // Allow both admin portal (5174) and agency portal (5173) in development.
 const allowedOrigins = Array.from(new Set(
   env.NODE_ENV === 'development'
-    ? ['http://localhost:5173', 'http://localhost:5174', ...configuredOrigins]
+    ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', ...configuredOrigins]
     : configuredOrigins
 ));
 
