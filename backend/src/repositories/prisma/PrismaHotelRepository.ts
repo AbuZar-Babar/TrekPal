@@ -27,6 +27,9 @@ export class PrismaHotelRepository implements IHotelRepository {
             ];
         }
 
+        console.log('[PrismaHotelRepository] findMany filters:', filters);
+        console.log('[PrismaHotelRepository] findMany where:', JSON.stringify(where, null, 2));
+
         const hotels = await prisma.hotel.findMany({
             where,
             skip,

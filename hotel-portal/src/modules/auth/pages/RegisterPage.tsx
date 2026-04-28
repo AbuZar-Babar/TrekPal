@@ -9,7 +9,7 @@ import api from '../../../api/axios';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   name: z.string().min(2, 'Owner name is required'),
   hotelName: z.string().min(2, 'Hotel name is required'),
   hotelAddress: z.string().min(10, 'Complete address is required'),
@@ -45,9 +45,13 @@ const RegisterPage: React.FC = () => {
     setError(null);
 
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+    formData.append('name', data.hotelName);
+    formData.append('phone', data.phoneNumber);
+    formData.append('address', data.hotelAddress);
+    formData.append('location', data.hotelAddress.split(',').pop()?.trim() || data.hotelAddress);
+    formData.append('description', data.hotelDescription);
     formData.append('locationImage', locationImage);
     formData.append('businessDoc', businessDoc);
 

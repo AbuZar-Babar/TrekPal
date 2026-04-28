@@ -126,15 +126,50 @@ export type AgencyRegisterInput = z.infer<typeof agencyRegisterSchema>['body'] &
 };
 
 // Hotel Registration Schema
+const normalizeHotelRegisterPayload = (value: unknown): unknown => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return value;
+  }
+
+  const payload = value as Record<string, unknown>;
+
+  const normalized = {
+    ...payload,
+    name: payload.name ?? payload.hotelName,
+    phone: payload.phone ?? payload.phoneNumber,
+    address: payload.address ?? payload.hotelAddress,
+    location: payload.location ?? payload.city ?? payload.hotelLocation,
+    description: payload.description ?? payload.hotelDescription,
+  };
+
+  const locationCandidate = normalized.location;
+  if (
+    (locationCandidate === undefined || locationCandidate === null || locationCandidate === '') &&
+    typeof normalized.address === 'string'
+  ) {
+    const trimmedAddress = normalized.address.trim();
+    if (trimmedAddress.length > 0) {
+      const parts = trimmedAddress.split(',').map((part) => part.trim()).filter(Boolean);
+      normalized.location = parts[parts.length - 1] || trimmedAddress;
+    }
+  }
+
+  return normalized;
+};
+
 export const hotelRegisterSchema = z.object({
-  body: z.object({
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    name: z.string().trim().min(2, 'Hotel name must be at least 2 characters'),
-    phone: z.string().trim().min(5, 'Phone number is required'),
-    address: z.string().trim().min(5, 'Address is required'),
-    location: z.string().trim().min(2, 'Location is required'),
-  }),
+  body: z.preprocess(
+    normalizeHotelRegisterPayload,
+    z.object({
+      email: z.string().email('Invalid email address'),
+      password: z.string().min(8, 'Password must be at least 8 characters'),
+      name: z.string().trim().min(2, 'Hotel name must be at least 2 characters'),
+      phone: z.string().trim().min(5, 'Phone number is required'),
+      address: z.string().trim().min(5, 'Address is required'),
+      location: z.string().trim().min(2, 'Location is required'),
+      description: z.string().trim().optional(),
+    })
+  ),
 });
 
 export type HotelRegisterInput = z.infer<typeof hotelRegisterSchema>['body'] & {

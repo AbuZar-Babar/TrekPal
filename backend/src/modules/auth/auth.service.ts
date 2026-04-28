@@ -397,6 +397,7 @@ export class AuthService {
       email: input.email,
       name: input.name,
       phone: input.phone,
+      description: input.description,
       address: input.address,
       city: input.location,
       country: 'Pakistan',

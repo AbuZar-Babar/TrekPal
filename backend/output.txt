@@ -1,0 +1,43 @@
+﻿NODE_ENV: development
+DATABASE_URL starts with: postgresql://postgre
+Fetching hotel statistics...
+prisma:query SELECT COUNT(*), "public"."hotels"."status" FROM "public"."hotels" WHERE 1=1 GROUP BY "public"."hotels"."status" OFFSET $1
+Status counts: [
+  {
+    "_count": 9,
+    "status": "APPROVED"
+  }
+]
+prisma:query SELECT "public"."hotels"."id", "public"."hotels"."name", "public"."hotels"."status", "public"."hotels"."createdAt" FROM "public"."hotels" WHERE 1=1 ORDER BY "public"."hotels"."createdAt" DESC LIMIT $1 OFFSET $2
+Latest 5 hotels: [
+  {
+    "id": "cmogjjtcm00014978klurv9ue",
+    "name": "hidden Hills",
+    "status": "APPROVED",
+    "createdAt": "2026-04-27T01:51:22.198Z"
+  },
+  {
+    "id": "cmo13moms000px4qxs6yzrb3p",
+    "name": "karachi hotel",
+    "status": "APPROVED",
+    "createdAt": "2026-04-16T06:29:09.557Z"
+  },
+  {
+    "id": "cmnlxq9g1000vmghetlwt6hao",
+    "name": "Lahore Heritage House",
+    "status": "APPROVED",
+    "createdAt": "2026-04-05T15:47:26.162Z"
+  },
+  {
+    "id": "cmnlxq8t5000nmgherd4ybqip",
+    "name": "Pasni Cliff Hotel",
+    "status": "APPROVED",
+    "createdAt": "2026-04-05T15:47:25.338Z"
+  },
+  {
+    "id": "cmnlxq7r7000fmghe00vsdfi0",
+    "name": "Skardu Alpine Stay",
+    "status": "APPROVED",
+    "createdAt": "2026-04-05T15:47:23.971Z"
+  }
+]
