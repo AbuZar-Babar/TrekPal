@@ -27,6 +27,23 @@ const RegisterPage: React.FC = () => {
   const [businessDoc, setBusinessDoc] = useState<File | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const allowedMimeTypes = new Set([
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+  ]);
+
+  const validateUploadFile = (file: File, label: string): string | null => {
+    if (!allowedMimeTypes.has(file.type)) {
+      return `${label} must be PDF, JPEG, PNG, or WebP`;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      return `${label} must be smaller than 10MB`;
+    }
+    return null;
+  };
+
   const {
     register,
     handleSubmit,
@@ -38,6 +55,18 @@ const RegisterPage: React.FC = () => {
   const onSubmit = async (data: RegisterFormValues) => {
     if (!locationImage || !businessDoc) {
       setError('Please upload both location image and business document');
+      return;
+    }
+
+    const locationImageError = validateUploadFile(locationImage, 'Location image');
+    if (locationImageError) {
+      setError(locationImageError);
+      return;
+    }
+
+    const businessDocError = validateUploadFile(businessDoc, 'Business document');
+    if (businessDocError) {
+      setError(businessDocError);
       return;
     }
 
@@ -56,15 +85,17 @@ const RegisterPage: React.FC = () => {
     formData.append('businessDoc', businessDoc);
 
     try {
-      await api.post('/auth/register/hotel', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      await api.post('/auth/register/hotel', formData);
       setIsSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      const details = err?.response?.data?.details;
+      if (Array.isArray(details) && details.length > 0) {
+        setError(details.map((item: { message?: string }) => item?.message).filter(Boolean).join(', '));
+        return;
+      }
+
+      setError(err?.response?.data?.message || err?.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -224,6 +255,7 @@ const RegisterPage: React.FC = () => {
                 <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${businessDoc ? 'border-green-200 bg-green-50' : 'border-slate-200 hover:border-primary-300 bg-slate-50'}`}>
                   <input 
                     type="file" 
+                    accept=".pdf,image/jpeg,image/png,image/webp"
                     onChange={(e) => setBusinessDoc(e.target.files?.[0] || null)}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
