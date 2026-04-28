@@ -301,6 +301,14 @@ const HotelApprovalList = () => {
                     <span className="font-semibold text-[var(--text)]">{selectedHotel.country}</span>
                   </div>
                   <div className="flex items-center justify-between gap-4">
+                    <span className="text-[var(--text-soft)]">Email</span>
+                    <span className="font-semibold text-[var(--text)]">{selectedHotel.email || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[var(--text-soft)]">Phone</span>
+                    <span className="font-semibold text-[var(--text)]">{selectedHotel.phone || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
                     <span className="text-[var(--text-soft)]">Rooms</span>
                     <span className="font-semibold text-[var(--text)]">
                       {selectedHotel.roomsCount ?? 0}

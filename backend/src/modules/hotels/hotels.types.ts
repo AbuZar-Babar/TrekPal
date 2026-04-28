@@ -20,6 +20,8 @@ export const createHotelSchema = z.object({
   amenities: z.array(z.string().trim().min(1)).default([]),
   businessDocUrl: z.string().url().optional(),
   locationImageUrl: z.string().url().optional(),
+  email: z.string().email().optional(),
+  phone: z.string().trim().min(1).optional(),
 });
 
 export const updateHotelSchema = createHotelSchema.partial().extend({
@@ -50,6 +52,8 @@ export interface HotelResponse {
   amenities: string[];
   businessDocUrl?: string | null;
   locationImageUrl?: string | null;
+  email: string | null;
+  phone: string | null;
   createdAt: Date;
   updatedAt: Date;
   rooms?: any[];

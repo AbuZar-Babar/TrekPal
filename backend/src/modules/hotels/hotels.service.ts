@@ -28,6 +28,8 @@ const hotelSelect = {
   locationImageUrl: true,
   createdAt: true,
   updatedAt: true,
+  email: true,
+  phone: true,
   rooms: {
     select: {
       id: true,
@@ -65,6 +67,8 @@ const mapHotel = async (hotel: any): Promise<HotelResponse> => ({
   amenities: hotel.amenities,
   businessDocUrl: hotel.businessDocUrl,
   locationImageUrl: hotel.locationImageUrl,
+  email: hotel.email,
+  phone: hotel.phone,
   createdAt: hotel.createdAt,
   updatedAt: hotel.updatedAt,
   rooms: hotel.rooms || [],
@@ -177,6 +181,8 @@ export class HotelsService {
         amenities: input.amenities ?? [],
         businessDocUrl: input.businessDocUrl ?? null,
         locationImageUrl: input.locationImageUrl ?? null,
+        email: input.email ?? null,
+        phone: input.phone ?? null,
         status: agencyId ? APPROVAL_STATUS.APPROVED : APPROVAL_STATUS.PENDING, // Hotels signed up by self need admin approval
       },
       select: hotelSelect,
@@ -198,6 +204,8 @@ export class HotelsService {
         ...(input.longitude !== undefined ? { longitude: input.longitude ?? null } : {}),
         ...(input.images !== undefined ? { images: normalizeMediaStoragePaths(input.images) } : {}),
         ...(input.amenities !== undefined ? { amenities: input.amenities } : {}),
+        ...(input.email !== undefined ? { email: input.email ?? null } : {}),
+        ...(input.phone !== undefined ? { phone: input.phone ?? null } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
       },
       select: hotelSelect,
