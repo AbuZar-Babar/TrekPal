@@ -1,6 +1,0 @@
-# Community 28
-
-## Nodes
-
-- traveler_app_trekpal_lib_core_constants_app_constants_dart
-- traveler_app_trekpal_lib_core_constants_app_constants_dart_appconstants

@@ -57,7 +57,7 @@ Thumbs.db
 # Uploads (local KYC files)
 uploads/
 
-# Graphify cache and temp files
-graphify-out/cache/
-graphify-out/.graphify_*
+# graphify generated artifacts
+**/graphify-out/
+**/.graphify_*
 .graphify_*

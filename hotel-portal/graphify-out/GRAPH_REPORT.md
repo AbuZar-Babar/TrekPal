@@ -1,12 +1,11 @@
-# Graph Report - C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal  (2026-04-28)
+# Graph Report - hotel-portal  (2026-04-29)
 
 ## Corpus Check
-- 16 files · ~9,885 words
-- Verdict: corpus is large enough that graph structure adds value.
+- Corpus is ~7,541 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 26 nodes · 14 edges · 14 communities detected
-- Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.8)
+- 28 nodes · 15 edges · 14 communities detected
+- Extraction: 87% EXTRACTED · 13% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -26,22 +25,23 @@
 - [[_COMMUNITY_Community 13|Community 13]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `onSubmit()` - 4 edges
+1. `onSubmit()` - 3 edges
 2. `validateUploadFile()` - 2 edges
-3. `handleSubmit()` - 2 edges
+3. `onSubmit()` - 2 edges
 4. `handleSubmit()` - 2 edges
+5. `handleSubmit()` - 2 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `onSubmit()` --calls--> `handleSubmit()`  [INFERRED]
-  C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\auth\pages\RegisterPage.tsx → C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\services\pages\ServicesPage.tsx
-- `onSubmit()` --calls--> `handleSubmit()`  [INFERRED]
-  C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\auth\pages\RegisterPage.tsx → C:\Users\AbuZar\Desktop\Fyp\trek pal\Trekpal\hotel-portal\src\modules\rooms\pages\RoomsPage.tsx
+- `handleSubmit()` --calls--> `onSubmit()`  [INFERRED]
+  hotel-portal\src\modules\rooms\pages\RoomsPage.tsx → hotel-portal\src\modules\settings\pages\SettingsPage.tsx
+- `handleSubmit()` --calls--> `onSubmit()`  [INFERRED]
+  hotel-portal\src\modules\services\pages\ServicesPage.tsx → hotel-portal\src\modules\settings\pages\SettingsPage.tsx
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.5
-Nodes (3): onSubmit(), validateUploadFile(), handleSubmit()
+Cohesion: 0.33
+Nodes (3): handleSubmit(), handleSubmit(), onSubmit()
 
 ### Community 1 - "Community 1"
 Cohesion: 0.67
@@ -53,7 +53,7 @@ Nodes (0):
 
 ### Community 3 - "Community 3"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): onSubmit(), validateUploadFile()
 
 ### Community 4 - "Community 4"
 Cohesion: 1.0
@@ -61,7 +61,7 @@ Nodes (0):
 
 ### Community 5 - "Community 5"
 Cohesion: 1.0
-Nodes (1): handleSubmit()
+Nodes (0): 
 
 ### Community 6 - "Community 6"
 Cohesion: 1.0
@@ -96,13 +96,11 @@ Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **Thin community `Community 3`** (2 nodes): `App.tsx`, `main.tsx`
+- **Thin community `Community 4`** (2 nodes): `App.tsx`, `main.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 4`** (2 nodes): `DashboardLayout.tsx`, `DashboardLayout()`
+- **Thin community `Community 5`** (2 nodes): `DashboardLayout()`, `DashboardLayout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 5`** (2 nodes): `ServicesPage.tsx`, `handleSubmit()`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 6`** (2 nodes): `cn.ts`, `cn()`
+- **Thin community `Community 6`** (2 nodes): `cn()`, `cn.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 7`** (1 nodes): `eslint.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -118,13 +116,3 @@ Nodes (0):
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 13`** (1 nodes): `useAuthStore.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-
-## Suggested Questions
-_Questions this graph is uniquely positioned to answer:_
-
-- **Why does `onSubmit()` connect `Community 0` to `Community 5`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
-- **Why does `handleSubmit()` connect `Community 5` to `Community 0`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Are the 2 inferred relationships involving `onSubmit()` (e.g. with `handleSubmit()` and `handleSubmit()`) actually correct?**
-  _`onSubmit()` has 2 INFERRED edges - model-reasoned connections that need verification._
