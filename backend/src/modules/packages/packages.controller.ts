@@ -133,8 +133,9 @@ export class PackagesController {
       const result = await packagesService.applyToPackage(req.params.id, traveler.id, input);
       sendSuccess(res, result, 'Trip offer request sent successfully', 201);
     } catch (error: any) {
-      const statusCode = error.message === 'Unauthorized' ? 401 : 400;
-      sendError(res, error.message || 'Failed to apply to trip offer', statusCode);
+      const statusCode = error.message === 'Unauthorized' ? 401 : error.code === 'OFFER_UNAVAILABLE' ? 409 : 400;
+      const errors = error.code ? [{ code: error.code, message: error.message }] : undefined;
+      sendError(res, error.message || 'Failed to apply to trip offer', statusCode, errors);
     }
   }
 }

@@ -38,6 +38,8 @@ export const createPackage = createAsyncThunk(
     description?: string;
     price: number;
     duration: number;
+    startDate: string;
+    maxSeats?: number;
     hotelId?: string | null;
     vehicleId?: string | null;
     destinations: string[];
@@ -60,6 +62,8 @@ export const updatePackage = createAsyncThunk(
       description?: string;
       price?: number;
       duration?: number;
+      startDate?: string;
+      maxSeats?: number;
       hotelId?: string | null;
       vehicleId?: string | null;
       destinations?: string[];

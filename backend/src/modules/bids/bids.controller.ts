@@ -16,6 +16,8 @@ type BidActor =
   | { role: typeof ROLES.AGENCY; agencyId: string }
   | { role: typeof ROLES.ADMIN };
 
+const ROOM_UNAVAILABLE_ERROR_CODE = 'ROOM_UNAVAILABLE';
+
 function resolveStatusCode(error: Error): number {
   if (error.message === 'Unauthorized') {
     return 401;
@@ -30,6 +32,14 @@ function resolveStatusCode(error: Error): number {
   }
 
   return 400;
+}
+
+function isRoomAvailabilityError(error: Error): boolean {
+  const message = error.message?.toLowerCase?.() ?? '';
+  return (
+    message.includes('no longer available') ||
+    message.includes('availability changed')
+  );
 }
 
 /**
@@ -119,6 +129,12 @@ export class BidsController {
       const result = await bidsService.createBid(actor.agencyId, input);
       sendSuccess(res, result, 'Bid submitted successfully', 201);
     } catch (error: any) {
+      if (isRoomAvailabilityError(error)) {
+        sendError(res, error.message, 409, [
+          { code: ROOM_UNAVAILABLE_ERROR_CODE, message: error.message },
+        ]);
+        return;
+      }
       sendError(res, error.message || 'Failed to create bid', resolveStatusCode(error));
     }
   }
@@ -192,6 +208,12 @@ export class BidsController {
       const result = await bidsService.createCounterOffer(req.params.id, actor, input);
       sendSuccess(res, result, 'Counteroffer submitted successfully');
     } catch (error: any) {
+      if (isRoomAvailabilityError(error)) {
+        sendError(res, error.message, 409, [
+          { code: ROOM_UNAVAILABLE_ERROR_CODE, message: error.message },
+        ]);
+        return;
+      }
       sendError(res, error.message || 'Failed to create counteroffer', resolveStatusCode(error));
     }
   }
@@ -214,6 +236,12 @@ export class BidsController {
       const result = await bidsService.acceptBid(id, actor.travelerId);
       sendSuccess(res, result, 'Bid accepted and booking created successfully');
     } catch (error: any) {
+      if (isRoomAvailabilityError(error)) {
+        sendError(res, error.message, 409, [
+          { code: ROOM_UNAVAILABLE_ERROR_CODE, message: error.message },
+        ]);
+        return;
+      }
       sendError(res, error.message || 'Failed to accept bid', resolveStatusCode(error));
     }
   }

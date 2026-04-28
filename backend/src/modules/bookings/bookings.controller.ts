@@ -93,6 +93,11 @@ export class BookingsController {
       }
 
       let agencyId: string | undefined;
+      if (req.user.role === ROLES.TRAVELER) {
+        sendError(res, 'Travelers cannot update booking status', 403);
+        return;
+      }
+
       if (req.user.role === ROLES.AGENCY) {
         const agency = await prisma.agency.findUnique({
           where: { authUid: req.user.uid },
@@ -109,6 +114,8 @@ export class BookingsController {
     } catch (error: any) {
       if (error.message.includes('Unauthorized')) {
         sendError(res, error.message, 403);
+      } else if (error.code === 'ROOM_UNAVAILABLE' || error.code === 'OFFER_UNAVAILABLE') {
+        sendError(res, error.message, 409, [{ code: error.code, message: error.message }]);
       } else {
         sendError(res, error.message || 'Failed to update booking status', 400);
       }

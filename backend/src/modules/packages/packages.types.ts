@@ -16,7 +16,8 @@ export const createPackageSchema = z.object({
   description: z.string().trim().optional(),
   price: z.coerce.number().positive('Price must be greater than 0'),
   duration: z.coerce.number().int().min(1, 'Duration must be at least 1 day'),
-  startDate: z.coerce.date(),
+  startDate: z.coerce.date().optional(),
+  maxSeats: z.coerce.number().int().min(1, 'Max seats must be at least 1').optional(),
   hotelId: z.string().trim().min(1).nullable().optional(),
   vehicleId: z.string().trim().min(1).nullable().optional(),
   destinations: z
@@ -60,6 +61,10 @@ export interface PackageResponse {
   price: number;
   duration: number;
   startDate: Date | null;
+  maxSeats: number;
+  confirmedSeats: number;
+  remainingSeats: number;
+  isSoldOut: boolean;
   destinations: string[];
   images: string[];
   isActive: boolean;

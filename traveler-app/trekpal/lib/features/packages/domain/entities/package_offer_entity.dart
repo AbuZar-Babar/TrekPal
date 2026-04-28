@@ -51,6 +51,10 @@ class PackageOfferEntity {
     required this.price,
     required this.duration,
     required this.startDate,
+    required this.maxSeats,
+    required this.confirmedSeats,
+    required this.remainingSeats,
+    required this.isSoldOut,
     required this.destinations,
     required this.images,
     required this.isActive,
@@ -73,6 +77,10 @@ class PackageOfferEntity {
   final num price;
   final int duration;
   final DateTime? startDate;
+  final int maxSeats;
+  final int confirmedSeats;
+  final int remainingSeats;
+  final bool isSoldOut;
   final List<String> destinations;
   final List<String> images;
   final bool isActive;

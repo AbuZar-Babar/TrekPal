@@ -97,6 +97,43 @@ function getCounterOfferState(actorRole: BidActorRole): {
  * Handles bid business logic including revisions and transactional acceptance
  */
 export class BidsService {
+  private async assertRoomStillAvailableForTrip(
+    roomId: string | null,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<void> {
+    if (!roomId) {
+      return;
+    }
+
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(0, 0, 0, 0);
+    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (nights <= 0) {
+      throw new Error('Trip dates are invalid for room allocation');
+    }
+
+    const slots = await prisma.roomAvailability.findMany({
+      where: {
+        roomId,
+        date: {
+          gte: start,
+          lt: end,
+        },
+      },
+      select: {
+        available: true,
+      },
+    });
+
+    if (slots.length < nights || slots.some((slot) => slot.available < 1)) {
+      throw new Error('Requested room is no longer available for the selected dates');
+    }
+  }
+
   /**
    * Create a bid on a trip request (agency only)
    */
@@ -112,6 +149,12 @@ export class BidsService {
     if (tripRequest.status !== 'PENDING') {
       throw new Error('Trip request is no longer accepting bids');
     }
+
+    await this.assertRoomStillAvailableForTrip(
+      tripRequest.roomId,
+      tripRequest.startDate,
+      tripRequest.endDate,
+    );
 
     const existingBid = await prisma.bid.findFirst({
       where: {
@@ -280,6 +323,9 @@ export class BidsService {
           select: {
             userId: true,
             status: true,
+            roomId: true,
+            startDate: true,
+            endDate: true,
           },
         },
       },
@@ -296,6 +342,12 @@ export class BidsService {
     if (bid.tripRequest.status !== 'PENDING') {
       throw new Error('Trip request is no longer accepting negotiation');
     }
+
+    await this.assertRoomStillAvailableForTrip(
+      bid.tripRequest.roomId,
+      bid.tripRequest.startDate,
+      bid.tripRequest.endDate,
+    );
 
     let actorId: string;
     let actorRole: BidActorRole;

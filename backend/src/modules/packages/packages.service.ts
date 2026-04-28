@@ -131,6 +131,9 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
     resolveMediaImageList(tripPackage.hotel?.images),
     resolveMediaImageList(tripPackage.vehicle?.images),
   ]);
+  const confirmedSeats = participants.length;
+  const maxSeats = tripPackage.maxSeats ?? 1;
+  const remainingSeats = Math.max(0, maxSeats - confirmedSeats);
 
   return {
     id: tripPackage.id,
@@ -143,6 +146,10 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
     price: tripPackage.price,
     duration: tripPackage.duration,
     startDate: tripPackage.startDate ?? null,
+    maxSeats,
+    confirmedSeats,
+    remainingSeats,
+    isSoldOut: remainingSeats <= 0,
     destinations: tripPackage.destinations,
     images: tripPackage.images,
     isActive: tripPackage.isActive,
@@ -176,6 +183,24 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
 };
 
 export class PackagesService {
+  private assertActiveOfferRequirements(input: {
+    isActive?: boolean;
+    hotelId?: string | null;
+    startDate?: Date | null;
+  }): void {
+    if (!input.isActive) {
+      return;
+    }
+
+    if (!input.hotelId) {
+      throw new Error('Active trip offer must include a hotel');
+    }
+
+    if (!input.startDate) {
+      throw new Error('Active trip offer must include a start date');
+    }
+  }
+
   private async assertInventoryOwnership(
     agencyId: string,
     inventory: { hotelId?: string | null; vehicleId?: string | null },
@@ -220,9 +245,11 @@ export class PackagesService {
 
     if (actor.role === ROLES.AGENCY) {
       where.agencyId = actor.agencyId;
-    } else if (active !== undefined) {
-      where.isActive = active;
-    } else if (actor.role !== ROLES.ADMIN) {
+    } else if (actor.role === ROLES.ADMIN) {
+      if (active !== undefined) {
+        where.isActive = active;
+      }
+    } else {
       where.isActive = true;
     }
 
@@ -277,6 +304,12 @@ export class PackagesService {
   }
 
   async createPackage(agencyId: string, input: CreatePackageInput): Promise<PackageResponse> {
+    this.assertActiveOfferRequirements({
+      isActive: input.isActive,
+      hotelId: input.hotelId ?? null,
+      startDate: input.startDate,
+    });
+
     await this.assertInventoryOwnership(agencyId, {
       hotelId: input.hotelId ?? null,
       vehicleId: input.vehicleId ?? null,
@@ -292,6 +325,7 @@ export class PackagesService {
         price: input.price,
         duration: input.duration,
         startDate: input.startDate,
+        maxSeats: input.maxSeats ?? 1,
         destinations: input.destinations,
         images: input.images ?? [],
         isActive: input.isActive ?? true,
@@ -318,12 +352,24 @@ export class PackagesService {
   ): Promise<PackageResponse> {
     const existing = await prisma.package.findFirst({
       where: { id, agencyId },
-      select: { id: true },
+      select: { id: true, hotelId: true, startDate: true, isActive: true },
     });
 
     if (!existing) {
       throw new Error('Trip offer not found');
     }
+
+    this.assertActiveOfferRequirements({
+      isActive: input.isActive ?? existing.isActive,
+      hotelId:
+        input.hotelId !== undefined
+          ? (input.hotelId ?? null)
+          : (existing.hotelId ?? null),
+      startDate:
+        input.startDate !== undefined
+          ? (input.startDate ?? null)
+          : (existing.startDate ?? null),
+    });
 
     await this.assertInventoryOwnership(agencyId, {
       hotelId: input.hotelId,
@@ -340,6 +386,7 @@ export class PackagesService {
         ...(input.price !== undefined ? { price: input.price } : {}),
         ...(input.duration !== undefined ? { duration: input.duration } : {}),
         ...(input.startDate !== undefined ? { startDate: input.startDate } : {}),
+        ...(input.maxSeats !== undefined ? { maxSeats: input.maxSeats } : {}),
         ...(input.destinations !== undefined ? { destinations: input.destinations } : {}),
         ...(input.images !== undefined ? { images: input.images } : {}),
         ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
@@ -406,11 +453,24 @@ export class PackagesService {
         duration: true,
         startDate: true,
         hotelId: true,
+        maxSeats: true,
       },
     });
 
     if (!tripPackage) {
       throw new Error('Trip offer not found');
+    }
+
+    const confirmedSeats = await prisma.booking.count({
+      where: {
+        packageId: tripPackage.id,
+        status: BOOKING_STATUS.CONFIRMED,
+      },
+    });
+    if (confirmedSeats >= tripPackage.maxSeats) {
+      const error: any = new Error('This trip offer is sold out');
+      error.code = 'OFFER_UNAVAILABLE';
+      throw error;
     }
 
     const existingBooking = await prisma.booking.findFirst({

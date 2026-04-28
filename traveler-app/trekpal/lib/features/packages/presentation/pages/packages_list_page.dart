@@ -265,6 +265,10 @@ class _OfferPreviewCard extends StatelessWidget {
                     ),
                   ),
                   _StatusPill(status: bookingStatus),
+                  if (offer.isSoldOut && bookingStatus == null)
+                    const SizedBox(width: 6),
+                  if (offer.isSoldOut && bookingStatus == null)
+                    _StatusPill(status: 'SOLD_OUT'),
                 ],
               ),
               const SizedBox(height: 14),
@@ -289,8 +293,9 @@ class _OfferPreviewCard extends StatelessWidget {
                   ),
                   _InfoChip(
                     icon: Icons.groups_2_outlined,
-                    label:
-                        '${offer.participantCount} confirmed traveler${offer.participantCount == 1 ? '' : 's'}',
+                    label: offer.isSoldOut
+                        ? 'Sold out'
+                        : '${offer.remainingSeats} seat${offer.remainingSeats == 1 ? '' : 's'} left',
                   ),
                 ],
               ),
@@ -350,7 +355,11 @@ class _StatusPill extends StatelessWidget {
     Color background = colorScheme.primary.withValues(alpha: 0.12);
     Color foreground = colorScheme.primary;
 
-    if (status == 'PENDING') {
+    if (status == 'SOLD_OUT') {
+      label = 'Sold out';
+      background = Colors.red.withValues(alpha: 0.14);
+      foreground = Colors.red.shade700;
+    } else if (status == 'PENDING') {
       label = 'Waiting';
       background = colorScheme.tertiary.withValues(alpha: 0.16);
       foreground = colorScheme.tertiary;

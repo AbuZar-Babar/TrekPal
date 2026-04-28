@@ -144,7 +144,12 @@ const HotelList = () => {
                   
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setSelectedHotel(hotel)}
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setSelectedHotel(hotel);
+                      }}
                       className="app-btn-secondary h-9 px-4 text-xs"
                     >
                       Details

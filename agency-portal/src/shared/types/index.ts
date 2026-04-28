@@ -100,6 +100,11 @@ export interface Package {
   description?: string | null;
   price: number;
   duration: number;
+  startDate: string | null;
+  maxSeats: number;
+  confirmedSeats: number;
+  remainingSeats: number;
+  isSoldOut: boolean;
   destinations: string[];
   images: string[];
   isActive: boolean;

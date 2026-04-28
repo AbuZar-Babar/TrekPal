@@ -131,6 +131,15 @@ async function mapBooking(booking: any): Promise<BookingResponse> {
  * Handles booking business logic
  */
 export class BookingsService {
+  private buildAvailabilityError(
+    message: string,
+    code: 'ROOM_UNAVAILABLE' | 'OFFER_UNAVAILABLE',
+  ): Error & { code: string } {
+    const error: Error & { code: string } = new Error(message) as Error & { code: string };
+    error.code = code;
+    return error;
+  }
+
   /**
    * Helper to manage room inventory based on status changes
    */
@@ -266,14 +275,106 @@ export class BookingsService {
       throw new Error(`Cannot transition booking from ${booking.status} to ${status}`);
     }
 
-    // Handle inventory deduction/restoration
-    await this.handleInventory(booking, booking.status, status);
+    let updated;
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status },
-      include: bookingInclude,
-    });
+    if (
+      booking.packageId &&
+      booking.status === BOOKING_STATUS.PENDING &&
+      status === BOOKING_STATUS.CONFIRMED
+    ) {
+      updated = await prisma.$transaction(async (tx: any) => {
+        const tripPackage = await tx.package.findUnique({
+          where: { id: booking.packageId },
+          select: {
+            id: true,
+            maxSeats: true,
+            startDate: true,
+            duration: true,
+          },
+        });
+
+        if (!tripPackage) {
+          throw new Error('Trip offer not found');
+        }
+
+        // Lock package row so seat checks stay consistent under concurrent confirms.
+        await tx.$queryRaw`SELECT id FROM packages WHERE id = ${tripPackage.id} FOR UPDATE`;
+
+        const confirmedCount = await tx.booking.count({
+          where: {
+            packageId: booking.packageId,
+            status: BOOKING_STATUS.CONFIRMED,
+          },
+        });
+
+        if (confirmedCount >= tripPackage.maxSeats) {
+          throw this.buildAvailabilityError('This trip offer is sold out', 'OFFER_UNAVAILABLE');
+        }
+
+        if (booking.roomId) {
+          const start = new Date(booking.startDate);
+          start.setHours(0, 0, 0, 0);
+          const end = new Date(booking.endDate);
+          end.setHours(0, 0, 0, 0);
+          const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+          if (nights > 0) {
+            const availableSlots = await tx.roomAvailability.findMany({
+              where: {
+                roomId: booking.roomId,
+                date: {
+                  gte: start,
+                  lt: end,
+                },
+              },
+              select: { available: true },
+            });
+
+            if (availableSlots.length < nights || availableSlots.some((slot: any) => slot.available < 1)) {
+              throw this.buildAvailabilityError(
+                'Selected room is no longer available for the requested dates',
+                'ROOM_UNAVAILABLE',
+              );
+            }
+
+            const roomUpdates = await tx.roomAvailability.updateMany({
+              where: {
+                roomId: booking.roomId,
+                date: {
+                  gte: start,
+                  lt: end,
+                },
+                available: { gte: 1 },
+              },
+              data: {
+                available: { decrement: 1 },
+              },
+            });
+
+            if (roomUpdates.count < nights) {
+              throw this.buildAvailabilityError(
+                'Selected room availability changed during confirmation. Please retry.',
+                'ROOM_UNAVAILABLE',
+              );
+            }
+          }
+        }
+
+        return tx.booking.update({
+          where: { id },
+          data: { status },
+          include: bookingInclude,
+        });
+      });
+    } else {
+      // Handle inventory deduction/restoration
+      await this.handleInventory(booking, booking.status, status);
+      updated = await prisma.booking.update({
+        where: { id },
+        data: { status },
+        include: bookingInclude,
+      });
+    }
 
     emitTravelerBookingUpdated(updated.userId, {
       eventType: 'STATUS_CHANGED',

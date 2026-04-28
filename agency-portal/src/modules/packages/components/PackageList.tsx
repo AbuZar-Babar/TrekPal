@@ -91,6 +91,16 @@ const PackageList = () => {
                 ))}
               </div>
 
+              <div className="mt-4 rounded-xl bg-[var(--panel-subtle)] p-3">
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Capacity</div>
+                <div className="mt-1 text-sm font-semibold text-[var(--text)]">
+                  {pkg.confirmedSeats} / {pkg.maxSeats} booked
+                </div>
+                <div className={`mt-1 text-xs ${pkg.isSoldOut ? 'text-[var(--danger-text)]' : 'text-[var(--text-soft)]'}`}>
+                  {pkg.isSoldOut ? 'Sold out' : `${pkg.remainingSeats} seats left`}
+                </div>
+              </div>
+
               <div className="mt-auto pt-6 flex items-center justify-between border-t border-[var(--border)]">
                 <div className="text-sm font-bold text-[var(--text)]">
                   {formatCurrency(pkg.price)}

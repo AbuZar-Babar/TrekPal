@@ -40,6 +40,8 @@ const PackageForm = () => {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [duration, setDuration] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [maxSeats, setMaxSeats] = useState('');
   const [destinations, setDestinations] = useState('');
   const [images, setImages] = useState('');
   const [hotelId, setHotelId] = useState('');
@@ -110,6 +112,12 @@ const PackageForm = () => {
         setDescription(tripPackage.description || '');
         setPrice(String(tripPackage.price));
         setDuration(String(tripPackage.duration));
+        setStartDate(
+          tripPackage.startDate
+            ? new Date(tripPackage.startDate).toISOString().slice(0, 10)
+            : '',
+        );
+        setMaxSeats(String(tripPackage.maxSeats ?? 1));
         setHotelId(tripPackage.hotelId || '');
         setVehicleId(tripPackage.vehicleId || '');
         setDestinations(tripPackage.destinations.join(', '));
@@ -153,6 +161,19 @@ const PackageForm = () => {
       nextErrors.duration = durationError;
     }
 
+    const seatsError = validatePositiveNumber(maxSeats, 'Max seats', 1);
+    if (seatsError) {
+      nextErrors.maxSeats = seatsError;
+    }
+
+    if (isActive && !startDate) {
+      nextErrors.startDate = 'Start date is required for an active offer';
+    }
+
+    if (isActive && !hotelId) {
+      nextErrors.hotelId = 'Select a hotel before publishing this offer';
+    }
+
     if (destinationList.length === 0) {
       nextErrors.destinations = 'Add at least one destination';
     }
@@ -180,6 +201,8 @@ const PackageForm = () => {
       description: description.trim() || undefined,
       price: Number(price),
       duration: Number(duration),
+      startDate,
+      maxSeats: Number(maxSeats),
       hotelId: hotelId || null,
       vehicleId: vehicleId || null,
       destinations: splitList(destinations),
@@ -228,7 +251,7 @@ const PackageForm = () => {
           <article className="stat-card">
             <span>Status</span>
             <strong>{isActive ? 'Live' : 'Draft'}</strong>
-            <p>Control whether the offer is visible to the agency workspace.</p>
+            <p>Published offers require a hotel and start date.</p>
           </article>
           <article className="stat-card">
             <span>Destinations</span>
@@ -244,6 +267,11 @@ const PackageForm = () => {
             <span>Inventory</span>
             <strong>{selectedHotel || selectedVehicle ? 'Linked' : 'Open'}</strong>
             <p>Hotel and vehicle can be attached as operational support.</p>
+          </article>
+          <article className="stat-card">
+            <span>Capacity</span>
+            <strong>{maxSeats || '0'} seats</strong>
+            <p>Confirmed bookings consume seats automatically.</p>
           </article>
         </div>
       </section>
@@ -317,6 +345,36 @@ const PackageForm = () => {
             {errors.duration && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.duration}</p>}
           </div>
 
+          <div>
+            <label htmlFor="startDate" className="mb-2 block text-sm font-semibold text-[var(--text)]">
+              Start date
+            </label>
+            <input
+              id="startDate"
+              type="date"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
+              className="app-field"
+            />
+            {errors.startDate && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.startDate}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="maxSeats" className="mb-2 block text-sm font-semibold text-[var(--text)]">
+              Max seats
+            </label>
+            <input
+              id="maxSeats"
+              type="number"
+              min="1"
+              value={maxSeats}
+              onChange={(event) => setMaxSeats(event.target.value)}
+              className="app-field"
+              placeholder="12"
+            />
+            {errors.maxSeats && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.maxSeats}</p>}
+          </div>
+
           <div className="md:col-span-2">
             <label htmlFor="description" className="mb-2 block text-sm font-semibold text-[var(--text)]">
               Description
@@ -347,6 +405,7 @@ const PackageForm = () => {
                 </option>
               ))}
             </select>
+            {errors.hotelId && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.hotelId}</p>}
           </div>
 
           <div>
@@ -449,7 +508,14 @@ const PackageForm = () => {
           <input
             type="checkbox"
             checked={isActive}
-            onChange={(event) => setIsActive(event.target.checked)}
+            onChange={(event) => {
+              if (event.target.checked && (!hotelId || !startDate)) {
+                setFormError('To publish this offer, select a hotel and start date first.');
+                return;
+              }
+              setFormError(null);
+              setIsActive(event.target.checked);
+            }}
             className="h-4 w-4 rounded border-[var(--border)]"
           />
           <div>

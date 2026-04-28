@@ -195,6 +195,7 @@ model Package {
   price       Float
   duration    Int      // Days
   startDate   DateTime?
+  maxSeats    Int      @default(1)
   destinations String[]
   images      String[]
   isActive    Boolean  @default(true)

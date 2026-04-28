@@ -164,6 +164,10 @@ class _PackageOfferDetailsPageState extends State<PackageOfferDetailsPage> {
       helperText =
           'Your request is sent. The trip moves to Trips after agency confirmation.';
       primaryAction = null;
+    } else if (offer.isSoldOut) {
+      primaryLabel = 'Sold out';
+      helperText = 'No seats left in this trip offer.';
+      primaryAction = null;
     } else if (isApplying) {
       primaryLabel = 'Sending request...';
       helperText = 'Submitting your booking request.';
@@ -257,6 +261,12 @@ class _PackageOfferDetailsPageState extends State<PackageOfferDetailsPage> {
                       icon: Icons.today_outlined,
                       label:
                           '${offer.duration} day${offer.duration == 1 ? '' : 's'}',
+                    ),
+                    _InfoChip(
+                      icon: Icons.groups_2_outlined,
+                      label: offer.isSoldOut
+                          ? 'Sold out'
+                          : '${offer.remainingSeats} seat${offer.remainingSeats == 1 ? '' : 's'} left',
                     ),
                     ...offer.destinations.map(
                       (String destination) => _InfoChip(

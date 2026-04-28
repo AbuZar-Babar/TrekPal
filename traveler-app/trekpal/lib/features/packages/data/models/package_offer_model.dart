@@ -20,6 +20,10 @@ class PackageOfferModel extends PackageOfferEntity {
     required super.price,
     required super.duration,
     required super.startDate,
+    required super.maxSeats,
+    required super.confirmedSeats,
+    required super.remainingSeats,
+    required super.isSoldOut,
     required super.destinations,
     required super.images,
     required super.isActive,
@@ -53,6 +57,10 @@ class PackageOfferModel extends PackageOfferEntity {
       startDate: json['startDate'] == null
           ? null
           : _parsePackageDate(json['startDate']),
+      maxSeats: json['maxSeats'] as int? ?? 1,
+      confirmedSeats: json['confirmedSeats'] as int? ?? 0,
+      remainingSeats: json['remainingSeats'] as int? ?? 0,
+      isSoldOut: json['isSoldOut'] as bool? ?? false,
       destinations: destinationList
           .map((dynamic item) => item.toString())
           .toList(),
