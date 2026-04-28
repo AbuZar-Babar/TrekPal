@@ -8,6 +8,7 @@ import AgencyList from './modules/agencies/components/AgencyList';
 import UserList from './modules/users/components/UserList';
 import ReportDashboard from './modules/reports/components/ReportDashboard';
 import InventoryPage from './modules/inventory/components/InventoryPage';
+import HotelApprovalList from './modules/hotels/components/HotelApprovalList';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -75,7 +76,16 @@ function App() {
         }
       />
       <Route path="/users" element={<Navigate to="/travelers" replace />} />
-      <Route path="/hotels" element={<Navigate to="/inventory?type=hotels" replace />} />
+      <Route
+        path="/hotels"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <HotelApprovalList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
       <Route path="/vehicles" element={<Navigate to="/inventory?type=vehicles" replace />} />
       <Route path="/reports" element={<Navigate to="/analytics" replace />} />
       <Route path="/activity" element={<Navigate to="/analytics" replace />} />
