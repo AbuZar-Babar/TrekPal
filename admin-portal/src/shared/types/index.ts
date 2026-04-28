@@ -54,6 +54,8 @@ export interface Hotel {
   agencyId: string | null;
   agencyName: string | null;
   name: string;
+  email: string | null;
+  phone: string | null;
   description: string | null;
   address: string;
   city: string;

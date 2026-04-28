@@ -176,6 +176,8 @@ export class AdminService {
       agencyId: hotel.agencyId,
       agencyName: hotel.agencyName || null,
       name: hotel.name,
+      email: hotel.email || null,
+      phone: hotel.phone || null,
       description: hotel.description,
       address: hotel.address,
       city: hotel.city,
