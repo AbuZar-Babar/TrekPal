@@ -6,6 +6,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import DashboardPage from './modules/dashboard/pages/DashboardPage';
 import RoomsPage from './modules/rooms/pages/RoomsPage';
 import ServicesPage from './modules/services/pages/ServicesPage';
+import SettingsPage from './modules/settings/pages/SettingsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,7 +30,7 @@ function App() {
             <Route path="/rooms" element={<RoomsPage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/bookings" element={<div>Bookings Page (Coming Soon)</div>} />
-            <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

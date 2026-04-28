@@ -18,28 +18,30 @@ interface Room {
 const RoomsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
-  const hotelId = user?.id;
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
 
-  // Fetch Hotel with Rooms
+  // Fetch current authenticated hotel profile
   const { data: hotel, isLoading } = useQuery({
-    queryKey: ['hotel', hotelId],
+    queryKey: ['hotel'],
     queryFn: async () => {
-      const response = await api.get(`/hotels/${hotelId}`);
-      return response.data.data;
+      const listResponse = await api.get('/hotels', {
+        params: { page: 1, limit: 1 },
+      });
+      return listResponse.data?.data?.hotels?.[0] ?? null;
     },
-    enabled: !!hotelId,
+    enabled: !!user,
   });
 
+  const hotelId = hotel?.id;
   const rooms: Room[] = hotel?.rooms || [];
 
   // Mutations
   const createMutation = useMutation({
     mutationFn: (data: Partial<Room>) => api.post(`/hotels/${hotelId}/rooms`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel', hotelId] });
+      queryClient.invalidateQueries({ queryKey: ['hotel'] });
       setIsAdding(false);
     },
   });
@@ -47,7 +49,7 @@ const RoomsPage: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: (data: Room) => api.put(`/hotels/rooms/${data.id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel', hotelId] });
+      queryClient.invalidateQueries({ queryKey: ['hotel'] });
       setEditingRoom(null);
     },
   });
@@ -55,7 +57,7 @@ const RoomsPage: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: (roomId: string) => api.delete(`/hotels/rooms/${roomId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel', hotelId] });
+      queryClient.invalidateQueries({ queryKey: ['hotel'] });
     },
   });
 

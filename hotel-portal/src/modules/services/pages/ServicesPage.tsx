@@ -22,26 +22,28 @@ const serviceIcons: Record<string, any> = {
 const ServicesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
-  const hotelId = user?.id;
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingService, setEditingService] = useState<HotelService | null>(null);
 
   const { data: hotel, isLoading } = useQuery({
-    queryKey: ['hotel-services', hotelId],
+    queryKey: ['hotel-services'],
     queryFn: async () => {
-      const response = await api.get(`/hotels/${hotelId}`);
-      return response.data.data;
+      const listResponse = await api.get('/hotels', {
+        params: { page: 1, limit: 1 },
+      });
+      return listResponse.data?.data?.hotels?.[0] ?? null;
     },
-    enabled: !!hotelId,
+    enabled: !!user,
   });
 
+  const hotelId = hotel?.id;
   const services: HotelService[] = hotel?.services || [];
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<HotelService>) => api.post(`/hotels/${hotelId}/services`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel-services', hotelId] });
+      queryClient.invalidateQueries({ queryKey: ['hotel-services'] });
       setIsAdding(false);
     },
   });
@@ -49,7 +51,7 @@ const ServicesPage: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: (data: HotelService) => api.put(`/hotels/services/${data.id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel-services', hotelId] });
+      queryClient.invalidateQueries({ queryKey: ['hotel-services'] });
       setEditingService(null);
     },
   });
@@ -57,7 +59,7 @@ const ServicesPage: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: (serviceId: string) => api.delete(`/hotels/services/${serviceId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel-services', hotelId] });
+      queryClient.invalidateQueries({ queryKey: ['hotel-services'] });
     },
   });
 

@@ -15,19 +15,25 @@ import { useAuthStore } from '../../../store/useAuthStore';
 
 const DashboardPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
-  const hotelId = user?.id;
 
   const { data: hotel } = useQuery({
-    queryKey: ['hotel-dashboard', hotelId],
+    queryKey: ['hotel-dashboard'],
     queryFn: async () => {
-      const response = await api.get(`/hotels/${hotelId}`);
-      return response.data.data;
+      const listResponse = await api.get('/hotels', {
+        params: { page: 1, limit: 1 },
+      });
+      return listResponse.data?.data?.hotels?.[0] ?? null;
     },
-    enabled: !!hotelId,
+    enabled: !!user,
   });
 
+  const totalRoomUnits = (hotel?.rooms || []).reduce(
+    (sum: number, room: { quantity?: number }) => sum + (room.quantity || 0),
+    0
+  );
+
   const stats = [
-    { label: 'Total Rooms', value: hotel?.rooms?.length || 0, icon: BedDouble, color: 'bg-blue-500', trend: '+2 this month' },
+    { label: 'Total Rooms', value: totalRoomUnits, icon: BedDouble, color: 'bg-blue-500', trend: `${hotel?.rooms?.length || 0} room types` },
     { label: 'Active Bookings', value: 12, icon: Calendar, color: 'bg-green-500', trend: '4 today' },
     { label: 'Monthly Revenue', value: '$4,250', icon: TrendingUp, color: 'bg-purple-500', trend: '+15% from last month' },
     { label: 'Avg Rating', value: '4.8', icon: Star, color: 'bg-amber-500', trend: 'Based on 48 reviews' },
