@@ -121,8 +121,8 @@ const TripRequestList = () => {
 
   return (
     <div className="space-y-6">
-      <section className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">Traveler Requests</h2>
+      <section className="section-title-row">
+        <h2 className="section-title">Traveler Requests</h2>
         <div className="text-xs font-medium text-[var(--text-soft)] uppercase tracking-wider">
           {pagination.total} Live Briefs
         </div>
@@ -165,12 +165,12 @@ const TripRequestList = () => {
           {tripRequests.map((tripRequest) => {
             const existingBid = bidsByTripRequestId[tripRequest.id];
             return (
-              <div key={tripRequest.id} className="surface flex flex-col p-6">
+              <div key={tripRequest.id} className="surface flex flex-col p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-[var(--text)]">{tripRequest.destination}</h3>
                     <p className="text-sm text-[var(--text-soft)]">
-                      {tripRequest.userName || 'Anonymous'} · {formatDate(tripRequest.createdAt)}
+                      {tripRequest.userName || 'Anonymous'} | {formatDate(tripRequest.createdAt)}
                     </p>
                   </div>
                   <span className={`app-pill ${
@@ -208,7 +208,7 @@ const TripRequestList = () => {
                   </div>
                   <button
                     onClick={() => handleOpenOffer(tripRequest)}
-                    className={`${existingBid ? 'app-btn-secondary' : 'app-btn-primary'} h-9 px-4 text-xs`}
+                    className={`${existingBid ? 'app-btn-secondary' : 'app-btn-primary'} app-btn-sm`}
                   >
                     {existingBid ? 'View Thread' : 'Submit Offer'}
                   </button>
@@ -224,7 +224,7 @@ const TripRequestList = () => {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="app-btn-secondary h-10 px-4 text-xs disabled:opacity-50"
+            className="app-btn-secondary app-btn-md disabled:opacity-50"
           >
             Previous
           </button>
@@ -234,7 +234,7 @@ const TripRequestList = () => {
           <button
             onClick={() => setPage((p) => p + 1)}
             disabled={page >= Math.ceil(pagination.total / pagination.limit)}
-            className="app-btn-secondary h-10 px-4 text-xs disabled:opacity-50"
+            className="app-btn-secondary app-btn-md disabled:opacity-50"
           >
             Next
           </button>
@@ -258,3 +258,4 @@ const TripRequestList = () => {
 };
 
 export default TripRequestList;
+

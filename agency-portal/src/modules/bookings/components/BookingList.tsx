@@ -41,8 +41,8 @@ const BookingList = () => {
 
   return (
     <div className="space-y-6">
-      <section className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">Bookings</h2>
+      <section className="section-title-row">
+        <h2 className="section-title">Bookings</h2>
       </section>
 
       <div className="segmented-filters">
@@ -54,7 +54,7 @@ const BookingList = () => {
               setPage(1);
               setStatusFilter(status);
             }}
-            className={`${statusFilter === status ? 'app-btn-primary' : 'app-btn-secondary'} h-11 px-5 text-sm`}
+            className={`${statusFilter === status ? 'app-btn-primary' : 'app-btn-secondary'} app-btn-md`}
           >
             {status || 'All'}
           </button>
@@ -92,7 +92,7 @@ const BookingList = () => {
                   : [];
 
             return (
-              <article key={booking.id} className="surface flex flex-col p-6">
+              <article key={booking.id} className="surface flex flex-col p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-[var(--text)]">
@@ -136,7 +136,7 @@ const BookingList = () => {
                         type="button"
                         disabled={updatingId === booking.id}
                         onClick={() => handleUpdateStatus(booking.id, action.status)}
-                        className={`h-9 flex-1 rounded-lg px-2 text-xs font-medium transition-colors ${action.classes} disabled:opacity-50`}
+                        className={`app-btn-secondary app-btn-sm flex-1 ${action.classes} disabled:opacity-50`}
                       >
                         {updatingId === booking.id ? '...' : action.label}
                       </button>

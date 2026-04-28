@@ -36,8 +36,8 @@ const VehicleList = () => {
 
   return (
     <div className="space-y-6">
-      <section className="mb-4">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">Fleet Management</h2>
+      <section className="section-title-row">
+        <h2 className="section-title">Fleet Management</h2>
       </section>
 
       <section className="surface">
@@ -61,7 +61,7 @@ const VehicleList = () => {
           <button
             type="button"
             onClick={() => navigate('/transport/new')}
-            className="app-btn-primary h-11 px-5 text-sm"
+            className="app-btn-primary app-btn-md"
           >
             Add vehicle
           </button>
@@ -101,7 +101,7 @@ const VehicleList = () => {
                       {vehicle.make} {vehicle.model}
                     </div>
                     <div className="mt-1 text-sm text-[var(--text-muted)]">
-                      {vehicle.year} • {formatStatusLabel(vehicle.type)}
+                      {vehicle.year} | {formatStatusLabel(vehicle.type)}
                     </div>
                   </div>
                   <span className={`app-pill ${vehicle.isAvailable ? 'app-pill-success' : 'app-pill-danger'}`}>
@@ -133,14 +133,14 @@ const VehicleList = () => {
                   <button
                     type="button"
                     onClick={() => navigate(`/transport/${vehicle.id}/edit`)}
-                    className="app-btn-secondary h-10 px-4 text-sm"
+                    className="app-btn-secondary app-btn-md"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(vehicle.id)}
-                    className="app-btn-secondary h-10 px-4 text-sm text-[var(--danger-text)]"
+                    className="app-btn-secondary app-btn-md text-[var(--danger-text)]"
                   >
                     Delete
                   </button>
@@ -169,7 +169,7 @@ const VehicleList = () => {
                         {vehicle.make} {vehicle.model}
                       </div>
                       <div className="mt-1 text-sm text-[var(--text-muted)]">
-                        {vehicle.year} • {formatStatusLabel(vehicle.type)}
+                        {vehicle.year} | {formatStatusLabel(vehicle.type)}
                       </div>
                     </td>
                     <td>
@@ -199,14 +199,14 @@ const VehicleList = () => {
                         <button
                           type="button"
                           onClick={() => navigate(`/transport/${vehicle.id}/edit`)}
-                          className="app-btn-secondary h-10 px-4 text-sm"
+                          className="app-btn-secondary app-btn-md"
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDelete(vehicle.id)}
-                          className="app-btn-secondary h-10 px-4 text-sm text-[var(--danger-text)]"
+                          className="app-btn-secondary app-btn-md text-[var(--danger-text)]"
                         >
                           Delete
                         </button>
@@ -226,7 +226,7 @@ const VehicleList = () => {
             type="button"
             onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
             disabled={page === 1}
-            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary app-btn-md disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous
           </button>
@@ -237,7 +237,7 @@ const VehicleList = () => {
             type="button"
             onClick={() => setPage((currentPage) => currentPage + 1)}
             disabled={page >= totalPages}
-            className="app-btn-secondary h-11 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-btn-secondary app-btn-md disabled:cursor-not-allowed disabled:opacity-50"
           >
             Next
           </button>
@@ -248,3 +248,4 @@ const VehicleList = () => {
 };
 
 export default VehicleList;
+

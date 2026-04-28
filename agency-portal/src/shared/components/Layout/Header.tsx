@@ -31,10 +31,10 @@ const Header = () => {
       <div className="portal-header-inner">
         <div className="min-w-0">
           <div className="app-section-label">TrekPal agency</div>
-          <h1 className="mt-2 truncate text-[1.8rem] font-semibold tracking-[-0.04em] text-[var(--text)] md:text-[2.2rem]">
+          <h1 className="mt-2 truncate text-[1.35rem] font-semibold tracking-[-0.035em] text-[var(--text)] sm:text-[1.55rem] md:text-[2rem]">
             {routeMeta?.title || 'Agency portal'}
           </h1>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
+          <p className="mt-2 max-w-3xl text-xs leading-6 text-[var(--text-muted)] sm:text-sm">
             {routeMeta?.description || 'Operate your agency from one clean, responsive workspace.'}
           </p>
         </div>
@@ -44,7 +44,7 @@ const Header = () => {
             {formatDate(new Date(), { weekday: 'short', month: 'short', day: 'numeric' })}
           </div>
 
-          <button type="button" onClick={toggleTheme} className="portal-icon-btn h-11 w-11" aria-label="Toggle theme">
+          <button type="button" onClick={toggleTheme} className="portal-icon-btn h-10 w-10 md:h-11 md:w-11" aria-label="Toggle theme">
             {theme === 'dark' ? (
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3v2.25m0 13.5V21m9-9h-2.25M5.25 12H3m15.114 6.364l-1.591-1.591M7.477 7.477 5.886 5.886m12.228 0-1.591 1.591M7.477 16.523l-1.591 1.591M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -72,7 +72,7 @@ const Header = () => {
 
           <button
             onClick={handleLogout}
-            className="app-btn-secondary h-11 px-4 text-sm text-[var(--danger-text)]"
+            className="app-btn-secondary h-10 px-3 text-xs text-[var(--danger-text)] sm:h-11 sm:px-4 sm:text-sm"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

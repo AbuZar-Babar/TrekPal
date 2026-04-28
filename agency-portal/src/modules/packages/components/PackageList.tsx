@@ -27,11 +27,11 @@ const PackageList = () => {
 
   return (
     <div className="space-y-6">
-      <section className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">Offers</h2>
+      <section className="section-title-row">
+        <h2 className="section-title">Offers</h2>
         <button
           onClick={() => navigate('/packages/new')}
-          className="app-btn-primary h-11 px-5 text-sm"
+          className="app-btn-primary app-btn-md"
         >
           New Offer
         </button>
@@ -72,7 +72,7 @@ const PackageList = () => {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {packages.map((pkg) => (
-            <article key={pkg.id} className="surface flex flex-col p-6">
+            <article key={pkg.id} className="surface flex flex-col p-5">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-[var(--text)]">{pkg.name}</h3>

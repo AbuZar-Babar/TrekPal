@@ -14,7 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
         <Sidebar />
         <div className="portal-content flex min-w-0 flex-1 flex-col">
           <Header />
-          <main className="flex-1 overflow-y-auto px-4 pb-28 pt-4 md:px-6 md:pb-10 xl:px-8">
+          <main className="flex-1 overflow-y-auto px-3 pb-24 pt-3 sm:px-4 md:px-6 md:pb-10 md:pt-4 xl:px-8">
             <div className="mx-auto w-full max-w-[1600px]">{children}</div>
           </main>
         </div>

@@ -46,8 +46,8 @@ const HotelList = () => {
 
   return (
     <div className="space-y-6">
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">Hotels</h2>
+      <section className="section-title-row">
+        <h2 className="section-title">Hotels</h2>
       </section>
 
       <section className="surface">
@@ -109,7 +109,7 @@ const HotelList = () => {
                 )}
               </div>
               
-              <div className="flex flex-1 flex-col p-5">
+              <div className="flex flex-1 flex-col p-4 sm:p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-[var(--text)]">{hotel.name}</h3>
@@ -117,7 +117,7 @@ const HotelList = () => {
                   </div>
                   {hotel.rating && (
                     <div className="flex items-center gap-1 rounded-lg bg-[var(--panel-subtle)] px-2 py-1 text-xs font-bold text-[var(--text)]">
-                      <span>★</span>
+                      <span>*</span>
                       <span>{hotel.rating}</span>
                     </div>
                   )}
@@ -150,7 +150,7 @@ const HotelList = () => {
                         event.stopPropagation();
                         setSelectedHotel(hotel);
                       }}
-                      className="app-btn-secondary h-9 px-4 text-xs"
+                      className="app-btn-secondary app-btn-sm"
                     >
                       Details
                     </button>
@@ -177,7 +177,7 @@ const HotelList = () => {
               <button
                 type="button"
                 onClick={() => setSelectedHotel(null)}
-                className="app-btn-secondary h-10 px-3 text-sm"
+                className="app-btn-secondary app-btn-md"
               >
                 Close
               </button>
@@ -261,3 +261,4 @@ const HotelList = () => {
 };
 
 export default HotelList;
+

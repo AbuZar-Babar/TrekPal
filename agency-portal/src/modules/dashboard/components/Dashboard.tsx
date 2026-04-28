@@ -55,22 +55,23 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold text-[var(--text)]">
+      <section className="section-title-row">
+        <h2 className="section-title">
           Welcome back, {user?.name || 'Agency'}
         </h2>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="surface flex flex-col items-center justify-center p-6 text-center">
+          <div key={stat.label} className="surface flex flex-col items-center justify-center p-5 text-center">
             <div className="text-3xl font-bold text-[var(--text)]">{stat.value}</div>
             <div className="mt-2 text-sm font-medium text-[var(--text-soft)]">{stat.label}</div>
+            <div className="mt-1 text-xs text-[var(--text-muted)]">{stat.note}</div>
           </div>
         ))}
       </section>
 
-      <section className="surface p-6">
+      <section className="surface p-5">
         <h3 className="mb-6 text-lg font-semibold text-[var(--text)]">Quick Actions</h3>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
           {actions.map((action) => (
@@ -78,7 +79,7 @@ const Dashboard = () => {
               key={action.label}
               type="button"
               onClick={() => navigate(action.path)}
-              className="app-btn-secondary h-12 text-sm font-medium"
+              className="app-btn-secondary app-btn-md font-medium"
             >
               {action.label}
             </button>

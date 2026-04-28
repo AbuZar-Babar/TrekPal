@@ -120,8 +120,8 @@ const Sidebar = () => {
         </div>
       </aside>
 
-      <nav className="portal-mobile-tabbar lg:hidden">
-        {navItems.slice(0, 5).map((item) => (
+      <nav className="portal-mobile-nav lg:hidden" aria-label="Mobile navigation">
+        {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
