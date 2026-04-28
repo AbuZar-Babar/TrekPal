@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import {
   formatCurrency,
-  formatDate,
   formatDateRange,
   formatShortId,
   formatStatusLabel,

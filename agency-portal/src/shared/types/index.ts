@@ -186,6 +186,8 @@ export interface TripRequest {
   tripSpecs: TripSpecs;
   status: 'PENDING' | 'ACCEPTED' | 'CANCELLED';
   bidsCount: number;
+  hotel?: Hotel | null;
+  room?: any | null;
   createdAt: string;
   updatedAt: string;
 }

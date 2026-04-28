@@ -126,4 +126,16 @@ export class PrismaHotelRepository implements IHotelRepository {
             roomsCount: hotel._count.rooms,
         };
     }
+
+    async findByAuthUid(authUid: string): Promise<Hotel | null> {
+        return await prisma.hotel.findUnique({
+            where: { authUid },
+        });
+    }
+
+    async findByEmail(email: string): Promise<Hotel | null> {
+        return await prisma.hotel.findUnique({
+            where: { email },
+        });
+    }
 }

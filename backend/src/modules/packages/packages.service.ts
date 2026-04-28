@@ -11,7 +11,6 @@ import {
   PackageResponse,
   UpdatePackageInput,
 } from './packages.types';
-import { roomAvailabilityService } from '../hotels/room-availability.service';
 
 const packageInclude = {
   agency: {
@@ -407,7 +406,6 @@ export class PackagesService {
         duration: true,
         startDate: true,
         hotelId: true,
-        roomId: true,
       },
     });
 
@@ -440,25 +438,12 @@ export class PackagesService {
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + Math.max(tripPackage.duration - 1, 0));
 
-    if (tripPackage.roomId) {
-      const isAvailable = await roomAvailabilityService.checkAvailability(
-        tripPackage.roomId,
-        startDate,
-        endDate
-      );
-
-      if (!isAvailable) {
-        throw new Error('Sorry, the hotel rooms for this trip are no longer available for these dates.');
-      }
-    }
-
     const booking = await prisma.booking.create({
       data: {
         userId: travelerId,
         agencyId: tripPackage.agencyId,
         packageId: tripPackage.id,
         hotelId: tripPackage.hotelId,
-        roomId: tripPackage.roomId,
         status: BOOKING_STATUS.PENDING,
         totalAmount: tripPackage.price,
         startDate,

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { hotelsController } from './hotels.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
-import { requireAgencyOrAdmin, requireHotelAgencyOrAdmin } from '../../middlewares/roleGuard.middleware';
+import { requireHotelAgencyOrAdmin } from '../../middlewares/roleGuard.middleware';
 import { createMediaImageUpload } from '../../middlewares/upload.middleware';
 
 const router = Router();

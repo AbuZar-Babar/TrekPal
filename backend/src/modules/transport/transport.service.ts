@@ -145,6 +145,29 @@ export class TransportService {
   }
 
   /**
+   * Get a single vehicle by ID
+   */
+  async getVehicleById(vehicleId: string, agencyId?: string): Promise<VehicleResponse> {
+    const where: any = { id: vehicleId };
+    if (agencyId) where.agencyId = agencyId;
+
+    const vehicle = await prisma.vehicle.findFirst({
+      where,
+      include: {
+        agency: {
+          select: { name: true },
+        },
+      },
+    });
+
+    if (!vehicle) {
+      throw new Error('Vehicle not found');
+    }
+
+    return await this.mapVehicleResponse(vehicle);
+  }
+
+  /**
    * Update vehicle (for agency)
    */
   async updateVehicle(

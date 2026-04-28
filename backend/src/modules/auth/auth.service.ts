@@ -19,14 +19,17 @@ import {
   LoginInput,
   VerifyCnicInput,
   AuthResponse,
+  HotelRegisterInput,
 } from './auth.types';
 import {
   IUserRepository,
   IAgencyRepository,
   IAdminRepository,
+  IHotelRepository,
   PrismaUserRepository,
   PrismaAgencyRepository,
   PrismaAdminRepository,
+  PrismaHotelRepository,
 } from '../../repositories';
 
 /**
@@ -129,15 +132,15 @@ export class AuthService {
 
   private mapAgency(agency: {
     id: string;
-    authUid: string;
-    email: string;
+    authUid: string | null;
+    email: string | null;
     name: string;
     status?: string;
   }): AuthResponse['user'] {
     return {
       id: agency.id,
-      authUid: agency.authUid,
-      email: agency.email,
+      authUid: agency.authUid || '',
+      email: agency.email || '',
       name: agency.name,
       status: agency.status,
       role: ROLES.AGENCY,
@@ -146,26 +149,26 @@ export class AuthService {
 
   private mapHotel(hotel: {
     id: string;
-    authUid: string;
-    email: string;
+    authUid: string | null;
+    email: string | null;
     name: string;
     status?: string;
   }): AuthResponse['user'] {
     return {
       id: hotel.id,
-      authUid: hotel.authUid,
-      email: hotel.email,
+      authUid: hotel.authUid || '',
+      email: hotel.email || '',
       name: hotel.name,
       status: hotel.status,
       role: ROLES.HOTEL,
     };
   }
 
-  private mapAdmin(admin: { id: string; authUid: string; email: string; name: string }): AuthResponse['user'] {
+  private mapAdmin(admin: { id: string; authUid: string | null; email: string | null; name: string }): AuthResponse['user'] {
     return {
       id: admin.id,
-      authUid: admin.authUid,
-      email: admin.email,
+      authUid: admin.authUid || '',
+      email: admin.email || '',
       name: admin.name,
       role: ROLES.ADMIN,
     };
@@ -395,7 +398,8 @@ export class AuthService {
       name: input.name,
       phone: input.phone,
       address: input.address,
-      location: input.location,
+      city: input.location,
+      country: 'Pakistan',
       locationImageUrl: input.locationImageUrl,
       businessDocUrl: input.businessDocUrl,
       status: APPROVAL_STATUS.PENDING,

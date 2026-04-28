@@ -83,6 +83,23 @@ export class TransportController {
       }
 
       const result = await transportService.createVehicle(agency.id, req.body);
+      sendSuccess(res, result, 'Vehicle created successfully', 201);
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to create vehicle', 400);
+    }
+  }
+
+  /**
+   * Get all vehicles for an agency
+   * GET /api/transport/agency
+   */
+  async getAgencyVehicles(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'Unauthorized', 401);
+        return;
+      }
+
       // Get agency ID from user
       let agency = await prisma.agency.findUnique({
         where: { authUid: req.user.uid },
@@ -115,6 +132,29 @@ export class TransportController {
 
       const result = await transportService.getAgencyVehicles(
         agency.id,
+        page,
+        limit,
+        status,
+        search
+      );
+      sendSuccess(res, result, 'Vehicles retrieved successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to get vehicles', 400);
+    }
+  }
+
+  /**
+   * Get all vehicles (for travelers/admins)
+   * GET /api/transport
+   */
+  async getVehicles(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const status = req.query.status as string | undefined;
+      const search = req.query.search as string | undefined;
+
+      const result = await transportService.getVehicles(
         page,
         limit,
         status,

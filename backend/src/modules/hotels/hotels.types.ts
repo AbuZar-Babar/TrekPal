@@ -18,9 +18,13 @@ export const createHotelSchema = z.object({
   longitude: z.number().finite().optional(),
   images: z.array(z.string()).default([]),
   amenities: z.array(z.string().trim().min(1)).default([]),
+  businessDocUrl: z.string().url().optional(),
+  locationImageUrl: z.string().url().optional(),
 });
 
-export const updateHotelSchema = createHotelSchema.partial().refine(
+export const updateHotelSchema = createHotelSchema.partial().extend({
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
+}).refine(
   (data) => Object.keys(data).length > 0,
   { message: 'At least one field is required' }
 );
@@ -32,6 +36,7 @@ export type UpdateHotelInput = z.infer<typeof updateHotelSchema>;
 export interface HotelResponse {
   id: string;
   agencyId: string | null;
+  authUid?: string | null;
   name: string;
   description: string | null;
   address: string;

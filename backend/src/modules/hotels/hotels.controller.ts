@@ -11,7 +11,7 @@ export class HotelsController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 20;
-      const status = req.query.status as string | undefined;
+      const status = req.query.status as 'PENDING' | 'APPROVED' | 'REJECTED' | undefined;
       const search = req.query.search as string | undefined;
       const discovery = req.query.discovery === 'true';
 

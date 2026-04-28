@@ -43,4 +43,14 @@ export interface IHotelRepository extends IRepository<Hotel> {
      * Find a single hotel by ID with relations
      */
     findByIdWithRelations(id: string): Promise<HotelWithRelations | null>;
+
+    /**
+     * Find a hotel by its auth user ID
+     */
+    findByAuthUid(authUid: string): Promise<Hotel | null>;
+
+    /**
+     * Find a hotel by its email
+     */
+    findByEmail(email: string): Promise<Hotel | null>;
 }

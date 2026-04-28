@@ -106,6 +106,7 @@ model Hotel {
   agencyId    String?
   email       String?  @unique
   authUid     String?  @unique
+  phone       String?
   name        String
   description String?
   address     String

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { RootState } from '../../../store';
-import { formatCurrency } from '../../../shared/utils/formatters';
 import { deleteHotel, fetchHotels } from '../store/hotelsSlice';
 
 const HotelList = () => {
