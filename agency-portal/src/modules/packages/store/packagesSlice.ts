@@ -41,6 +41,7 @@ export const createPackage = createAsyncThunk(
     startDate: string;
     maxSeats?: number;
     hotelId?: string | null;
+    hotelIds?: string[];
     vehicleId?: string | null;
     destinations: string[];
     images?: string[];
@@ -65,6 +66,7 @@ export const updatePackage = createAsyncThunk(
       startDate?: string;
       maxSeats?: number;
       hotelId?: string | null;
+      hotelIds?: string[];
       vehicleId?: string | null;
       destinations?: string[];
       images?: string[];

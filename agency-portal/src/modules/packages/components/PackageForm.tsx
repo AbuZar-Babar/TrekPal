@@ -130,7 +130,13 @@ const PackageForm = () => {
             : '',
         );
         setMaxSeats(String(tripPackage.maxSeats ?? 1));
-        setSelectedHotelIds(tripPackage.hotelId ? [tripPackage.hotelId] : []);
+        setSelectedHotelIds(
+          tripPackage.hotelIds && tripPackage.hotelIds.length > 0
+            ? tripPackage.hotelIds
+            : tripPackage.hotelId
+              ? [tripPackage.hotelId]
+              : [],
+        );
         setVehicleId(tripPackage.vehicleId || '');
         setDestinations(tripPackage.destinations.join(', '));
         setImages(tripPackage.images.join(', '));
@@ -216,6 +222,7 @@ const PackageForm = () => {
       startDate,
       maxSeats: Number(maxSeats),
       hotelId: selectedHotelIds[0] || null,
+      hotelIds: selectedHotelIds,
       vehicleId: vehicleId || null,
       destinations: splitList(destinations),
       images: splitList(images),

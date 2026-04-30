@@ -125,11 +125,23 @@ const resolveMediaImageList = async (images?: string[] | null): Promise<string[]
   return resolveMediaUrls(images);
 };
 
+const normalizeHotelIds = (hotelIds?: string[] | null, hotelId?: string | null): string[] => {
+  const values = [...(hotelIds ?? []), ...(hotelId ? [hotelId] : [])].map((value) => value.trim());
+  return Array.from(new Set(values.filter(Boolean)));
+};
+
 const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
-  const [participants, hotelImages, vehicleImages] = await Promise.all([
+  const normalizedHotelIds = normalizeHotelIds(tripPackage.hotelIds, tripPackage.hotelId);
+  const [participants, hotelImages, vehicleImages, relatedHotels] = await Promise.all([
     Promise.all(tripPackage.bookings.map(mapParticipant)),
     resolveMediaImageList(tripPackage.hotel?.images),
     resolveMediaImageList(tripPackage.vehicle?.images),
+    normalizedHotelIds.length > 0
+      ? prisma.hotel.findMany({
+          where: { id: { in: normalizedHotelIds } },
+          select: { id: true, name: true, city: true, country: true, rating: true, images: true },
+        })
+      : Promise.resolve([]),
   ]);
   const confirmedSeats = participants.length;
   const maxSeats = tripPackage.maxSeats ?? 1;
@@ -140,6 +152,7 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
     agencyId: tripPackage.agencyId,
     agencyName: tripPackage.agency.name,
     hotelId: tripPackage.hotelId ?? null,
+    hotelIds: normalizedHotelIds,
     vehicleId: tripPackage.vehicleId ?? null,
     name: tripPackage.name,
     description: tripPackage.description,
@@ -166,6 +179,20 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
             images: hotelImages,
           }
         : null,
+    hotels: await Promise.all(
+      relatedHotels.map(async (hotel: any) => {
+        const images = await resolveMediaImageList(hotel.images);
+        return {
+          id: hotel.id,
+          name: hotel.name,
+          city: hotel.city,
+          country: hotel.country,
+          rating: hotel.rating ?? null,
+          image: images.length > 0 ? images[0] : null,
+          images,
+        };
+      }),
+    ),
     vehicle: tripPackage.vehicle
         ? {
             id: tripPackage.vehicle.id,
@@ -186,13 +213,15 @@ export class PackagesService {
   private assertActiveOfferRequirements(input: {
     isActive?: boolean;
     hotelId?: string | null;
+    hotelIds?: string[] | null;
     startDate?: Date | null;
   }): void {
     if (!input.isActive) {
       return;
     }
 
-    if (!input.hotelId) {
+    const hasAnyHotel = normalizeHotelIds(input.hotelIds, input.hotelId).length > 0;
+    if (!hasAnyHotel) {
       throw new Error('Active trip offer must include a hotel');
     }
 
@@ -203,18 +232,19 @@ export class PackagesService {
 
   private async assertInventoryOwnership(
     agencyId: string,
-    inventory: { hotelId?: string | null; vehicleId?: string | null },
+    inventory: { hotelId?: string | null; hotelIds?: string[] | null; vehicleId?: string | null },
   ): Promise<void> {
-    if (inventory.hotelId) {
-      const hotel = await prisma.hotel.findFirst({
+    const hotelIds = normalizeHotelIds(inventory.hotelIds, inventory.hotelId);
+    if (hotelIds.length > 0) {
+      const foundHotels = await prisma.hotel.findMany({
         where: {
-          id: inventory.hotelId,
+          id: { in: hotelIds },
           agencyId,
         },
         select: { id: true },
       });
 
-      if (!hotel) {
+      if (foundHotels.length !== hotelIds.length) {
         throw new Error('Selected hotel was not found in your inventory');
       }
     }
@@ -304,21 +334,25 @@ export class PackagesService {
   }
 
   async createPackage(agencyId: string, input: CreatePackageInput): Promise<PackageResponse> {
+    const normalizedHotelIds = normalizeHotelIds(input.hotelIds, input.hotelId ?? null);
     this.assertActiveOfferRequirements({
       isActive: input.isActive,
-      hotelId: input.hotelId ?? null,
+      hotelId: normalizedHotelIds[0] ?? null,
+      hotelIds: normalizedHotelIds,
       startDate: input.startDate,
     });
 
     await this.assertInventoryOwnership(agencyId, {
-      hotelId: input.hotelId ?? null,
+      hotelId: normalizedHotelIds[0] ?? null,
+      hotelIds: normalizedHotelIds,
       vehicleId: input.vehicleId ?? null,
     });
 
     const tripPackage = await prisma.package.create({
       data: {
         agencyId,
-        hotelId: input.hotelId ?? null,
+        hotelId: normalizedHotelIds[0] ?? null,
+        hotelIds: normalizedHotelIds,
         vehicleId: input.vehicleId ?? null,
         name: input.name,
         description: input.description ?? null,
@@ -352,19 +386,23 @@ export class PackagesService {
   ): Promise<PackageResponse> {
     const existing = await prisma.package.findFirst({
       where: { id, agencyId },
-      select: { id: true, hotelId: true, startDate: true, isActive: true },
+      select: { id: true, hotelId: true, hotelIds: true, startDate: true, isActive: true },
     });
 
     if (!existing) {
       throw new Error('Trip offer not found');
     }
 
+    const existingHotelIds = normalizeHotelIds(existing.hotelIds, existing.hotelId ?? null);
+    const nextHotelIds =
+      input.hotelIds !== undefined || input.hotelId !== undefined
+        ? normalizeHotelIds(input.hotelIds, input.hotelId ?? null)
+        : existingHotelIds;
+
     this.assertActiveOfferRequirements({
       isActive: input.isActive ?? existing.isActive,
-      hotelId:
-        input.hotelId !== undefined
-          ? (input.hotelId ?? null)
-          : (existing.hotelId ?? null),
+      hotelId: nextHotelIds[0] ?? null,
+      hotelIds: nextHotelIds,
       startDate:
         input.startDate !== undefined
           ? (input.startDate ?? null)
@@ -372,14 +410,17 @@ export class PackagesService {
     });
 
     await this.assertInventoryOwnership(agencyId, {
-      hotelId: input.hotelId,
+      hotelId: nextHotelIds[0] ?? null,
+      hotelIds: nextHotelIds,
       vehicleId: input.vehicleId,
     });
 
     const tripPackage = await prisma.package.update({
       where: { id },
       data: {
-        ...(input.hotelId !== undefined ? { hotelId: input.hotelId ?? null } : {}),
+        ...(input.hotelId !== undefined || input.hotelIds !== undefined
+          ? { hotelId: nextHotelIds[0] ?? null, hotelIds: nextHotelIds }
+          : {}),
         ...(input.vehicleId !== undefined ? { vehicleId: input.vehicleId ?? null } : {}),
         ...(input.name !== undefined ? { name: input.name } : {}),
         ...(input.description !== undefined ? { description: input.description ?? null } : {}),

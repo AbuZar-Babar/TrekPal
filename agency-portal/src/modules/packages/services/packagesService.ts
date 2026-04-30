@@ -32,6 +32,7 @@ export const packagesService = {
     startDate: string;
     maxSeats?: number;
     hotelId?: string | null;
+    hotelIds?: string[];
     vehicleId?: string | null;
     destinations: string[];
     images?: string[];
@@ -51,6 +52,7 @@ export const packagesService = {
       startDate?: string;
       maxSeats?: number;
       hotelId?: string | null;
+      hotelIds?: string[];
       vehicleId?: string | null;
       destinations?: string[];
       images?: string[];

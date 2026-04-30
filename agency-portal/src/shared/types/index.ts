@@ -95,6 +95,7 @@ export interface Package {
   agencyId: string;
   agencyName: string;
   hotelId: string | null;
+  hotelIds: string[];
   vehicleId: string | null;
   name: string;
   description?: string | null;
@@ -116,6 +117,14 @@ export interface Package {
     rating: number | null;
     image: string | null;
   } | null;
+  hotels: Array<{
+    id: string;
+    name: string;
+    city: string;
+    country: string;
+    rating: number | null;
+    image: string | null;
+  }>;
   vehicle: {
     id: string;
     type: string;

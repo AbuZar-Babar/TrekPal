@@ -19,6 +19,7 @@ export const createPackageSchema = z.object({
   startDate: z.coerce.date().optional(),
   maxSeats: z.coerce.number().int().min(1, 'Max seats must be at least 1').optional(),
   hotelId: z.string().trim().min(1).nullable().optional(),
+  hotelIds: z.array(z.string().trim().min(1)).optional().default([]),
   vehicleId: z.string().trim().min(1).nullable().optional(),
   destinations: z
     .array(z.string().trim().min(1, 'Destination cannot be empty'))
@@ -55,6 +56,7 @@ export interface PackageResponse {
   agencyId: string;
   agencyName: string;
   hotelId: string | null;
+  hotelIds: string[];
   vehicleId: string | null;
   name: string;
   description: string | null;
@@ -79,6 +81,15 @@ export interface PackageResponse {
     image: string | null;
     images: string[];
   } | null;
+  hotels: Array<{
+    id: string;
+    name: string;
+    city: string;
+    country: string;
+    rating: number | null;
+    image: string | null;
+    images: string[];
+  }>;
   vehicle: {
     id: string;
     type: string;

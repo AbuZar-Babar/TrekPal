@@ -189,6 +189,7 @@ model Package {
   id          String   @id @default(cuid())
   agencyId    String
   hotelId     String?
+  hotelIds    String[] @default([])
   vehicleId   String?
   name        String
   description String?
