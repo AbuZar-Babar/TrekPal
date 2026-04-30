@@ -108,15 +108,6 @@ const Sidebar = () => {
             ))}
           </nav>
 
-          <div className="portal-sidebar-footer">
-            <div className="app-card-subtle px-4 py-4">
-              <div className="app-section-label">Workspace</div>
-              <div className="mt-2 text-sm font-semibold text-[var(--text)]">Approved access</div>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
-                Offers, requests, inventory, and live booking operations in one place.
-              </p>
-            </div>
-          </div>
         </div>
       </aside>
 
