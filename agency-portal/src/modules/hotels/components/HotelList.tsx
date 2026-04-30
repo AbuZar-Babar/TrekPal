@@ -213,19 +213,19 @@ const HotelList = () => {
               )}
 
               <div>
-                <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Amenities</div>
+                <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Hotel Services</div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(selectedHotel.amenities || []).length > 0 ? (
-                    selectedHotel.amenities.map((amenity) => (
+                  {(selectedHotel.services || []).length > 0 ? (
+                    (selectedHotel.services ?? []).map((service) => (
                       <span
-                        key={amenity}
+                        key={service.id}
                         className="rounded-md bg-[var(--panel-subtle)] px-2 py-1 text-xs font-semibold text-[var(--text)]"
                       >
-                        {amenity}
+                        {service.name}
                       </span>
                     ))
                   ) : (
-                    <span className="text-sm text-[var(--text-muted)]">No amenities listed.</span>
+                    <span className="text-sm text-[var(--text-muted)]">No hotel services listed.</span>
                   )}
                 </div>
               </div>
