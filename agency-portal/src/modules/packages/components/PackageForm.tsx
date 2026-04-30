@@ -44,7 +44,9 @@ const PackageForm = () => {
   const [maxSeats, setMaxSeats] = useState('');
   const [destinations, setDestinations] = useState('');
   const [images, setImages] = useState('');
-  const [hotelId, setHotelId] = useState('');
+  const [selectedHotelIds, setSelectedHotelIds] = useState<string[]>([]);
+  const [isHotelPickerOpen, setIsHotelPickerOpen] = useState(false);
+  const [hotelSearch, setHotelSearch] = useState('');
   const [vehicleId, setVehicleId] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -55,10 +57,20 @@ const PackageForm = () => {
   const [loading, setLoading] = useState(isEditing);
   const [submitting, setSubmitting] = useState(false);
 
-  const selectedHotel = useMemo(
-    () => hotels.find((item) => item.id === hotelId) || null,
-    [hotelId, hotels],
+  const selectedHotels = useMemo(
+    () => hotels.filter((item) => selectedHotelIds.includes(item.id)),
+    [hotels, selectedHotelIds],
   );
+  const filteredHotels = useMemo(() => {
+    const query = hotelSearch.trim().toLowerCase();
+    if (!query) {
+      return hotels;
+    }
+
+    return hotels.filter((hotel) =>
+      `${hotel.name} ${hotel.city} ${hotel.country}`.toLowerCase().includes(query),
+    );
+  }, [hotelSearch, hotels]);
   const selectedVehicle = useMemo(
     () => vehicles.find((item) => item.id === vehicleId) || null,
     [vehicleId, vehicles],
@@ -118,7 +130,7 @@ const PackageForm = () => {
             : '',
         );
         setMaxSeats(String(tripPackage.maxSeats ?? 1));
-        setHotelId(tripPackage.hotelId || '');
+        setSelectedHotelIds(tripPackage.hotelId ? [tripPackage.hotelId] : []);
         setVehicleId(tripPackage.vehicleId || '');
         setDestinations(tripPackage.destinations.join(', '));
         setImages(tripPackage.images.join(', '));
@@ -170,8 +182,8 @@ const PackageForm = () => {
       nextErrors.startDate = 'Start date is required for an active offer';
     }
 
-    if (isActive && !hotelId) {
-      nextErrors.hotelId = 'Select a hotel before publishing this offer';
+    if (isActive && selectedHotelIds.length === 0) {
+      nextErrors.hotelIds = 'Select at least one hotel before publishing this offer';
     }
 
     if (destinationList.length === 0) {
@@ -203,7 +215,7 @@ const PackageForm = () => {
       duration: Number(duration),
       startDate,
       maxSeats: Number(maxSeats),
-      hotelId: hotelId || null,
+      hotelId: selectedHotelIds[0] || null,
       vehicleId: vehicleId || null,
       destinations: splitList(destinations),
       images: splitList(images),
@@ -265,7 +277,7 @@ const PackageForm = () => {
           </article>
           <article className="stat-card">
             <span>Inventory</span>
-            <strong>{selectedHotel || selectedVehicle ? 'Linked' : 'Open'}</strong>
+            <strong>{selectedHotels.length > 0 || selectedVehicle ? 'Linked' : 'Open'}</strong>
             <p>Hotel and vehicle can be attached as operational support.</p>
           </article>
           <article className="stat-card">
@@ -389,23 +401,17 @@ const PackageForm = () => {
           </div>
 
           <div>
-            <label htmlFor="hotelId" className="mb-2 block text-sm font-semibold text-[var(--text)]">
-              Stay hotel
-            </label>
-            <select
-              id="hotelId"
-              value={hotelId}
-              onChange={(event) => setHotelId(event.target.value)}
-              className="app-field"
+            <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Stay hotels</label>
+            <button
+              type="button"
+              onClick={() => setIsHotelPickerOpen(true)}
+              className="app-btn-secondary h-11 w-full justify-center text-sm"
             >
-              <option value="">No hotel selected</option>
-              {hotels.map((hotel) => (
-                <option key={hotel.id} value={hotel.id}>
-                  {hotel.name} - {hotel.city}
-                </option>
-              ))}
-            </select>
-            {errors.hotelId && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.hotelId}</p>}
+              {selectedHotelIds.length > 0
+                ? `Selected ${selectedHotelIds.length} hotel${selectedHotelIds.length > 1 ? 's' : ''}`
+                : 'Select hotels'}
+            </button>
+            {errors.hotelIds && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.hotelIds}</p>}
           </div>
 
           <div>
@@ -427,23 +433,22 @@ const PackageForm = () => {
             </select>
           </div>
 
-          {(selectedHotel || selectedVehicle) && (
+          {(selectedHotels.length > 0 || selectedVehicle) && (
             <div className="md:col-span-2 grid gap-4 md:grid-cols-2">
-              {selectedHotel && (
-                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] p-4">
+              {selectedHotels.length > 0 && (
+                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] p-4 md:col-span-2">
                   <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
-                    Selected hotel
+                    Selected hotels ({selectedHotels.length})
                   </div>
-                  {selectedHotel.images[0] && (
-                    <img
-                      src={selectedHotel.images[0]}
-                      alt={selectedHotel.name}
-                      className="mb-3 h-32 w-full rounded-[18px] object-cover"
-                    />
-                  )}
-                  <div className="text-sm font-semibold text-[var(--text)]">{selectedHotel.name}</div>
-                  <div className="mt-1 text-sm text-[var(--text-muted)]">
-                    {selectedHotel.city}, {selectedHotel.country}
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {selectedHotels.map((hotel) => (
+                      <div key={hotel.id} className="rounded-[16px] border border-[var(--border)] bg-[var(--panel)] p-3">
+                        <div className="text-sm font-semibold text-[var(--text)]">{hotel.name}</div>
+                        <div className="mt-1 text-sm text-[var(--text-muted)]">
+                          {hotel.city}, {hotel.country}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -509,8 +514,8 @@ const PackageForm = () => {
             type="checkbox"
             checked={isActive}
             onChange={(event) => {
-              if (event.target.checked && (!hotelId || !startDate)) {
-                setFormError('To publish this offer, select a hotel and start date first.');
+              if (event.target.checked && (selectedHotelIds.length === 0 || !startDate)) {
+                setFormError('To publish this offer, select at least one hotel and start date first.');
                 return;
               }
               setFormError(null);
@@ -541,6 +546,95 @@ const PackageForm = () => {
           </button>
         </div>
       </form>
+
+      {isHotelPickerOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
+          <div className="w-full max-w-3xl rounded-[24px] border border-[var(--border)] bg-[var(--panel)] p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-semibold text-[var(--text)]">Select Hotels</h3>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  Choose one or more hotels for this offer.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsHotelPickerOpen(false)}
+                className="app-btn-secondary h-10 px-4 text-sm"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-4">
+              <input
+                value={hotelSearch}
+                onChange={(event) => setHotelSearch(event.target.value)}
+                className="app-field"
+                placeholder="Search hotels by name or city"
+              />
+            </div>
+
+            <div className="mt-4 max-h-[420px] space-y-2 overflow-y-auto rounded-[16px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+              {filteredHotels.length === 0 ? (
+                <div className="px-2 py-4 text-sm text-[var(--text-muted)]">No hotels found.</div>
+              ) : (
+                filteredHotels.map((hotel) => {
+                  const checked = selectedHotelIds.includes(hotel.id);
+
+                  return (
+                    <label
+                      key={hotel.id}
+                      className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-3"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(event) => {
+                          if (event.target.checked) {
+                            setSelectedHotelIds((current) => [...current, hotel.id]);
+                            return;
+                          }
+                          setSelectedHotelIds((current) => current.filter((idValue) => idValue !== hotel.id));
+                        }}
+                        className="mt-1 h-4 w-4 rounded border-[var(--border)]"
+                      />
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-[var(--text)]">{hotel.name}</div>
+                        <div className="text-sm text-[var(--text-muted)]">
+                          {hotel.city}, {hotel.country}
+                        </div>
+                      </div>
+                    </label>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div className="text-sm text-[var(--text-muted)]">
+                {selectedHotelIds.length} selected
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedHotelIds([])}
+                  className="app-btn-secondary h-10 px-4 text-sm"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsHotelPickerOpen(false)}
+                  className="app-btn-primary h-10 px-4 text-sm"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
