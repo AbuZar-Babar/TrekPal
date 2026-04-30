@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,7 @@ const VehicleList = () => {
   const { vehicles, loading, error, pagination } = useSelector((state: RootState) => state.transport);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [expandedVehicleId, setExpandedVehicleId] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -94,7 +95,13 @@ const VehicleList = () => {
         <>
           <div className="mobile-record-list lg:hidden">
             {vehicles.map((vehicle) => (
-              <article key={vehicle.id} className="record-card">
+              <article
+                key={vehicle.id}
+                className="record-card cursor-pointer"
+                onClick={() =>
+                  setExpandedVehicleId((current) => (current === vehicle.id ? null : vehicle.id))
+                }
+              >
                 <div className="record-grid">
                   <div>
                     <div className="text-base font-semibold tracking-tight text-[var(--text)]">
@@ -111,7 +118,6 @@ const VehicleList = () => {
 
                 <div className="space-y-2 text-sm text-[var(--text-muted)]">
                   <div>Registration {vehicle.vehicleNumber || '--'}</div>
-                  <div>Driver {vehicle.driverName || '--'}</div>
                   <div>{vehicle.capacity} seats</div>
                 </div>
 
@@ -129,20 +135,39 @@ const VehicleList = () => {
                   </div>
                 </div>
 
-                <div className="record-actions">
+                {expandedVehicleId === vehicle.id && (
+                  <div className="space-y-2 rounded-xl border border-[var(--border)] bg-[var(--panel-subtle)] px-3 py-3 text-sm text-[var(--text-muted)]">
+                    <div>Driver name: {vehicle.driverName || '--'}</div>
+                    <div>Driver phone: {vehicle.driverPhone || '--'}</div>
+                    <div>Driver license: {vehicle.driverLicense || '--'}</div>
+                    <div>Vehicle status: {formatStatusLabel(vehicle.status || '')}</div>
+                    <div>Created: {formatDate(vehicle.createdAt)}</div>
+                    <div>Last updated: {formatDate(vehicle.updatedAt)}</div>
+                  </div>
+                )}
+
+                <div className="record-actions" onClick={(event) => event.stopPropagation()}>
                   <button
                     type="button"
                     onClick={() => navigate(`/transport/${vehicle.id}/edit`)}
                     className="app-btn-secondary app-btn-md"
+                    title="Edit vehicle"
+                    aria-label="Edit vehicle"
                   >
-                    Edit
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15.232 5.232l3.536 3.536M4 20h3.5L19 8.5 15.5 5 4 16.5V20z" />
+                    </svg>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(vehicle.id)}
                     className="app-btn-secondary app-btn-md text-[var(--danger-text)]"
+                    title="Delete vehicle"
+                    aria-label="Delete vehicle"
                   >
-                    Delete
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 7h12m-9 0V5h6v2m-7 0l1 12h6l1-12" />
+                    </svg>
                   </button>
                 </div>
               </article>
@@ -163,56 +188,85 @@ const VehicleList = () => {
               </thead>
               <tbody>
                 {vehicles.map((vehicle) => (
-                  <tr key={vehicle.id}>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">
-                        {vehicle.make} {vehicle.model}
-                      </div>
-                      <div className="mt-1 text-sm text-[var(--text-muted)]">
-                        {vehicle.year} | {formatStatusLabel(vehicle.type)}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">
-                        {vehicle.vehicleNumber || '--'}
-                      </div>
-                      <div className="mt-1 text-sm text-[var(--text-muted)]">
-                        Driver {vehicle.driverName || '--'}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="font-semibold tracking-tight text-[var(--text)]">
-                        {vehicle.capacity} seat(s)
-                      </div>
-                      <div className="mt-1 text-sm text-[var(--text-muted)]">
-                        {formatCurrency(vehicle.pricePerDay)}
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`app-pill ${vehicle.isAvailable ? 'app-pill-success' : 'app-pill-danger'}`}>
-                        {vehicle.isAvailable ? 'Available' : 'Unavailable'}
-                      </span>
-                    </td>
-                    <td>{formatDate(vehicle.updatedAt)}</td>
-                    <td>
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/transport/${vehicle.id}/edit`)}
-                          className="app-btn-secondary app-btn-md"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(vehicle.id)}
-                          className="app-btn-secondary app-btn-md text-[var(--danger-text)]"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  <Fragment key={vehicle.id}>
+                    <tr
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setExpandedVehicleId((current) => (current === vehicle.id ? null : vehicle.id))
+                      }
+                    >
+                      <td>
+                        <div className="font-semibold tracking-tight text-[var(--text)]">
+                          {vehicle.make} {vehicle.model}
+                        </div>
+                        <div className="mt-1 text-sm text-[var(--text-muted)]">
+                          {vehicle.year} | {formatStatusLabel(vehicle.type)}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="font-semibold tracking-tight text-[var(--text)]">
+                          {vehicle.vehicleNumber || '--'}
+                        </div>
+                        <div className="mt-1 text-sm text-[var(--text-muted)]">
+                          Driver {vehicle.driverName || '--'}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="font-semibold tracking-tight text-[var(--text)]">
+                          {vehicle.capacity} seat(s)
+                        </div>
+                        <div className="mt-1 text-sm text-[var(--text-muted)]">
+                          {formatCurrency(vehicle.pricePerDay)}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`app-pill ${vehicle.isAvailable ? 'app-pill-success' : 'app-pill-danger'}`}>
+                          {vehicle.isAvailable ? 'Available' : 'Unavailable'}
+                        </span>
+                      </td>
+                      <td>{formatDate(vehicle.updatedAt)}</td>
+                      <td>
+                        <div className="flex flex-wrap gap-2" onClick={(event) => event.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/transport/${vehicle.id}/edit`)}
+                            className="app-btn-secondary app-btn-md"
+                            title="Edit vehicle"
+                            aria-label="Edit vehicle"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15.232 5.232l3.536 3.536M4 20h3.5L19 8.5 15.5 5 4 16.5V20z" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(vehicle.id)}
+                            className="app-btn-secondary app-btn-md text-[var(--danger-text)]"
+                            title="Delete vehicle"
+                            aria-label="Delete vehicle"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 7h12m-9 0V5h6v2m-7 0l1 12h6l1-12" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {expandedVehicleId === vehicle.id ? (
+                      <tr>
+                        <td colSpan={6} className="bg-[var(--panel-subtle)]">
+                          <div className="grid gap-3 px-4 py-4 text-sm text-[var(--text-muted)] md:grid-cols-3">
+                            <div>Driver name: {vehicle.driverName || '--'}</div>
+                            <div>Driver phone: {vehicle.driverPhone || '--'}</div>
+                            <div>Driver license: {vehicle.driverLicense || '--'}</div>
+                            <div>Vehicle type: {formatStatusLabel(vehicle.type)}</div>
+                            <div>Status: {formatStatusLabel(vehicle.status || '')}</div>
+                            <div>Created: {formatDate(vehicle.createdAt)}</div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
                 ))}
               </tbody>
             </table>
