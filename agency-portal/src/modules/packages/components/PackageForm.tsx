@@ -46,6 +46,9 @@ const PackageForm = () => {
   const [images, setImages] = useState('');
   const [selectedHotelIds, setSelectedHotelIds] = useState<string[]>([]);
   const [selectedHotelRooms, setSelectedHotelRooms] = useState<Record<string, number>>({});
+  const [selectedHotelRoomTypes, setSelectedHotelRoomTypes] = useState<
+    Record<string, Record<string, number>>
+  >({});
   const [isHotelPickerOpen, setIsHotelPickerOpen] = useState(false);
   const [detailHotel, setDetailHotel] = useState<Hotel | null>(null);
   const [hotelSearch, setHotelSearch] = useState('');
@@ -82,6 +85,15 @@ const PackageForm = () => {
       (sum, room) => sum + (room.availableQuantity ?? room.quantity ?? 0),
       0,
     );
+  const getBookedRoomTypeTotal = (hotelId: string): number =>
+    Object.values(selectedHotelRoomTypes[hotelId] || {}).reduce((sum, value) => sum + value, 0);
+  const getBookedRoomTypeSummary = (hotel: Hotel): Array<{ roomType: string; quantity: number }> =>
+    (hotel.rooms || [])
+      .map((room) => ({
+        roomType: room.type,
+        quantity: selectedHotelRoomTypes[hotel.id]?.[room.id] || 0,
+      }))
+      .filter((entry) => entry.quantity > 0);
 
   useEffect(() => {
     let mounted = true;
@@ -240,7 +252,7 @@ const PackageForm = () => {
       hotelIds: selectedHotelIds,
       hotelRoomPlan: selectedHotelIds.map((hotelId) => ({
         hotelId,
-        rooms: selectedHotelRooms[hotelId] || 1,
+        rooms: Math.max(1, getBookedRoomTypeTotal(hotelId) || selectedHotelRooms[hotelId] || 1),
       })),
       vehicleId: vehicleId || null,
       destinations: splitList(destinations),
@@ -274,55 +286,6 @@ const PackageForm = () => {
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div className="space-y-3">
-          <span className="app-pill app-pill-neutral">Trip offer</span>
-          <h1 className="page-title">
-            {isEditing ? 'Edit trip offer' : 'Create trip offer'}
-          </h1>
-          <p className="page-copy max-w-3xl">
-            Keep the offer simple and structured. Add the route, price, duration, and the inventory
-            you want to attach.
-          </p>
-        </div>
-        <div className="page-stats-grid">
-          <article className="stat-card">
-            <span>Status</span>
-            <strong>{isActive ? 'Live' : 'Draft'}</strong>
-            <p>Published offers require a hotel and start date.</p>
-          </article>
-          <article className="stat-card">
-            <span>Destinations</span>
-            <strong>{splitList(destinations).length}</strong>
-            <p>Stops or places currently attached to the offer.</p>
-          </article>
-          <article className="stat-card">
-            <span>Media</span>
-            <strong>{splitList(images).length}</strong>
-            <p>Image URLs included for the offer presentation.</p>
-          </article>
-          <article className="stat-card">
-            <span>Inventory</span>
-            <strong>{selectedHotels.length > 0 || selectedVehicle ? 'Linked' : 'Open'}</strong>
-            <p>Hotel and vehicle can be attached as operational support.</p>
-          </article>
-          <article className="stat-card">
-            <span>Capacity</span>
-            <strong>{maxSeats || '0'} seats</strong>
-            <p>Confirmed bookings consume seats automatically.</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="surface">
-        <div className="surface-header">
-          <div>
-            <h2>{isEditing ? 'Edit trip offer' : 'Offer details'}</h2>
-            <p>Use clear pricing, route detail, and linked inventory.</p>
-          </div>
-        </div>
-      </section>
-
       <form onSubmit={handleSubmit} className="surface space-y-6 px-6 py-6 md:px-8 md:py-8">
         {formError && (
           <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
@@ -651,6 +614,10 @@ const PackageForm = () => {
                               const { [hotel.id]: _removed, ...rest } = current;
                               return rest;
                             });
+                            setSelectedHotelRoomTypes((current) => {
+                              const { [hotel.id]: _removed, ...rest } = current;
+                              return rest;
+                            });
                           }}
                           className="mt-1 h-4 w-4 rounded border-[var(--border)]"
                         />
@@ -659,9 +626,15 @@ const PackageForm = () => {
                           <div className="text-sm text-[var(--text-muted)]">
                             {hotel.city}, {hotel.country}
                           </div>
-                          <div className="mt-1 text-xs text-[var(--text-soft)]">
-                            {(hotel.rooms || []).length} room types • {getAvailableUnits(hotel)} units available
-                          </div>
+                          {getBookedRoomTypeSummary(hotel).length > 0 ? (
+                            <div className="mt-1 space-y-1 text-xs text-[var(--text-soft)]">
+                              {getBookedRoomTypeSummary(hotel).map((entry) => (
+                                <div key={`${hotel.id}-${entry.roomType}`}>
+                                  {entry.roomType}: {entry.quantity} booked
+                                </div>
+                              ))}
+                            </div>
+                          ) : null}
                         </div>
                         <button
                           type="button"
@@ -671,27 +644,11 @@ const PackageForm = () => {
                           Book room
                         </button>
                       </div>
-                      <div className="mt-3 flex items-center gap-3 border-t border-[var(--border)] pt-3">
-                        <label className="text-xs text-[var(--text-soft)]">Rooms to use</label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={Math.max(1, getAvailableUnits(hotel))}
-                          value={selectedHotelRooms[hotel.id] || 1}
-                          onChange={(event) => {
-                            const nextValue = Number(event.target.value || 1);
-                            setSelectedHotelRooms((current) => ({
-                              ...current,
-                              [hotel.id]: Math.max(1, Math.min(getAvailableUnits(hotel) || 1, nextValue)),
-                            }));
-                          }}
-                          disabled={!checked}
-                          className="app-field h-9 w-24 disabled:cursor-not-allowed disabled:opacity-60"
-                        />
-                        <span className="text-xs text-[var(--text-muted)]">
-                          {checked ? `Max ${Math.max(1, getAvailableUnits(hotel))}` : 'Select hotel to enable'}
-                        </span>
-                      </div>
+                      {getBookedRoomTypeSummary(hotel).length > 0 ? (
+                        <div className="mt-3 border-t border-[var(--border)] pt-3 text-xs text-[var(--text-muted)]">
+                          Total rooms booked: {getBookedRoomTypeTotal(hotel.id)}
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })
@@ -705,7 +662,11 @@ const PackageForm = () => {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setSelectedHotelIds([])}
+                  onClick={() => {
+                    setSelectedHotelIds([]);
+                    setSelectedHotelRooms({});
+                    setSelectedHotelRoomTypes({});
+                  }}
                   className="app-btn-secondary h-10 px-4 text-sm"
                 >
                   Clear
@@ -774,28 +735,71 @@ const PackageForm = () => {
                   (detailHotel.rooms || []).map((room) => (
                     <div
                       key={room.id}
-                      className="flex items-center justify-between rounded-[10px] border border-[var(--border)] bg-[var(--panel)] px-3 py-2"
+                      className="rounded-[10px] border border-[var(--border)] bg-[var(--panel)] px-3 py-3"
                     >
-                      <div>
-                        <div className="text-sm font-semibold text-[var(--text)]">{room.type}</div>
-                        <div className="text-xs text-[var(--text-muted)]">
-                          Capacity {room.capacity} • PKR {room.price.toLocaleString()}
-                        </div>
-                        {(room.amenities || []).length > 0 ? (
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {(room.amenities || []).map((amenity: string) => (
-                              <span
-                                key={`${room.id}-${amenity}`}
-                                className="rounded-md border border-[var(--border)] bg-[var(--panel-subtle)] px-2 py-0.5 text-[10px] text-[var(--text-soft)]"
-                              >
-                                {amenity}
-                              </span>
-                            ))}
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-semibold text-[var(--text)]">{room.type}</div>
+                          <div className="text-xs text-[var(--text-muted)]">
+                            Capacity {room.capacity} • PKR {room.price.toLocaleString()}
                           </div>
-                        ) : null}
+                          {(room.amenities || []).length > 0 ? (
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {(room.amenities || []).map((amenity: string) => (
+                                <span
+                                  key={`${room.id}-${amenity}`}
+                                  className="rounded-md border border-[var(--border)] bg-[var(--panel-subtle)] px-2 py-0.5 text-[10px] text-[var(--text-soft)]"
+                                >
+                                  {amenity}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-[var(--text-soft)]">Available</div>
+                          <div className="text-sm font-semibold text-[var(--text)]">
+                            {room.availableQuantity ?? room.quantity ?? 0}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-sm font-semibold text-[var(--text)]">
-                        {room.availableQuantity ?? room.quantity ?? 0} available
+                      <div className="mt-3 flex items-center gap-3">
+                        <label className="text-xs text-[var(--text-soft)]">Book rooms</label>
+                        <input
+                          type="number"
+                          min={0}
+                          max={Math.max(0, room.availableQuantity ?? room.quantity ?? 0)}
+                          value={selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0}
+                          onChange={(event) => {
+                            const nextValue = Number(event.target.value || 0);
+                            const bounded = Math.max(
+                              0,
+                              Math.min(room.availableQuantity ?? room.quantity ?? 0, nextValue),
+                            );
+                            setSelectedHotelRoomTypes((current) => ({
+                              ...current,
+                              [detailHotel.id]: {
+                                ...(current[detailHotel.id] || {}),
+                                [room.id]: bounded,
+                              },
+                            }));
+                            setSelectedHotelRooms((current) => ({
+                              ...current,
+                              [detailHotel.id]: Math.max(
+                                1,
+                                Object.values({
+                                  ...(selectedHotelRoomTypes[detailHotel.id] || {}),
+                                  [room.id]: bounded,
+                                }).reduce((sum, value) => sum + value, 0) || 1,
+                              ),
+                            }));
+                          }}
+                          disabled={!selectedHotelIds.includes(detailHotel.id)}
+                          className="app-field h-9 w-24 disabled:cursor-not-allowed disabled:opacity-60"
+                        />
+                        <span className="text-xs text-[var(--text-muted)]">
+                          Max {Math.max(0, room.availableQuantity ?? room.quantity ?? 0)}
+                        </span>
                       </div>
                     </div>
                   ))
@@ -805,26 +809,10 @@ const PackageForm = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-3 rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
-              <label className="text-sm text-[var(--text-soft)]">Rooms to use</label>
-              <input
-                type="number"
-                min={1}
-                max={Math.max(1, getAvailableUnits(detailHotel))}
-                value={selectedHotelRooms[detailHotel.id] || 1}
-                onChange={(event) => {
-                  const nextValue = Number(event.target.value || 1);
-                  setSelectedHotelRooms((current) => ({
-                    ...current,
-                    [detailHotel.id]: Math.max(
-                      1,
-                      Math.min(getAvailableUnits(detailHotel) || 1, nextValue),
-                    ),
-                  }));
-                }}
-                disabled={!selectedHotelIds.includes(detailHotel.id)}
-                className="app-field h-9 w-24 disabled:cursor-not-allowed disabled:opacity-60"
-              />
+            <div className="mt-4 flex items-center justify-between rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+              <div className="text-sm text-[var(--text-muted)]">
+                {getBookedRoomTypeTotal(detailHotel.id)} room(s) selected for this hotel
+              </div>
               {!selectedHotelIds.includes(detailHotel.id) ? (
                 <button
                   type="button"
@@ -834,17 +822,21 @@ const PackageForm = () => {
                     );
                     setSelectedHotelRooms((current) => ({
                       ...current,
-                      [detailHotel.id]: current[detailHotel.id] || 1,
+                      [detailHotel.id]: Math.max(1, getBookedRoomTypeTotal(detailHotel.id) || 1),
                     }));
                   }}
                   className="app-btn-secondary h-9 px-3 text-xs"
                 >
-                  Select hotel
+                  Add Hotel
                 </button>
               ) : (
-                <span className="text-xs text-[var(--text-muted)]">
-                  Max {Math.max(1, getAvailableUnits(detailHotel))}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setDetailHotel(null)}
+                  className="app-btn-primary h-9 px-3 text-xs"
+                >
+                  Done
+                </button>
               )}
             </div>
           </div>
