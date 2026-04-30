@@ -130,8 +130,30 @@ const normalizeHotelIds = (hotelIds?: string[] | null, hotelId?: string | null):
   return Array.from(new Set(values.filter(Boolean)));
 };
 
+const normalizeHotelRoomPlan = (
+  hotelRoomPlan: Array<{ hotelId: string; rooms: number }> | null | undefined,
+  hotelIds: string[],
+): Array<{ hotelId: string; rooms: number }> => {
+  const byHotel = new Map<string, number>();
+
+  for (const entry of hotelRoomPlan ?? []) {
+    const hotelId = entry.hotelId?.trim();
+    if (!hotelId || !hotelIds.includes(hotelId)) {
+      continue;
+    }
+    const rooms = Number(entry.rooms);
+    byHotel.set(hotelId, Number.isFinite(rooms) && rooms > 0 ? Math.floor(rooms) : 1);
+  }
+
+  return hotelIds.map((hotelId) => ({
+    hotelId,
+    rooms: byHotel.get(hotelId) ?? 1,
+  }));
+};
+
 const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
   const normalizedHotelIds = normalizeHotelIds(tripPackage.hotelIds, tripPackage.hotelId);
+  const normalizedRoomPlan = normalizeHotelRoomPlan(tripPackage.hotelRoomPlan as any, normalizedHotelIds);
   const [participants, hotelImages, vehicleImages, relatedHotels] = await Promise.all([
     Promise.all(tripPackage.bookings.map(mapParticipant)),
     resolveMediaImageList(tripPackage.hotel?.images),
@@ -153,6 +175,7 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
     agencyName: tripPackage.agency.name,
     hotelId: tripPackage.hotelId ?? null,
     hotelIds: normalizedHotelIds,
+    hotelRoomPlan: normalizedRoomPlan,
     vehicleId: tripPackage.vehicleId ?? null,
     name: tripPackage.name,
     description: tripPackage.description,
@@ -335,6 +358,7 @@ export class PackagesService {
 
   async createPackage(agencyId: string, input: CreatePackageInput): Promise<PackageResponse> {
     const normalizedHotelIds = normalizeHotelIds(input.hotelIds, input.hotelId ?? null);
+    const normalizedRoomPlan = normalizeHotelRoomPlan(input.hotelRoomPlan, normalizedHotelIds);
     this.assertActiveOfferRequirements({
       isActive: input.isActive,
       hotelId: normalizedHotelIds[0] ?? null,
@@ -353,6 +377,7 @@ export class PackagesService {
         agencyId,
         hotelId: normalizedHotelIds[0] ?? null,
         hotelIds: normalizedHotelIds,
+        hotelRoomPlan: normalizedRoomPlan,
         vehicleId: input.vehicleId ?? null,
         name: input.name,
         description: input.description ?? null,
@@ -386,7 +411,7 @@ export class PackagesService {
   ): Promise<PackageResponse> {
     const existing = await prisma.package.findFirst({
       where: { id, agencyId },
-      select: { id: true, hotelId: true, hotelIds: true, startDate: true, isActive: true },
+      select: { id: true, hotelId: true, hotelIds: true, hotelRoomPlan: true, startDate: true, isActive: true },
     });
 
     if (!existing) {
@@ -398,6 +423,11 @@ export class PackagesService {
       input.hotelIds !== undefined || input.hotelId !== undefined
         ? normalizeHotelIds(input.hotelIds, input.hotelId ?? null)
         : existingHotelIds;
+    const existingRoomPlan = normalizeHotelRoomPlan((existing as any).hotelRoomPlan as any, existingHotelIds);
+    const nextRoomPlan =
+      input.hotelRoomPlan !== undefined || input.hotelIds !== undefined || input.hotelId !== undefined
+        ? normalizeHotelRoomPlan(input.hotelRoomPlan, nextHotelIds)
+        : existingRoomPlan;
 
     this.assertActiveOfferRequirements({
       isActive: input.isActive ?? existing.isActive,
@@ -419,7 +449,10 @@ export class PackagesService {
       where: { id },
       data: {
         ...(input.hotelId !== undefined || input.hotelIds !== undefined
-          ? { hotelId: nextHotelIds[0] ?? null, hotelIds: nextHotelIds }
+          ? { hotelId: nextHotelIds[0] ?? null, hotelIds: nextHotelIds, hotelRoomPlan: nextRoomPlan }
+          : {}),
+        ...(input.hotelRoomPlan !== undefined && input.hotelId === undefined && input.hotelIds === undefined
+          ? { hotelRoomPlan: nextRoomPlan }
           : {}),
         ...(input.vehicleId !== undefined ? { vehicleId: input.vehicleId ?? null } : {}),
         ...(input.name !== undefined ? { name: input.name } : {}),

@@ -96,6 +96,10 @@ export interface Package {
   agencyName: string;
   hotelId: string | null;
   hotelIds: string[];
+  hotelRoomPlan: Array<{
+    hotelId: string;
+    rooms: number;
+  }>;
   vehicleId: string | null;
   name: string;
   description?: string | null;

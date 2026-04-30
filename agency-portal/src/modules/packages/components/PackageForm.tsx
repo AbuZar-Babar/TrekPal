@@ -45,7 +45,9 @@ const PackageForm = () => {
   const [destinations, setDestinations] = useState('');
   const [images, setImages] = useState('');
   const [selectedHotelIds, setSelectedHotelIds] = useState<string[]>([]);
+  const [selectedHotelRooms, setSelectedHotelRooms] = useState<Record<string, number>>({});
   const [isHotelPickerOpen, setIsHotelPickerOpen] = useState(false);
+  const [detailHotel, setDetailHotel] = useState<Hotel | null>(null);
   const [hotelSearch, setHotelSearch] = useState('');
   const [vehicleId, setVehicleId] = useState('');
   const [isActive, setIsActive] = useState(true);
@@ -75,6 +77,11 @@ const PackageForm = () => {
     () => vehicles.find((item) => item.id === vehicleId) || null,
     [vehicleId, vehicles],
   );
+  const getAvailableUnits = (hotel: Hotel): number =>
+    (hotel.rooms || []).reduce(
+      (sum, room) => sum + (room.availableQuantity ?? room.quantity ?? 0),
+      0,
+    );
 
   useEffect(() => {
     let mounted = true;
@@ -136,6 +143,14 @@ const PackageForm = () => {
             : tripPackage.hotelId
               ? [tripPackage.hotelId]
               : [],
+        );
+        setSelectedHotelRooms(
+          Object.fromEntries(
+            (tripPackage.hotelRoomPlan || []).map((entry: { hotelId: string; rooms: number }) => [
+              entry.hotelId,
+              entry.rooms,
+            ]),
+          ),
         );
         setVehicleId(tripPackage.vehicleId || '');
         setDestinations(tripPackage.destinations.join(', '));
@@ -223,6 +238,10 @@ const PackageForm = () => {
       maxSeats: Number(maxSeats),
       hotelId: selectedHotelIds[0] || null,
       hotelIds: selectedHotelIds,
+      hotelRoomPlan: selectedHotelIds.map((hotelId) => ({
+        hotelId,
+        rooms: selectedHotelRooms[hotelId] || 1,
+      })),
       vehicleId: vehicleId || null,
       destinations: splitList(destinations),
       images: splitList(images),
@@ -454,6 +473,26 @@ const PackageForm = () => {
                         <div className="mt-1 text-sm text-[var(--text-muted)]">
                           {hotel.city}, {hotel.country}
                         </div>
+                        <div className="mt-3 flex items-center gap-3">
+                          <label className="text-xs text-[var(--text-soft)]">Rooms to use</label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={Math.max(1, getAvailableUnits(hotel))}
+                            value={selectedHotelRooms[hotel.id] || 1}
+                            onChange={(event) => {
+                              const nextValue = Number(event.target.value || 1);
+                              setSelectedHotelRooms((current) => ({
+                                ...current,
+                                [hotel.id]: Math.max(1, Math.min(getAvailableUnits(hotel) || 1, nextValue)),
+                              }));
+                            }}
+                            className="app-field h-9 w-24"
+                          />
+                          <span className="text-xs text-[var(--text-muted)]">
+                            Available: {getAvailableUnits(hotel)}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -590,29 +629,71 @@ const PackageForm = () => {
                   const checked = selectedHotelIds.includes(hotel.id);
 
                   return (
-                    <label
+                    <div
                       key={hotel.id}
-                      className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-3"
+                      className="rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-3"
                     >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={(event) => {
-                          if (event.target.checked) {
-                            setSelectedHotelIds((current) => [...current, hotel.id]);
-                            return;
-                          }
-                          setSelectedHotelIds((current) => current.filter((idValue) => idValue !== hotel.id));
-                        }}
-                        className="mt-1 h-4 w-4 rounded border-[var(--border)]"
-                      />
-                      <div className="min-w-0">
-                        <div className="text-sm font-semibold text-[var(--text)]">{hotel.name}</div>
-                        <div className="text-sm text-[var(--text-muted)]">
-                          {hotel.city}, {hotel.country}
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              setSelectedHotelIds((current) => [...current, hotel.id]);
+                              setSelectedHotelRooms((current) => ({
+                                ...current,
+                                [hotel.id]: current[hotel.id] || 1,
+                              }));
+                              return;
+                            }
+                            setSelectedHotelIds((current) => current.filter((idValue) => idValue !== hotel.id));
+                            setSelectedHotelRooms((current) => {
+                              const { [hotel.id]: _removed, ...rest } = current;
+                              return rest;
+                            });
+                          }}
+                          className="mt-1 h-4 w-4 rounded border-[var(--border)]"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-sm font-semibold text-[var(--text)]">{hotel.name}</div>
+                          <div className="text-sm text-[var(--text-muted)]">
+                            {hotel.city}, {hotel.country}
+                          </div>
+                          <div className="mt-1 text-xs text-[var(--text-soft)]">
+                            {(hotel.rooms || []).length} room types • {getAvailableUnits(hotel)} units available
+                          </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => setDetailHotel(hotel)}
+                          className="app-btn-secondary h-9 px-3 text-xs"
+                        >
+                          View details
+                        </button>
                       </div>
-                    </label>
+                      {checked ? (
+                        <div className="mt-3 flex items-center gap-3 border-t border-[var(--border)] pt-3">
+                          <label className="text-xs text-[var(--text-soft)]">Rooms to use</label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={Math.max(1, getAvailableUnits(hotel))}
+                            value={selectedHotelRooms[hotel.id] || 1}
+                            onChange={(event) => {
+                              const nextValue = Number(event.target.value || 1);
+                              setSelectedHotelRooms((current) => ({
+                                ...current,
+                                [hotel.id]: Math.max(1, Math.min(getAvailableUnits(hotel) || 1, nextValue)),
+                              }));
+                            }}
+                            className="app-field h-9 w-24"
+                          />
+                          <span className="text-xs text-[var(--text-muted)]">
+                            Max {Math.max(1, getAvailableUnits(hotel))}
+                          </span>
+                        </div>
+                      ) : null}
+                    </div>
                   );
                 })
               )}
@@ -637,6 +718,61 @@ const PackageForm = () => {
                 >
                   Done
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {detailHotel ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 px-4 py-6">
+          <div className="w-full max-w-2xl rounded-[24px] border border-[var(--border)] bg-[var(--panel)] p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-semibold text-[var(--text)]">{detailHotel.name}</h3>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  {detailHotel.city}, {detailHotel.country}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDetailHotel(null)}
+                className="app-btn-secondary h-10 px-4 text-sm"
+              >
+                Close
+              </button>
+            </div>
+
+            {detailHotel.description ? (
+              <div className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+                <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Description</div>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">{detailHotel.description}</p>
+              </div>
+            ) : null}
+
+            <div className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Room Inventory</div>
+              <div className="mt-3 space-y-2">
+                {(detailHotel.rooms || []).length > 0 ? (
+                  (detailHotel.rooms || []).map((room) => (
+                    <div
+                      key={room.id}
+                      className="flex items-center justify-between rounded-[10px] border border-[var(--border)] bg-[var(--panel)] px-3 py-2"
+                    >
+                      <div>
+                        <div className="text-sm font-semibold text-[var(--text)]">{room.type}</div>
+                        <div className="text-xs text-[var(--text-muted)]">
+                          Capacity {room.capacity} • PKR {room.price.toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="text-sm font-semibold text-[var(--text)]">
+                        {room.availableQuantity ?? room.quantity ?? 0} available
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-[var(--text-muted)]">No room inventory listed for this hotel yet.</div>
+                )}
               </div>
             </div>
           </div>

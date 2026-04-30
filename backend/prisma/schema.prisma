@@ -190,6 +190,7 @@ model Package {
   agencyId    String
   hotelId     String?
   hotelIds    String[] @default([])
+  hotelRoomPlan Json?
   vehicleId   String?
   name        String
   description String?
