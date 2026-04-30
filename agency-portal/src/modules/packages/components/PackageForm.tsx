@@ -49,6 +49,7 @@ const PackageForm = () => {
   const [selectedHotelRoomTypes, setSelectedHotelRoomTypes] = useState<
     Record<string, Record<string, number>>
   >({});
+  const [selectedHotelServices, setSelectedHotelServices] = useState<Record<string, string[]>>({});
   const [isHotelPickerOpen, setIsHotelPickerOpen] = useState(false);
   const [detailHotel, setDetailHotel] = useState<Hotel | null>(null);
   const [hotelSearch, setHotelSearch] = useState('');
@@ -164,6 +165,7 @@ const PackageForm = () => {
             ]),
           ),
         );
+        setSelectedHotelServices({});
         setVehicleId(tripPackage.vehicleId || '');
         setDestinations(tripPackage.destinations.join(', '));
         setImages(tripPackage.images.join(', '));
@@ -607,6 +609,10 @@ const PackageForm = () => {
                                 ...current,
                                 [hotel.id]: current[hotel.id] || 1,
                               }));
+                              setSelectedHotelServices((current) => ({
+                                ...current,
+                                [hotel.id]: current[hotel.id] || [],
+                              }));
                               return;
                             }
                             setSelectedHotelIds((current) => current.filter((idValue) => idValue !== hotel.id));
@@ -615,6 +621,10 @@ const PackageForm = () => {
                               return rest;
                             });
                             setSelectedHotelRoomTypes((current) => {
+                              const { [hotel.id]: _removed, ...rest } = current;
+                              return rest;
+                            });
+                            setSelectedHotelServices((current) => {
                               const { [hotel.id]: _removed, ...rest } = current;
                               return rest;
                             });
@@ -666,6 +676,7 @@ const PackageForm = () => {
                     setSelectedHotelIds([]);
                     setSelectedHotelRooms({});
                     setSelectedHotelRoomTypes({});
+                    setSelectedHotelServices({});
                   }}
                   className="app-btn-secondary h-10 px-4 text-sm"
                 >
@@ -711,19 +722,42 @@ const PackageForm = () => {
             ) : null}
 
             <div className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
-              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Hotel Amenities</div>
+              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Hotel Services</div>
               <div className="mt-2 flex flex-wrap gap-2">
-                {(detailHotel.amenities || []).length > 0 ? (
-                  (detailHotel.amenities || []).map((amenity) => (
-                    <span
-                      key={amenity}
-                      className="rounded-md border border-[var(--border)] bg-[var(--panel)] px-2 py-1 text-xs text-[var(--text)]"
-                    >
-                      {amenity}
-                    </span>
-                  ))
+                {(detailHotel.services || []).length > 0 ? (
+                  (detailHotel.services || []).map((service) => {
+                    const isSelected =
+                      selectedHotelServices[detailHotel.id]?.includes(service.id) || false;
+                    return (
+                      <button
+                        key={service.id}
+                        type="button"
+                        onClick={() =>
+                          setSelectedHotelServices((current) => {
+                            const existing = current[detailHotel.id] || [];
+                            const next = existing.includes(service.id)
+                              ? existing.filter((value) => value !== service.id)
+                              : [...existing, service.id];
+
+                            return {
+                              ...current,
+                              [detailHotel.id]: next,
+                            };
+                          })
+                        }
+                        className={`rounded-md border px-2 py-1 text-xs ${
+                          isSelected
+                            ? 'border-[var(--primary)] bg-[var(--primary-container)] text-[var(--primary)]'
+                            : 'border-[var(--border)] bg-[var(--panel)] text-[var(--text)]'
+                        }`}
+                      >
+                        {service.name}
+                        {service.price > 0 ? ` (PKR ${service.price.toLocaleString()})` : ''}
+                      </button>
+                    );
+                  })
                 ) : (
-                  <span className="text-sm text-[var(--text-muted)]">No hotel amenities listed.</span>
+                  <span className="text-sm text-[var(--text-muted)]">No hotel services listed.</span>
                 )}
               </div>
             </div>
