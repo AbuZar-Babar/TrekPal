@@ -1,5 +1,5 @@
 import { prisma } from '../../config/database';
-import { BOOKING_STATUS, ROLES } from '../../config/constants';
+import { APPROVAL_STATUS, BOOKING_STATUS, ROLES } from '../../config/constants';
 import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
 import { resolveMediaUrls } from '../../services/media-storage.service';
 import { emitOfferUpdated } from '../../ws/socket.emitter';
@@ -239,13 +239,13 @@ export class PackagesService {
       const foundHotels = await prisma.hotel.findMany({
         where: {
           id: { in: hotelIds },
-          agencyId,
+          status: APPROVAL_STATUS.APPROVED,
         },
         select: { id: true },
       });
 
       if (foundHotels.length !== hotelIds.length) {
-        throw new Error('Selected hotel was not found in your inventory');
+        throw new Error('Selected hotel was not found in the marketplace');
       }
     }
 
