@@ -668,31 +668,30 @@ const PackageForm = () => {
                           onClick={() => setDetailHotel(hotel)}
                           className="app-btn-secondary h-9 px-3 text-xs"
                         >
-                          View details
+                          Book room
                         </button>
                       </div>
-                      {checked ? (
-                        <div className="mt-3 flex items-center gap-3 border-t border-[var(--border)] pt-3">
-                          <label className="text-xs text-[var(--text-soft)]">Rooms to use</label>
-                          <input
-                            type="number"
-                            min={1}
-                            max={Math.max(1, getAvailableUnits(hotel))}
-                            value={selectedHotelRooms[hotel.id] || 1}
-                            onChange={(event) => {
-                              const nextValue = Number(event.target.value || 1);
-                              setSelectedHotelRooms((current) => ({
-                                ...current,
-                                [hotel.id]: Math.max(1, Math.min(getAvailableUnits(hotel) || 1, nextValue)),
-                              }));
-                            }}
-                            className="app-field h-9 w-24"
-                          />
-                          <span className="text-xs text-[var(--text-muted)]">
-                            Max {Math.max(1, getAvailableUnits(hotel))}
-                          </span>
-                        </div>
-                      ) : null}
+                      <div className="mt-3 flex items-center gap-3 border-t border-[var(--border)] pt-3">
+                        <label className="text-xs text-[var(--text-soft)]">Rooms to use</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={Math.max(1, getAvailableUnits(hotel))}
+                          value={selectedHotelRooms[hotel.id] || 1}
+                          onChange={(event) => {
+                            const nextValue = Number(event.target.value || 1);
+                            setSelectedHotelRooms((current) => ({
+                              ...current,
+                              [hotel.id]: Math.max(1, Math.min(getAvailableUnits(hotel) || 1, nextValue)),
+                            }));
+                          }}
+                          disabled={!checked}
+                          className="app-field h-9 w-24 disabled:cursor-not-allowed disabled:opacity-60"
+                        />
+                        <span className="text-xs text-[var(--text-muted)]">
+                          {checked ? `Max ${Math.max(1, getAvailableUnits(hotel))}` : 'Select hotel to enable'}
+                        </span>
+                      </div>
                     </div>
                   );
                 })
@@ -751,6 +750,24 @@ const PackageForm = () => {
             ) : null}
 
             <div className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Hotel Amenities</div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {(detailHotel.amenities || []).length > 0 ? (
+                  (detailHotel.amenities || []).map((amenity) => (
+                    <span
+                      key={amenity}
+                      className="rounded-md border border-[var(--border)] bg-[var(--panel)] px-2 py-1 text-xs text-[var(--text)]"
+                    >
+                      {amenity}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-[var(--text-muted)]">No hotel amenities listed.</span>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
               <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Room Inventory</div>
               <div className="mt-3 space-y-2">
                 {(detailHotel.rooms || []).length > 0 ? (
@@ -764,6 +781,18 @@ const PackageForm = () => {
                         <div className="text-xs text-[var(--text-muted)]">
                           Capacity {room.capacity} • PKR {room.price.toLocaleString()}
                         </div>
+                        {(room.amenities || []).length > 0 ? (
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {(room.amenities || []).map((amenity: string) => (
+                              <span
+                                key={`${room.id}-${amenity}`}
+                                className="rounded-md border border-[var(--border)] bg-[var(--panel-subtle)] px-2 py-0.5 text-[10px] text-[var(--text-soft)]"
+                              >
+                                {amenity}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
                       <div className="text-sm font-semibold text-[var(--text)]">
                         {room.availableQuantity ?? room.quantity ?? 0} available
@@ -774,6 +803,49 @@ const PackageForm = () => {
                   <div className="text-sm text-[var(--text-muted)]">No room inventory listed for this hotel yet.</div>
                 )}
               </div>
+            </div>
+
+            <div className="mt-4 flex items-center gap-3 rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+              <label className="text-sm text-[var(--text-soft)]">Rooms to use</label>
+              <input
+                type="number"
+                min={1}
+                max={Math.max(1, getAvailableUnits(detailHotel))}
+                value={selectedHotelRooms[detailHotel.id] || 1}
+                onChange={(event) => {
+                  const nextValue = Number(event.target.value || 1);
+                  setSelectedHotelRooms((current) => ({
+                    ...current,
+                    [detailHotel.id]: Math.max(
+                      1,
+                      Math.min(getAvailableUnits(detailHotel) || 1, nextValue),
+                    ),
+                  }));
+                }}
+                disabled={!selectedHotelIds.includes(detailHotel.id)}
+                className="app-field h-9 w-24 disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              {!selectedHotelIds.includes(detailHotel.id) ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedHotelIds((current) =>
+                      current.includes(detailHotel.id) ? current : [...current, detailHotel.id],
+                    );
+                    setSelectedHotelRooms((current) => ({
+                      ...current,
+                      [detailHotel.id]: current[detailHotel.id] || 1,
+                    }));
+                  }}
+                  className="app-btn-secondary h-9 px-3 text-xs"
+                >
+                  Select hotel
+                </button>
+              ) : (
+                <span className="text-xs text-[var(--text-muted)]">
+                  Max {Math.max(1, getAvailableUnits(detailHotel))}
+                </span>
+              )}
             </div>
           </div>
         </div>
