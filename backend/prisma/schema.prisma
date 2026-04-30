@@ -170,6 +170,10 @@ model Vehicle {
   quantity    Int      @default(1)
   pricePerDay Float
   images      String[]
+  vehicleNumber String?
+  driverName  String?
+  driverPhone String?
+  driverLicense String?
   status      String   @default("APPROVED") // PENDING, APPROVED, REJECTED
   isAvailable Boolean  @default(true)
   createdAt   DateTime @default(now())

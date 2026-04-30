@@ -15,6 +15,10 @@ export const createVehicleSchema = z.object({
     pricePerDay: z.number().min(0, 'Price must be non-negative'),
     images: z.array(z.string().url()).optional(),
     isAvailable: z.boolean().optional().default(true),
+    vehicleNumber: z.string().min(1).optional(),
+    driverName: z.string().min(1).optional(),
+    driverPhone: z.string().min(1).optional(),
+    driverLicense: z.string().min(1).optional(),
   }),
 });
 
@@ -32,6 +36,10 @@ export const updateVehicleSchema = z.object({
     pricePerDay: z.number().min(0).optional(),
     images: z.array(z.string().url()).optional(),
     isAvailable: z.boolean().optional(),
+    vehicleNumber: z.string().min(1).optional(),
+    driverName: z.string().min(1).optional(),
+    driverPhone: z.string().min(1).optional(),
+    driverLicense: z.string().min(1).optional(),
   }),
 });
 
@@ -62,5 +70,10 @@ export interface VehicleResponse {
   status: string;
   isAvailable: boolean;
   images: string[];
+  vehicleNumber?: string | null;
+  driverName?: string | null;
+  driverPhone?: string | null;
+  driverLicense?: string | null;
   createdAt: Date;
+  updatedAt: Date;
 }

@@ -25,7 +25,12 @@ export class TransportService {
     status: string;
     isAvailable: boolean;
     images: string[];
+    vehicleNumber: string | null;
+    driverName: string | null;
+    driverPhone: string | null;
+    driverLicense: string | null;
     createdAt: Date;
+    updatedAt: Date;
   }): Promise<VehicleResponse> {
     return {
       id: vehicle.id,
@@ -40,7 +45,12 @@ export class TransportService {
       status: vehicle.status,
       isAvailable: vehicle.isAvailable,
       images: await resolveMediaUrls(vehicle.images),
+      vehicleNumber: vehicle.vehicleNumber,
+      driverName: vehicle.driverName,
+      driverPhone: vehicle.driverPhone,
+      driverLicense: vehicle.driverLicense,
       createdAt: vehicle.createdAt,
+      updatedAt: vehicle.updatedAt,
     };
   }
 
@@ -60,6 +70,10 @@ export class TransportService {
         images: normalizeMediaStoragePaths(input.images || []),
         status: APPROVAL_STATUS.APPROVED,
         isAvailable: input.isAvailable ?? true,
+        vehicleNumber: input.vehicleNumber ?? null,
+        driverName: input.driverName ?? null,
+        driverPhone: input.driverPhone ?? null,
+        driverLicense: input.driverLicense ?? null,
       },
       include: {
         agency: {
@@ -112,6 +126,8 @@ export class TransportService {
         { make: { contains: search, mode: 'insensitive' } },
         { model: { contains: search, mode: 'insensitive' } },
         { type: { contains: search, mode: 'insensitive' } },
+        { vehicleNumber: { contains: search, mode: 'insensitive' } },
+        { driverName: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -197,6 +213,10 @@ export class TransportService {
     if (input.pricePerDay !== undefined) updateData.pricePerDay = input.pricePerDay;
     if (input.images !== undefined) updateData.images = normalizeMediaStoragePaths(input.images);
     if (input.isAvailable !== undefined) updateData.isAvailable = input.isAvailable;
+    if (input.vehicleNumber !== undefined) updateData.vehicleNumber = input.vehicleNumber;
+    if (input.driverName !== undefined) updateData.driverName = input.driverName;
+    if (input.driverPhone !== undefined) updateData.driverPhone = input.driverPhone;
+    if (input.driverLicense !== undefined) updateData.driverLicense = input.driverLicense;
     updateData.status = APPROVAL_STATUS.APPROVED;
 
     const vehicle = await prisma.vehicle.update({
