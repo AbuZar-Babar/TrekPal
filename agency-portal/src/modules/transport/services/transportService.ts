@@ -27,7 +27,7 @@ export const transportService = {
     status?: string;
     search?: string;
   }): Promise<PaginatedResponse<Vehicle>> {
-    const response = await apiClient.get('/transport', { params });
+    const response = await apiClient.get('/transport/my-vehicles', { params });
     const result = response.data.data;
     return {
       data: result.vehicles,
