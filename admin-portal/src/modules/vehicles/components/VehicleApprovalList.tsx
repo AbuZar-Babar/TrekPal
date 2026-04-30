@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../../../store';
+import EntityDetailModal from '../../../shared/components/management/EntityDetailModal';
 import { formatDate, formatCurrency, getInitials } from '../../../shared/utils/formatters';
 import { approveVehicle, fetchVehicles, rejectVehicle } from '../store/vehiclesSlice';
 
@@ -20,6 +21,7 @@ const VehicleApprovalList = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -33,13 +35,9 @@ const VehicleApprovalList = () => {
   }, [dispatch, page, search, statusFilter]);
 
   useEffect(() => {
-    if (vehicles.length === 0) {
+    if (selectedVehicleId && !vehicles.some((vehicle) => vehicle.id === selectedVehicleId)) {
       setSelectedVehicleId(null);
-      return;
-    }
-
-    if (!selectedVehicleId || !vehicles.some((vehicle) => vehicle.id === selectedVehicleId)) {
-      setSelectedVehicleId(vehicles[0].id);
+      setIsDetailOpen(false);
     }
   }, [selectedVehicleId, vehicles]);
 
@@ -138,7 +136,7 @@ const VehicleApprovalList = () => {
         })}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.95fr)]">
+      <section>
         <div className="space-y-5">
           <div className="relative">
             <svg
@@ -184,7 +182,10 @@ const VehicleApprovalList = () => {
                   return (
                     <tr
                       key={vehicle.id}
-                      onClick={() => setSelectedVehicleId(vehicle.id)}
+                      onClick={() => {
+                        setSelectedVehicleId(vehicle.id);
+                        setIsDetailOpen(true);
+                      }}
                       className={`cursor-pointer transition-colors ${active ? 'bg-[var(--surface-low)]' : ''}`}
                     >
                       <td>
@@ -248,10 +249,16 @@ const VehicleApprovalList = () => {
             </div>
           )}
         </div>
+      </section>
 
-        <aside className="space-y-5">
-          {selectedVehicle ? (
-            <div className="sovereign-panel sticky top-28 p-6">
+      <EntityDetailModal
+        open={isDetailOpen && Boolean(selectedVehicle)}
+        title={selectedVehicle ? `${selectedVehicle.make} ${selectedVehicle.model}` : 'Vehicle details'}
+        subtitle={selectedVehicle?.agencyName}
+        onClose={() => setIsDetailOpen(false)}
+      >
+        {selectedVehicle ? (
+          <div className="space-y-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="sovereign-label">Vehicle review</div>
@@ -277,7 +284,7 @@ const VehicleApprovalList = () => {
                 </div>
               )}
 
-              <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
                 <div className="sovereign-label">Operational details</div>
                 <div className="mt-4 space-y-3 text-sm">
                   <div className="flex items-center justify-between gap-4">
@@ -315,7 +322,7 @@ const VehicleApprovalList = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
+              <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
                 {selectedVehicle.status !== 'APPROVED' && (
                   <button
                     type="button"
@@ -335,19 +342,9 @@ const VehicleApprovalList = () => {
                   </button>
                 )}
               </div>
-            </div>
-          ) : (
-            <div className="sovereign-panel p-10 text-center">
-              <h3 className="font-headline text-2xl font-bold text-[var(--text)]">
-                No vehicle selected
-              </h3>
-              <p className="mt-2 text-sm text-[var(--text-muted)]">
-                Select a fleet record to inspect its approval details.
-              </p>
-            </div>
-          )}
-        </aside>
-      </section>
+          </div>
+        ) : null}
+      </EntityDetailModal>
     </div>
   );
 };

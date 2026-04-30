@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../../../store';
+import EntityDetailModal from '../../../shared/components/management/EntityDetailModal';
 import { formatDate, getInitials } from '../../../shared/utils/formatters';
 import { approveHotel, fetchHotels, rejectHotel } from '../store/hotelSlice';
 
@@ -18,6 +19,7 @@ const HotelApprovalList = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedHotelId, setSelectedHotelId] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -31,13 +33,9 @@ const HotelApprovalList = () => {
   }, [dispatch, page, search, statusFilter]);
 
   useEffect(() => {
-    if (hotels.length === 0) {
+    if (selectedHotelId && !hotels.some((hotel) => hotel.id === selectedHotelId)) {
       setSelectedHotelId(null);
-      return;
-    }
-
-    if (!selectedHotelId || !hotels.some((hotel) => hotel.id === selectedHotelId)) {
-      setSelectedHotelId(hotels[0].id);
+      setIsDetailOpen(false);
     }
   }, [hotels, selectedHotelId]);
 
@@ -138,7 +136,7 @@ const HotelApprovalList = () => {
         })}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.95fr)]">
+      <section>
         <div className="space-y-5">
           <div className="relative">
             <svg
@@ -184,7 +182,10 @@ const HotelApprovalList = () => {
                   return (
                     <tr
                       key={hotel.id}
-                      onClick={() => setSelectedHotelId(hotel.id)}
+                      onClick={() => {
+                        setSelectedHotelId(hotel.id);
+                        setIsDetailOpen(true);
+                      }}
                       className={`cursor-pointer transition-colors ${active ? 'bg-[var(--surface-low)]' : ''}`}
                     >
                       <td>
@@ -254,10 +255,16 @@ const HotelApprovalList = () => {
             </div>
           )}
         </div>
+      </section>
 
-        <aside className="space-y-5">
-          {selectedHotel ? (
-            <div className="sovereign-panel sticky top-28 p-6">
+      <EntityDetailModal
+        open={isDetailOpen && Boolean(selectedHotel)}
+        title={selectedHotel?.name || 'Hotel details'}
+        subtitle={selectedHotel?.agencyName || 'Independent Hotel'}
+        onClose={() => setIsDetailOpen(false)}
+      >
+        {selectedHotel ? (
+          <div className="space-y-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="sovereign-label">Hotel review</div>
@@ -283,7 +290,7 @@ const HotelApprovalList = () => {
                 </div>
               )}
 
-              <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
                 <div className="sovereign-label">Property details</div>
                 <div className="mt-4 space-y-3 text-sm">
                   <div className="flex items-center justify-between gap-4">
@@ -317,7 +324,7 @@ const HotelApprovalList = () => {
                 </div>
               </div>
 
-              <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
                 <div className="sovereign-label">Verification documents</div>
                 <div className="mt-4 grid grid-cols-2 gap-4">
                   <div>
@@ -382,7 +389,7 @@ const HotelApprovalList = () => {
               </div>
 
               {selectedHotel.description && (
-                <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
                   <div className="sovereign-label">Description</div>
                   <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
                     {selectedHotel.description}
@@ -390,7 +397,7 @@ const HotelApprovalList = () => {
                 </div>
               )}
 
-              <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
                 <div className="sovereign-label">Amenities</div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {selectedHotel.amenities.length > 0 ? (
@@ -407,7 +414,7 @@ const HotelApprovalList = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
+              <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
                 {selectedHotel.status !== 'APPROVED' && (
                   <button
                     type="button"
@@ -427,19 +434,9 @@ const HotelApprovalList = () => {
                   </button>
                 )}
               </div>
-            </div>
-          ) : (
-            <div className="sovereign-panel p-10 text-center">
-              <h3 className="font-headline text-2xl font-bold text-[var(--text)]">
-                No hotel selected
-              </h3>
-              <p className="mt-2 text-sm text-[var(--text-muted)]">
-                Select a hotel record to review its moderation details.
-              </p>
-            </div>
-          )}
-        </aside>
-      </section>
+          </div>
+        ) : null}
+      </EntityDetailModal>
     </div>
   );
 };

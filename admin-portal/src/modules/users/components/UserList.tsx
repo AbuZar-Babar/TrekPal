@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import MetricCard from '../../../shared/components/analytics/MetricCard';
 import EntityEditModal from '../../../shared/components/management/EntityEditModal';
+import EntityDetailModal from '../../../shared/components/management/EntityDetailModal';
 import DocumentGrid from '../../../shared/components/management/DocumentGrid';
 import ManagementPageShell from '../../../shared/components/management/ManagementPageShell';
 import { AppDispatch, RootState } from '../../../store';
@@ -69,6 +70,7 @@ const UserList = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -94,13 +96,9 @@ const UserList = () => {
   }, [statusFilter]);
 
   useEffect(() => {
-    if (users.length === 0) {
+    if (selectedUserId && !users.some((user) => user.id === selectedUserId)) {
       setSelectedUserId(null);
-      return;
-    }
-
-    if (!selectedUserId || !users.some((user) => user.id === selectedUserId)) {
-      setSelectedUserId(users[0].id);
+      setIsDetailOpen(false);
     }
   }, [selectedUserId, users]);
 
@@ -305,7 +303,10 @@ const UserList = () => {
                   return (
                     <tr
                       key={user.id}
-                      onClick={() => setSelectedUserId(user.id)}
+                      onClick={() => {
+                        setSelectedUserId(user.id);
+                        setIsDetailOpen(true);
+                      }}
                       className={`cursor-pointer transition-colors ${active ? 'bg-[var(--surface-low)]' : ''}`}
                     >
                       <td>
@@ -371,8 +372,8 @@ const UserList = () => {
   const canReviewTraveler =
     selectedUser?.travelerKycStatus && selectedUser.travelerKycStatus !== 'NOT_SUBMITTED';
 
-  const detail = selectedUser ? (
-    <div className="sovereign-panel sticky top-28 p-6">
+  const detailContent = selectedUser ? (
+    <div className="space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4">
           {selectedUser.avatar ? (
@@ -403,7 +404,7 @@ const UserList = () => {
         </span>
       </div>
 
-      <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
+      <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-4">
             <span className="text-[var(--text-soft)]">Phone</span>
@@ -424,14 +425,14 @@ const UserList = () => {
         </div>
       </div>
 
-      <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+      <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
         <div className="sovereign-label">Address</div>
         <p className="mt-3 text-sm text-[var(--text-muted)]">
           {selectedUser.residentialAddress || 'Not provided'}
         </p>
       </div>
 
-      <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
+      <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-4">
             <span className="text-[var(--text-soft)]">Submitted</span>
@@ -448,7 +449,7 @@ const UserList = () => {
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <MetricCard
           label="Bookings"
           value={(selectedUser.bookingsCount || 0).toLocaleString()}
@@ -461,7 +462,7 @@ const UserList = () => {
         />
       </div>
 
-      <div className="mt-5">
+      <div>
         <div className="sovereign-label">Documents</div>
         <div className="mt-3">
           <DocumentGrid entries={documentEntries} emptyMessage="No traveler KYC files uploaded." />
@@ -469,12 +470,12 @@ const UserList = () => {
       </div>
 
       {formError ? (
-        <div className="mt-5 rounded-[18px] border border-[var(--danger-border)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+        <div className="rounded-[18px] border border-[var(--danger-border)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {formError}
         </div>
       ) : null}
 
-      <div className="mt-6 flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
+      <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
         {canReviewTraveler && selectedUser.travelerKycStatus !== 'VERIFIED' ? (
           <button type="button" onClick={handleApprove} className="sovereign-button-primary h-11 px-5">
             Approve
@@ -490,12 +491,7 @@ const UserList = () => {
         </button>
       </div>
     </div>
-  ) : (
-    <div className="sovereign-panel p-10 text-center">
-      <h3 className="font-headline text-2xl font-bold text-[var(--text)]">No traveler selected</h3>
-      <p className="mt-2 text-sm text-[var(--text-muted)]">Select a traveler to review the profile.</p>
-    </div>
-  );
+  ) : null;
 
   return (
     <>
@@ -504,8 +500,16 @@ const UserList = () => {
         subtitle="Approve, reject, or edit traveler profiles."
         filters={filters}
         list={list}
-        detail={detail}
       />
+
+      <EntityDetailModal
+        open={isDetailOpen && Boolean(selectedUser)}
+        title={selectedUser?.name || 'Traveler details'}
+        subtitle={selectedUser?.email}
+        onClose={() => setIsDetailOpen(false)}
+      >
+        {detailContent}
+      </EntityDetailModal>
 
       <EntityEditModal
         open={isEditOpen}

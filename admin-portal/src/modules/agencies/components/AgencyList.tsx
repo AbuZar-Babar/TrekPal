@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
 import EntityEditModal from '../../../shared/components/management/EntityEditModal';
+import EntityDetailModal from '../../../shared/components/management/EntityDetailModal';
 import DocumentGrid from '../../../shared/components/management/DocumentGrid';
 import ManagementPageShell from '../../../shared/components/management/ManagementPageShell';
 import { RootState, AppDispatch } from '../../../store';
@@ -42,6 +43,7 @@ const AgencyList = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedAgencyId, setSelectedAgencyId] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -67,13 +69,9 @@ const AgencyList = () => {
   }, [statusFilter]);
 
   useEffect(() => {
-    if (agencies.length === 0) {
+    if (selectedAgencyId && !agencies.some((agency) => agency.id === selectedAgencyId)) {
       setSelectedAgencyId(null);
-      return;
-    }
-
-    if (!selectedAgencyId || !agencies.some((agency) => agency.id === selectedAgencyId)) {
-      setSelectedAgencyId(agencies[0].id);
+      setIsDetailOpen(false);
     }
   }, [agencies, selectedAgencyId]);
 
@@ -270,7 +268,10 @@ const AgencyList = () => {
                   return (
                     <tr
                       key={agency.id}
-                      onClick={() => setSelectedAgencyId(agency.id)}
+                      onClick={() => {
+                        setSelectedAgencyId(agency.id);
+                        setIsDetailOpen(true);
+                      }}
                       className={`cursor-pointer transition-colors ${active ? 'bg-[var(--surface-low)]' : ''}`}
                     >
                       <td>
@@ -328,8 +329,8 @@ const AgencyList = () => {
     </div>
   );
 
-  const detail = selectedAgency ? (
-    <div className="sovereign-panel sticky top-28 p-6">
+  const detailContent = selectedAgency ? (
+    <div className="space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="sovereign-label">Agency</div>
@@ -343,7 +344,7 @@ const AgencyList = () => {
         </span>
       </div>
 
-      <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
+      <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-4">
             <span className="text-[var(--text-soft)]">Owner</span>
@@ -380,7 +381,7 @@ const AgencyList = () => {
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
           <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-soft)]">
             Hotels
@@ -399,14 +400,14 @@ const AgencyList = () => {
         </div>
       </div>
 
-      <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+      <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
         <div className="sovereign-label">Address</div>
         <p className="mt-3 text-sm text-[var(--text-muted)]">
           {selectedAgency.address || 'Not provided'}
         </p>
       </div>
 
-      <div className="mt-5">
+      <div>
         <div className="sovereign-label">Documents</div>
         <div className="mt-3">
           <DocumentGrid entries={documentEntries} emptyMessage="No KYC files uploaded." />
@@ -414,12 +415,12 @@ const AgencyList = () => {
       </div>
 
       {formError ? (
-        <div className="mt-5 rounded-[18px] border border-[var(--danger-border)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+        <div className="rounded-[18px] border border-[var(--danger-border)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {formError}
         </div>
       ) : null}
 
-      <div className="mt-6 flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
+      <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
         {selectedAgency.status !== 'APPROVED' ? (
           <button type="button" onClick={handleApprove} className="sovereign-button-primary h-11 px-5">
             Approve
@@ -435,12 +436,7 @@ const AgencyList = () => {
         </button>
       </div>
     </div>
-  ) : (
-    <div className="sovereign-panel p-10 text-center">
-      <h3 className="font-headline text-2xl font-bold text-[var(--text)]">No agency selected</h3>
-      <p className="mt-2 text-sm text-[var(--text-muted)]">Select an agency to review it.</p>
-    </div>
-  );
+  ) : null;
 
   return (
     <>
@@ -449,8 +445,16 @@ const AgencyList = () => {
         subtitle="Approve, reject, or edit agency profiles."
         filters={filters}
         list={list}
-        detail={detail}
       />
+
+      <EntityDetailModal
+        open={isDetailOpen && Boolean(selectedAgency)}
+        title={selectedAgency?.name || 'Agency details'}
+        subtitle={selectedAgency?.email}
+        onClose={() => setIsDetailOpen(false)}
+      >
+        {detailContent}
+      </EntityDetailModal>
 
       <EntityEditModal
         open={isEditOpen}

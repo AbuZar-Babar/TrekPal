@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import ManagementPageShell from '../../../shared/components/management/ManagementPageShell';
+import EntityDetailModal from '../../../shared/components/management/EntityDetailModal';
 import { formatCurrency, formatDate } from '../../../shared/utils/formatters';
 import { useHotels } from '../../hotels/hooks/useHotels';
 import { useVehicles } from '../../vehicles/hooks/useVehicles';
@@ -34,6 +35,7 @@ const InventoryPage = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   useEffect(() => {
     if (type === 'hotels') {
@@ -50,13 +52,9 @@ const InventoryPage = () => {
   const pagination = type === 'hotels' ? hotelsPagination : vehiclesPagination;
 
   useEffect(() => {
-    if (activeItems.length === 0) {
+    if (selectedId && !activeItems.some((item) => item.id === selectedId)) {
       setSelectedId(null);
-      return;
-    }
-
-    if (!selectedId || !activeItems.some((item) => item.id === selectedId)) {
-      setSelectedId(activeItems[0].id);
+      setIsDetailOpen(false);
     }
   }, [activeItems, selectedId]);
 
@@ -157,7 +155,10 @@ const InventoryPage = () => {
                       return (
                         <tr
                           key={hotel.id}
-                          onClick={() => setSelectedId(hotel.id)}
+                          onClick={() => {
+                            setSelectedId(hotel.id);
+                            setIsDetailOpen(true);
+                          }}
                           className={`cursor-pointer transition-colors ${active ? 'bg-[var(--surface-low)]' : ''}`}
                         >
                           <td>
@@ -183,7 +184,10 @@ const InventoryPage = () => {
                       return (
                         <tr
                           key={vehicle.id}
-                          onClick={() => setSelectedId(vehicle.id)}
+                          onClick={() => {
+                            setSelectedId(vehicle.id);
+                            setIsDetailOpen(true);
+                          }}
                           className={`cursor-pointer transition-colors ${active ? 'bg-[var(--surface-low)]' : ''}`}
                         >
                           <td>
@@ -245,8 +249,8 @@ const InventoryPage = () => {
     </div>
   );
 
-  const detail = selectedItem ? (
-    <div className="sovereign-panel sticky top-28 p-6">
+  const detailContent = selectedItem ? (
+    <div className="space-y-5">
       {selectedHotel ? (
         <>
           <div className="flex items-start justify-between gap-4">
@@ -262,7 +266,7 @@ const InventoryPage = () => {
             </span>
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-4">
                 <span className="text-[var(--text-soft)]">City</span>
@@ -285,12 +289,12 @@ const InventoryPage = () => {
             </div>
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
             <div className="sovereign-label">Address</div>
             <p className="mt-3 text-sm text-[var(--text-muted)]">{selectedHotel.address}</p>
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
             <div className="sovereign-label">Amenities</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {selectedHotel.amenities.length > 0 ? (
@@ -306,7 +310,7 @@ const InventoryPage = () => {
           </div>
 
           {selectedHotel.images.length > 0 ? (
-            <div className="mt-5">
+            <div>
               <div className="sovereign-label">Images</div>
               <div className="mt-3 grid grid-cols-2 gap-3">
                 {selectedHotel.images.map((image) => (
@@ -336,7 +340,7 @@ const InventoryPage = () => {
             </span>
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-low)] p-4 text-sm">
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-4">
                 <span className="text-[var(--text-soft)]">Type</span>
@@ -370,7 +374,7 @@ const InventoryPage = () => {
           </div>
 
           {selectedVehicle && selectedVehicle.images.length > 0 ? (
-            <div className="mt-5">
+            <div>
               <div className="sovereign-label">Images</div>
               <div className="mt-3 grid grid-cols-2 gap-3">
                 {selectedVehicle.images.map((image) => (
@@ -387,21 +391,29 @@ const InventoryPage = () => {
         </>
       )}
     </div>
-  ) : (
-    <div className="sovereign-panel p-10 text-center">
-      <h3 className="font-headline text-2xl font-bold text-[var(--text)]">No item selected</h3>
-      <p className="mt-2 text-sm text-[var(--text-muted)]">Select a hotel or vehicle to inspect it.</p>
-    </div>
-  );
+  ) : null;
 
   return (
-    <ManagementPageShell
-      title="Inventory"
-      subtitle="View hotels and vehicles. Inventory is read only."
-      filters={filters}
-      list={list}
-      detail={detail}
-    />
+    <>
+      <ManagementPageShell
+        title="Inventory"
+        subtitle="View hotels and vehicles. Inventory is read only."
+        filters={filters}
+        list={list}
+      />
+      <EntityDetailModal
+        open={isDetailOpen && Boolean(selectedItem)}
+        title={
+          selectedHotel
+            ? selectedHotel.name
+            : `${selectedVehicle?.make || ''} ${selectedVehicle?.model || ''}`.trim() || 'Inventory item details'
+        }
+        subtitle={selectedHotel?.agencyName || selectedVehicle?.agencyName || undefined}
+        onClose={() => setIsDetailOpen(false)}
+      >
+        {detailContent}
+      </EntityDetailModal>
+    </>
   );
 };
 
