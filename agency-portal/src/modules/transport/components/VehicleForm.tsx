@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { createVehicle, fetchVehicles, updateVehicle } from '../store/transportSlice';
 import { transportService } from '../services/transportService';
-import { formatCurrency, formatStatusLabel } from '../../../shared/utils/formatters';
 import ImageGalleryInput from '../../../shared/components/forms/ImageGalleryInput';
 
 interface VehicleFormData {
@@ -120,39 +119,8 @@ const VehicleForm = () => {
 
   return (
     <div className="space-y-6">
-      <section className="page-hero">
-        <div className="space-y-3">
-          <span className="app-pill app-pill-neutral">{isEdit ? 'Edit vehicle' : 'New vehicle'}</span>
-          <h1 className="page-title">
-            {isEdit ? 'Update vehicle and driver details' : 'Create a fleet listing'}
-          </h1>
-          <p className="page-copy max-w-3xl">
-            Keep transport records clear and operational so vehicles can be quoted, assigned, and
-            managed without back-and-forth.
-          </p>
-        </div>
-        <div className="page-stats-grid">
-          <article className="stat-card">
-            <span>Type</span>
-            <strong>{formData.type ? formatStatusLabel(formData.type) : '--'}</strong>
-            <p>Transport class used in quotes and offer summaries.</p>
-          </article>
-          <article className="stat-card">
-            <span>Seats</span>
-            <strong>{formData.capacity}</strong>
-            <p>Total passenger capacity on the listing.</p>
-          </article>
-          <article className="stat-card">
-            <span>Rate</span>
-            <strong>{formatCurrency(formData.pricePerDay, 'PKR 0')}</strong>
-            <p>Daily operational pricing used by the agency.</p>
-          </article>
-          <article className="stat-card">
-            <span>Status</span>
-            <strong>{formData.isAvailable ? 'Available' : 'Unavailable'}</strong>
-            <p>Controls whether the vehicle can be attached to new work.</p>
-          </article>
-        </div>
+      <section className="section-title-row">
+        <h2 className="section-title">{isEdit ? 'Update vehicle' : 'Add vehicle'}</h2>
       </section>
 
       {error && (
@@ -161,9 +129,8 @@ const VehicleForm = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
-        <div className="space-y-6">
-          <div className="surface px-6 py-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="surface px-6 py-6">
             <div className="surface-header px-0 pt-0">
               <div>
                 <h2>Vehicle information</h2>
@@ -266,9 +233,9 @@ const VehicleForm = () => {
                 />
               </div>
             </div>
-          </div>
+        </div>
 
-          <div className="surface px-6 py-6">
+        <div className="surface px-6 py-6">
             <div className="surface-header px-0 pt-0">
               <div>
                 <h2>Driver information</h2>
@@ -313,16 +280,16 @@ const VehicleForm = () => {
                 />
               </div>
             </div>
-          </div>
+        </div>
 
-          <ImageGalleryInput
-            title="Images"
-            images={formData.images}
-            uploadImage={transportService.uploadImage}
-            onChange={(images) => setFormData((current) => ({ ...current, images }))}
-          />
+        <ImageGalleryInput
+          title="Images"
+          images={formData.images}
+          uploadImage={transportService.uploadImage}
+          onChange={(images) => setFormData((current) => ({ ...current, images }))}
+        />
 
-          <div className="surface px-6 py-6">
+        <div className="surface px-6 py-6">
             <div className="surface-header px-0 pt-0">
               <div>
                 <h2>Availability</h2>
@@ -341,71 +308,23 @@ const VehicleForm = () => {
                 <span className="text-sm leading-7 text-[var(--text)]">Vehicle is currently available for booking</span>
               </label>
             </div>
-          </div>
-
-          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={() => navigate('/transport')}
-              className="app-btn-secondary h-11 px-5 text-sm"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="app-btn-primary h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? 'Saving...' : isEdit ? 'Update vehicle' : 'Create vehicle'}
-            </button>
-          </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="app-panel-dark px-6 py-6">
-            <div className="app-section-label text-white/55">Listing summary</div>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-              {formData.make || 'New'} {formData.model || 'vehicle'}
-            </h2>
-            <div className="mt-5 space-y-3 text-sm text-white/72">
-              <div className="flex justify-between gap-4">
-                <span>Vehicle type</span>
-                <span className="text-right font-semibold text-white">{formatStatusLabel(formData.type || 'UNSPECIFIED')}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span>Capacity</span>
-                <span className="text-right font-semibold text-white">{formData.capacity} seat(s)</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span>Rate</span>
-                <span className="text-right font-semibold text-white">{formatCurrency(formData.pricePerDay, 'PKR 0')}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span>Availability</span>
-                <span className="text-right font-semibold text-white">{formData.isAvailable ? 'Available' : 'Unavailable'}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="surface px-6 py-6">
-            <div className="surface-header px-0 pt-0">
-              <div>
-                <h2>Publishing note</h2>
-                <p>What changes after you save this record.</p>
-              </div>
-            </div>
-            <p className="text-sm leading-7 text-[var(--text-muted)]">
-              Newly created or updated vehicle records are available in the agency workspace
-              immediately. No additional admin verification is required for vehicle inventory.
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate('/transport')}
-              className="app-btn-secondary mt-4 h-11 px-4 text-sm"
-            >
-              Back to vehicles
-            </button>
-          </div>
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={() => navigate('/transport')}
+            className="app-btn-secondary h-11 px-5 text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="app-btn-primary h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? 'Saving...' : isEdit ? 'Update vehicle' : 'Create vehicle'}
+          </button>
         </div>
       </form>
     </div>

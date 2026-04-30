@@ -136,7 +136,20 @@ const VehicleList = () => {
                 </div>
 
                 {expandedVehicleId === vehicle.id && (
-                  <div className="space-y-2 rounded-xl border border-[var(--border)] bg-[var(--panel-subtle)] px-3 py-3 text-sm text-[var(--text-muted)]">
+                  <div className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--panel-subtle)] px-3 py-3 text-sm text-[var(--text-muted)]">
+                    <div className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
+                      {vehicle.images?.[0] ? (
+                        <img
+                          src={vehicle.images[0]}
+                          alt={`${vehicle.make} ${vehicle.model}`}
+                          className="h-36 w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-24 items-center justify-center text-xs text-[var(--text-soft)]">
+                          No vehicle image
+                        </div>
+                      )}
+                    </div>
                     <div>Driver name: {vehicle.driverName || '--'}</div>
                     <div>Driver phone: {vehicle.driverPhone || '--'}</div>
                     <div>Driver license: {vehicle.driverLicense || '--'}</div>
@@ -255,13 +268,28 @@ const VehicleList = () => {
                     {expandedVehicleId === vehicle.id ? (
                       <tr>
                         <td colSpan={6} className="bg-[var(--panel-subtle)]">
-                          <div className="grid gap-3 px-4 py-4 text-sm text-[var(--text-muted)] md:grid-cols-3">
-                            <div>Driver name: {vehicle.driverName || '--'}</div>
-                            <div>Driver phone: {vehicle.driverPhone || '--'}</div>
-                            <div>Driver license: {vehicle.driverLicense || '--'}</div>
-                            <div>Vehicle type: {formatStatusLabel(vehicle.type)}</div>
-                            <div>Status: {formatStatusLabel(vehicle.status || '')}</div>
-                            <div>Created: {formatDate(vehicle.createdAt)}</div>
+                          <div className="grid gap-4 px-4 py-4 md:grid-cols-[220px,1fr]">
+                            <div className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
+                              {vehicle.images?.[0] ? (
+                                <img
+                                  src={vehicle.images[0]}
+                                  alt={`${vehicle.make} ${vehicle.model}`}
+                                  className="h-36 w-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-24 items-center justify-center text-xs text-[var(--text-soft)]">
+                                  No vehicle image
+                                </div>
+                              )}
+                            </div>
+                            <div className="grid gap-3 text-sm text-[var(--text-muted)] md:grid-cols-2">
+                              <div>Driver name: {vehicle.driverName || '--'}</div>
+                              <div>Driver phone: {vehicle.driverPhone || '--'}</div>
+                              <div>Driver license: {vehicle.driverLicense || '--'}</div>
+                              <div>Vehicle type: {formatStatusLabel(vehicle.type)}</div>
+                              <div>Status: {formatStatusLabel(vehicle.status || '')}</div>
+                              <div>Created: {formatDate(vehicle.createdAt)}</div>
+                            </div>
                           </div>
                         </td>
                       </tr>
