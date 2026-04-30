@@ -799,38 +799,77 @@ const PackageForm = () => {
                       </div>
                       <div className="mt-3 flex items-center gap-3">
                         <label className="text-xs text-[var(--text-soft)]">Book rooms</label>
-                        <input
-                          type="number"
-                          min={0}
-                          max={Math.max(0, room.availableQuantity ?? room.quantity ?? 0)}
-                          value={selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0}
-                          onChange={(event) => {
-                            const nextValue = Number(event.target.value || 0);
-                            const bounded = Math.max(
-                              0,
-                              Math.min(room.availableQuantity ?? room.quantity ?? 0, nextValue),
-                            );
-                            setSelectedHotelRoomTypes((current) => ({
-                              ...current,
-                              [detailHotel.id]: {
-                                ...(current[detailHotel.id] || {}),
-                                [room.id]: bounded,
-                              },
-                            }));
-                            setSelectedHotelRooms((current) => ({
-                              ...current,
-                              [detailHotel.id]: Math.max(
-                                1,
-                                Object.values({
-                                  ...(selectedHotelRoomTypes[detailHotel.id] || {}),
-                                  [room.id]: bounded,
-                                }).reduce((sum, value) => sum + value, 0) || 1,
-                              ),
-                            }));
-                          }}
-                          disabled={!selectedHotelIds.includes(detailHotel.id)}
-                          className="app-field h-9 w-24 disabled:cursor-not-allowed disabled:opacity-60"
-                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            disabled={
+                              !selectedHotelIds.includes(detailHotel.id) ||
+                              (selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0) <= 0
+                            }
+                            onClick={() => {
+                              const currentQty = selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0;
+                              const nextValue = Math.max(0, currentQty - 1);
+                              setSelectedHotelRoomTypes((current) => ({
+                                ...current,
+                                [detailHotel.id]: {
+                                  ...(current[detailHotel.id] || {}),
+                                  [room.id]: nextValue,
+                                },
+                              }));
+                              setSelectedHotelRooms((current) => ({
+                                ...current,
+                                [detailHotel.id]: Math.max(
+                                  1,
+                                  Object.values({
+                                    ...(selectedHotelRoomTypes[detailHotel.id] || {}),
+                                    [room.id]: nextValue,
+                                  }).reduce((sum, value) => sum + value, 0) || 1,
+                                ),
+                              }));
+                            }}
+                            className="app-btn-secondary h-9 w-9 p-0 text-base disabled:cursor-not-allowed disabled:opacity-60"
+                            aria-label={`Decrease ${room.type} rooms`}
+                          >
+                            -
+                          </button>
+                          <div className="app-field flex h-9 w-16 items-center justify-center text-sm">
+                            {selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0}
+                          </div>
+                          <button
+                            type="button"
+                            disabled={
+                              !selectedHotelIds.includes(detailHotel.id) ||
+                              (selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0) >=
+                                Math.max(0, room.availableQuantity ?? room.quantity ?? 0)
+                            }
+                            onClick={() => {
+                              const maxAvailable = Math.max(0, room.availableQuantity ?? room.quantity ?? 0);
+                              const currentQty = selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0;
+                              const nextValue = Math.min(maxAvailable, currentQty + 1);
+                              setSelectedHotelRoomTypes((current) => ({
+                                ...current,
+                                [detailHotel.id]: {
+                                  ...(current[detailHotel.id] || {}),
+                                  [room.id]: nextValue,
+                                },
+                              }));
+                              setSelectedHotelRooms((current) => ({
+                                ...current,
+                                [detailHotel.id]: Math.max(
+                                  1,
+                                  Object.values({
+                                    ...(selectedHotelRoomTypes[detailHotel.id] || {}),
+                                    [room.id]: nextValue,
+                                  }).reduce((sum, value) => sum + value, 0) || 1,
+                                ),
+                              }));
+                            }}
+                            className="app-btn-secondary h-9 w-9 p-0 text-base disabled:cursor-not-allowed disabled:opacity-60"
+                            aria-label={`Increase ${room.type} rooms`}
+                          >
+                            +
+                          </button>
+                        </div>
                         <span className="text-xs text-[var(--text-muted)]">
                           Max {Math.max(0, room.availableQuantity ?? room.quantity ?? 0)}
                         </span>
