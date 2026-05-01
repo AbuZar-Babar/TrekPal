@@ -340,8 +340,7 @@ export class PackagesService {
     }
   }
 
-  private async assertSelectedHotelsOwnedByAgency(
-    agencyId: string,
+  private async assertMarketplaceHotelsAvailable(
     hotelIds: string[],
     requireApproved: boolean,
   ): Promise<void> {
@@ -352,7 +351,6 @@ export class PackagesService {
     const hotels = await prisma.hotel.findMany({
       where: {
         id: { in: hotelIds },
-        agencyId,
         ...(requireApproved ? { status: APPROVAL_STATUS.APPROVED } : {}),
       },
       select: { id: true },
@@ -361,14 +359,13 @@ export class PackagesService {
     if (hotels.length !== hotelIds.length) {
       throw new Error(
         requireApproved
-          ? 'Selected hotel was not found in your approved inventory'
-          : 'Selected hotel was not found in your inventory',
+          ? 'Selected hotel was not found in the approved marketplace'
+          : 'Selected hotel was not found in the marketplace',
       );
     }
   }
 
-  private async assertRoomPlanOwnedByAgency(
-    agencyId: string,
+  private async assertMarketplaceRoomPlan(
     hotelIds: string[],
     hotelRoomPlan: PackageRoomPlanEntry[],
     requireApproved: boolean,
@@ -395,26 +392,22 @@ export class PackagesService {
     });
 
     if (rooms.length !== roomIds.length) {
-      throw new Error('Selected room was not found in your inventory');
+      throw new Error('Selected room was not found in the marketplace');
     }
 
     const roomsById = new Map(rooms.map((room) => [room.id, room]));
     for (const entry of hotelRoomPlan) {
       const room = roomsById.get(entry.roomId);
       if (!room) {
-        throw new Error('Selected room was not found in your inventory');
+        throw new Error('Selected room was not found in the marketplace');
       }
 
       if (room.hotelId !== entry.hotelId || !hotelIds.includes(entry.hotelId)) {
         throw new Error('Selected room does not belong to the chosen hotel');
       }
 
-      if (room.hotel?.agencyId !== agencyId) {
-        throw new Error('Selected room was not found in your inventory');
-      }
-
       if (requireApproved && room.hotel?.status !== APPROVAL_STATUS.APPROVED) {
-        throw new Error('Selected room must belong to an approved hotel');
+        throw new Error('Selected room must belong to an approved marketplace hotel');
       }
     }
   }
@@ -641,13 +634,11 @@ export class PackagesService {
       hotelRoomPlan: normalizedRoomPlan,
     });
 
-    await this.assertSelectedHotelsOwnedByAgency(
-      agencyId,
+    await this.assertMarketplaceHotelsAvailable(
       normalizedHotelIds,
       Boolean(input.isActive ?? true),
     );
-    await this.assertRoomPlanOwnedByAgency(
-      agencyId,
+    await this.assertMarketplaceRoomPlan(
       normalizedHotelIds,
       normalizedRoomPlan,
       Boolean(input.isActive ?? true),
@@ -764,8 +755,8 @@ export class PackagesService {
       hotelRoomPlan: nextDesiredRoomPlan,
     });
 
-    await this.assertSelectedHotelsOwnedByAgency(agencyId, nextHotelIds, nextIsActive);
-    await this.assertRoomPlanOwnedByAgency(agencyId, nextHotelIds, nextDesiredRoomPlan, nextIsActive);
+    await this.assertMarketplaceHotelsAvailable(nextHotelIds, nextIsActive);
+    await this.assertMarketplaceRoomPlan(nextHotelIds, nextDesiredRoomPlan, nextIsActive);
     await this.assertVehicleOwnership(
       agencyId,
       input.vehicleId !== undefined ? input.vehicleId ?? null : existing.vehicleId ?? null,

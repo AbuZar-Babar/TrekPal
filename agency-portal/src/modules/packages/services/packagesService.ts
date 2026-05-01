@@ -2,6 +2,10 @@ import apiClient from '../../../shared/services/apiClient';
 import { Package, PaginatedResponse } from '../../../shared/types';
 
 export const packagesService = {
+  readError(error: any): string {
+    return error.response?.data?.message || error.response?.data?.error || error.message || 'Request failed';
+  },
+
   async getPackages(params?: {
     page?: number;
     limit?: number;
@@ -39,8 +43,12 @@ export const packagesService = {
     images?: string[];
     isActive?: boolean;
   }): Promise<Package> {
-    const response = await apiClient.post('/packages', data);
-    return response.data.data;
+    try {
+      const response = await apiClient.post('/packages', data);
+      return response.data.data;
+    } catch (error: any) {
+      throw new Error(this.readError(error) || 'Failed to create trip offer');
+    }
   },
 
   async updatePackage(
@@ -61,11 +69,19 @@ export const packagesService = {
       isActive?: boolean;
     },
   ): Promise<Package> {
-    const response = await apiClient.put(`/packages/${id}`, data);
-    return response.data.data;
+    try {
+      const response = await apiClient.put(`/packages/${id}`, data);
+      return response.data.data;
+    } catch (error: any) {
+      throw new Error(this.readError(error) || 'Failed to update trip offer');
+    }
   },
 
   async deletePackage(id: string): Promise<void> {
-    await apiClient.delete(`/packages/${id}`);
+    try {
+      await apiClient.delete(`/packages/${id}`);
+    } catch (error: any) {
+      throw new Error(this.readError(error) || 'Failed to delete trip offer');
+    }
   },
 };

@@ -72,20 +72,24 @@ const PackageForm = () => {
   const [loading, setLoading] = useState(isEditing);
   const [submitting, setSubmitting] = useState(false);
 
+  const eligibleHotels = useMemo(
+    () => hotels.filter((item) => !isActive || item.status === 'APPROVED'),
+    [hotels, isActive],
+  );
   const selectedHotels = useMemo(
-    () => hotels.filter((item) => selectedHotelIds.includes(item.id)),
-    [hotels, selectedHotelIds],
+    () => eligibleHotels.filter((item) => selectedHotelIds.includes(item.id)),
+    [eligibleHotels, selectedHotelIds],
   );
   const filteredHotels = useMemo(() => {
     const query = hotelSearch.trim().toLowerCase();
     if (!query) {
-      return hotels;
+      return eligibleHotels;
     }
 
-    return hotels.filter((hotel) =>
+    return eligibleHotels.filter((hotel) =>
       `${hotel.name} ${hotel.city} ${hotel.country}`.toLowerCase().includes(query),
     );
-  }, [hotelSearch, hotels]);
+  }, [hotelSearch, eligibleHotels]);
   const selectedVehicle = useMemo(
     () => vehicles.find((item) => item.id === vehicleId) || null,
     [vehicleId, vehicles],
@@ -121,9 +125,16 @@ const PackageForm = () => {
 
         setHotels(hotelsResult.data);
         setVehicles(vehiclesResult.data);
+        if (hotelsResult.data.length === 0) {
+          setInventoryError('No hotels were found in the marketplace.');
+        } else if (!hotelsResult.data.some((hotel) => hotel.status === 'APPROVED')) {
+          setInventoryError('No approved marketplace hotels are available for publishing active trip offers.');
+        } else {
+          setInventoryError(null);
+        }
       } catch (error: any) {
         if (mounted) {
-          setInventoryError(error.message || 'Failed to load agency inventory');
+          setInventoryError(error.message || 'Failed to load marketplace hotels');
         }
       }
     };
@@ -630,7 +641,9 @@ const PackageForm = () => {
               <div>
                 <h3 className="text-xl font-semibold text-[var(--text)]">Select Hotels</h3>
                 <p className="mt-1 text-sm text-[var(--text-muted)]">
-                  Choose one or more hotels for this offer.
+                  {isActive
+                    ? 'Choose approved hotels from the marketplace for this offer.'
+                    : 'Choose one or more hotels from the marketplace for this offer.'}
                 </p>
               </div>
               <button
@@ -653,7 +666,11 @@ const PackageForm = () => {
 
             <div className="mt-4 max-h-[420px] space-y-2 overflow-y-auto rounded-[16px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
               {filteredHotels.length === 0 ? (
-                <div className="px-2 py-4 text-sm text-[var(--text-muted)]">No hotels found.</div>
+                <div className="px-2 py-4 text-sm text-[var(--text-muted)]">
+                  {isActive
+                    ? 'No approved hotels found in the marketplace.'
+                    : 'No hotels found in the marketplace.'}
+                </div>
               ) : (
                 filteredHotels.map((hotel) => {
                   const checked = selectedHotelIds.includes(hotel.id);
