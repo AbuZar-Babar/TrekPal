@@ -132,7 +132,7 @@ const RoomsPage: React.FC = () => {
                 </div>
                 <div className="absolute bottom-4 left-4">
                   <span className="px-3 py-1 bg-white/90 backdrop-blur rounded-full text-xs font-bold text-primary-700 shadow-sm">
-                    ${room.price}/night
+                    PKR {room.price.toLocaleString()}/night
                   </span>
                 </div>
               </div>
@@ -227,7 +227,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, onClose, onSubmit, isLoading 
               />
             </div>
             <div>
-              <label className="label">Price Per Night ($)</label>
+              <label className="label">Price Per Night (PKR)</label>
               <input 
                 required
                 type="number" 

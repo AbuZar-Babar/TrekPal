@@ -124,7 +124,7 @@ const ServicesPage: React.FC = () => {
                   <p className="text-sm text-slate-500 mb-3">Additional service</p>
                   <div className="flex items-center justify-between mt-auto">
                     <span className="text-sm font-bold text-slate-900">
-                      {service.price && service.price > 0 ? `$${service.price}` : 'Free'}
+                      {service.price && service.price > 0 ? `PKR ${service.price.toLocaleString()}` : 'Free'}
                     </span>
                     <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded uppercase tracking-wider">
                       Active
@@ -196,7 +196,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onClose, onSubmit, i
           </div>
 
           <div>
-            <label className="label">Price (0 for Free)</label>
+            <label className="label">Price (PKR, 0 for Free)</label>
             <input 
               required
               type="number" 

@@ -502,7 +502,7 @@ const PackageForm = () => {
 
           <div>
             <label htmlFor="price" className="mb-2 block text-sm font-semibold text-[var(--text)]">
-              Price
+              Price per person (PKR)
             </label>
             <input
               id="price"
