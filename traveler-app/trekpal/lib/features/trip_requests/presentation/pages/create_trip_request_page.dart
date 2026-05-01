@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/utils/extensions.dart';
@@ -8,8 +8,6 @@ import '../../domain/entities/trip_request_entities.dart';
 import '../providers/trip_requests_provider.dart';
 import '../../../hotels/presentation/providers/hotels_provider.dart';
 import '../../../transport/presentation/providers/transport_provider.dart';
-import '../../../hotels/domain/entities/hotel_entities.dart';
-import '../../../transport/domain/entities/vehicle_entities.dart';
 
 class CreateTripRequestPage extends StatefulWidget {
   const CreateTripRequestPage({super.key});
@@ -372,6 +370,13 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildReviewItem(String label, String value, IconData icon) {
+    return SizedBox(
+      width: double.infinity,
+      child: _buildOverviewItem(icon: icon, label: label, value: value),
     );
   }
 
@@ -795,6 +800,8 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
             ),
           ],
         );
+      default:
+        return const SizedBox.shrink();
     }
   }
 
@@ -1200,18 +1207,23 @@ class _HotelPicker extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final hotel = provider.hotels[index];
                     return ExpansionTile(
-                      leading: hotel.imageUrl != null
+                      leading: hotel.images.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.network(hotel.imageUrl!, width: 50, height: 50, fit: BoxFit.cover),
+                              child: Image.network(
+                                hotel.images.first,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : const Icon(Icons.hotel),
                       title: Text(hotel.name),
-                      subtitle: Text(hotel.location),
+                      subtitle: Text('${hotel.city} â€¢ ${hotel.address}'),
                       children: hotel.rooms.map((room) {
                         return ListTile(
                           title: Text(room.type),
-                          subtitle: Text('PKR ${room.basePrice} / night'),
+                          subtitle: Text('PKR ${room.pricePerNight} / night'),
                           trailing: const Icon(Icons.add_circle_outline),
                           onTap: () {
                             Navigator.pop(context, {
@@ -1274,15 +1286,19 @@ class _VehiclePicker extends StatelessWidget {
                   separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (context, index) {
                     final vehicle = provider.vehicles[index];
+                    final String vehicleName =
+                        '${vehicle.make} ${vehicle.model}'.trim();
                     return ListTile(
                       leading: const Icon(Icons.directions_car),
-                      title: Text(vehicle.name),
-                      subtitle: Text('${vehicle.type} • PKR ${vehicle.basePricePerDay}/day'),
+                      title: Text(vehicleName),
+                      subtitle: Text(
+                        '${vehicle.type} • PKR ${vehicle.pricePerDay}/day',
+                      ),
                       trailing: const Icon(Icons.add_circle_outline),
                       onTap: () {
                         Navigator.pop(context, {
                           'id': vehicle.id,
-                          'name': '${vehicle.name} (${vehicle.type})',
+                          'name': '$vehicleName (${vehicle.type})',
                         });
                       },
                     );
@@ -1297,3 +1313,5 @@ class _VehiclePicker extends StatelessWidget {
     );
   }
 }
+
+
