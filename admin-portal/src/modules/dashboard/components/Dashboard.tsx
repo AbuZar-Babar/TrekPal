@@ -20,24 +20,44 @@ const Dashboard = () => {
       label: 'Pending Agencies',
       value: stats?.pendingAgencies ?? 0,
       hint: 'Review agency KYC',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 21h18M5 21V7l7-4 7 4v14M9 10h6M9 14h6" />
+        </svg>
+      ),
       onClick: () => navigate('/agencies?status=PENDING'),
     },
     {
       label: 'Pending Travelers',
       value: stats?.pendingTravelers ?? 0,
       hint: 'Review traveler KYC',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0" />
+        </svg>
+      ),
       onClick: () => navigate('/travelers?status=PENDING'),
     },
     {
       label: 'Hotels',
       value: stats?.totalHotels ?? 0,
       hint: 'View hotel inventory',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 21h18M5 21V5h14v16M9 9h2m4 0h2m-8 4h2m4 0h2" />
+        </svg>
+      ),
       onClick: () => navigate('/inventory?type=hotels'),
     },
     {
       label: 'Vehicles',
       value: stats?.totalVehicles ?? 0,
       hint: 'View vehicle inventory',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 13l2-6h14l2 6M5 13v5h2m10-5v5h2M7 18a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
+        </svg>
+      ),
       onClick: () => navigate('/inventory?type=vehicles'),
     },
   ];
@@ -68,6 +88,7 @@ const Dashboard = () => {
             label={card.label}
             value={card.value.toLocaleString()}
             hint={card.hint}
+            icon={card.icon}
             onClick={card.onClick}
           />
         ))}

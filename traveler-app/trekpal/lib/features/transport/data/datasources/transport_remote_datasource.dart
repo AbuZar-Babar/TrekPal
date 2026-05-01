@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../../../../core/constants/api_constants.dart';
-import '../../../../core/errors/exceptions.dart';
+import '../../../../core/network/api_client.dart';
 import '../models/vehicle_model.dart';
 
 abstract class TransportRemoteDataSource {
@@ -10,9 +8,9 @@ abstract class TransportRemoteDataSource {
 }
 
 class TransportRemoteDataSourceImpl implements TransportRemoteDataSource {
-  final http.Client client;
+  final ApiClient apiClient;
 
-  TransportRemoteDataSourceImpl({required this.client});
+  TransportRemoteDataSourceImpl({required this.apiClient});
 
   @override
   Future<List<VehicleModel>> getVehicles({String? search, String? type}) async {
@@ -22,35 +20,21 @@ class TransportRemoteDataSourceImpl implements TransportRemoteDataSource {
       'status': 'APPROVED',
     };
 
-    final uri = Uri.parse('${ApiConstants.baseUrl}${ApiConstants.transport}')
-        .replace(queryParameters: queryParams);
-
-    final response = await client.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
+    final dynamic data = await apiClient.get(
+      ApiConstants.transport,
+      queryParameters: queryParams,
+      authenticated: true,
     );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final List vehicles = data['data']['vehicles'] ?? [];
-      return vehicles.map((v) => VehicleModel.fromJson(v)).toList();
-    } else {
-      throw ServerException();
-    }
+    final List vehicles = (data as Map<String, dynamic>)['vehicles'] ?? [];
+    return vehicles.map((v) => VehicleModel.fromJson(v)).toList();
   }
 
   @override
   Future<VehicleModel> getVehicleById(String id) async {
-    final response = await client.get(
-      Uri.parse('${ApiConstants.baseUrl}${ApiConstants.transport}/$id'),
-      headers: {'Content-Type': 'application/json'},
+    final dynamic data = await apiClient.get(
+      '${ApiConstants.transport}/$id',
+      authenticated: true,
     );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return VehicleModel.fromJson(data['data']);
-    } else {
-      throw ServerException();
-    }
+    return VehicleModel.fromJson(data as Map<String, dynamic>);
   }
 }

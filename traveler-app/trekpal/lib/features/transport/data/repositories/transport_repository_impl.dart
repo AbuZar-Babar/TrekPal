@@ -1,6 +1,6 @@
-import '../../data/datasources/transport_remote_datasource.dart';
-import '../entities/vehicle_entities.dart';
-import 'transport_repository.dart';
+import '../datasources/transport_remote_datasource.dart';
+import '../../domain/entities/vehicle_entities.dart';
+import '../../domain/repositories/transport_repository.dart';
 
 class TransportRepositoryImpl implements TransportRepository {
   final TransportRemoteDataSource remoteDataSource;

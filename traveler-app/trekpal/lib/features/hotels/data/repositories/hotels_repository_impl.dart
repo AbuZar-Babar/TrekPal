@@ -1,6 +1,6 @@
-import '../../data/datasources/hotels_remote_datasource.dart';
-import '../entities/hotel_entities.dart';
-import 'hotels_repository.dart';
+import '../datasources/hotels_remote_datasource.dart';
+import '../../domain/entities/hotel_entities.dart';
+import '../../domain/repositories/hotels_repository.dart';
 
 class HotelsRepositoryImpl implements HotelsRepository {
   final HotelsRemoteDataSource remoteDataSource;

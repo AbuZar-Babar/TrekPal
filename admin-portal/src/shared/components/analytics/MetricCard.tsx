@@ -5,13 +5,17 @@ interface MetricCardProps {
   value: string | number;
   hint?: string;
   action?: ReactNode;
+  icon?: ReactNode;
   onClick?: () => void;
 }
 
-const MetricCard = ({ label, value, hint, action, onClick }: MetricCardProps) => {
+const MetricCard = ({ label, value, hint, action, icon, onClick }: MetricCardProps) => {
   const content = (
     <>
-      <div className="sovereign-label">{label}</div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="sovereign-label">{label}</div>
+        {icon ? <span className="text-[var(--text-soft)]">{icon}</span> : null}
+      </div>
       <div className="mt-3 font-headline text-4xl font-extrabold tracking-tight text-[var(--text)]">
         {value}
       </div>

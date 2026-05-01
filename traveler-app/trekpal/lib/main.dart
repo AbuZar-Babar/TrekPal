@@ -82,10 +82,10 @@ Future<void> main() async {
     PackagesRemoteDataSource(apiClient),
   );
   final hotelsRepository = HotelsRepositoryImpl(
-    remoteDataSource: HotelsRemoteDataSourceImpl(client: apiClient.client),
+    remoteDataSource: HotelsRemoteDataSourceImpl(apiClient: apiClient),
   );
   final transportRepository = TransportRepositoryImpl(
-    remoteDataSource: TransportRemoteDataSourceImpl(client: apiClient.client),
+    remoteDataSource: TransportRemoteDataSourceImpl(apiClient: apiClient),
   );
 
   runApp(

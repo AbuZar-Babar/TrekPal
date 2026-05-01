@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../../../../core/constants/api_constants.dart';
-import '../../../../core/errors/exceptions.dart';
+import '../../../../core/network/api_client.dart';
 import '../models/hotels_model.dart';
 
 abstract class HotelsRemoteDataSource {
@@ -10,9 +8,9 @@ abstract class HotelsRemoteDataSource {
 }
 
 class HotelsRemoteDataSourceImpl implements HotelsRemoteDataSource {
-  final http.Client client;
+  final ApiClient apiClient;
 
-  HotelsRemoteDataSourceImpl({required this.client});
+  HotelsRemoteDataSourceImpl({required this.apiClient});
 
   @override
   Future<List<HotelModel>> getHotels({String? search, String? city}) async {
@@ -23,35 +21,21 @@ class HotelsRemoteDataSourceImpl implements HotelsRemoteDataSource {
       'discovery': 'true',
     };
 
-    final uri = Uri.parse('${ApiConstants.baseUrl}${ApiConstants.hotels}')
-        .replace(queryParameters: queryParams);
-
-    final response = await client.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
+    final dynamic data = await apiClient.get(
+      ApiConstants.hotels,
+      queryParameters: queryParams,
+      authenticated: true,
     );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final List hotels = data['data']['hotels'] ?? [];
-      return hotels.map((h) => HotelModel.fromJson(h)).toList();
-    } else {
-      throw ServerException();
-    }
+    final List hotels = (data as Map<String, dynamic>)['hotels'] ?? [];
+    return hotels.map((h) => HotelModel.fromJson(h)).toList();
   }
 
   @override
   Future<HotelModel> getHotelById(String id) async {
-    final response = await client.get(
-      Uri.parse('${ApiConstants.baseUrl}${ApiConstants.hotels}/$id'),
-      headers: {'Content-Type': 'application/json'},
+    final dynamic data = await apiClient.get(
+      '${ApiConstants.hotels}/$id',
+      authenticated: true,
     );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return HotelModel.fromJson(data['data']);
-    } else {
-      throw ServerException();
-    }
+    return HotelModel.fromJson(data as Map<String, dynamic>);
   }
 }
