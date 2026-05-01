@@ -29,6 +29,15 @@ const isValidUrl = (value: string): boolean => {
   }
 };
 
+const readErrorMessage = (error: any): string => {
+  return (
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    'Failed to save trip offer'
+  );
+};
+
 const PackageForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -322,7 +331,7 @@ const PackageForm = () => {
 
       navigate('/packages');
     } catch (error: any) {
-      setFormError(error.message || 'Failed to save trip offer');
+      setFormError(readErrorMessage(error));
     } finally {
       setSubmitting(false);
     }
