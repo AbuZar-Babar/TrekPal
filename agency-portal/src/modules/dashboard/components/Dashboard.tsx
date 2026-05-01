@@ -9,7 +9,6 @@ import { fetchTripRequests } from '../../tripRequests/store/tripRequestsSlice';
 import { fetchVehicles } from '../../transport/store/transportSlice';
 import { RootState } from '../../../store';
 import { formatCurrency } from '../../../shared/utils/formatters';
-import agencyDashboardMinimal from '../../../assets/illustrations/agency-dashboard-minimal.svg';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -108,15 +107,10 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <section className="grid items-center gap-4 lg:grid-cols-[1fr,320px]">
+      <section className="section-title-row">
         <h2 className="section-title">
           Welcome back, {user?.name || 'Agency'}
         </h2>
-        <img
-          src={agencyDashboardMinimal}
-          alt="Minimal agency operations illustration"
-          className="hidden w-full max-w-[320px] justify-self-end rounded-2xl border border-[var(--line-soft)] bg-[var(--surface)] p-1 lg:block"
-        />
       </section>
 
       <section className="grid gap-4 lg:grid-cols-4">

@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 
-import adminDashboardMinimal from '../../../assets/illustrations/admin-dashboard-minimal.svg';
 import MetricCard from '../../../shared/components/analytics/MetricCard';
 import { useDashboardStats } from '../hooks/useDashboard';
 
@@ -72,21 +71,14 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <section className="grid items-center gap-4 lg:grid-cols-[1fr,320px]">
-        <div>
-          <div className="sovereign-label">Overview</div>
-          <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
-            Dashboard
-          </h2>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">
-            Review pending work and jump straight to action.
-          </p>
-        </div>
-        <img
-          src={adminDashboardMinimal}
-          alt="Minimal admin analytics illustration"
-          className="hidden w-full max-w-[320px] justify-self-end rounded-2xl border border-[var(--line-soft)] bg-[var(--surface)] p-1 lg:block"
-        />
+      <section>
+        <div className="sovereign-label">Overview</div>
+        <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
+          Dashboard
+        </h2>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">
+          Review pending work and jump straight to action.
+        </p>
       </section>
 
       <section className="grid gap-5 xl:grid-cols-4">
