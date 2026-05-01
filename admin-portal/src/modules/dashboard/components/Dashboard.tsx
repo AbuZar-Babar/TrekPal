@@ -71,16 +71,6 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <section>
-        <div className="sovereign-label">Overview</div>
-        <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
-          Dashboard
-        </h2>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Review pending work and jump straight to action.
-        </p>
-      </section>
-
       <section className="grid gap-5 xl:grid-cols-4">
         {cards.map((card) => (
           <MetricCard

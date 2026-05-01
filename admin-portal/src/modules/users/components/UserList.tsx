@@ -496,8 +496,6 @@ const UserList = () => {
   return (
     <>
       <ManagementPageShell
-        title="Travelers"
-        subtitle="Approve, reject, or edit traveler profiles."
         filters={filters}
         list={list}
       />

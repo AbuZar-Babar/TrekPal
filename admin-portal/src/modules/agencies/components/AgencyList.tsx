@@ -441,8 +441,6 @@ const AgencyList = () => {
   return (
     <>
       <ManagementPageShell
-        title="Agencies"
-        subtitle="Approve, reject, or edit agency profiles."
         filters={filters}
         list={list}
       />

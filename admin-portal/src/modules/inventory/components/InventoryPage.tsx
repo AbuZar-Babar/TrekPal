@@ -396,8 +396,6 @@ const InventoryPage = () => {
   return (
     <>
       <ManagementPageShell
-        title="Inventory"
-        subtitle="View hotels and vehicles. Inventory is read only."
         filters={filters}
         list={list}
       />

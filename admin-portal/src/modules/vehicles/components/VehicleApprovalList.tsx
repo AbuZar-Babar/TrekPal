@@ -98,17 +98,6 @@ const VehicleApprovalList = () => {
 
   return (
     <div className="space-y-8">
-      <section>
-        <div className="sovereign-label">Vehicle approvals</div>
-        <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
-          Moderate transport capacity with pricing and readiness in view
-        </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
-          Review fleet submissions, validate pricing posture, and approve only the records ready
-          for traveler-facing operations.
-        </p>
-      </section>
-
       <section className="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-low)] p-1.5">
         {[
           { value: '', label: 'All Vehicles', count: tabCounts.ALL },

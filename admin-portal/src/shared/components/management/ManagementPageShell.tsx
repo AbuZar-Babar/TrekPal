@@ -1,8 +1,6 @@
 import { ReactNode } from 'react';
 
 interface ManagementPageShellProps {
-  title: string;
-  subtitle?: string;
   controls?: ReactNode;
   filters?: ReactNode;
   list: ReactNode;
@@ -10,8 +8,6 @@ interface ManagementPageShellProps {
 }
 
 const ManagementPageShell = ({
-  title,
-  subtitle,
   controls,
   filters,
   list,
@@ -19,19 +15,7 @@ const ManagementPageShell = ({
 }: ManagementPageShellProps) => {
   return (
     <div className="space-y-6">
-      <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="min-w-0">
-          <div className="sovereign-label">Admin</div>
-          <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
-            {title}
-          </h2>
-          {subtitle ? (
-            <p className="mt-2 max-w-2xl text-sm text-[var(--text-muted)]">{subtitle}</p>
-          ) : null}
-        </div>
-
-        {controls ? <div className="flex flex-wrap gap-3">{controls}</div> : null}
-      </section>
+      {controls ? <section className="flex flex-wrap justify-end gap-3">{controls}</section> : null}
 
       {filters ? <section>{filters}</section> : null}
 

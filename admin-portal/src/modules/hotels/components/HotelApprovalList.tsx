@@ -96,19 +96,6 @@ const HotelApprovalList = () => {
 
   return (
     <div className="space-y-8">
-      <section className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-        <div>
-          <div className="sovereign-label">Hotel moderation</div>
-          <h2 className="mt-2 font-headline text-3xl font-extrabold tracking-tight text-[var(--text)]">
-            Review hospitality inventory with clean evidence hierarchy
-          </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">
-            Moderate hotel submissions, inspect amenities and imagery, and keep the stay catalog
-            aligned with platform standards.
-          </p>
-        </div>
-      </section>
-
       <section className="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-low)] p-1.5">
         {[
           { value: '', label: 'All Hotels', count: tabCounts.ALL },
