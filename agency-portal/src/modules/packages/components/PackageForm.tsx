@@ -102,7 +102,7 @@ const PackageForm = () => {
     const loadInventory = async () => {
       try {
         const [hotelsResult, vehiclesResult] = await Promise.all([
-          hotelsService.getHotels({ limit: 100 }),
+          hotelsService.getHotels({ limit: 100, discovery: true }),
           transportService.getVehicles({ limit: 100 }),
         ]);
 
