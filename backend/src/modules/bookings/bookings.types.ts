@@ -38,6 +38,27 @@ export interface BookingResponse {
   packageParticipants?: BookingParticipantPreview[];
 }
 
+export interface HotelBookingResponse {
+  id: string;
+  source: 'DIRECT_BOOKING' | 'PACKAGE_RESERVATION';
+  bookingId: string | null;
+  packageId: string | null;
+  packageName: string | null;
+  agencyId: string | null;
+  agencyName: string | null;
+  travelerName: string | null;
+  roomId: string;
+  roomType: string;
+  reservedRooms: number;
+  status: string;
+  totalAmount: number | null;
+  startDate: Date;
+  endDate: Date;
+  stayLengthDays: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface UpdateBookingStatusInput {
   status: 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 }

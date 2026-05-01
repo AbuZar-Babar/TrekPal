@@ -2,7 +2,7 @@ import { prisma } from '../../config/database';
 import { BOOKING_STATUS } from '../../config/constants';
 import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
 import { emitTravelerBookingUpdated } from '../../ws/socket.emitter';
-import { BookingParticipantPreview, BookingResponse } from './bookings.types';
+import { BookingParticipantPreview, BookingResponse, HotelBookingResponse } from './bookings.types';
 import { roomAvailabilityService } from '../hotels/room-availability.service';
 
 const bookingInclude = {
@@ -126,6 +126,16 @@ async function mapBooking(booking: any): Promise<BookingResponse> {
   };
 }
 
+function getStayLengthDays(startDate: Date, endDate: Date): number {
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(endDate);
+  end.setHours(0, 0, 0, 0);
+
+  const durationMs = end.getTime() - start.getTime();
+  return Math.max(1, Math.ceil(durationMs / (1000 * 60 * 60 * 24)));
+}
+
 /**
  * Bookings Service
  * Handles booking business logic
@@ -229,6 +239,131 @@ export class BookingsService {
     return {
       bookings: await Promise.all(bookings.map(mapBooking)),
       total,
+      page,
+      limit,
+    };
+  }
+
+  async getHotelBookings(
+    hotelId: string,
+    filters: { status?: string; page?: number; limit?: number },
+  ): Promise<{ bookings: HotelBookingResponse[]; total: number; page: number; limit: number }> {
+    const { status, page = 1, limit = 20 } = filters;
+    const skip = (page - 1) * limit;
+
+    const directBookingWhere: any = {
+      OR: [
+        { hotelId },
+        { room: { hotelId } },
+      ],
+    };
+
+    if (status) {
+      directBookingWhere.status = status;
+    }
+
+    const [directBookings, packageReservations] = await Promise.all([
+      prisma.booking.findMany({
+        where: directBookingWhere,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          agency: { select: { name: true } },
+          user: { select: { name: true } },
+          room: { select: { id: true, type: true } },
+          package: { select: { id: true, name: true } },
+        },
+      }),
+      prisma.packageRoomAllocation.findMany({
+        where: {
+          room: { hotelId },
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          room: {
+            select: {
+              id: true,
+              type: true,
+            },
+          },
+          package: {
+            select: {
+              id: true,
+              name: true,
+              isActive: true,
+              startDate: true,
+              duration: true,
+              createdAt: true,
+              updatedAt: true,
+              agencyId: true,
+              agency: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+    const directItems: HotelBookingResponse[] = directBookings.map((booking: any) => ({
+      id: `booking-${booking.id}`,
+      source: 'DIRECT_BOOKING',
+      bookingId: booking.id,
+      packageId: booking.packageId ?? null,
+      packageName: booking.package?.name ?? null,
+      agencyId: booking.agencyId ?? null,
+      agencyName: booking.agency?.name ?? null,
+      travelerName: booking.user?.name?.trim() || 'Traveler',
+      roomId: booking.room?.id ?? booking.roomId,
+      roomType: booking.room?.type ?? 'Room',
+      reservedRooms: 1,
+      status: booking.status,
+      totalAmount: booking.totalAmount ?? null,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      stayLengthDays: getStayLengthDays(booking.startDate, booking.endDate),
+      createdAt: booking.createdAt,
+      updatedAt: booking.updatedAt,
+    }));
+
+    const packageItems: HotelBookingResponse[] = packageReservations
+      .filter((allocation: any) => allocation.package?.startDate)
+      .map((allocation: any) => {
+        const startDate = allocation.package.startDate as Date;
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + allocation.package.duration);
+
+        return {
+          id: `package-${allocation.id}`,
+          source: 'PACKAGE_RESERVATION' as const,
+          bookingId: null,
+          packageId: allocation.package.id,
+          packageName: allocation.package.name,
+          agencyId: allocation.package.agencyId,
+          agencyName: allocation.package.agency?.name ?? null,
+          travelerName: null,
+          roomId: allocation.room.id,
+          roomType: allocation.room.type,
+          reservedRooms: allocation.reservedRooms,
+          status: allocation.package.isActive ? 'RESERVED' : 'HELD',
+          totalAmount: null,
+          startDate,
+          endDate,
+          stayLengthDays: allocation.package.duration,
+          createdAt: allocation.package.createdAt,
+          updatedAt: allocation.package.updatedAt,
+        };
+      })
+      .filter((item) => !status || item.status === status);
+
+    const merged = [...directItems, ...packageItems].sort(
+      (left, right) => right.createdAt.getTime() - left.createdAt.getTime(),
+    );
+
+    return {
+      bookings: merged.slice(skip, skip + limit),
+      total: merged.length,
       page,
       limit,
     };

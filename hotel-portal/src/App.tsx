@@ -4,6 +4,7 @@ import LoginPage from './modules/auth/pages/LoginPage';
 import RegisterPage from './modules/auth/pages/RegisterPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardPage from './modules/dashboard/pages/DashboardPage';
+import BookingsPage from './modules/bookings/pages/BookingsPage';
 import RoomsPage from './modules/rooms/pages/RoomsPage';
 import ServicesPage from './modules/services/pages/ServicesPage';
 import SettingsPage from './modules/settings/pages/SettingsPage';
@@ -29,7 +30,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/rooms" element={<RoomsPage />} />
             <Route path="/services" element={<ServicesPage />} />
-            <Route path="/bookings" element={<div>Bookings Page (Coming Soon)</div>} />
+            <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 

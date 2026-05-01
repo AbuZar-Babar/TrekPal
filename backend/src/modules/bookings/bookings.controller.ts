@@ -45,8 +45,18 @@ export class BookingsController {
         }
         const result = await bookingsService.getAgencyBookings(agency.id, { status, page, limit });
         sendSuccess(res, result, 'Bookings retrieved successfully');
+      } else if (req.user.role === ROLES.HOTEL) {
+        const hotel = await prisma.hotel.findUnique({
+          where: { authUid: req.user.uid },
+          select: { id: true },
+        });
+        if (!hotel) {
+          sendError(res, 'Hotel profile not found', 404);
+          return;
+        }
+        const result = await bookingsService.getHotelBookings(hotel.id, { status, page, limit });
+        sendSuccess(res, result, 'Bookings retrieved successfully');
       } else {
-        // Admin — could list all, for now return error
         sendError(res, 'Admin booking listing not yet implemented', 501);
       }
     } catch (error: any) {
