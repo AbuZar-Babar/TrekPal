@@ -6,6 +6,8 @@ export const hotelFiltersSchema = z.object({
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
   search: z.string().trim().min(1).optional(),
   discovery: z.coerce.boolean().optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
 });
 
 export const createHotelSchema = z.object({

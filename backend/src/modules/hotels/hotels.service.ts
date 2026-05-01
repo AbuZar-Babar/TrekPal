@@ -50,29 +50,57 @@ const hotelSelect = {
   },
 } as const;
 
-const mapHotel = async (hotel: any): Promise<HotelResponse> => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+const mapHotel = async (
+  hotel: any,
+  availabilityWindow?: { start: Date; end: Date } | null,
+): Promise<HotelResponse> => {
+  const defaultDate = new Date();
+  defaultDate.setHours(0, 0, 0, 0);
 
   const roomsWithAvailability = await Promise.all(
     (hotel.rooms || []).map(async (room: any) => {
-      const availability = await prisma.roomAvailability.findUnique({
-        where: {
-          roomId_date: {
+      let availableQuantity: number;
+
+      if (availabilityWindow) {
+        const availabilities = await prisma.roomAvailability.findMany({
+          where: {
             roomId: room.id,
-            date: today,
+            date: {
+              gte: availabilityWindow.start,
+              lt: availabilityWindow.end,
+            },
           },
-        },
-        select: {
-          available: true,
-        },
-      });
+          select: {
+            available: true,
+          },
+        });
+
+        if (availabilities.length === 0) {
+          availableQuantity = room.quantity ?? 0;
+        } else {
+          availableQuantity = Math.min(...availabilities.map((slot: any) => slot.available));
+        }
+      } else {
+        const availability = await prisma.roomAvailability.findUnique({
+          where: {
+            roomId_date: {
+              roomId: room.id,
+              date: defaultDate,
+            },
+          },
+          select: {
+            available: true,
+          },
+        });
+
+        availableQuantity = availability?.available ?? room.quantity ?? 0;
+      }
 
       return {
         ...room,
-        availableQuantity: availability?.available ?? room.quantity ?? 0,
+        availableQuantity,
       };
-    })
+    }),
   );
 
   return {
@@ -106,7 +134,7 @@ export class HotelsService {
     filters: HotelFiltersInput,
     actor: { role: string; agencyId?: string; authUid?: string }
   ): Promise<{ hotels: HotelResponse[]; total: number; page: number; limit: number }> {
-    const { page, limit, status, search } = filters;
+    const { page, limit, status, search, startDate, endDate } = filters;
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -137,6 +165,18 @@ export class HotelsService {
       ];
     }
 
+    let availabilityWindow: { start: Date; end: Date } | null = null;
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setHours(0, 0, 0, 0);
+
+      if (end > start) {
+        availabilityWindow = { start, end };
+      }
+    }
+
     const [hotels, total] = await Promise.all([
       prisma.hotel.findMany({
         where,
@@ -149,7 +189,7 @@ export class HotelsService {
     ]);
 
     return {
-      hotels: await Promise.all(hotels.map((hotel) => mapHotel(hotel))),
+      hotels: await Promise.all(hotels.map((hotel) => mapHotel(hotel, availabilityWindow))),
       total,
       page,
       limit,

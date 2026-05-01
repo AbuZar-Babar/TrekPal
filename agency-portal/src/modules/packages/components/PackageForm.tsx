@@ -38,6 +38,34 @@ const readErrorMessage = (error: any): string => {
   );
 };
 
+const computeReservationWindow = (
+  startDate: string,
+  duration: string,
+): { startDate: string; endDate: string } | null => {
+  if (!startDate || !duration) {
+    return null;
+  }
+
+  const totalDays = Number(duration);
+  if (!Number.isFinite(totalDays) || totalDays < 1) {
+    return null;
+  }
+
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) {
+    return null;
+  }
+
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start);
+  end.setDate(end.getDate() + totalDays);
+
+  return {
+    startDate: start.toISOString(),
+    endDate: end.toISOString(),
+  };
+};
+
 const PackageForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -94,6 +122,10 @@ const PackageForm = () => {
     () => vehicles.find((item) => item.id === vehicleId) || null,
     [vehicleId, vehicles],
   );
+  const reservationWindow = useMemo(
+    () => computeReservationWindow(startDate, duration),
+    [startDate, duration],
+  );
   const getAvailableUnits = (hotel: Hotel): number =>
     (hotel.rooms || []).reduce(
       (sum, room) => sum + (room.availableQuantity ?? room.quantity ?? 0),
@@ -115,7 +147,12 @@ const PackageForm = () => {
     const loadInventory = async () => {
       try {
         const [hotelsResult, vehiclesResult] = await Promise.all([
-          hotelsService.getHotels({ limit: 100, discovery: true }),
+          hotelsService.getHotels({
+            limit: 100,
+            discovery: true,
+            startDate: reservationWindow?.startDate,
+            endDate: reservationWindow?.endDate,
+          }),
           transportService.getVehicles({ limit: 100 }),
         ]);
 
@@ -144,7 +181,7 @@ const PackageForm = () => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [reservationWindow?.startDate, reservationWindow?.endDate]);
 
   useEffect(() => {
     if (!isEditing || !id) {

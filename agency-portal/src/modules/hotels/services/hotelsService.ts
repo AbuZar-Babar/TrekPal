@@ -30,6 +30,8 @@ export const hotelsService = {
         status?: string;
         search?: string;
         discovery?: boolean;
+        startDate?: string;
+        endDate?: string;
     }): Promise<PaginatedResponse<Hotel>> {
         const response = await apiClient.get('/hotels', { params });
         const result = response.data.data;

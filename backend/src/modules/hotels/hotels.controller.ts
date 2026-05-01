@@ -53,10 +53,15 @@ export class HotelsController {
       const status = req.query.status as 'PENDING' | 'APPROVED' | 'REJECTED' | undefined;
       const search = req.query.search as string | undefined;
       const discovery = req.query.discovery === 'true';
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
 
       const actor = await this.resolveActor(req);
 
-      const result = await hotelsService.getHotels({ page, limit, status, search, discovery }, actor);
+      const result = await hotelsService.getHotels(
+        { page, limit, status, search, discovery, startDate, endDate },
+        actor,
+      );
       sendSuccess(res, result, 'Hotels retrieved successfully');
     } catch (error: any) {
       sendError(res, error.message || 'Failed to get hotels', 500);
