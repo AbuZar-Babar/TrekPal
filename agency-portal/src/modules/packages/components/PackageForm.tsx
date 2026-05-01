@@ -102,7 +102,7 @@ const PackageForm = () => {
     const loadInventory = async () => {
       try {
         const [hotelsResult, vehiclesResult] = await Promise.all([
-          hotelsService.getHotels({ limit: 100, discovery: true }),
+          hotelsService.getHotels({ limit: 100 }),
           transportService.getVehicles({ limit: 100 }),
         ]);
 
@@ -159,10 +159,33 @@ const PackageForm = () => {
         );
         setSelectedHotelRooms(
           Object.fromEntries(
-            (tripPackage.hotelRoomPlan || []).map((entry: { hotelId: string; rooms: number }) => [
-              entry.hotelId,
-              entry.rooms,
-            ]),
+            Object.entries(
+              (tripPackage.hotelRoomPlan || []).reduce(
+                (
+                  acc: Record<string, number>,
+                  entry: { hotelId: string; roomId: string; rooms: number },
+                ) => {
+                  acc[entry.hotelId] = (acc[entry.hotelId] || 0) + entry.rooms;
+                  return acc;
+                },
+                {},
+              ),
+            ),
+          ),
+        );
+        setSelectedHotelRoomTypes(
+          (tripPackage.hotelRoomPlan || []).reduce(
+            (
+              acc: Record<string, Record<string, number>>,
+              entry: { hotelId: string; roomId: string; rooms: number },
+            ) => {
+              acc[entry.hotelId] = {
+                ...(acc[entry.hotelId] || {}),
+                [entry.roomId]: entry.rooms,
+              };
+              return acc;
+            },
+            {},
           ),
         );
         setSelectedHotelServices({});
@@ -192,6 +215,15 @@ const PackageForm = () => {
     const nextErrors: FormErrors = {};
     const destinationList = splitList(destinations);
     const imageList = splitList(images);
+    const hotelRoomPlan = selectedHotelIds.flatMap((hotelId) =>
+      Object.entries(selectedHotelRoomTypes[hotelId] || {})
+        .filter(([, rooms]) => Number(rooms) > 0)
+        .map(([roomId, rooms]) => ({
+          hotelId,
+          roomId,
+          rooms: Number(rooms),
+        })),
+    );
 
     const nameError = validateMinLength(name, 'Trip offer name', 2);
     if (nameError) {
@@ -221,6 +253,17 @@ const PackageForm = () => {
       nextErrors.hotelIds = 'Select at least one hotel before publishing this offer';
     }
 
+    if (isActive && hotelRoomPlan.length === 0) {
+      nextErrors.hotelRoomPlan = 'Select at least one room allocation before publishing this offer';
+    }
+
+    if (
+      isActive &&
+      selectedHotelIds.some((hotelId) => getBookedRoomTypeTotal(hotelId) <= 0)
+    ) {
+      nextErrors.hotelRoomPlan = 'Every selected hotel must include at least one room allocation';
+    }
+
     if (destinationList.length === 0) {
       nextErrors.destinations = 'Add at least one destination';
     }
@@ -243,6 +286,17 @@ const PackageForm = () => {
 
     setSubmitting(true);
 
+    const hotelRoomPlan = selectedHotelIds.flatMap((hotelId) =>
+      Object.entries(selectedHotelRoomTypes[hotelId] || {})
+        .filter(([, rooms]) => Number(rooms) > 0)
+        .map(([roomId, rooms]) => ({
+          hotelId,
+          roomId,
+          rooms: Number(rooms),
+        })),
+    );
+    const plannedHotelIds = Array.from(new Set(hotelRoomPlan.map((entry) => entry.hotelId)));
+
     const payload = {
       name: name.trim(),
       description: description.trim() || undefined,
@@ -250,12 +304,9 @@ const PackageForm = () => {
       duration: Number(duration),
       startDate,
       maxSeats: Number(maxSeats),
-      hotelId: selectedHotelIds[0] || null,
-      hotelIds: selectedHotelIds,
-      hotelRoomPlan: selectedHotelIds.map((hotelId) => ({
-        hotelId,
-        rooms: Math.max(1, getBookedRoomTypeTotal(hotelId) || selectedHotelRooms[hotelId] || 1),
-      })),
+      hotelId: plannedHotelIds[0] || selectedHotelIds[0] || null,
+      hotelIds: plannedHotelIds.length > 0 ? plannedHotelIds : selectedHotelIds,
+      hotelRoomPlan,
       vehicleId: vehicleId || null,
       destinations: splitList(destinations),
       images: splitList(images),
@@ -403,6 +454,9 @@ const PackageForm = () => {
                 : 'Select hotels'}
             </button>
             {errors.hotelIds && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.hotelIds}</p>}
+            {errors.hotelRoomPlan && (
+              <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.hotelRoomPlan}</p>
+            )}
           </div>
 
           <div>
@@ -439,25 +493,27 @@ const PackageForm = () => {
                           {hotel.city}, {hotel.country}
                         </div>
                         <div className="mt-3 flex items-center gap-3">
-                          <label className="text-xs text-[var(--text-soft)]">Rooms to use</label>
-                          <input
-                            type="number"
-                            min={1}
-                            max={Math.max(1, getAvailableUnits(hotel))}
-                            value={selectedHotelRooms[hotel.id] || 1}
-                            onChange={(event) => {
-                              const nextValue = Number(event.target.value || 1);
-                              setSelectedHotelRooms((current) => ({
-                                ...current,
-                                [hotel.id]: Math.max(1, Math.min(getAvailableUnits(hotel) || 1, nextValue)),
-                              }));
-                            }}
-                            className="app-field h-9 w-24"
-                          />
-                          <span className="text-xs text-[var(--text-muted)]">
-                            Available: {getAvailableUnits(hotel)}
-                          </span>
+                          <div className="text-xs text-[var(--text-soft)]">
+                            Reserved rooms: <span className="font-semibold text-[var(--text)]">{getBookedRoomTypeTotal(hotel.id) || selectedHotelRooms[hotel.id] || 0}</span>
+                          </div>
+                          <span className="text-xs text-[var(--text-muted)]">Available: {getAvailableUnits(hotel)}</span>
                         </div>
+                        {getBookedRoomTypeSummary(hotel).length > 0 ? (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {getBookedRoomTypeSummary(hotel).map((entry) => (
+                              <span
+                                key={`${hotel.id}-${entry.roomType}`}
+                                className="rounded-full border border-[var(--border)] bg-[var(--panel-subtle)] px-2 py-1 text-xs text-[var(--text-muted)]"
+                              >
+                                {entry.roomType}: {entry.quantity}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="mt-3 text-xs text-[var(--text-muted)]">
+                            Open the hotel details and choose exact rooms to reserve.
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

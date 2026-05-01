@@ -154,6 +154,7 @@ model Room {
   bookings    Booking[]
   availabilities RoomAvailability[]
   tripRequests TripRequest[]
+  packageAllocations PackageRoomAllocation[]
 
   @@map("rooms")
 }
@@ -214,8 +215,25 @@ model Package {
   vehicle     Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   bookings    Booking[]
   chatRoom    TripGroup?
+  roomAllocations PackageRoomAllocation[]
 
   @@map("packages")
+}
+
+model PackageRoomAllocation {
+  id            String   @id @default(cuid())
+  packageId      String
+  roomId         String
+  reservedRooms  Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  package        Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  room           Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, roomId])
+  @@index([roomId])
+  @@map("package_room_allocations")
 }
 
 // Trip Request model

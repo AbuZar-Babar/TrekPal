@@ -24,6 +24,7 @@ export const createPackageSchema = z.object({
     .array(
       z.object({
         hotelId: z.string().trim().min(1),
+        roomId: z.string().trim().min(1),
         rooms: z.coerce.number().int().min(1),
       }),
     )
@@ -68,6 +69,7 @@ export interface PackageResponse {
   hotelIds: string[];
   hotelRoomPlan: Array<{
     hotelId: string;
+    roomId: string;
     rooms: number;
   }>;
   vehicleId: string | null;

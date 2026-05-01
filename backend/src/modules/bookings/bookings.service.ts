@@ -288,8 +288,6 @@ export class BookingsService {
           select: {
             id: true,
             maxSeats: true,
-            startDate: true,
-            duration: true,
           },
         });
 
@@ -311,53 +309,24 @@ export class BookingsService {
           throw this.buildAvailabilityError('This trip offer is sold out', 'OFFER_UNAVAILABLE');
         }
 
-        if (booking.roomId) {
-          const start = new Date(booking.startDate);
-          start.setHours(0, 0, 0, 0);
-          const end = new Date(booking.endDate);
-          end.setHours(0, 0, 0, 0);
-          const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        const roomAllocations = await tx.packageRoomAllocation.findMany({
+          where: {
+            packageId: booking.packageId,
+          },
+          select: {
+            reservedRooms: true,
+          },
+        });
 
-          if (nights > 0) {
-            const availableSlots = await tx.roomAvailability.findMany({
-              where: {
-                roomId: booking.roomId,
-                date: {
-                  gte: start,
-                  lt: end,
-                },
-              },
-              select: { available: true },
-            });
+        const packageCapacity = roomAllocations.length
+          ? Math.min(
+              tripPackage.maxSeats,
+              ...roomAllocations.map((allocation: any) => allocation.reservedRooms),
+            )
+          : 0;
 
-            if (availableSlots.length < nights || availableSlots.some((slot: any) => slot.available < 1)) {
-              throw this.buildAvailabilityError(
-                'Selected room is no longer available for the requested dates',
-                'ROOM_UNAVAILABLE',
-              );
-            }
-
-            const roomUpdates = await tx.roomAvailability.updateMany({
-              where: {
-                roomId: booking.roomId,
-                date: {
-                  gte: start,
-                  lt: end,
-                },
-                available: { gte: 1 },
-              },
-              data: {
-                available: { decrement: 1 },
-              },
-            });
-
-            if (roomUpdates.count < nights) {
-              throw this.buildAvailabilityError(
-                'Selected room availability changed during confirmation. Please retry.',
-                'ROOM_UNAVAILABLE',
-              );
-            }
-          }
+        if (confirmedCount >= packageCapacity) {
+          throw this.buildAvailabilityError('This trip offer has no reserved rooms left', 'OFFER_UNAVAILABLE');
         }
 
         return tx.booking.update({

@@ -42,7 +42,7 @@ export const createPackage = createAsyncThunk(
     maxSeats?: number;
     hotelId?: string | null;
     hotelIds?: string[];
-    hotelRoomPlan?: Array<{ hotelId: string; rooms: number }>;
+    hotelRoomPlan?: Array<{ hotelId: string; roomId: string; rooms: number }>;
     vehicleId?: string | null;
     destinations: string[];
     images?: string[];
@@ -68,7 +68,7 @@ export const updatePackage = createAsyncThunk(
       maxSeats?: number;
       hotelId?: string | null;
       hotelIds?: string[];
-      hotelRoomPlan?: Array<{ hotelId: string; rooms: number }>;
+      hotelRoomPlan?: Array<{ hotelId: string; roomId: string; rooms: number }>;
       vehicleId?: string | null;
       destinations?: string[];
       images?: string[];

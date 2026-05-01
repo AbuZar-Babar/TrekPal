@@ -103,6 +103,7 @@ export interface Package {
   hotelIds: string[];
   hotelRoomPlan: Array<{
     hotelId: string;
+    roomId: string;
     rooms: number;
   }>;
   vehicleId: string | null;
