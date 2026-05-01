@@ -13,6 +13,7 @@ import { packagesService } from '../services/packagesService';
 import { transportService } from '../../transport/services/transportService';
 
 type FormErrors = Record<string, string>;
+type HotelRoom = NonNullable<Hotel['rooms']>[number];
 
 const splitList = (value: string): string[] =>
   value
@@ -65,6 +66,15 @@ const computeReservationWindow = (
     endDate: end.toISOString(),
   };
 };
+
+const getRoomTotalQuantity = (room: HotelRoom): number =>
+  Math.max(0, room.quantity ?? 0);
+
+const getRoomAvailableQuantity = (room: HotelRoom): number =>
+  Math.max(0, room.availableQuantity ?? room.quantity ?? 0);
+
+const getRoomBookedQuantity = (room: HotelRoom): number =>
+  Math.max(0, getRoomTotalQuantity(room) - getRoomAvailableQuantity(room));
 
 const PackageForm = () => {
   const dispatch = useDispatch();
@@ -126,9 +136,10 @@ const PackageForm = () => {
     () => computeReservationWindow(startDate, duration),
     [startDate, duration],
   );
+  const hasReservationWindow = Boolean(reservationWindow);
   const getAvailableUnits = (hotel: Hotel): number =>
     (hotel.rooms || []).reduce(
-      (sum, room) => sum + (room.availableQuantity ?? room.quantity ?? 0),
+      (sum, room) => sum + getRoomAvailableQuantity(room),
       0,
     );
   const getBookedRoomTypeTotal = (hotelId: string): number =>
@@ -146,15 +157,16 @@ const PackageForm = () => {
 
     const loadInventory = async () => {
       try {
-        const [hotelsResult, vehiclesResult] = await Promise.all([
-          hotelsService.getHotels({
-            limit: 100,
-            discovery: true,
-            startDate: reservationWindow?.startDate,
-            endDate: reservationWindow?.endDate,
-          }),
-          transportService.getVehicles({ limit: 100 }),
-        ]);
+        const vehiclesPromise = transportService.getVehicles({ limit: 100 });
+        const hotelsPromise = reservationWindow
+          ? hotelsService.getHotels({
+              limit: 100,
+              discovery: true,
+              startDate: reservationWindow.startDate,
+              endDate: reservationWindow.endDate,
+            })
+          : Promise.resolve({ data: [] as Hotel[] });
+        const [hotelsResult, vehiclesResult] = await Promise.all([hotelsPromise, vehiclesPromise]);
 
         if (!mounted) {
           return;
@@ -162,7 +174,9 @@ const PackageForm = () => {
 
         setHotels(hotelsResult.data);
         setVehicles(vehiclesResult.data);
-        if (hotelsResult.data.length === 0) {
+        if (!reservationWindow) {
+          setInventoryError(null);
+        } else if (hotelsResult.data.length === 0) {
           setInventoryError('No hotels were found in the marketplace.');
         } else if (!hotelsResult.data.some((hotel) => hotel.status === 'APPROVED')) {
           setInventoryError('No approved marketplace hotels are available for publishing active trip offers.');
@@ -182,6 +196,68 @@ const PackageForm = () => {
       mounted = false;
     };
   }, [reservationWindow?.startDate, reservationWindow?.endDate]);
+
+  useEffect(() => {
+    if (reservationWindow) {
+      return;
+    }
+
+    setSelectedHotelIds([]);
+    setSelectedHotelRooms({});
+    setSelectedHotelRoomTypes({});
+    setSelectedHotelServices({});
+    setIsHotelPickerOpen(false);
+    setDetailHotel(null);
+  }, [reservationWindow]);
+
+  useEffect(() => {
+    if (!reservationWindow) {
+      return;
+    }
+
+    const hotelMap = new Map(hotels.map((hotel) => [hotel.id, hotel]));
+    let didChange = false;
+    const nextRoomTypes: Record<string, Record<string, number>> = {};
+    const nextRooms: Record<string, number> = {};
+
+    selectedHotelIds.forEach((hotelId) => {
+      const hotel = hotelMap.get(hotelId);
+      if (!hotel) {
+        didChange = true;
+        return;
+      }
+
+      const currentSelections = selectedHotelRoomTypes[hotelId] || {};
+      const nextSelections: Record<string, number> = {};
+
+      Object.entries(currentSelections).forEach(([roomId, selectedCount]) => {
+        const room = (hotel.rooms || []).find((entry) => entry.id === roomId);
+        if (!room) {
+          didChange = true;
+          return;
+        }
+
+        const clampedCount = Math.min(selectedCount, getRoomAvailableQuantity(room));
+        if (clampedCount !== selectedCount) {
+          didChange = true;
+        }
+
+        if (clampedCount > 0) {
+          nextSelections[roomId] = clampedCount;
+        }
+      });
+
+      nextRoomTypes[hotelId] = nextSelections;
+      nextRooms[hotelId] = Object.values(nextSelections).reduce((sum, value) => sum + value, 0);
+    });
+
+    if (!didChange) {
+      return;
+    }
+
+    setSelectedHotelRoomTypes(nextRoomTypes);
+    setSelectedHotelRooms(nextRooms);
+  }, [hotels, reservationWindow, selectedHotelIds, selectedHotelRoomTypes]);
 
   useEffect(() => {
     if (!isEditing || !id) {
@@ -503,13 +579,24 @@ const PackageForm = () => {
             <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Stay hotels</label>
             <button
               type="button"
-              onClick={() => setIsHotelPickerOpen(true)}
-              className="app-btn-secondary h-11 w-full justify-center text-sm"
+              onClick={() => {
+                if (!hasReservationWindow) {
+                  return;
+                }
+                setIsHotelPickerOpen(true);
+              }}
+              disabled={!hasReservationWindow}
+              className="app-btn-secondary h-11 w-full justify-center text-sm disabled:cursor-not-allowed disabled:opacity-60"
             >
               {selectedHotelIds.length > 0
                 ? `Selected ${selectedHotelIds.length} hotel${selectedHotelIds.length > 1 ? 's' : ''}`
                 : 'Select hotels'}
             </button>
+            {!hasReservationWindow && (
+              <p className="mt-2 text-xs text-[var(--text-soft)]">
+                Select start date and duration first to load hotel availability.
+              </p>
+            )}
             {errors.hotelIds && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.hotelIds}</p>}
             {errors.hotelRoomPlan && (
               <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.hotelRoomPlan}</p>
@@ -551,7 +638,7 @@ const PackageForm = () => {
                         </div>
                         <div className="mt-3 flex items-center gap-3">
                           <div className="text-xs text-[var(--text-soft)]">
-                            Reserved rooms: <span className="font-semibold text-[var(--text)]">{getBookedRoomTypeTotal(hotel.id) || selectedHotelRooms[hotel.id] || 0}</span>
+                            Selected rooms: <span className="font-semibold text-[var(--text)]">{getBookedRoomTypeTotal(hotel.id) || selectedHotelRooms[hotel.id] || 0}</span>
                           </div>
                           <span className="text-xs text-[var(--text-muted)]">Available: {getAvailableUnits(hotel)}</span>
                         </div>
@@ -755,11 +842,26 @@ const PackageForm = () => {
                           <div className="text-sm text-[var(--text-muted)]">
                             {hotel.city}, {hotel.country}
                           </div>
+                          {hasReservationWindow ? (
+                            <div className="mt-2 space-y-1 text-xs text-[var(--text-soft)]">
+                              {(hotel.rooms || []).map((room) => {
+                                const selectedCount = selectedHotelRoomTypes[hotel.id]?.[room.id] || 0;
+                                return (
+                                  <div key={`${hotel.id}-${room.id}`}>
+                                    {room.type}: Booked {getRoomBookedQuantity(room)} / {getRoomTotalQuantity(room)} total
+                                    {' · '}
+                                    {getRoomAvailableQuantity(room)} available
+                                    {selectedCount > 0 ? ` · ${selectedCount} selected` : ''}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : null}
                           {getBookedRoomTypeSummary(hotel).length > 0 ? (
-                            <div className="mt-1 space-y-1 text-xs text-[var(--text-soft)]">
+                            <div className="mt-2 space-y-1 text-xs text-[var(--text-muted)]">
                               {getBookedRoomTypeSummary(hotel).map((entry) => (
                                 <div key={`${hotel.id}-${entry.roomType}`}>
-                                  {entry.roomType}: {entry.quantity} booked
+                                  {entry.roomType}: {entry.quantity} selected
                                 </div>
                               ))}
                             </div>
@@ -775,7 +877,7 @@ const PackageForm = () => {
                       </div>
                       {getBookedRoomTypeSummary(hotel).length > 0 ? (
                         <div className="mt-3 border-t border-[var(--border)] pt-3 text-xs text-[var(--text-muted)]">
-                          Total rooms booked: {getBookedRoomTypeTotal(hotel.id)}
+                          Total rooms selected: {getBookedRoomTypeTotal(hotel.id)}
                         </div>
                       ) : null}
                     </div>
@@ -910,9 +1012,12 @@ const PackageForm = () => {
                           ) : null}
                         </div>
                         <div className="text-right">
-                          <div className="text-xs text-[var(--text-soft)]">Available</div>
+                          <div className="text-xs text-[var(--text-soft)]">Booked / total</div>
                           <div className="text-sm font-semibold text-[var(--text)]">
-                            {room.availableQuantity ?? room.quantity ?? 0}
+                            {getRoomBookedQuantity(room)} / {getRoomTotalQuantity(room)}
+                          </div>
+                          <div className="mt-1 text-xs text-[var(--text-muted)]">
+                            {getRoomAvailableQuantity(room)} available
                           </div>
                         </div>
                       </div>
@@ -959,10 +1064,10 @@ const PackageForm = () => {
                             disabled={
                               !selectedHotelIds.includes(detailHotel.id) ||
                               (selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0) >=
-                                Math.max(0, room.availableQuantity ?? room.quantity ?? 0)
+                                getRoomAvailableQuantity(room)
                             }
                             onClick={() => {
-                              const maxAvailable = Math.max(0, room.availableQuantity ?? room.quantity ?? 0);
+                              const maxAvailable = getRoomAvailableQuantity(room);
                               const currentQty = selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0;
                               const nextValue = Math.min(maxAvailable, currentQty + 1);
                               setSelectedHotelRoomTypes((current) => ({
@@ -990,7 +1095,7 @@ const PackageForm = () => {
                           </button>
                         </div>
                         <span className="text-xs text-[var(--text-muted)]">
-                          Max {Math.max(0, room.availableQuantity ?? room.quantity ?? 0)}
+                          Max {getRoomAvailableQuantity(room)}
                         </span>
                       </div>
                     </div>
