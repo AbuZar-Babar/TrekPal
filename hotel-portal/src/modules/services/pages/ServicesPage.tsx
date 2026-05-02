@@ -27,14 +27,16 @@ const ServicesPage: React.FC = () => {
   const [editingService, setEditingService] = useState<HotelService | null>(null);
 
   const { data: hotel, isLoading } = useQuery({
-    queryKey: ['hotel-services'],
+    queryKey: ['hotel-services', user?.id],
     queryFn: async () => {
-      const listResponse = await api.get('/hotels', {
-        params: { page: 1, limit: 1 },
-      });
-      return listResponse.data?.data?.hotels?.[0] ?? null;
+      if (!user?.id) {
+        return null;
+      }
+
+      const response = await api.get(`/hotels/${user.id}`);
+      return response.data?.data ?? null;
     },
-    enabled: !!user,
+    enabled: !!user?.id,
   });
 
   const hotelId = hotel?.id;
@@ -43,7 +45,7 @@ const ServicesPage: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: (data: Partial<HotelService>) => api.post(`/hotels/${hotelId}/services`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel-services'] });
+      queryClient.invalidateQueries({ queryKey: ['hotel-services', user?.id] });
       setIsAdding(false);
     },
   });
@@ -51,7 +53,7 @@ const ServicesPage: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: (data: HotelService) => api.put(`/hotels/services/${data.id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel-services'] });
+      queryClient.invalidateQueries({ queryKey: ['hotel-services', user?.id] });
       setEditingService(null);
     },
   });
@@ -59,7 +61,7 @@ const ServicesPage: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: (serviceId: string) => api.delete(`/hotels/services/${serviceId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel-services'] });
+      queryClient.invalidateQueries({ queryKey: ['hotel-services', user?.id] });
     },
   });
 

@@ -10,14 +10,16 @@ const DashboardPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
 
   const { data: hotel } = useQuery({
-    queryKey: ['hotel-dashboard'],
+    queryKey: ['hotel-dashboard', user?.id],
     queryFn: async () => {
-      const listResponse = await api.get('/hotels', {
-        params: { page: 1, limit: 1 },
-      });
-      return listResponse.data?.data?.hotels?.[0] ?? null;
+      if (!user?.id) {
+        return null;
+      }
+
+      const response = await api.get(`/hotels/${user.id}`);
+      return response.data?.data ?? null;
     },
-    enabled: !!user,
+    enabled: !!user?.id,
   });
 
   const totalRoomUnits = (hotel?.rooms || []).reduce(

@@ -24,14 +24,16 @@ const RoomsPage: React.FC = () => {
 
   // Fetch current authenticated hotel profile
   const { data: hotel, isLoading } = useQuery({
-    queryKey: ['hotel'],
+    queryKey: ['hotel', user?.id],
     queryFn: async () => {
-      const listResponse = await api.get('/hotels', {
-        params: { page: 1, limit: 1 },
-      });
-      return listResponse.data?.data?.hotels?.[0] ?? null;
+      if (!user?.id) {
+        return null;
+      }
+
+      const response = await api.get(`/hotels/${user.id}`);
+      return response.data?.data ?? null;
     },
-    enabled: !!user,
+    enabled: !!user?.id,
   });
 
   const hotelId = hotel?.id;
@@ -41,7 +43,7 @@ const RoomsPage: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: (data: Partial<Room>) => api.post(`/hotels/${hotelId}/rooms`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel'] });
+      queryClient.invalidateQueries({ queryKey: ['hotel', user?.id] });
       setIsAdding(false);
     },
   });
@@ -49,7 +51,7 @@ const RoomsPage: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: (data: Room) => api.put(`/hotels/rooms/${data.id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel'] });
+      queryClient.invalidateQueries({ queryKey: ['hotel', user?.id] });
       setEditingRoom(null);
     },
   });
@@ -57,7 +59,7 @@ const RoomsPage: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: (roomId: string) => api.delete(`/hotels/rooms/${roomId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel'] });
+      queryClient.invalidateQueries({ queryKey: ['hotel', user?.id] });
     },
   });
 
@@ -159,6 +161,15 @@ const RoomsPage: React.FC = () => {
           ))}
         </AnimatePresence>
       </div>
+
+      {rooms.length === 0 && !isAdding && (
+        <div className="card p-8 text-center">
+          <h2 className="text-lg font-bold text-slate-900">No rooms found</h2>
+          <p className="mt-2 text-sm text-slate-500">
+            This hotel does not have any room types saved yet for the current account.
+          </p>
+        </div>
+      )}
 
       {editingRoom && (
         <RoomForm 
