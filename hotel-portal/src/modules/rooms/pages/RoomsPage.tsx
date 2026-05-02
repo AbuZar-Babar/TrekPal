@@ -21,9 +21,10 @@ const RoomsPage: React.FC = () => {
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Fetch current authenticated hotel profile
-  const { data: hotel, isLoading } = useQuery({
+  const { data: hotel, isLoading, isError } = useQuery({
     queryKey: ['hotel', user?.id],
     queryFn: async () => {
       if (!user?.id) {
@@ -45,6 +46,10 @@ const RoomsPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hotel', user?.id] });
       setIsAdding(false);
+      setActionError(null);
+    },
+    onError: (error: any) => {
+      setActionError(error?.response?.data?.message || 'Failed to create room');
     },
   });
 
@@ -53,6 +58,10 @@ const RoomsPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hotel', user?.id] });
       setEditingRoom(null);
+      setActionError(null);
+    },
+    onError: (error: any) => {
+      setActionError(error?.response?.data?.message || 'Failed to update room');
     },
   });
 
@@ -60,6 +69,10 @@ const RoomsPage: React.FC = () => {
     mutationFn: (roomId: string) => api.delete(`/hotels/rooms/${roomId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hotel', user?.id] });
+      setActionError(null);
+    },
+    onError: (error: any) => {
+      setActionError(error?.response?.data?.message || 'Failed to delete room');
     },
   });
 
@@ -67,6 +80,15 @@ const RoomsPage: React.FC = () => {
     return (
       <div className="h-96 flex items-center justify-center">
         <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="card p-6">
+        <h1 className="text-xl font-bold text-slate-900">Room Management</h1>
+        <p className="mt-3 text-sm text-rose-600">Failed to load hotel profile. Please sign in again.</p>
       </div>
     );
   }
@@ -80,11 +102,18 @@ const RoomsPage: React.FC = () => {
         </div>
         <button 
           onClick={() => setIsAdding(true)}
+          disabled={!hotelId}
           className="btn-primary"
         >
           <Plus className="w-5 h-5" /> Add New Room Type
         </button>
       </div>
+
+      {actionError && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {actionError}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence>

@@ -59,7 +59,7 @@ const getStatusTone = (status: string): string => {
 const BookingsPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['hotel-bookings'],
     queryFn: async () => {
       const response = await api.get('/bookings', {
@@ -90,10 +90,11 @@ const BookingsPage: React.FC = () => {
   }
 
   if (isError) {
+    const message = (error as any)?.response?.data?.message || 'Failed to load booking activity for this hotel.';
     return (
       <div className="card p-6">
         <h1 className="text-xl font-bold text-slate-900">Bookings</h1>
-        <p className="mt-3 text-sm text-rose-600">Failed to load booking activity for this hotel.</p>
+        <p className="mt-3 text-sm text-rose-600">{message}</p>
       </div>
     );
   }

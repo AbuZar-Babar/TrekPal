@@ -76,11 +76,43 @@ export class AuthService {
   }
 
   private buildToken(user: AuthResponse['user']): string {
+    const fallbackUid = user.authUid?.trim() || user.id;
     return generateJWT({
-      uid: user.authUid,
+      uid: fallbackUid,
       email: user.email,
       role: user.role,
     });
+  }
+
+  private async ensureProfileAuthUid(profile: AuthResponse['user']): Promise<AuthResponse['user']> {
+    const existingAuthUid = profile.authUid?.trim();
+    if (existingAuthUid) {
+      return profile;
+    }
+
+    const generatedAuthUid = this.buildDevelopmentAuthUid();
+
+    if (profile.role === ROLES.TRAVELER) {
+      const updated = await this.userRepo.update(profile.id, { authUid: generatedAuthUid });
+      return this.mapTraveler(updated);
+    }
+
+    if (profile.role === ROLES.AGENCY) {
+      const updated = await this.agencyRepo.update(profile.id, { authUid: generatedAuthUid });
+      return this.mapAgency(updated);
+    }
+
+    if (profile.role === ROLES.HOTEL) {
+      const updated = await this.hotelRepo.update(profile.id, { authUid: generatedAuthUid });
+      return this.mapHotel(updated);
+    }
+
+    if (profile.role === ROLES.ADMIN) {
+      const updated = await this.adminRepo.update(profile.id, { authUid: generatedAuthUid });
+      return this.mapAdmin(updated);
+    }
+
+    return profile;
   }
 
   private mapTraveler(user: {
@@ -462,6 +494,7 @@ export class AuthService {
     }
 
     profile.role = this.normalizeRole(profile.role || this.getRoleFromSupabaseUser(supabaseUser));
+    profile = await this.ensureProfileAuthUid(profile);
 
     return {
       user: profile,
@@ -547,6 +580,7 @@ export class AuthService {
     }
 
     profile.role = this.normalizeRole(profile.role || this.getRoleFromSupabaseUser(supabaseUser));
+    profile = await this.ensureProfileAuthUid(profile);
 
     return {
       user: profile,
