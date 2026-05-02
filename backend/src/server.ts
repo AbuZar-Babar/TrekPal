@@ -34,11 +34,24 @@ const configuredOrigins = env.CORS_ORIGIN
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const renderPortalOrigins = [
+  'https://trekpal-hotel-portal.onrender.com',
+  'https://trekpal-agency-portal.onrender.com',
+  'https://trekpal-admin-portal.onrender.com',
+];
+
 // Allow both admin portal (5174) and agency portal (5173) in development.
 const allowedOrigins = Array.from(new Set(
   env.NODE_ENV === 'development'
-    ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', ...configuredOrigins]
-    : configuredOrigins
+    ? [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      'http://localhost:5176',
+      'http://localhost:5177',
+      ...configuredOrigins,
+    ]
+    : [...renderPortalOrigins, ...configuredOrigins]
 ));
 
 app.use(cors({

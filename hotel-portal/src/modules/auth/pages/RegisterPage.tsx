@@ -89,6 +89,11 @@ const RegisterPage: React.FC = () => {
       setIsSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (err: any) {
+      if (!err?.response) {
+        setError('Unable to reach server. Please check backend is running and CORS allows this portal origin.');
+        return;
+      }
+
       const details = err?.response?.data?.details;
       if (Array.isArray(details) && details.length > 0) {
         setError(details.map((item: { message?: string }) => item?.message).filter(Boolean).join(', '));
