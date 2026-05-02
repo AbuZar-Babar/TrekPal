@@ -1,0 +1,445 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\App.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_app_tsx",
+      "community": 5,
+      "norm_label": "app.tsx"
+    },
+    {
+      "label": "main.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\main.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_main_tsx",
+      "community": 5,
+      "norm_label": "main.tsx"
+    },
+    {
+      "label": "axios.ts",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\api\\axios.ts",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_api_axios_ts",
+      "community": 8,
+      "norm_label": "axios.ts"
+    },
+    {
+      "label": "Sidebar.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\components\\Sidebar.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_components_sidebar_tsx",
+      "community": 2,
+      "norm_label": "sidebar.tsx"
+    },
+    {
+      "label": "cn()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\components\\Sidebar.tsx",
+      "source_location": "L17",
+      "id": "sidebar_cn",
+      "community": 2,
+      "norm_label": "cn()"
+    },
+    {
+      "label": "handleLogout()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\components\\Sidebar.tsx",
+      "source_location": "L33",
+      "id": "sidebar_handlelogout",
+      "community": 2,
+      "norm_label": "handlelogout()"
+    },
+    {
+      "label": "DashboardLayout.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\layouts\\DashboardLayout.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_layouts_dashboardlayout_tsx",
+      "community": 6,
+      "norm_label": "dashboardlayout.tsx"
+    },
+    {
+      "label": "DashboardLayout()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\layouts\\DashboardLayout.tsx",
+      "source_location": "L7",
+      "id": "dashboardlayout_dashboardlayout",
+      "community": 6,
+      "norm_label": "dashboardlayout()"
+    },
+    {
+      "label": "LoginPage.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\LoginPage.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_loginpage_tsx",
+      "community": 3,
+      "norm_label": "loginpage.tsx"
+    },
+    {
+      "label": "onSubmit()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\LoginPage.tsx",
+      "source_location": "L32",
+      "id": "loginpage_onsubmit",
+      "community": 3,
+      "norm_label": "onsubmit()"
+    },
+    {
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\LoginPage.tsx",
+      "source_location": "L86",
+      "id": "loginpage_handlesubmit",
+      "community": 3,
+      "norm_label": "handlesubmit()"
+    },
+    {
+      "label": "RegisterPage.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\RegisterPage.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_registerpage_tsx",
+      "community": 4,
+      "norm_label": "registerpage.tsx"
+    },
+    {
+      "label": "validateUploadFile()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\RegisterPage.tsx",
+      "source_location": "L37",
+      "id": "registerpage_validateuploadfile",
+      "community": 4,
+      "norm_label": "validateuploadfile()"
+    },
+    {
+      "label": "onSubmit()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\RegisterPage.tsx",
+      "source_location": "L55",
+      "id": "registerpage_onsubmit",
+      "community": 4,
+      "norm_label": "onsubmit()"
+    },
+    {
+      "label": "BookingsPage.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\bookings\\pages\\BookingsPage.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_bookings_pages_bookingspage_tsx",
+      "community": 0,
+      "norm_label": "bookingspage.tsx"
+    },
+    {
+      "label": "formatDate()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\bookings\\pages\\BookingsPage.tsx",
+      "source_location": "L29",
+      "id": "bookingspage_formatdate",
+      "community": 0,
+      "norm_label": "formatdate()"
+    },
+    {
+      "label": "formatStatus()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\bookings\\pages\\BookingsPage.tsx",
+      "source_location": "L36",
+      "id": "bookingspage_formatstatus",
+      "community": 0,
+      "norm_label": "formatstatus()"
+    },
+    {
+      "label": "getStatusTone()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\bookings\\pages\\BookingsPage.tsx",
+      "source_location": "L43",
+      "id": "bookingspage_getstatustone",
+      "community": 0,
+      "norm_label": "getstatustone()"
+    },
+    {
+      "label": "DashboardPage.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\dashboard\\pages\\DashboardPage.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_dashboard_pages_dashboardpage_tsx",
+      "community": 9,
+      "norm_label": "dashboardpage.tsx"
+    },
+    {
+      "label": "RoomsPage.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\rooms\\pages\\RoomsPage.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_rooms_pages_roomspage_tsx",
+      "community": 10,
+      "norm_label": "roomspage.tsx"
+    },
+    {
+      "label": "ServicesPage.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\services\\pages\\ServicesPage.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_services_pages_servicespage_tsx",
+      "community": 1,
+      "norm_label": "servicespage.tsx"
+    },
+    {
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\services\\pages\\ServicesPage.tsx",
+      "source_location": "L167",
+      "id": "servicespage_handlesubmit",
+      "community": 1,
+      "norm_label": "handlesubmit()"
+    },
+    {
+      "label": "SettingsPage.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\settings\\pages\\SettingsPage.tsx",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_settings_pages_settingspage_tsx",
+      "community": 1,
+      "norm_label": "settingspage.tsx"
+    },
+    {
+      "label": "onSubmit()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\settings\\pages\\SettingsPage.tsx",
+      "source_location": "L109",
+      "id": "settingspage_onsubmit",
+      "community": 1,
+      "norm_label": "onsubmit()"
+    },
+    {
+      "label": "useAuthStore.ts",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\store\\useAuthStore.ts",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_store_useauthstore_ts",
+      "community": 11,
+      "norm_label": "useauthstore.ts"
+    },
+    {
+      "label": "cn.ts",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\utils\\cn.ts",
+      "source_location": "L1",
+      "id": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_utils_cn_ts",
+      "community": 7,
+      "norm_label": "cn.ts"
+    },
+    {
+      "label": "cn()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\utils\\cn.ts",
+      "source_location": "L4",
+      "id": "cn_cn",
+      "community": 7,
+      "norm_label": "cn()"
+    }
+  ],
+  "links": [
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\main.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_main_tsx",
+      "_tgt": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_app_tsx",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_app_tsx",
+      "target": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_main_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\components\\Sidebar.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_components_sidebar_tsx",
+      "_tgt": "sidebar_cn",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_components_sidebar_tsx",
+      "target": "sidebar_cn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\components\\Sidebar.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_components_sidebar_tsx",
+      "_tgt": "sidebar_handlelogout",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_components_sidebar_tsx",
+      "target": "sidebar_handlelogout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\layouts\\DashboardLayout.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_layouts_dashboardlayout_tsx",
+      "_tgt": "dashboardlayout_dashboardlayout",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_layouts_dashboardlayout_tsx",
+      "target": "dashboardlayout_dashboardlayout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\LoginPage.tsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_loginpage_tsx",
+      "_tgt": "loginpage_onsubmit",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_loginpage_tsx",
+      "target": "loginpage_onsubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\LoginPage.tsx",
+      "source_location": "L86",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_loginpage_tsx",
+      "_tgt": "loginpage_handlesubmit",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_loginpage_tsx",
+      "target": "loginpage_handlesubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\RegisterPage.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_registerpage_tsx",
+      "_tgt": "registerpage_validateuploadfile",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_registerpage_tsx",
+      "target": "registerpage_validateuploadfile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\RegisterPage.tsx",
+      "source_location": "L55",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_registerpage_tsx",
+      "_tgt": "registerpage_onsubmit",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_auth_pages_registerpage_tsx",
+      "target": "registerpage_onsubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\auth\\pages\\RegisterPage.tsx",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "registerpage_onsubmit",
+      "_tgt": "registerpage_validateuploadfile",
+      "source": "registerpage_validateuploadfile",
+      "target": "registerpage_onsubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\bookings\\pages\\BookingsPage.tsx",
+      "source_location": "L172",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_bookings_pages_bookingspage_tsx",
+      "_tgt": "bookingspage_formatdate",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_bookings_pages_bookingspage_tsx",
+      "target": "bookingspage_formatdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\bookings\\pages\\BookingsPage.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_bookings_pages_bookingspage_tsx",
+      "_tgt": "bookingspage_formatstatus",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_bookings_pages_bookingspage_tsx",
+      "target": "bookingspage_formatstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\bookings\\pages\\BookingsPage.tsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_bookings_pages_bookingspage_tsx",
+      "_tgt": "bookingspage_getstatustone",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_bookings_pages_bookingspage_tsx",
+      "target": "bookingspage_getstatustone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\services\\pages\\ServicesPage.tsx",
+      "source_location": "L167",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_services_pages_servicespage_tsx",
+      "_tgt": "servicespage_handlesubmit",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_services_pages_servicespage_tsx",
+      "target": "servicespage_handlesubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\services\\pages\\ServicesPage.tsx",
+      "source_location": "L169",
+      "weight": 1.0,
+      "_src": "servicespage_handlesubmit",
+      "_tgt": "settingspage_onsubmit",
+      "source": "servicespage_handlesubmit",
+      "target": "settingspage_onsubmit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\modules\\settings\\pages\\SettingsPage.tsx",
+      "source_location": "L109",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_settings_pages_settingspage_tsx",
+      "_tgt": "settingspage_onsubmit",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_modules_settings_pages_settingspage_tsx",
+      "target": "settingspage_onsubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\AbuZar\\Desktop\\Fyp\\trek pal\\Trekpal\\hotel-portal\\src\\utils\\cn.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_utils_cn_ts",
+      "_tgt": "cn_cn",
+      "source": "c_users_abuzar_desktop_fyp_trek_pal_trekpal_hotel_portal_src_utils_cn_ts",
+      "target": "cn_cn",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
