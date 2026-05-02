@@ -27,6 +27,7 @@ const DashboardPage: React.FC = () => {
 
   const servicesCount = hotel?.services?.length || 0;
   const imageCount = hotel?.images?.length || 0;
+  const rooms = hotel?.rooms || [];
 
   const stats = [
     {
@@ -156,6 +157,67 @@ const DashboardPage: React.FC = () => {
           </div>
         </section>
       </div>
+
+      <section className="card p-6">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Room Inventory</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Live room types configured for this hotel.
+            </p>
+          </div>
+          <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-700">
+            {rooms.length} type{rooms.length === 1 ? '' : 's'}
+          </div>
+        </div>
+
+        {rooms.length === 0 ? (
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500">
+            No rooms have been added for this hotel yet.
+          </div>
+        ) : (
+          <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {rooms.map((room: any) => (
+              <div key={room.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">{room.type}</h3>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Capacity {room.capacity} guest{room.capacity === 1 ? '' : 's'}
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-white px-3 py-2 text-right shadow-sm">
+                    <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      Price
+                    </div>
+                    <div className="text-sm font-bold text-slate-900">
+                      PKR {Number(room.price || 0).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between rounded-xl bg-white px-3 py-2 text-sm">
+                  <span className="text-slate-500">Total rooms</span>
+                  <span className="font-semibold text-slate-900">{room.quantity || 0}</span>
+                </div>
+
+                {(room.amenities || []).length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {(room.amenities || []).map((amenity: string) => (
+                      <span
+                        key={`${room.id}-${amenity}`}
+                        className="rounded-md bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-600"
+                      >
+                        {amenity}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {hotel?.description && (
         <section className="card p-6">
