@@ -58,6 +58,18 @@ const allowedOrigins = Array.from(new Set(
     : [...renderPortalOrigins, ...localPortalOrigins, ...configuredOrigins]
 ));
 
+const isAllowedLocalhostOrigin = (origin: string): boolean => {
+  try {
+    const parsed = new URL(origin);
+    return (
+      (parsed.protocol === 'http:' || parsed.protocol === 'https:')
+      && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1')
+    );
+  } catch {
+    return false;
+  }
+};
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
@@ -66,7 +78,7 @@ app.use(cors({
       return;
     }
 
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || isAllowedLocalhostOrigin(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
