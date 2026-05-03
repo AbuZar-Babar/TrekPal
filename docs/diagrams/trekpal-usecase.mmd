@@ -1,0 +1,163 @@
+%% TrekPal Use Case Diagram (Basic)
+flowchart LR
+  %% Actors
+  T[Traveler<br/>(Primary)]
+  A[Travel Agency<br/>(Primary)]
+  H[Hotel Manager<br/>(Primary)]
+  AD[Admin<br/>(Primary)]
+
+  PG[Payment Gateway<br/>(Secondary)]
+  AS[Auth Service<br/>(Secondary)]
+  NS[Notification Service<br/>(Secondary)]
+
+  %% System boundary
+  subgraph SYS[TrekPal System]
+    UC1((Register / Login))
+    UC2((Complete KYC))
+    UC3((Create Trip Request))
+    UC4((View Bids))
+    UC5((Accept Bid))
+    UC6((Create Booking))
+    UC7((Browse Hotels))
+    UC8((Browse Transport))
+    UC9((Chat in Trip Group))
+    UC10((Submit Review))
+
+    UC11((Manage Inventory))
+    UC12((Submit Bid))
+    UC13((Manage Packages))
+    UC14((Manage Room Types))
+    UC15((View Booking Activity))
+
+    UC16((Approve/Reject Agencies))
+    UC17((Approve/Reject Hotels & Vehicles))
+    UC18((Moderate Platform Data))
+  end
+
+  %% Actor associations
+  T --- UC1
+  T --- UC2
+  T --- UC3
+  T --- UC4
+  T --- UC5
+  T --- UC7
+  T --- UC8
+  T --- UC9
+  T --- UC10
+
+  A --- UC11
+  A --- UC12
+  A --- UC13
+  A --- UC9
+
+  H --- UC14
+  H --- UC15
+  H --- UC9
+
+  AD --- UC16
+  AD --- UC17
+  AD --- UC18
+
+  %% Secondary actor associations
+  AS --- UC1
+  AS --- UC2
+  PG --- UC6
+  NS --- UC5
+  NS --- UC12
+
+  %% include relationships (mandatory sub-flow)
+  UC5 -. "<<include>>" .-> UC6
+  UC3 -. "<<include>>" .-> UC7
+  UC3 -. "<<include>>" .-> UC8
+
+  %% extend relationships (optional/conditional behavior)
+  UC2 -. "<<extend>>" .-> UC1
+  UC10 -. "<<extend>>" .-> UC6
+  UC9 -. "<<extend>>" .-> UC6
+
+
+%% TrekPal Use Case Diagram (Styled)
+flowchart LR
+  classDef primary fill:#0f766e,stroke:#134e4a,color:#ffffff,stroke-width:1.5px;
+  classDef secondary fill:#475569,stroke:#1e293b,color:#ffffff,stroke-width:1.2px;
+  classDef usecase fill:#ecfeff,stroke:#0e7490,color:#0c4a6e,stroke-width:1.2px;
+  classDef boundary fill:#f8fafc,stroke:#94a3b8,color:#0f172a,stroke-width:1px;
+
+  %% Primary actors
+  T2[Traveler<br/>(Primary)]
+  A2[Travel Agency<br/>(Primary)]
+  H2[Hotel Manager<br/>(Primary)]
+  AD2[Admin<br/>(Primary)]
+
+  %% Secondary actors
+  PG2[Payment Gateway<br/>(Secondary)]
+  AS2[Auth Service<br/>(Secondary)]
+  NS2[Notification Service<br/>(Secondary)]
+
+  %% System boundary
+  subgraph SYS2[TrekPal System]
+    direction TB
+    UC21((Register / Login))
+    UC22((Complete KYC))
+    UC23((Create Trip Request))
+    UC24((View Bids))
+    UC25((Accept Bid))
+    UC26((Create Booking))
+    UC27((Browse Hotels))
+    UC28((Browse Transport))
+    UC29((Chat in Trip Group))
+    UC210((Submit Review))
+    UC211((Manage Inventory))
+    UC212((Submit Bid))
+    UC213((Manage Packages))
+    UC214((Manage Room Types))
+    UC215((View Booking Activity))
+    UC216((Approve/Reject Agencies))
+    UC217((Approve/Reject Hotels & Vehicles))
+    UC218((Moderate Platform Data))
+  end
+
+  %% Associations
+  T2 --- UC21
+  T2 --- UC22
+  T2 --- UC23
+  T2 --- UC24
+  T2 --- UC25
+  T2 --- UC27
+  T2 --- UC28
+  T2 --- UC29
+  T2 --- UC210
+
+  A2 --- UC211
+  A2 --- UC212
+  A2 --- UC213
+  A2 --- UC29
+
+  H2 --- UC214
+  H2 --- UC215
+  H2 --- UC29
+
+  AD2 --- UC216
+  AD2 --- UC217
+  AD2 --- UC218
+
+  AS2 --- UC21
+  AS2 --- UC22
+  PG2 --- UC26
+  NS2 --- UC25
+  NS2 --- UC212
+
+  %% include / extend
+  UC25 -. "<<include>>" .-> UC26
+  UC23 -. "<<include>>" .-> UC27
+  UC23 -. "<<include>>" .-> UC28
+
+  UC22 -. "<<extend>>" .-> UC21
+  UC210 -. "<<extend>>" .-> UC26
+  UC29 -. "<<extend>>" .-> UC26
+
+  %% Styling
+  class T2,A2,H2,AD2 primary;
+  class PG2,AS2,NS2 secondary;
+  class UC21,UC22,UC23,UC24,UC25,UC26,UC27,UC28,UC29,UC210,UC211,UC212,UC213,UC214,UC215,UC216,UC217,UC218 usecase;
+  class SYS2 boundary;

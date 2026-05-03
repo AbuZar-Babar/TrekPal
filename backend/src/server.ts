@@ -40,18 +40,22 @@ const renderPortalOrigins = [
   'https://trekpal-admin-portal.onrender.com',
 ];
 
-// Allow both admin portal (5174) and agency portal (5173) in development.
+const localPortalOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:5177',
+];
+
+// Allow local portal development servers to call the deployed backend as well.
 const allowedOrigins = Array.from(new Set(
   env.NODE_ENV === 'development'
     ? [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'http://localhost:5176',
-      'http://localhost:5177',
+      ...localPortalOrigins,
       ...configuredOrigins,
     ]
-    : [...renderPortalOrigins, ...configuredOrigins]
+    : [...renderPortalOrigins, ...localPortalOrigins, ...configuredOrigins]
 ));
 
 app.use(cors({
