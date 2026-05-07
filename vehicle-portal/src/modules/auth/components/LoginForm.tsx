@@ -71,9 +71,9 @@ const LoginForm = () => {
 
   return (
     <AuthShell
-      badge="Agency Portal"
+      badge="Vehicle Portal"
       title="Sign in"
-      subtitle="Access your agency dashboard."
+      subtitle="Access your vehicle partner dashboard."
     >
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>
@@ -94,7 +94,7 @@ const LoginForm = () => {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               className="app-field"
-              placeholder="agency@example.com"
+              placeholder="vehicle@example.com"
             />
             {errors.email && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.email}</p>}
           </div>
@@ -131,7 +131,7 @@ const LoginForm = () => {
           <div className="border-t border-[var(--border)] pt-5 text-center text-sm text-[var(--text-muted)]">
             No account yet?{' '}
             <Link to="/signup" className="font-semibold text-[var(--primary)]">
-              Register agency
+              Register vehicle provider
             </Link>
           </div>
         </form>
