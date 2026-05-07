@@ -19,5 +19,9 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    host: true,
+    allowedHosts: ['trekpal-vehicle-portal.onrender.com'],
+  },
 });
 
