@@ -15,28 +15,45 @@ const AuthShell = ({
   children,
 }: AuthShellProps) => {
   return (
-    <div className="min-h-screen bg-[var(--bg)] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto w-full max-w-md">
-        <div className="flex flex-col items-center text-center">
-          <Link to="/" className="flex items-center gap-3 text-[var(--text)] no-underline mb-8">
-            <div className="portal-brand-mark">
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-              </svg>
-            </div>
-            <div className="text-xl font-bold tracking-tight">TrekPal</div>
-          </Link>
-
-          <div className="mb-8 w-full">
-            <div className="app-section-label mb-3">{badge}</div>
-            <h2 className="text-2xl font-bold tracking-tight text-[var(--text)] mb-2">{title}</h2>
-            <p className="text-[var(--text-soft)] text-sm">{subtitle}</p>
+    <div className="auth-shell">
+      <div className="auth-frame">
+        <aside className="auth-aside">
+          <div>
+            <div className="app-section-label">TrekPal vehicle partner</div>
+            <h2 className="page-title mt-4">Launch your fleet on TrekPal</h2>
+            <p className="page-copy">
+              Same trusted partner experience as hotel portal, now tailored for standalone vehicle providers.
+            </p>
           </div>
-        </div>
 
-        <div className="w-full">
-          {children}
-        </div>
+          <div className="space-y-3">
+            <div className="auth-point">Register as a vehicle provider and wait for admin approval.</div>
+            <div className="auth-point">Add vehicles with documents, pricing, and availability.</div>
+            <div className="auth-point">Approved vehicles appear in traveler marketplace flows.</div>
+          </div>
+        </aside>
+
+        <main className="auth-main">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <Link to="/" className="mb-6 flex items-center gap-3 text-[var(--text)] no-underline">
+              <div className="portal-brand-mark">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 13h18l-1.5-5.25A2 2 0 0017.58 6H6.42a2 2 0 00-1.92 1.75L3 13zm2 0v4a1 1 0 001 1h1a2 2 0 104 0h2a2 2 0 104 0h1a1 1 0 001-1v-4" />
+                </svg>
+              </div>
+              <div className="text-xl font-bold tracking-tight">TrekPal</div>
+            </Link>
+
+            <div className="mb-3 app-section-label">{badge}</div>
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--text)] mb-2">{title}</h1>
+            <p className="text-[var(--text-soft)] text-sm">{subtitle}</p>
+            <div className="mt-4 auth-chip">Vehicle Portal</div>
+          </div>
+
+          <div className="mx-auto w-full max-w-md">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

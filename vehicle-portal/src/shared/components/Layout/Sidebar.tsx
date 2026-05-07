@@ -32,32 +32,45 @@ const Sidebar = () => {
   return (
     <>
       <aside className="portal-sidebar">
-        <div className="portal-sidebar-desktop">
-          <div className="portal-brand">
-            <div className="portal-brand-mark">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M4 20h16M6 20V9l6-3 6 3v11M9 12h6M9 15h4m8-8l-5 5" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-sm font-semibold tracking-tight text-[var(--text)]">TrekPal</div>
-              <div className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[var(--sidebar-muted)]">Vehicle portal</div>
+        <div className="w-64 bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0">
+          <div className="p-6 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary-600 p-2 rounded-xl shadow-md text-white">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 13h18l-1.5-5.25A2 2 0 0017.58 6H6.42a2 2 0 00-1.92 1.75L3 13zm2 0v4a1 1 0 001 1h1a2 2 0 104 0h2a2 2 0 104 0h1a1 1 0 001-1v-4" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="font-bold text-slate-900 leading-tight">TrekPal</h1>
+                <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wider">Vehicle Partner</p>
+              </div>
             </div>
           </div>
 
-          <nav className="portal-nav">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`portal-nav-link ${isActive(item.path) ? 'portal-nav-link-active' : ''}`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                  isActive(item.path)
+                    ? 'bg-primary-50 text-primary-700 shadow-sm shadow-primary-100/50'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
               >
-                <span>{item.icon}</span>
+                <span className="h-5 w-5">{item.icon}</span>
                 <span className="text-sm font-medium">{item.label}</span>
               </Link>
             ))}
           </nav>
-
+          <div className="p-4 border-t border-slate-100">
+            <div className="bg-slate-50 p-4 rounded-2xl">
+              <p className="text-[10px] text-green-600 font-bold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                VEHICLE PARTNER
+              </p>
+            </div>
+          </div>
         </div>
       </aside>
 
