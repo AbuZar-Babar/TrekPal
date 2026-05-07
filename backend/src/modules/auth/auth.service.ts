@@ -20,6 +20,7 @@ import {
   VerifyCnicInput,
   AuthResponse,
   HotelRegisterInput,
+  VehicleRegisterInput,
 } from './auth.types';
 import {
   IUserRepository,
@@ -31,6 +32,7 @@ import {
   PrismaAdminRepository,
   PrismaHotelRepository,
 } from '../../repositories';
+import { prisma } from '../../config/database';
 
 /**
  * Auth Service
@@ -63,7 +65,8 @@ export class AuthService {
       normalizedRole === ROLES.TRAVELER ||
       normalizedRole === ROLES.AGENCY ||
       normalizedRole === ROLES.ADMIN ||
-      normalizedRole === ROLES.HOTEL
+      normalizedRole === ROLES.HOTEL ||
+      normalizedRole === ROLES.VEHICLE
     ) {
       return normalizedRole;
     }
@@ -110,6 +113,14 @@ export class AuthService {
     if (profile.role === ROLES.ADMIN) {
       const updated = await this.adminRepo.update(profile.id, { authUid: generatedAuthUid });
       return this.mapAdmin(updated);
+    }
+
+    if (profile.role === ROLES.VEHICLE) {
+      const updated = await prisma.vehicleProvider.update({
+        where: { id: profile.id },
+        data: { authUid: generatedAuthUid },
+      });
+      return this.mapVehicleProvider(updated);
     }
 
     return profile;
@@ -206,6 +217,23 @@ export class AuthService {
     };
   }
 
+  private mapVehicleProvider(provider: {
+    id: string;
+    authUid: string | null;
+    email: string | null;
+    name: string;
+    status?: string;
+  }): AuthResponse['user'] {
+    return {
+      id: provider.id,
+      authUid: provider.authUid || '',
+      email: provider.email || '',
+      name: provider.name,
+      status: provider.status,
+      role: ROLES.VEHICLE,
+    };
+  }
+
   private getAgencyApprovalErrorMessage(status: string): string {
     if (status === APPROVAL_STATUS.REJECTED) {
       return 'Agency account was rejected';
@@ -234,6 +262,16 @@ export class AuthService {
     }
   }
 
+  private assertVehicleProviderApproved(provider: { status: string }): void {
+    if (provider.status !== APPROVAL_STATUS.APPROVED) {
+      throw new Error(
+        provider.status === APPROVAL_STATUS.REJECTED
+          ? 'Vehicle provider account was rejected'
+          : 'Vehicle provider account is pending approval',
+      );
+    }
+  }
+
   private async findProfileByEmail(email: string, enforceAgencyApproval: boolean): Promise<AuthResponse['user'] | null> {
     const traveler = await this.userRepo.findByEmail(email);
     if (traveler) {
@@ -259,6 +297,18 @@ export class AuthService {
     const admin = await this.adminRepo.findByEmail(email);
     if (admin) {
       return this.mapAdmin(admin);
+    }
+
+    const provider = await prisma.vehicleProvider.findUnique({ where: { email } });
+    if (provider) {
+      if (enforceAgencyApproval && provider.status !== APPROVAL_STATUS.APPROVED) {
+        throw new Error(
+          provider.status === APPROVAL_STATUS.REJECTED
+            ? 'Vehicle provider account was rejected'
+            : 'Vehicle provider account is pending approval',
+        );
+      }
+      return this.mapVehicleProvider(provider);
     }
 
     return null;
@@ -297,6 +347,18 @@ export class AuthService {
         ? admin
         : await this.adminRepo.update(admin.id, { authUid });
       return this.mapAdmin(updatedAdmin);
+    }
+
+    const provider = await prisma.vehicleProvider.findUnique({ where: { email } });
+    if (provider) {
+      const updatedProvider = provider.authUid === authUid
+        ? provider
+        : await prisma.vehicleProvider.update({
+          where: { id: provider.id },
+          data: { authUid },
+        });
+      this.assertVehicleProviderApproved(updatedProvider);
+      return this.mapVehicleProvider(updatedProvider);
     }
 
     return null;
@@ -446,6 +508,54 @@ export class AuthService {
     };
   }
 
+  async registerVehicleProvider(input: VehicleRegisterInput): Promise<AuthResponse> {
+    let authUid: string;
+
+    if (isSupabaseConfigured()) {
+      const supabaseUser = await createSupabaseAuthUser({
+        email: input.email,
+        password: input.password,
+        name: input.name,
+        role: ROLES.VEHICLE,
+      });
+      authUid = supabaseUser.id;
+    } else if (process.env.NODE_ENV === 'development') {
+      authUid = this.buildDevelopmentAuthUid();
+    } else {
+      throw new Error('Supabase auth is not configured');
+    }
+
+    const provider = await prisma.vehicleProvider.create({
+      data: {
+        authUid,
+        email: input.email,
+        name: input.name,
+        phone: input.phone,
+        address: input.address,
+        officeCity: input.officeCity,
+        license: input.license,
+        ntn: input.ntn ?? null,
+        ownerName: input.ownerName,
+        cnic: input.cnic,
+        cnicImageUrl: input.cnicImageUrl,
+        ownerPhotoUrl: input.ownerPhotoUrl,
+        licenseCertificateUrl: input.licenseCertificateUrl,
+        ntnCertificateUrl: input.ntnCertificateUrl,
+        officeProofUrl: input.officeProofUrl,
+        bankCertificateUrl: input.bankCertificateUrl,
+        additionalSupportingDocumentUrl: input.additionalSupportingDocumentUrl,
+        applicationSubmittedAt: new Date(),
+        status: APPROVAL_STATUS.PENDING,
+      },
+    });
+
+    const profile = this.mapVehicleProvider(provider);
+    return {
+      user: profile,
+      token: this.buildToken(profile),
+    };
+  }
+
   /**
    * Login user, agency, or admin using Supabase email/password
    */
@@ -540,6 +650,12 @@ export class AuthService {
     const admin = await this.adminRepo.findByAuthUid(authUid);
     if (admin) {
       return this.mapAdmin(admin);
+    }
+
+    const provider = await prisma.vehicleProvider.findUnique({ where: { authUid } });
+    if (provider) {
+      this.assertVehicleProviderApproved(provider);
+      return this.mapVehicleProvider(provider);
     }
 
     throw new Error('User not found');

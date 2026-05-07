@@ -15,7 +15,7 @@ export interface VehicleFilters {
  * Vehicle with additional computed fields
  */
 export interface VehicleWithRelations extends Vehicle {
-    agencyName?: string;
+    vehicleProviderName?: string | null;
 }
 
 /**

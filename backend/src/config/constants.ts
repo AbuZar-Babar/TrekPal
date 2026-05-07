@@ -6,6 +6,7 @@ export const ROLES = {
   AGENCY: 'AGENCY',
   ADMIN: 'ADMIN',
   HOTEL: 'HOTEL',
+  VEHICLE: 'VEHICLE',
 
 } as const;
 

@@ -28,6 +28,11 @@ const routeMeta = [
     description: 'View hotels and vehicles',
   },
   {
+    match: '/vehicle-providers',
+    title: 'Vehicle Providers',
+    description: 'Approve or reject vehicle provider applications',
+  },
+  {
     match: '/analytics',
     title: 'Analytics',
     description: 'Users, queues, and booking trend',

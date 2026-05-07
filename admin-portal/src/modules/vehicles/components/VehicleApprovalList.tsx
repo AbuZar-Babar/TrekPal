@@ -192,7 +192,7 @@ const VehicleApprovalList = () => {
                           </div>
                         </div>
                       </td>
-                      <td>{vehicle.agencyName}</td>
+                      <td>{vehicle.vehicleProviderName}</td>
                       <td>{vehicle.capacity} seats</td>
                       <td>{formatCurrency(vehicle.pricePerDay)}</td>
                       <td>
@@ -243,7 +243,7 @@ const VehicleApprovalList = () => {
       <EntityDetailModal
         open={isDetailOpen && Boolean(selectedVehicle)}
         title={selectedVehicle ? `${selectedVehicle.make} ${selectedVehicle.model}` : 'Vehicle details'}
-        subtitle={selectedVehicle?.agencyName}
+        subtitle={selectedVehicle?.vehicleProviderName || undefined}
         onClose={() => setIsDetailOpen(false)}
       >
         {selectedVehicle ? (
@@ -254,7 +254,7 @@ const VehicleApprovalList = () => {
                   <h3 className="mt-2 font-headline text-2xl font-bold tracking-tight text-[var(--text)]">
                     {selectedVehicle.make} {selectedVehicle.model}
                   </h3>
-                  <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedVehicle.agencyName}</p>
+                  <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedVehicle.vehicleProviderName}</p>
                 </div>
                 <span className={statusClassMap[selectedVehicle.status] || 'sovereign-pill sovereign-pill-neutral'}>
                   {selectedVehicle.status}

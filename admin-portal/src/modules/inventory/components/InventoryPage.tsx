@@ -196,7 +196,7 @@ const InventoryPage = () => {
                             </div>
                             <div className="text-xs text-[var(--text-soft)]">{vehicle.year}</div>
                           </td>
-                          <td>{vehicle.agencyName}</td>
+                          <td>{vehicle.vehicleProviderName}</td>
                           <td>
                             {vehicle.type} • {vehicle.capacity} seats
                           </td>
@@ -333,7 +333,7 @@ const InventoryPage = () => {
               <h3 className="mt-2 font-headline text-2xl font-bold text-[var(--text)]">
                 {selectedVehicle?.make} {selectedVehicle?.model}
               </h3>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedVehicle?.agencyName}</p>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedVehicle?.vehicleProviderName}</p>
             </div>
             <span className={statusClassMap[selectedVehicle?.status || ''] || 'sovereign-pill sovereign-pill-neutral'}>
               {selectedVehicle?.status}
@@ -406,7 +406,11 @@ const InventoryPage = () => {
             ? selectedHotel.name
             : `${selectedVehicle?.make || ''} ${selectedVehicle?.model || ''}`.trim() || 'Inventory item details'
         }
-        subtitle={selectedHotel?.agencyName || selectedVehicle?.agencyName || undefined}
+        subtitle={
+          selectedHotel?.agencyName
+          || selectedVehicle?.vehicleProviderName
+          || undefined
+        }
         onClose={() => setIsDetailOpen(false)}
       >
         {detailContent}

@@ -58,6 +58,20 @@ const navItems = [
     ),
   },
   {
+    path: '/vehicle-providers',
+    label: 'Vehicle Providers',
+    icon: (
+      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.8}
+          d="M17 20h5V9L12 4 2 9v11h5m10 0v-6H7v6m10 0H7"
+        />
+      </svg>
+    ),
+  },
+  {
     path: '/inventory',
     label: 'Inventory',
     icon: (

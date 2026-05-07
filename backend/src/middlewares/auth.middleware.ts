@@ -3,6 +3,7 @@ import { verifySupabaseAccessToken, isSupabaseConfigured } from '../config/supab
 import { generateJWT, verifyJWT } from '../utils/jwt.util';
 import { APPROVAL_STATUS, ROLES } from '../config/constants';
 import { PrismaAgencyRepository } from '../repositories';
+import { prisma } from '../config/database';
 
 /**
  * Extended Express Request with user information
@@ -26,6 +27,7 @@ const normalizeRole = (role: unknown): string => {
     || normalizedRole === ROLES.AGENCY
     || normalizedRole === ROLES.ADMIN
     || normalizedRole === ROLES.HOTEL
+    || normalizedRole === ROLES.VEHICLE
   ) {
     return normalizedRole;
   }
@@ -113,6 +115,27 @@ export const authenticate = async (
           error: agency.status === APPROVAL_STATUS.REJECTED
             ? 'Agency account was rejected'
             : 'Agency account is pending approval',
+        });
+        return;
+      }
+    }
+
+    if (decodedToken.role === ROLES.VEHICLE) {
+      const provider = await prisma.vehicleProvider.findFirst({
+        where: {
+          OR: [
+            { authUid: decodedToken.uid },
+            ...(decodedToken.email ? [{ email: decodedToken.email }] : []),
+          ],
+        },
+        select: { status: true },
+      });
+
+      if (provider && provider.status !== APPROVAL_STATUS.APPROVED) {
+        res.status(403).json({
+          error: provider.status === APPROVAL_STATUS.REJECTED
+            ? 'Vehicle provider account was rejected'
+            : 'Vehicle provider account is pending approval',
         });
         return;
       }

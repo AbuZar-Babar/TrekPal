@@ -412,8 +412,7 @@ export class PackagesService {
     }
   }
 
-  private async assertVehicleOwnership(
-    agencyId: string,
+  private async assertVehicleMarketplaceAvailability(
     vehicleId?: string | null,
   ): Promise<void> {
     if (!vehicleId) {
@@ -423,13 +422,13 @@ export class PackagesService {
     const vehicle = await prisma.vehicle.findFirst({
       where: {
         id: vehicleId,
-        agencyId,
+        status: APPROVAL_STATUS.APPROVED,
       },
       select: { id: true },
     });
 
     if (!vehicle) {
-      throw new Error('Selected vehicle was not found in your inventory');
+      throw new Error('Selected vehicle was not found in the approved marketplace');
     }
   }
 
@@ -643,7 +642,7 @@ export class PackagesService {
       normalizedRoomPlan,
       Boolean(input.isActive ?? true),
     );
-    await this.assertVehicleOwnership(agencyId, input.vehicleId ?? null);
+    await this.assertVehicleMarketplaceAvailability(input.vehicleId ?? null);
 
     const heldRoomPlan = buildHeldRoomPlan(
       normalizedRoomPlan,
@@ -757,8 +756,7 @@ export class PackagesService {
 
     await this.assertMarketplaceHotelsAvailable(nextHotelIds, nextIsActive);
     await this.assertMarketplaceRoomPlan(nextHotelIds, nextDesiredRoomPlan, nextIsActive);
-    await this.assertVehicleOwnership(
-      agencyId,
+    await this.assertVehicleMarketplaceAvailability(
       input.vehicleId !== undefined ? input.vehicleId ?? null : existing.vehicleId ?? null,
     );
 

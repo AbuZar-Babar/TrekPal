@@ -37,7 +37,6 @@ export class PrismaAgencyRepository implements IAgencyRepository {
                 _count: {
                     select: {
                         hotels: true,
-                        vehicles: true,
                     },
                 },
             },
@@ -46,7 +45,7 @@ export class PrismaAgencyRepository implements IAgencyRepository {
         return agencies.map((agency) => ({
             ...agency,
             hotelsCount: agency._count.hotels,
-            vehiclesCount: agency._count.vehicles,
+            vehiclesCount: 0,
         }));
     }
 

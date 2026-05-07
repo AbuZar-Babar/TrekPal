@@ -9,6 +9,7 @@ import {
   userRegisterSchema,
   agencyRegisterSchema,
   hotelRegisterSchema,
+  vehicleRegisterSchema,
   loginSchema,
   verifyCnicSchema,
 } from './auth.types';
@@ -49,6 +50,13 @@ router.post(
   uploadKycDocuments as any,
   validateBody(agencyRegisterSchema.shape.body),
   authController.registerAgency.bind(authController)
+);
+
+router.post(
+  '/register/vehicle',
+  uploadKycDocuments as any,
+  validateBody(vehicleRegisterSchema.shape.body),
+  authController.registerVehicleProvider.bind(authController),
 );
 
 /**

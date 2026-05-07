@@ -59,8 +59,8 @@ export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>['body'];
 
 export interface VehicleResponse {
   id: string;
-  agencyId: string;
-  agencyName: string;
+  vehicleProviderId: string;
+  vehicleProviderName: string;
   type: string;
   make: string;
   model: string;

@@ -20,6 +20,7 @@ import {
   AgencyResponse,
   HotelResponse,
   VehicleResponse,
+  VehicleProviderResponse,
   UserResponse,
   DashboardStats,
   UpdateAgencyInput,
@@ -200,7 +201,6 @@ export class AdminService {
         _count: {
           select: {
             hotels: true,
-            vehicles: true,
           },
         },
       },
@@ -213,7 +213,7 @@ export class AdminService {
     return {
       ...agency,
       hotelsCount: agency._count.hotels,
-      vehiclesCount: agency._count.vehicles,
+      vehiclesCount: 0,
     };
   }
 
@@ -238,6 +238,52 @@ export class AdminService {
       ...user,
       bookingsCount: user._count.bookings,
       tripRequestsCount: user._count.tripRequests,
+    };
+  }
+
+  private async mapVehicleProviderResponse(provider: any): Promise<VehicleProviderResponse> {
+    const [
+      cnicImageUrl,
+      ownerPhotoUrl,
+      licenseCertificateUrl,
+      ntnCertificateUrl,
+      officeProofUrl,
+      bankCertificateUrl,
+      additionalSupportingDocumentUrl,
+    ] = await Promise.all([
+      this.resolveKycUrl(provider.cnicImageUrl),
+      this.resolveKycUrl(provider.ownerPhotoUrl),
+      this.resolveKycUrl(provider.licenseCertificateUrl),
+      this.resolveKycUrl(provider.ntnCertificateUrl),
+      this.resolveKycUrl(provider.officeProofUrl),
+      this.resolveKycUrl(provider.bankCertificateUrl),
+      this.resolveKycUrl(provider.additionalSupportingDocumentUrl),
+    ]);
+
+    return {
+      id: provider.id,
+      authUid: provider.authUid,
+      email: provider.email,
+      name: provider.name,
+      phone: provider.phone ?? null,
+      address: provider.address ?? null,
+      officeCity: provider.officeCity ?? null,
+      license: provider.license ?? null,
+      ntn: provider.ntn ?? null,
+      ownerName: provider.ownerName ?? null,
+      cnic: provider.cnic ?? null,
+      cnicImageUrl,
+      ownerPhotoUrl,
+      licenseCertificateUrl,
+      ntnCertificateUrl,
+      officeProofUrl,
+      bankCertificateUrl,
+      additionalSupportingDocumentUrl,
+      applicationSubmittedAt: provider.applicationSubmittedAt ?? null,
+      status: provider.status,
+      createdAt: provider.createdAt,
+      updatedAt: provider.updatedAt,
+      vehiclesCount: provider.vehiclesCount ?? 0,
     };
   }
 
@@ -413,8 +459,8 @@ export class AdminService {
     const vehiclesResponse = await Promise.all(
       vehicles.map(async (vehicle) => ({
         id: vehicle.id,
-        agencyId: vehicle.agencyId,
-        agencyName: vehicle.agencyName || '',
+        vehicleProviderId: (vehicle as any).vehicleProviderId,
+        vehicleProviderName: (vehicle as any).vehicleProviderName || 'Vehicle Provider',
         type: vehicle.type,
         make: vehicle.make,
         model: vehicle.model,
@@ -448,8 +494,8 @@ export class AdminService {
 
     return {
       id: vehicleWithRelations.id,
-      agencyId: vehicleWithRelations.agencyId,
-      agencyName: (vehicleWithRelations as any).agencyName || '',
+      vehicleProviderId: (vehicleWithRelations as any).vehicleProviderId,
+      vehicleProviderName: (vehicleWithRelations as any).vehicleProviderName || 'Vehicle Provider',
       type: vehicleWithRelations.type,
       make: vehicleWithRelations.make,
       model: vehicleWithRelations.model,
@@ -475,8 +521,8 @@ export class AdminService {
 
     return {
       id: vehicleWithRelations.id,
-      agencyId: vehicleWithRelations.agencyId,
-      agencyName: (vehicleWithRelations as any).agencyName || '',
+      vehicleProviderId: (vehicleWithRelations as any).vehicleProviderId,
+      vehicleProviderName: (vehicleWithRelations as any).vehicleProviderName || 'Vehicle Provider',
       type: vehicleWithRelations.type,
       make: vehicleWithRelations.make,
       model: vehicleWithRelations.model,
@@ -515,6 +561,82 @@ export class AdminService {
       page,
       limit,
     };
+  }
+
+  async getVehicleProviders(
+    page: number = 1,
+    limit: number = 20,
+    status?: string,
+    search?: string,
+  ): Promise<{ providers: VehicleProviderResponse[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
+    const where: any = {};
+
+    if (status) {
+      where.status = status;
+    }
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { ownerName: { contains: search, mode: 'insensitive' } },
+        { officeCity: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [providers, total] = await Promise.all([
+      prisma.vehicleProvider.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          _count: { select: { vehicles: true } },
+        },
+      }),
+      prisma.vehicleProvider.count({ where }),
+    ]);
+
+    const mapped = await Promise.all(
+      providers.map((provider) =>
+        this.mapVehicleProviderResponse({
+          ...provider,
+          vehiclesCount: provider._count.vehicles,
+        }),
+      ),
+    );
+
+    return { providers: mapped, total, page, limit };
+  }
+
+  async approveVehicleProvider(id: string, _reason?: string): Promise<VehicleProviderResponse> {
+    const provider = await prisma.vehicleProvider.update({
+      where: { id },
+      data: { status: APPROVAL_STATUS.APPROVED },
+      include: {
+        _count: { select: { vehicles: true } },
+      },
+    });
+
+    return this.mapVehicleProviderResponse({
+      ...provider,
+      vehiclesCount: provider._count.vehicles,
+    });
+  }
+
+  async rejectVehicleProvider(id: string, _reason?: string): Promise<VehicleProviderResponse> {
+    const provider = await prisma.vehicleProvider.update({
+      where: { id },
+      data: { status: APPROVAL_STATUS.REJECTED },
+      include: {
+        _count: { select: { vehicles: true } },
+      },
+    });
+
+    return this.mapVehicleProviderResponse({
+      ...provider,
+      vehiclesCount: provider._count.vehicles,
+    });
   }
 
   /**
@@ -584,6 +706,7 @@ export class AdminService {
       bookings,
       recentUsers,
       recentAgencies,
+      recentVehicleProviders,
     ] = await Promise.all([
       this.userRepo.count(),
       this.agencyRepo.count(),
@@ -601,6 +724,13 @@ export class AdminService {
       prisma.booking.findMany({ select: { totalAmount: true } }),
       this.userRepo.countRecentRegistrations(7),
       prisma.agency.count({
+        where: {
+          createdAt: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          },
+        },
+      }),
+      prisma.vehicleProvider.count({
         where: {
           createdAt: {
             gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
@@ -629,6 +759,7 @@ export class AdminService {
       recentRegistrations: {
         users: recentUsers,
         agencies: recentAgencies,
+        vehicleProviders: recentVehicleProviders,
       },
     };
   }

@@ -13,8 +13,6 @@ import HotelList from './modules/hotels/components/HotelList';
 import PackageForm from './modules/packages/components/PackageForm';
 import PackageList from './modules/packages/components/PackageList';
 import TripRequestList from './modules/tripRequests/components/TripRequestList';
-import VehicleForm from './modules/transport/components/VehicleForm';
-import VehicleList from './modules/transport/components/VehicleList';
 import Layout from './shared/components/Layout/Layout';
 import { AppDispatch, RootState } from './store';
 
@@ -155,36 +153,6 @@ function App() {
       <Route
         path="/hotels/:id/edit"
         element={<Navigate to="/hotels" replace />}
-      />
-      <Route
-        path="/transport"
-        element={(
-          <ProtectedRoute>
-            <Layout>
-              <VehicleList />
-            </Layout>
-          </ProtectedRoute>
-        )}
-      />
-      <Route
-        path="/transport/new"
-        element={(
-          <ProtectedRoute>
-            <Layout>
-              <VehicleForm />
-            </Layout>
-          </ProtectedRoute>
-        )}
-      />
-      <Route
-        path="/transport/:id/edit"
-        element={(
-          <ProtectedRoute>
-            <Layout>
-              <VehicleForm />
-            </Layout>
-          </ProtectedRoute>
-        )}
       />
       <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
       <Route path="/status" element={<Navigate to="/dashboard" replace />} />

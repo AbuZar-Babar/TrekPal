@@ -72,6 +72,14 @@ const requiredAgencyFileFields = (input: AgencyRegisterInput): AgencyApplication
   return required;
 };
 
+const requiredVehicleFileFields: AgencyApplicationFileField[] = [
+  'cnicImage',
+  'ownerPhoto',
+  'licenseCertificate',
+  'officeProof',
+  'bankCertificate',
+];
+
 const buildKycObjectPath = (
   uploadBatchId: string,
   fieldName: string,
@@ -301,6 +309,73 @@ export class AuthController {
       console.error('[Auth Controller] registerHotel error:', error.message || error);
       if (error.code === 'auth/email-already-exists') {
         sendError(res, 'Email already registered', 409);
+      } else {
+        sendError(res, error.message || 'Registration failed', 400);
+      }
+    }
+  }
+
+  async registerVehicleProvider(req: AuthRequest, res: Response): Promise<void> {
+    const uploadedObjectPaths: string[] = [];
+    try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const input = req.body;
+      const missingRequiredFiles = requiredVehicleFileFields.filter(
+        (fieldName) => !files?.[fieldName]?.[0],
+      );
+
+      if (missingRequiredFiles.length > 0) {
+        sendError(
+          res,
+          `Missing required documents: ${missingRequiredFiles.map((field) => agencyDocumentLabels[field]).join(', ')}`,
+          400,
+        );
+        return;
+      }
+
+      const uploadBatchId = `vehicles-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const uploadedDocuments: Partial<Record<AgencyApplicationFileField, string>> = {};
+
+      for (const fieldName of agencyApplicationFileFields) {
+        const file = files?.[fieldName]?.[0];
+        if (!file) {
+          continue;
+        }
+
+        const objectPath = `vehicle-providers/pending/${uploadBatchId}/${fieldName}${path.extname(file.originalname || '').toLowerCase() || inferKycExtensionFromMimeType(file.mimetype)}`;
+        await uploadKycFile(
+          file.buffer,
+          resolveKycMimeType(file.mimetype, file.originalname),
+          objectPath,
+        );
+        uploadedObjectPaths.push(objectPath);
+        uploadedDocuments[fieldName] = objectPath;
+      }
+
+      const result = await authService.registerVehicleProvider({
+        ...input,
+        cnicImageUrl: uploadedDocuments.cnicImage,
+        ownerPhotoUrl: uploadedDocuments.ownerPhoto,
+        licenseCertificateUrl: uploadedDocuments.licenseCertificate,
+        ntnCertificateUrl: uploadedDocuments.ntnCertificate,
+        officeProofUrl: uploadedDocuments.officeProof,
+        bankCertificateUrl: uploadedDocuments.bankCertificate,
+        additionalSupportingDocumentUrl: uploadedDocuments.additionalSupportingDocument,
+      });
+
+      sendSuccess(res, result, 'Vehicle provider registered successfully. Pending admin approval.', 201);
+    } catch (error: any) {
+      if (uploadedObjectPaths.length > 0) {
+        await Promise.allSettled(
+          uploadedObjectPaths.map((objectPath) => deleteKycFile(objectPath)),
+        );
+      }
+
+      if (error.code === 'auth/email-already-exists') {
+        sendError(res, 'Email already registered', 409);
+      } else if (error.code === 'P2002') {
+        const field = error.meta?.target?.[0] || 'field';
+        sendError(res, `A record with this ${field} already exists`, 409);
       } else {
         sendError(res, error.message || 'Registration failed', 400);
       }

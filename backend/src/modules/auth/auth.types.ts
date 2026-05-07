@@ -177,6 +177,31 @@ export type HotelRegisterInput = z.infer<typeof hotelRegisterSchema>['body'] & {
   businessDocUrl?: string;
 };
 
+export const vehicleRegisterSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    name: z.string().trim().min(2, 'Business name must be at least 2 characters'),
+    phone: z.string().trim().min(5, 'Phone number is required'),
+    address: z.string().trim().min(5, 'Address is required'),
+    officeCity: z.string().trim().min(2, 'Office city is required'),
+    license: z.string().trim().min(1, 'License number is required'),
+    ntn: z.string().trim().optional(),
+    ownerName: z.string().trim().min(2, 'Owner name is required'),
+    cnic: z.string().regex(/^\d{13}$/, 'CNIC must be exactly 13 digits'),
+  }),
+});
+
+export type VehicleRegisterInput = z.infer<typeof vehicleRegisterSchema>['body'] & {
+  cnicImageUrl?: string;
+  ownerPhotoUrl?: string;
+  licenseCertificateUrl?: string;
+  ntnCertificateUrl?: string;
+  officeProofUrl?: string;
+  bankCertificateUrl?: string;
+  additionalSupportingDocumentUrl?: string;
+};
+
 // Login Schema (for both user and agency)
 // Supports both Supabase token and email/password
 export const loginSchema = z.object({

@@ -33,7 +33,7 @@ export class PrismaVehicleRepository implements IVehicleRepository {
             take: limit,
             orderBy: { createdAt: 'desc' },
             include: {
-                agency: {
+                vehicleProvider: {
                     select: {
                         name: true,
                     },
@@ -43,7 +43,7 @@ export class PrismaVehicleRepository implements IVehicleRepository {
 
         return vehicles.map((vehicle) => ({
             ...vehicle,
-            agencyName: vehicle.agency.name,
+            vehicleProviderName: vehicle.vehicleProvider?.name || null,
         }));
     }
 

@@ -79,7 +79,6 @@ model Agency {
 
   // Relations
   hotels      Hotel[]
-  vehicles    Vehicle[]
   packages    Package[]
   bids        Bid[]
   bookings    Booking[]
@@ -135,6 +134,35 @@ model Hotel {
   @@map("hotels")
 }
 
+model VehicleProvider {
+  id            String   @id @default(cuid())
+  authUid       String   @unique
+  email         String   @unique
+  name          String
+  phone         String?
+  address       String?
+  officeCity    String?
+  license       String?  @unique
+  ntn           String?  @unique
+  ownerName     String?
+  cnic          String?  @unique
+  cnicImageUrl  String?
+  ownerPhotoUrl String?
+  licenseCertificateUrl String?
+  ntnCertificateUrl String?
+  officeProofUrl String?
+  bankCertificateUrl String?
+  additionalSupportingDocumentUrl String?
+  applicationSubmittedAt DateTime?
+  status        String   @default("PENDING")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  vehicles      Vehicle[]
+
+  @@map("vehicle_providers")
+}
+
 // Room model
 model Room {
   id          String   @id @default(cuid())
@@ -162,7 +190,7 @@ model Room {
 // Vehicle model
 model Vehicle {
   id          String   @id @default(cuid())
-  agencyId    String
+  vehicleProviderId String
   type        String   // CAR, BUS, VAN, etc.
   make        String
   model       String
@@ -181,7 +209,7 @@ model Vehicle {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  vehicleProvider VehicleProvider @relation(fields: [vehicleProviderId], references: [id], onDelete: Cascade)
   bookings    Booking[]
   packages    Package[]
   tripRequests TripRequest[]

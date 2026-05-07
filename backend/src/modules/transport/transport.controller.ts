@@ -17,13 +17,13 @@ export class TransportController {
         return;
       }
 
-      const agency = await prisma.agency.findUnique({
+      const provider = await prisma.vehicleProvider.findUnique({
         where: { authUid: req.user.uid },
         select: { id: true },
       });
 
-      if (!agency) {
-        sendError(res, 'Agency not found', 404);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
         return;
       }
 
@@ -33,7 +33,7 @@ export class TransportController {
       }
 
       const objectPath = buildMediaObjectPath(
-        `vehicles/${agency.id}`,
+        `vehicles/${provider.id}`,
         `${Date.now()}-${Math.round(Math.random() * 1e9)}`,
         req.file.mimetype,
         req.file.originalname,
@@ -58,31 +58,35 @@ export class TransportController {
       }
 
       // Get agency ID from user
-      let agency = await prisma.agency.findUnique({
+      let provider = await prisma.vehicleProvider.findUnique({
         where: { authUid: req.user.uid },
       });
 
-      // In development mode, create a dummy agency if it doesn't exist
-      if (!agency && process.env.NODE_ENV === 'development') {
-        agency = await prisma.agency.upsert({
+      if (!provider && process.env.NODE_ENV === 'development') {
+        provider = await prisma.vehicleProvider.upsert({
           where: { authUid: req.user.uid },
           update: {},
           create: {
             authUid: req.user.uid,
-            email: req.user.email || 'agency@trekpal.com',
-            name: 'Development Agency',
+            email: req.user.email || 'vehicle@trekpal.com',
+            name: 'Development Vehicle Provider',
             phone: '+1234567890',
+            address: 'Development Address',
+            officeCity: 'Islamabad',
+            license: `DEV-LIC-${Date.now()}`,
+            ownerName: 'Development Owner',
+            cnic: `1234567${Math.floor(100000 + Math.random() * 899999)}`,
             status: 'APPROVED',
           },
         });
       }
 
-      if (!agency) {
-        sendError(res, 'Agency not found', 404);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
         return;
       }
 
-      const result = await transportService.createVehicle(agency.id, req.body);
+      const result = await transportService.createVehicle(provider.id, req.body);
       sendSuccess(res, result, 'Vehicle created successfully', 201);
     } catch (error: any) {
       sendError(res, error.message || 'Failed to create vehicle', 400);
@@ -101,27 +105,12 @@ export class TransportController {
       }
 
       // Get agency ID from user
-      let agency = await prisma.agency.findUnique({
+      const provider = await prisma.vehicleProvider.findUnique({
         where: { authUid: req.user.uid },
       });
 
-      // In development mode, create a dummy agency if it doesn't exist
-      if (!agency && process.env.NODE_ENV === 'development') {
-        agency = await prisma.agency.upsert({
-          where: { authUid: req.user.uid },
-          update: {},
-          create: {
-            authUid: req.user.uid,
-            email: req.user.email || 'agency@trekpal.com',
-            name: 'Development Agency',
-            phone: '+1234567890',
-            status: 'APPROVED',
-          },
-        });
-      }
-
-      if (!agency) {
-        sendError(res, 'Agency not found', 404);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
         return;
       }
 
@@ -130,8 +119,8 @@ export class TransportController {
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
 
-      const result = await transportService.getAgencyVehicles(
-        agency.id,
+      const result = await transportService.getOwnerVehicles(
+        provider.id,
         page,
         limit,
         status,
@@ -180,15 +169,13 @@ export class TransportController {
       const { id } = req.params;
 
       // Get agency ID if user is agency
-      let agencyId: string | undefined;
-      const agency = await prisma.agency.findUnique({
+      const provider = await prisma.vehicleProvider.findUnique({
         where: { authUid: req.user.uid },
       });
-      if (agency) {
-        agencyId = agency.id;
-      }
-
-      const result = await transportService.getVehicleById(id, agencyId);
+      const result = await transportService.getVehicleById(
+        id,
+        provider?.id,
+      );
       sendSuccess(res, result, 'Vehicle retrieved successfully');
     } catch (error: any) {
       sendError(res, error.message || 'Vehicle not found', 404);
@@ -209,31 +196,16 @@ export class TransportController {
       const { id } = req.params;
 
       // Get agency ID from user
-      let agency = await prisma.agency.findUnique({
+      const provider = await prisma.vehicleProvider.findUnique({
         where: { authUid: req.user.uid },
       });
 
-      // In development mode, create a dummy agency if it doesn't exist
-      if (!agency && process.env.NODE_ENV === 'development') {
-        agency = await prisma.agency.upsert({
-          where: { authUid: req.user.uid },
-          update: {},
-          create: {
-            authUid: req.user.uid,
-            email: req.user.email || 'agency@trekpal.com',
-            name: 'Development Agency',
-            phone: '+1234567890',
-            status: 'APPROVED',
-          },
-        });
-      }
-
-      if (!agency) {
-        sendError(res, 'Agency not found', 404);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
         return;
       }
 
-      const result = await transportService.updateVehicle(id, agency.id, req.body);
+      const result = await transportService.updateVehicle(id, provider.id, req.body);
       sendSuccess(res, result, 'Vehicle updated successfully');
     } catch (error: any) {
       sendError(res, error.message || 'Failed to update vehicle', 400);
@@ -254,31 +226,16 @@ export class TransportController {
       const { id } = req.params;
 
       // Get agency ID from user
-      let agency = await prisma.agency.findUnique({
+      const provider = await prisma.vehicleProvider.findUnique({
         where: { authUid: req.user.uid },
       });
 
-      // In development mode, create a dummy agency if it doesn't exist
-      if (!agency && process.env.NODE_ENV === 'development') {
-        agency = await prisma.agency.upsert({
-          where: { authUid: req.user.uid },
-          update: {},
-          create: {
-            authUid: req.user.uid,
-            email: req.user.email || 'agency@trekpal.com',
-            name: 'Development Agency',
-            phone: '+1234567890',
-            status: 'APPROVED',
-          },
-        });
-      }
-
-      if (!agency) {
-        sendError(res, 'Agency not found', 404);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
         return;
       }
 
-      await transportService.deleteVehicle(id, agency.id);
+      await transportService.deleteVehicle(id, provider.id);
       sendSuccess(res, null, 'Vehicle deleted successfully');
     } catch (error: any) {
       sendError(res, error.message || 'Failed to delete vehicle', 400);

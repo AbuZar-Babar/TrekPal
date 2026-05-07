@@ -258,6 +258,50 @@ export class AdminController {
     }
   }
 
+  async getVehicleProviders(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const status = req.query.status as string | undefined;
+      const search = req.query.search as string | undefined;
+
+      const result = await adminService.getVehicleProviders(page, limit, status, search);
+      sendSuccess(res, result, 'Vehicle providers retrieved successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to get vehicle providers', 500);
+    }
+  }
+
+  async approveVehicleProvider(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body || {};
+      const provider = await adminService.approveVehicleProvider(id, reason);
+      sendSuccess(res, provider, 'Vehicle provider approved successfully');
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        sendError(res, 'Vehicle provider not found', 404);
+      } else {
+        sendError(res, error.message || 'Failed to approve vehicle provider', 500);
+      }
+    }
+  }
+
+  async rejectVehicleProvider(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body || {};
+      const provider = await adminService.rejectVehicleProvider(id, reason);
+      sendSuccess(res, provider, 'Vehicle provider rejected successfully');
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        sendError(res, 'Vehicle provider not found', 404);
+      } else {
+        sendError(res, error.message || 'Failed to reject vehicle provider', 500);
+      }
+    }
+  }
+
   /**
    * Approve a traveler
    * POST /api/admin/users/:id/approve

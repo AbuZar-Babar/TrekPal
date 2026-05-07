@@ -14,8 +14,8 @@ import { normalizeMediaStoragePaths, resolveMediaUrls } from '../../services/med
 export class TransportService {
   private async mapVehicleResponse(vehicle: {
     id: string;
-    agencyId: string;
-    agency: { name: string };
+    vehicleProviderId: string | null;
+    vehicleProvider: { name: string } | null;
     type: string;
     make: string;
     model: string;
@@ -32,10 +32,14 @@ export class TransportService {
     createdAt: Date;
     updatedAt: Date;
   }): Promise<VehicleResponse> {
+    if (!vehicle.vehicleProviderId || !vehicle.vehicleProvider) {
+      throw new Error('Vehicle ownership is invalid. Missing vehicle provider link.');
+    }
+
     return {
       id: vehicle.id,
-      agencyId: vehicle.agencyId,
-      agencyName: vehicle.agency.name,
+      vehicleProviderId: vehicle.vehicleProviderId,
+      vehicleProviderName: vehicle.vehicleProvider.name,
       type: vehicle.type,
       make: vehicle.make,
       model: vehicle.model,
@@ -57,10 +61,10 @@ export class TransportService {
   /**
    * Create a new vehicle (for agency)
    */
-  async createVehicle(agencyId: string, input: CreateVehicleInput): Promise<VehicleResponse> {
+  async createVehicle(vehicleProviderId: string, input: CreateVehicleInput): Promise<VehicleResponse> {
     const vehicle = await prisma.vehicle.create({
       data: {
-        agencyId,
+        vehicleProviderId,
         type: input.type,
         make: input.make,
         model: input.model,
@@ -68,7 +72,7 @@ export class TransportService {
         capacity: input.capacity,
         pricePerDay: input.pricePerDay,
         images: normalizeMediaStoragePaths(input.images || []),
-        status: APPROVAL_STATUS.APPROVED,
+        status: APPROVAL_STATUS.PENDING,
         isAvailable: input.isAvailable ?? true,
         vehicleNumber: input.vehicleNumber ?? null,
         driverName: input.driverName ?? null,
@@ -76,7 +80,7 @@ export class TransportService {
         driverLicense: input.driverLicense ?? null,
       },
       include: {
-        agency: {
+        vehicleProvider: {
           select: {
             name: true,
           },
@@ -90,14 +94,14 @@ export class TransportService {
   /**
    * Get all vehicles for an agency
    */
-  async getAgencyVehicles(
-    agencyId: string,
+  async getOwnerVehicles(
+    vehicleProviderId: string,
     page: number = 1,
     limit: number = 20,
     status?: string,
     search?: string
   ): Promise<{ vehicles: VehicleResponse[]; total: number; page: number; limit: number }> {
-    return this.getVehicles(page, limit, status, search, agencyId);
+    return this.getVehicles(page, limit, status, search, vehicleProviderId);
   }
 
   /**
@@ -108,27 +112,32 @@ export class TransportService {
     limit: number = 20,
     status?: string,
     search?: string,
-    agencyId?: string
+    vehicleProviderId?: string
   ): Promise<{ vehicles: VehicleResponse[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
 
     const where: any = {};
-    if (agencyId) {
-      where.agencyId = agencyId;
+    if (vehicleProviderId) {
+      where.vehicleProviderId = vehicleProviderId;
+    } else {
+      where.status = APPROVAL_STATUS.APPROVED;
     }
 
-    if (status) {
+    if (status && vehicleProviderId) {
       where.status = status;
     }
 
     if (search) {
-      where.OR = [
+      where.AND = where.AND || [];
+      where.AND.push({
+        OR: [
         { make: { contains: search, mode: 'insensitive' } },
         { model: { contains: search, mode: 'insensitive' } },
         { type: { contains: search, mode: 'insensitive' } },
         { vehicleNumber: { contains: search, mode: 'insensitive' } },
         { driverName: { contains: search, mode: 'insensitive' } },
-      ];
+        ],
+      });
     }
 
     const [vehicles, total] = await Promise.all([
@@ -138,7 +147,7 @@ export class TransportService {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          agency: {
+          vehicleProvider: {
             select: {
               name: true,
             },
@@ -163,14 +172,18 @@ export class TransportService {
   /**
    * Get a single vehicle by ID
    */
-  async getVehicleById(vehicleId: string, agencyId?: string): Promise<VehicleResponse> {
+  async getVehicleById(vehicleId: string, vehicleProviderId?: string): Promise<VehicleResponse> {
     const where: any = { id: vehicleId };
-    if (agencyId) where.agencyId = agencyId;
+    if (vehicleProviderId) {
+      where.vehicleProviderId = vehicleProviderId;
+    } else {
+      where.status = APPROVAL_STATUS.APPROVED;
+    }
 
     const vehicle = await prisma.vehicle.findFirst({
       where,
       include: {
-        agency: {
+        vehicleProvider: {
           select: { name: true },
         },
       },
@@ -188,7 +201,7 @@ export class TransportService {
    */
   async updateVehicle(
     vehicleId: string,
-    agencyId: string,
+    vehicleProviderId: string,
     input: UpdateVehicleInput
   ): Promise<VehicleResponse> {
     // Verify vehicle belongs to agency
@@ -200,8 +213,8 @@ export class TransportService {
       throw new Error('Vehicle not found');
     }
 
-    if (existingVehicle.agencyId !== agencyId) {
-      throw new Error('Unauthorized: Vehicle does not belong to your agency');
+    if (existingVehicle.vehicleProviderId !== vehicleProviderId) {
+      throw new Error('Unauthorized: Vehicle does not belong to your account');
     }
 
     const updateData: any = {};
@@ -217,13 +230,13 @@ export class TransportService {
     if (input.driverName !== undefined) updateData.driverName = input.driverName;
     if (input.driverPhone !== undefined) updateData.driverPhone = input.driverPhone;
     if (input.driverLicense !== undefined) updateData.driverLicense = input.driverLicense;
-    updateData.status = APPROVAL_STATUS.APPROVED;
+    updateData.status = APPROVAL_STATUS.PENDING;
 
     const vehicle = await prisma.vehicle.update({
       where: { id: vehicleId },
       data: updateData,
       include: {
-        agency: {
+        vehicleProvider: {
           select: {
             name: true,
           },
@@ -237,7 +250,7 @@ export class TransportService {
   /**
    * Delete vehicle (for agency)
    */
-  async deleteVehicle(vehicleId: string, agencyId: string): Promise<void> {
+  async deleteVehicle(vehicleId: string, vehicleProviderId: string): Promise<void> {
     // Verify vehicle belongs to agency
     const vehicle = await prisma.vehicle.findUnique({
       where: { id: vehicleId },
@@ -247,8 +260,8 @@ export class TransportService {
       throw new Error('Vehicle not found');
     }
 
-    if (vehicle.agencyId !== agencyId) {
-      throw new Error('Unauthorized: Vehicle does not belong to your agency');
+    if (vehicle.vehicleProviderId !== vehicleProviderId) {
+      throw new Error('Unauthorized: Vehicle does not belong to your account');
     }
 
     await prisma.vehicle.delete({

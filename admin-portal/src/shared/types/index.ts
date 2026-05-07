@@ -13,7 +13,7 @@ export interface User {
   authUid: string;
   email: string;
   name: string;
-  role: 'TRAVELER' | 'AGENCY' | 'ADMIN';
+  role: 'TRAVELER' | 'AGENCY' | 'ADMIN' | 'HOTEL' | 'VEHICLE';
 }
 
 export interface Agency {
@@ -72,8 +72,8 @@ export interface Hotel {
 
 export interface Vehicle {
   id: string;
-  agencyId: string;
-  agencyName: string;
+  vehicleProviderId: string;
+  vehicleProviderName: string;
   type: string;
   make: string;
   model: string;
@@ -84,6 +84,32 @@ export interface Vehicle {
   isAvailable: boolean;
   images: string[];
   createdAt: string;
+}
+
+export interface VehicleProvider {
+  id: string;
+  authUid: string;
+  email: string;
+  name: string;
+  phone: string | null;
+  address: string | null;
+  officeCity: string | null;
+  license: string | null;
+  ntn: string | null;
+  ownerName: string | null;
+  cnic: string | null;
+  cnicImageUrl: string | null;
+  ownerPhotoUrl: string | null;
+  licenseCertificateUrl: string | null;
+  ntnCertificateUrl: string | null;
+  officeProofUrl: string | null;
+  bankCertificateUrl: string | null;
+  additionalSupportingDocumentUrl: string | null;
+  applicationSubmittedAt: string | null;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string;
+  vehiclesCount?: number;
 }
 
 export interface UserProfile {
@@ -124,6 +150,7 @@ export interface DashboardStats {
   recentRegistrations: {
     users: number;
     agencies: number;
+    vehicleProviders: number;
   };
 }
 

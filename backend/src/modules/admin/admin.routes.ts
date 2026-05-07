@@ -107,6 +107,16 @@ router.post(
   adminController.rejectVehicle.bind(adminController)
 );
 
+router.get('/vehicle-providers', adminController.getVehicleProviders.bind(adminController));
+router.post(
+  '/vehicle-providers/:id/approve',
+  adminController.approveVehicleProvider.bind(adminController),
+);
+router.post(
+  '/vehicle-providers/:id/reject',
+  adminController.rejectVehicleProvider.bind(adminController),
+);
+
 /**
  * @route   GET /api/admin/users
  * @desc    Get all users with pagination

@@ -5,6 +5,7 @@ import hotelReducer from '../modules/hotels/store/hotelSlice';
 import vehiclesReducer from '../modules/vehicles/store/vehiclesSlice';
 import usersReducer from '../modules/users/store/usersSlice';
 import reportsReducer from '../modules/reports/store/reportsSlice';
+import vehicleProvidersReducer from '../modules/vehicleProviders/store/vehicleProvidersSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     vehicles: vehiclesReducer,
     users: usersReducer,
     reports: reportsReducer,
+    vehicleProviders: vehicleProvidersReducer,
   },
 });
 

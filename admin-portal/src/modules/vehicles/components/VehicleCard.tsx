@@ -35,12 +35,12 @@ const VehicleCard = ({ vehicle, onApprove, onReject }: VehicleCardProps) => {
               </span>
             </div>
 
-            {/* Agency */}
+            {/* Provider */}
             <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-3">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
               </svg>
-              <span>{vehicle.agencyName}</span>
+              <span>{vehicle.vehicleProviderName}</span>
             </div>
 
             {/* Details Grid */}

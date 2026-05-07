@@ -173,8 +173,8 @@ export interface HotelResponse {
 // Vehicle Response Type
 export interface VehicleResponse {
   id: string;
-  agencyId: string;
-  agencyName: string;
+  vehicleProviderId: string;
+  vehicleProviderName: string;
   type: string;
   make: string;
   model: string;
@@ -186,6 +186,32 @@ export interface VehicleResponse {
   isAvailable: boolean;
   images: string[];
   createdAt: Date;
+}
+
+export interface VehicleProviderResponse {
+  id: string;
+  authUid: string;
+  email: string;
+  name: string;
+  phone: string | null;
+  address: string | null;
+  officeCity: string | null;
+  license: string | null;
+  ntn: string | null;
+  ownerName: string | null;
+  cnic: string | null;
+  cnicImageUrl: string | null;
+  ownerPhotoUrl: string | null;
+  licenseCertificateUrl: string | null;
+  ntnCertificateUrl: string | null;
+  officeProofUrl: string | null;
+  bankCertificateUrl: string | null;
+  additionalSupportingDocumentUrl: string | null;
+  applicationSubmittedAt: Date | null;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  vehiclesCount?: number;
 }
 
 // User Response Type
@@ -228,5 +254,6 @@ export interface DashboardStats {
   recentRegistrations: {
     users: number;
     agencies: number;
+    vehicleProviders: number;
   };
 }

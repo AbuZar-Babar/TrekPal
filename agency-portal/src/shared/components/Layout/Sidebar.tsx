@@ -51,16 +51,6 @@ const navItems = [
       </svg>
     ),
   },
-  {
-    path: '/transport',
-    label: 'Fleet',
-    shortLabel: 'Fleet',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 17h.01M16 17h.01M3 11l1.5-5.25A2 2 0 016.42 4h11.16a2 2 0 011.92 1.75L21 11M3 11v6a1 1 0 001 1h1a2 2 0 004 0h6a2 2 0 004 0h1a1 1 0 001-1v-6M3 11h18" />
-      </svg>
-    ),
-  },
 ];
 
 const Sidebar = () => {

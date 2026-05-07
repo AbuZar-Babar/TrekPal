@@ -64,3 +64,5 @@ uploads/
 **/graphify-out/obsidian/
 **/graphify-out/.questions.json
 **/graphify-out/.sections.txt
+
+.obsidian
