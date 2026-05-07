@@ -52,13 +52,6 @@ export const signup = createAsyncThunk(
     fieldOfOperations: string[];
     capitalAvailablePkr: number;
     cnicImage: File;
-    ownerPhoto: File;
-    licenseCertificate: File;
-    ntnCertificate: File;
-    officeProof: File;
-    bankCertificate: File;
-    businessRegistrationProof?: File;
-    additionalSupportingDocument?: File;
     secpRegistrationNumber?: string;
     partnershipRegistrationNumber?: string;
   }) => {

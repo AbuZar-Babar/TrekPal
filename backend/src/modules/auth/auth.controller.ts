@@ -72,13 +72,7 @@ const requiredAgencyFileFields = (input: AgencyRegisterInput): AgencyApplication
   return required;
 };
 
-const requiredVehicleFileFields: AgencyApplicationFileField[] = [
-  'cnicImage',
-  'ownerPhoto',
-  'licenseCertificate',
-  'officeProof',
-  'bankCertificate',
-];
+const requiredVehicleFileFields: AgencyApplicationFileField[] = ['cnicImage'];
 
 const buildKycObjectPath = (
   uploadBatchId: string,
@@ -355,12 +349,6 @@ export class AuthController {
       const result = await authService.registerVehicleProvider({
         ...input,
         cnicImageUrl: uploadedDocuments.cnicImage,
-        ownerPhotoUrl: uploadedDocuments.ownerPhoto,
-        licenseCertificateUrl: uploadedDocuments.licenseCertificate,
-        ntnCertificateUrl: uploadedDocuments.ntnCertificate,
-        officeProofUrl: uploadedDocuments.officeProof,
-        bankCertificateUrl: uploadedDocuments.bankCertificate,
-        additionalSupportingDocumentUrl: uploadedDocuments.additionalSupportingDocument,
       });
 
       sendSuccess(res, result, 'Vehicle provider registered successfully. Pending admin approval.', 201);

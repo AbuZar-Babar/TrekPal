@@ -64,13 +64,6 @@ export const authService = {
     fieldOfOperations: string[];
     capitalAvailablePkr: number;
     cnicImage: File;
-    ownerPhoto: File;
-    licenseCertificate: File;
-    ntnCertificate: File;
-    officeProof: File;
-    bankCertificate: File;
-    businessRegistrationProof?: File;
-    additionalSupportingDocument?: File;
     secpRegistrationNumber?: string;
     partnershipRegistrationNumber?: string;
   }): Promise<{ user: User; token: string; status: string }> {
@@ -95,17 +88,6 @@ export const authService = {
       formData.append('fieldOfOperations', JSON.stringify(data.fieldOfOperations));
       formData.append('capitalAvailablePkr', String(data.capitalAvailablePkr));
       formData.append('cnicImage', data.cnicImage);
-      formData.append('ownerPhoto', data.ownerPhoto);
-      formData.append('licenseCertificate', data.licenseCertificate);
-      formData.append('ntnCertificate', data.ntnCertificate);
-      formData.append('officeProof', data.officeProof);
-      formData.append('bankCertificate', data.bankCertificate);
-      if (data.businessRegistrationProof) {
-        formData.append('businessRegistrationProof', data.businessRegistrationProof);
-      }
-      if (data.additionalSupportingDocument) {
-        formData.append('additionalSupportingDocument', data.additionalSupportingDocument);
-      }
       if (data.secpRegistrationNumber) {
         formData.append('secpRegistrationNumber', data.secpRegistrationNumber);
       }

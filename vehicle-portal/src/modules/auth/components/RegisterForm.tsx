@@ -1,4 +1,4 @@
-import { DragEvent, useMemo, useState } from 'react';
+import { DragEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -32,21 +32,12 @@ const LEGAL_ENTITY_OPTIONS = [
   { value: 'COMPANY', label: 'Company' },
 ] as const;
 const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-const DOCUMENT_MIME_TYPES = [...IMAGE_MIME_TYPES, 'application/pdf'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 type LegalEntityType = typeof LEGAL_ENTITY_OPTIONS[number]['value'];
 type Jurisdiction = typeof JURISDICTIONS[number];
 type FieldOfOperation = typeof FIELD_OF_OPERATIONS[number];
-type ImageFileField = 'cnicImage' | 'ownerPhoto';
-type DocumentFileField =
-  | 'licenseCertificate'
-  | 'ntnCertificate'
-  | 'businessRegistrationProof'
-  | 'officeProof'
-  | 'bankCertificate'
-  | 'additionalSupportingDocument';
-type FileFieldKey = ImageFileField | DocumentFileField;
+type FileFieldKey = 'cnicImage';
 
 interface FormState {
   name: string;
@@ -69,13 +60,6 @@ interface FormState {
 
 interface FileState {
   cnicImage: File | null;
-  ownerPhoto: File | null;
-  licenseCertificate: File | null;
-  ntnCertificate: File | null;
-  businessRegistrationProof: File | null;
-  officeProof: File | null;
-  bankCertificate: File | null;
-  additionalSupportingDocument: File | null;
 }
 
 const initialFormState: FormState = {
@@ -99,19 +83,10 @@ const initialFormState: FormState = {
 
 const initialFileState: FileState = {
   cnicImage: null,
-  ownerPhoto: null,
-  licenseCertificate: null,
-  ntnCertificate: null,
-  businessRegistrationProof: null,
-  officeProof: null,
-  bankCertificate: null,
-  additionalSupportingDocument: null,
 };
 
 const labelForJurisdiction = (jurisdiction: Jurisdiction | '') =>
   jurisdiction ? `${jurisdiction} Tourism License Number` : 'Tourism License Number';
-
-const fileLooksLikeImage = (file: File | null) => !!file && IMAGE_MIME_TYPES.includes(file.type);
 
 const TextInput = ({
   id,
@@ -131,9 +106,7 @@ const TextInput = ({
   onChange: (value: string) => void;
 }) => (
   <div>
-    <label htmlFor={id} className="mb-2 block text-sm font-medium text-slate-800">
-      {label}
-    </label>
+    <label htmlFor={id} className="mb-2 block text-sm font-medium text-slate-800">{label}</label>
     <input
       id={id}
       type={type}
@@ -162,9 +135,7 @@ const SelectInput = ({
   onChange: (value: string) => void;
 }) => (
   <div>
-    <label htmlFor={id} className="mb-2 block text-sm font-medium text-slate-800">
-      {label}
-    </label>
+    <label htmlFor={id} className="mb-2 block text-sm font-medium text-slate-800">{label}</label>
     <select
       id={id}
       value={value}
@@ -173,9 +144,7 @@ const SelectInput = ({
     >
       <option value="">Select {label.toLowerCase()}</option>
       {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
+        <option key={option.value} value={option.value}>{option.label}</option>
       ))}
     </select>
     {error && <p className="mt-2 text-sm text-[var(--danger-text)]">{error}</p>}
@@ -186,10 +155,7 @@ const FileUploadCard = ({
   id,
   label,
   file,
-  previewUrl,
   helperText,
-  required = false,
-  accept,
   error,
   onDrop,
   onFileChange,
@@ -197,10 +163,7 @@ const FileUploadCard = ({
   id: FileFieldKey;
   label: string;
   file: File | null;
-  previewUrl?: string | null;
   helperText: string;
-  required?: boolean;
-  accept: string;
   error?: string;
   onDrop: (event: DragEvent<HTMLLabelElement>) => void;
   onFileChange: (file: File) => void;
@@ -215,31 +178,22 @@ const FileUploadCard = ({
       <input
         id={id}
         type="file"
-        accept={accept}
+        accept="image/jpeg,image/png,image/jpg,image/webp"
         className="hidden"
         onChange={(event) => {
           const selectedFile = event.target.files?.[0];
-          if (selectedFile) {
-            onFileChange(selectedFile);
-          }
+          if (selectedFile) onFileChange(selectedFile);
         }}
       />
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="mb-1 flex items-center gap-2">
             <span className="text-sm font-semibold text-slate-800">{label}</span>
-            {required && <span className="text-xs text-red-500">*</span>}
+            <span className="text-xs text-red-500">*</span>
           </div>
           <p className="text-xs text-slate-500">{helperText}</p>
           <p className="mt-2 truncate text-xs text-slate-500">{file ? file.name : 'Upload file'}</p>
         </div>
-        {previewUrl && fileLooksLikeImage(file) ? (
-          <img src={previewUrl} alt={label} className="h-14 w-14 rounded-lg border border-slate-300 object-cover" />
-        ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-300 bg-white text-xs text-slate-500">
-            {file?.type === 'application/pdf' ? 'PDF' : 'FILE'}
-          </div>
-        )}
       </div>
     </label>
     {error && <p className="mt-2 text-sm text-[var(--danger-text)]">{error}</p>}
@@ -252,18 +206,9 @@ const RegisterForm = () => {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [form, setForm] = useState<FormState>(initialFormState);
   const [files, setFiles] = useState<FileState>(initialFileState);
-  const [previews, setPreviews] = useState<Record<ImageFileField, string | null>>({
-    cnicImage: null,
-    ownerPhoto: null,
-  });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const isBusinessRegistrationRequired = useMemo(
-    () => form.legalEntityType === 'COMPANY' || form.legalEntityType === 'PARTNERSHIP',
-    [form.legalEntityType],
-  );
 
   const updateForm = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -279,36 +224,24 @@ const RegisterForm = () => {
   };
 
   const handleFileSelect = (field: FileFieldKey, file: File) => {
-    const allowedTypes = field === 'cnicImage' || field === 'ownerPhoto' ? IMAGE_MIME_TYPES : DOCUMENT_MIME_TYPES;
-
-    if (!allowedTypes.includes(file.type)) {
-      setFormError(
-        field === 'cnicImage' || field === 'ownerPhoto'
-          ? 'CNIC image and owner photo must be JPG, PNG, or WebP.'
-          : 'Documents must be PDF, JPG, PNG, or WebP.',
-      );
+    if (!IMAGE_MIME_TYPES.includes(file.type)) {
+      setFormError('CNIC image must be JPG, PNG, or WebP.');
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      setFormError('Each file must be 10MB or smaller.');
+      setFormError('CNIC image must be 10MB or smaller.');
       return;
     }
 
     setFormError(null);
     setFiles((current) => ({ ...current, [field]: file }));
-
-    if (field === 'cnicImage' || field === 'ownerPhoto') {
-      setPreviews((current) => ({ ...current, [field]: URL.createObjectURL(file) }));
-    }
   };
 
   const handleDrop = (field: FileFieldKey) => (event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
     const file = event.dataTransfer.files?.[0];
-    if (file) {
-      handleFileSelect(field, file);
-    }
+    if (file) handleFileSelect(field, file);
   };
 
   const validateAll = (): ValidationErrors => {
@@ -365,24 +298,8 @@ const RegisterForm = () => {
       nextErrors.partnershipRegistrationNumber = 'Partnership registration number is required';
     }
 
-    const requiredFiles: Array<[FileFieldKey, string]> = [
-      ['cnicImage', 'CNIC image'],
-      ['ownerPhoto', 'Owner photo'],
-      ['licenseCertificate', 'Tourism license certificate'],
-      ['ntnCertificate', 'NTN certificate'],
-      ['officeProof', 'Office proof'],
-      ['bankCertificate', 'Bank certificate'],
-    ];
-
-    requiredFiles.forEach(([key, label]) => {
-      const error = validateFilePresent(files[key], label);
-      if (error) nextErrors[key] = error;
-    });
-
-    if (isBusinessRegistrationRequired) {
-      const businessProofError = validateFilePresent(files.businessRegistrationProof, 'Business registration proof');
-      if (businessProofError) nextErrors.businessRegistrationProof = businessProofError;
-    }
+    const cnicImageError = validateFilePresent(files.cnicImage, 'CNIC image');
+    if (cnicImageError) nextErrors.cnicImage = cnicImageError;
 
     return nextErrors;
   };
@@ -393,9 +310,7 @@ const RegisterForm = () => {
 
     const nextErrors = validateAll();
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) {
-      return;
-    }
+    if (Object.keys(nextErrors).length > 0) return;
 
     setLoading(true);
 
@@ -417,13 +332,6 @@ const RegisterForm = () => {
           fieldOfOperations: form.fieldOfOperations,
           capitalAvailablePkr: Number(form.capitalAvailablePkr),
           cnicImage: files.cnicImage!,
-          ownerPhoto: files.ownerPhoto!,
-          licenseCertificate: files.licenseCertificate!,
-          ntnCertificate: files.ntnCertificate!,
-          officeProof: files.officeProof!,
-          bankCertificate: files.bankCertificate!,
-          businessRegistrationProof: files.businessRegistrationProof || undefined,
-          additionalSupportingDocument: files.additionalSupportingDocument || undefined,
           secpRegistrationNumber: form.secpRegistrationNumber.trim() || undefined,
           partnershipRegistrationNumber: form.partnershipRegistrationNumber.trim() || undefined,
         }) as any,
@@ -503,14 +411,15 @@ const RegisterForm = () => {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <FileUploadCard id="ownerPhoto" label="Owner Photo" file={files.ownerPhoto} previewUrl={previews.ownerPhoto} helperText="Upload profile photo" required accept="image/jpeg,image/png,image/jpg,image/webp" error={errors.ownerPhoto} onDrop={handleDrop('ownerPhoto')} onFileChange={(file) => handleFileSelect('ownerPhoto', file)} />
-            <FileUploadCard id="cnicImage" label="CNIC Image" file={files.cnicImage} previewUrl={previews.cnicImage} helperText="Upload CNIC front" required accept="image/jpeg,image/png,image/jpg,image/webp" error={errors.cnicImage} onDrop={handleDrop('cnicImage')} onFileChange={(file) => handleFileSelect('cnicImage', file)} />
-            <FileUploadCard id="licenseCertificate" label="License Certificate" file={files.licenseCertificate} helperText="PDF/Image" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" error={errors.licenseCertificate} onDrop={handleDrop('licenseCertificate')} onFileChange={(file) => handleFileSelect('licenseCertificate', file)} />
-            <FileUploadCard id="ntnCertificate" label="NTN Certificate" file={files.ntnCertificate} helperText="PDF/Image" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" error={errors.ntnCertificate} onDrop={handleDrop('ntnCertificate')} onFileChange={(file) => handleFileSelect('ntnCertificate', file)} />
-            <FileUploadCard id="officeProof" label="Office Proof" file={files.officeProof} helperText="Ownership or rent proof" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" error={errors.officeProof} onDrop={handleDrop('officeProof')} onFileChange={(file) => handleFileSelect('officeProof', file)} />
-            <FileUploadCard id="bankCertificate" label="Bank Certificate" file={files.bankCertificate} helperText="Business bank proof" required accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" error={errors.bankCertificate} onDrop={handleDrop('bankCertificate')} onFileChange={(file) => handleFileSelect('bankCertificate', file)} />
-            <FileUploadCard id="businessRegistrationProof" label="Business Registration Proof" file={files.businessRegistrationProof} helperText={isBusinessRegistrationRequired ? 'Required for company and partnership' : 'Optional'} required={isBusinessRegistrationRequired} accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" error={errors.businessRegistrationProof} onDrop={handleDrop('businessRegistrationProof')} onFileChange={(file) => handleFileSelect('businessRegistrationProof', file)} />
-            <FileUploadCard id="additionalSupportingDocument" label="Additional Supporting Document" file={files.additionalSupportingDocument} helperText="Optional" accept="application/pdf,image/jpeg,image/png,image/jpg,image/webp" onDrop={handleDrop('additionalSupportingDocument')} onFileChange={(file) => handleFileSelect('additionalSupportingDocument', file)} />
+            <FileUploadCard
+              id="cnicImage"
+              label="CNIC Image"
+              file={files.cnicImage}
+              helperText="Upload CNIC front image"
+              error={errors.cnicImage}
+              onDrop={handleDrop('cnicImage')}
+              onFileChange={(file) => handleFileSelect('cnicImage', file)}
+            />
           </div>
 
           <button type="submit" disabled={loading} className="h-12 w-full rounded-lg bg-[#0b8ccf] font-semibold text-white transition-colors hover:bg-[#097bb3] disabled:cursor-not-allowed disabled:opacity-60">
