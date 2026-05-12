@@ -150,9 +150,9 @@ const VehicleList = () => {
                         </div>
                       )}
                     </div>
-                    <div>Driver name: {vehicle.driverName || '--'}</div>
-                    <div>Driver phone: {vehicle.driverPhone || '--'}</div>
-                    <div>Driver license: {vehicle.driverLicense || '--'}</div>
+                    <div>Driver name: {vehicle.driver?.name || '--'}</div>
+                    <div>Driver phone: {vehicle.driver?.phone || '--'}</div>
+                    <div>Driver license: {vehicle.driver?.licenseNumber || '--'}</div>
                     <div>Vehicle status: {formatStatusLabel(vehicle.status || '')}</div>
                     <div>Created: {formatDate(vehicle.createdAt)}</div>
                     <div>Last updated: {formatDate(vehicle.updatedAt)}</div>
@@ -221,7 +221,7 @@ const VehicleList = () => {
                           {vehicle.vehicleNumber || '--'}
                         </div>
                         <div className="mt-1 text-sm text-[var(--text-muted)]">
-                          Driver {vehicle.driverName || '--'}
+                          Driver {vehicle.driver?.name || '--'}
                         </div>
                       </td>
                       <td>
@@ -283,9 +283,9 @@ const VehicleList = () => {
                               )}
                             </div>
                             <div className="grid gap-3 text-sm text-[var(--text-muted)] md:grid-cols-2">
-                              <div>Driver name: {vehicle.driverName || '--'}</div>
-                              <div>Driver phone: {vehicle.driverPhone || '--'}</div>
-                              <div>Driver license: {vehicle.driverLicense || '--'}</div>
+                              <div>Driver name: {vehicle.driver?.name || '--'}</div>
+                              <div>Driver phone: {vehicle.driver?.phone || '--'}</div>
+                              <div>Driver license: {vehicle.driver?.licenseNumber || '--'}</div>
                               <div>Vehicle type: {formatStatusLabel(vehicle.type)}</div>
                               <div>Status: {formatStatusLabel(vehicle.status || '')}</div>
                               <div>Created: {formatDate(vehicle.createdAt)}</div>

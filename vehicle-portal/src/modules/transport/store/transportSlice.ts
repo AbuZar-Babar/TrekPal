@@ -40,6 +40,7 @@ export const fetchVehicles = createAsyncThunk(
 export const createVehicle = createAsyncThunk(
   'transport/createVehicle',
   async (data: {
+    driverId: string;
     type: string;
     make: string;
     model: string;
@@ -49,9 +50,6 @@ export const createVehicle = createAsyncThunk(
     images?: string[];
     isAvailable?: boolean;
     vehicleNumber?: string;
-    driverName?: string;
-    driverPhone?: string;
-    driverLicense?: string;
   }) => {
     return await transportService.createVehicle(data);
   }
@@ -68,6 +66,7 @@ export const updateVehicle = createAsyncThunk(
   }: {
     id: string;
     data: {
+      driverId?: string;
       type?: string;
       make?: string;
       model?: string;
@@ -77,9 +76,6 @@ export const updateVehicle = createAsyncThunk(
       images?: string[];
       isAvailable?: boolean;
       vehicleNumber?: string;
-      driverName?: string;
-      driverPhone?: string;
-      driverLicense?: string;
     };
   }) => {
     return await transportService.updateVehicle(id, data);

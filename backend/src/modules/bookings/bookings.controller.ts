@@ -56,6 +56,17 @@ export class BookingsController {
         }
         const result = await bookingsService.getHotelBookings(hotel.id, { status, page, limit });
         sendSuccess(res, result, 'Bookings retrieved successfully');
+      } else if (req.user.role === ROLES.VEHICLE) {
+        const provider = await prisma.vehicleProvider.findUnique({
+          where: { authUid: req.user.uid },
+          select: { id: true },
+        });
+        if (!provider) {
+          sendError(res, 'Vehicle provider not found', 404);
+          return;
+        }
+        const result = await bookingsService.getVehicleProviderBookings(provider.id, { status, page, limit });
+        sendSuccess(res, result, 'Bookings retrieved successfully');
       } else {
         sendError(res, 'Admin booking listing not yet implemented', 501);
       }
@@ -103,6 +114,7 @@ export class BookingsController {
       }
 
       let agencyId: string | undefined;
+      let vehicleProviderId: string | undefined;
       if (req.user.role === ROLES.TRAVELER) {
         sendError(res, 'Travelers cannot update booking status', 403);
         return;
@@ -117,14 +129,29 @@ export class BookingsController {
           return;
         }
         agencyId = agency.id;
+      } else if (req.user.role === ROLES.VEHICLE) {
+        const provider = await prisma.vehicleProvider.findUnique({
+          where: { authUid: req.user.uid },
+          select: { id: true },
+        });
+        if (!provider) {
+          sendError(res, 'Vehicle provider not found', 404);
+          return;
+        }
+        vehicleProviderId = provider.id;
       }
 
-      const result = await bookingsService.updateBookingStatus(id, status, agencyId);
+      const result = await bookingsService.updateBookingStatus(id, status, agencyId, vehicleProviderId);
       sendSuccess(res, result, 'Booking status updated successfully');
     } catch (error: any) {
       if (error.message.includes('Unauthorized')) {
         sendError(res, error.message, 403);
-      } else if (error.code === 'ROOM_UNAVAILABLE' || error.code === 'OFFER_UNAVAILABLE') {
+      } else if (
+        error.code === 'ROOM_UNAVAILABLE'
+        || error.code === 'OFFER_UNAVAILABLE'
+        || error.code === 'VEHICLE_UNAVAILABLE'
+        || error.code === 'DRIVER_UNAVAILABLE'
+      ) {
         sendError(res, error.message, 409, [{ code: error.code, message: error.message }]);
       } else {
         sendError(res, error.message || 'Failed to update booking status', 400);

@@ -33,6 +33,10 @@ router.post('/upload-image', requireVehicle, createMediaImageUpload('vehicles') 
  */
 router.get('/my-vehicles', requireVehicle, transportController.getAgencyVehicles.bind(transportController));
 
+router.get('/drivers', requireVehicle, transportController.getDrivers.bind(transportController));
+router.post('/drivers', requireVehicle, transportController.createDriver.bind(transportController));
+router.put('/drivers/:id', requireVehicle, transportController.updateDriver.bind(transportController));
+
 /**
  * @route   GET /api/transport/:id
  * @desc    Get vehicle by ID

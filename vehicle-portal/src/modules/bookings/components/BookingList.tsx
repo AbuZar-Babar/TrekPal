@@ -126,6 +126,18 @@ const BookingList = () => {
                     <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Dates</div>
                     <div className="text-sm font-medium text-[var(--text)]">{formatDateRange(booking.startDate, booking.endDate)}</div>
                   </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Driver</div>
+                    <div className="text-sm font-medium text-[var(--text)]">
+                      {booking.assignedDriver?.name || booking.driverNameSnapshot || 'No driver assigned'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Vehicle</div>
+                    <div className="text-sm font-medium text-[var(--text)]">
+                      {booking.vehicleNumberSnapshot || 'Assigned via package'}
+                    </div>
+                  </div>
                 </div>
 
                 {actions.length > 0 && (

@@ -6,6 +6,7 @@ import packagesReducer from '../modules/packages/store/packagesSlice';
 import tripRequestsReducer from '../modules/tripRequests/store/tripRequestsSlice';
 import bidsReducer from '../modules/bids/store/bidsSlice';
 import bookingsReducer from '../modules/bookings/store/bookingsSlice';
+import driversReducer from '../modules/drivers/store/driversSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     tripRequests: tripRequestsReducer,
     bids: bidsReducer,
     bookings: bookingsReducer,
+    drivers: driversReducer,
   },
 });
 

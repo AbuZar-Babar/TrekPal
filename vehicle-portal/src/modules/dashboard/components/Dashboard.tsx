@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchAgencyBids } from '../../bids/store/bidsSlice';
 import { fetchBookings } from '../../bookings/store/bookingsSlice';
+import { fetchDrivers } from '../../drivers/store/driversSlice';
 import { fetchHotels } from '../../hotels/store/hotelsSlice';
 import { fetchPackages } from '../../packages/store/packagesSlice';
 import { fetchTripRequests } from '../../tripRequests/store/tripRequestsSlice';
@@ -15,6 +16,7 @@ const Dashboard = () => {
 
   const { user } = useSelector((state: RootState) => state.auth);
   const { vehicles } = useSelector((state: RootState) => state.transport);
+  const { drivers } = useSelector((state: RootState) => state.drivers);
   const { hotels } = useSelector((state: RootState) => state.hotels);
   const { packages } = useSelector((state: RootState) => state.packages);
   const { bids } = useSelector((state: RootState) => state.bids);
@@ -23,6 +25,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(fetchVehicles({ limit: 100 }) as any);
+    dispatch(fetchDrivers() as any);
     dispatch(fetchHotels({ limit: 100 }) as any);
     dispatch(fetchPackages({ limit: 100 }) as any);
     dispatch(fetchAgencyBids({ limit: 100 }) as any);
@@ -54,6 +57,7 @@ const Dashboard = () => {
   const roomOccupancy = totalRooms > 0 ? Math.round((bookedRooms / totalRooms) * 100) : 0;
   const vehicleUtilization =
     vehicles.length > 0 ? Math.round(((vehicles.length - availableVehicles.length) / vehicles.length) * 100) : 0;
+  const activeDrivers = drivers.filter((driver) => driver.status === 'ACTIVE');
   const bookingStatusCounts = {
     CONFIRMED: bookings.filter((booking) => booking.status === 'CONFIRMED').length,
     PENDING: bookings.filter((booking) => booking.status === 'PENDING').length,
@@ -123,6 +127,16 @@ const Dashboard = () => {
           </div>
         ))}
       </section>
+
+      {vehicles.length > 1 && activeDrivers.length <= 1 ? (
+        <section className="surface border border-amber-200 bg-amber-50 p-5 text-amber-900">
+          <h3 className="text-lg font-semibold">Driver capacity warning</h3>
+          <p className="mt-2 text-sm">
+            You have {vehicles.length} vehicles but only {activeDrivers.length} active driver{activeDrivers.length === 1 ? '' : 's'}.
+            Overlapping confirmed bookings require different drivers, so grow the driver roster before scaling the fleet.
+          </p>
+        </section>
+      ) : null}
 
       <section className="grid gap-4 xl:grid-cols-2">
         <div className="surface p-5">

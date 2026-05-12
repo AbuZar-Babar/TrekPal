@@ -158,9 +158,28 @@ model VehicleProvider {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  drivers       Driver[]
   vehicles      Vehicle[]
 
   @@map("vehicle_providers")
+}
+
+model Driver {
+  id                String   @id @default(cuid())
+  vehicleProviderId String
+  name              String
+  phone             String?
+  licenseNumber     String?
+  status            String   @default("ACTIVE")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  vehicle           Vehicle?
+  bookings          Booking[]
+  vehicleProvider   VehicleProvider @relation(fields: [vehicleProviderId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleProviderId])
+  @@map("drivers")
 }
 
 // Room model
@@ -191,6 +210,7 @@ model Room {
 model Vehicle {
   id          String   @id @default(cuid())
   vehicleProviderId String
+  driverId     String   @unique
   type        String   // CAR, BUS, VAN, etc.
   make        String
   model       String
@@ -200,15 +220,13 @@ model Vehicle {
   pricePerDay Float
   images      String[]
   vehicleNumber String?
-  driverName  String?
-  driverPhone String?
-  driverLicense String?
   status      String   @default("APPROVED") // PENDING, APPROVED, REJECTED
   isAvailable Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
+  driver      Driver @relation(fields: [driverId], references: [id], onDelete: Restrict)
   vehicleProvider VehicleProvider @relation(fields: [vehicleProviderId], references: [id], onDelete: Cascade)
   bookings    Booking[]
   packages    Package[]
@@ -341,7 +359,11 @@ model Booking {
   hotelId       String?
   roomId        String?
   vehicleId     String?
+  driverId      String?
   packageId     String?
+  driverNameSnapshot   String?
+  driverPhoneSnapshot  String?
+  vehicleNumberSnapshot String?
   status        String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
   totalAmount   Float
   startDate     DateTime
@@ -356,10 +378,12 @@ model Booking {
   bid           Bid?     @relation(fields: [bidId], references: [id], onDelete: SetNull)
   hotel         Hotel?   @relation(fields: [hotelId], references: [id], onDelete: SetNull)
   room          Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  driver        Driver?  @relation(fields: [driverId], references: [id], onDelete: SetNull)
   vehicle       Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   package       Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
   review        Review?
 
+  @@index([driverId])
   @@map("bookings")
 }
 

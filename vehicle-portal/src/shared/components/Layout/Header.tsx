@@ -19,6 +19,8 @@ const Header = () => {
   const routeMeta = [
     { match: '/dashboard', title: 'Vehicle dashboard', description: 'Track approvals, listings, and fleet readiness from one place.' },
     { match: '/transport', title: 'Vehicle management', description: 'Create and manage your vehicle inventory for marketplace approval.' },
+    { match: '/drivers', title: 'Driver roster', description: 'Manage the internal drivers who can be assigned to your vehicles.' },
+    { match: '/bookings', title: 'Vehicle bookings', description: 'Review bookings against your assigned fleet and confirm only when driver availability is clear.' },
   ].find((item) => location.pathname.startsWith(item.match));
 
   return (

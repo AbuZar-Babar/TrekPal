@@ -46,6 +46,7 @@ export interface Vehicle {
   id: string;
   vehicleProviderId: string;
   vehicleProviderName: string;
+  driverId: string;
   type: string;
   make: string;
   model: string;
@@ -55,10 +56,27 @@ export interface Vehicle {
   images: string[];
   isAvailable: boolean;
   vehicleNumber?: string;
-  driverName?: string;
-  driverPhone?: string;
-  driverLicense?: string;
+  driver: {
+    id: string;
+    name: string;
+    phone: string | null;
+    licenseNumber: string | null;
+    status: string;
+  };
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Driver {
+  id: string;
+  vehicleProviderId: string;
+  name: string;
+  phone: string | null;
+  licenseNumber: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  vehicleId: string | null;
+  vehicleLabel: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -257,7 +275,11 @@ export interface Booking {
   hotelId: string | null;
   roomId: string | null;
   vehicleId: string | null;
+  driverId: string | null;
   packageId: string | null;
+  driverNameSnapshot: string | null;
+  driverPhoneSnapshot: string | null;
+  vehicleNumberSnapshot: string | null;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
   totalAmount: number;
   startDate: string;
@@ -265,6 +287,12 @@ export interface Booking {
   createdAt: string;
   updatedAt: string;
   destination?: string;
+  assignedDriver?: {
+    id: string;
+    name: string;
+    phone: string | null;
+    licenseNumber: string | null;
+  } | null;
 }
 
 export interface PaginatedResponse<T> {

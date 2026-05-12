@@ -6,6 +6,7 @@ import packagesReducer from '../modules/packages/store/packagesSlice';
 import tripRequestsReducer from '../modules/tripRequests/store/tripRequestsSlice';
 import bidsReducer from '../modules/bids/store/bidsSlice';
 import bookingsReducer from '../modules/bookings/store/bookingsSlice';
+import driversReducer from '../modules/drivers/store/driversSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   tripRequests: tripRequestsReducer,
   bids: bidsReducer,
   bookings: bookingsReducer,
+  drivers: driversReducer,
 });
 
 export default rootReducer;

@@ -5,8 +5,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createVehicle, fetchVehicles, updateVehicle } from '../store/transportSlice';
 import { transportService } from '../services/transportService';
 import ImageGalleryInput from '../../../shared/components/forms/ImageGalleryInput';
+import { Driver } from '../../../shared/types';
 
 interface VehicleFormData {
+  driverId: string;
   type: string;
   make: string;
   model: string;
@@ -16,12 +18,10 @@ interface VehicleFormData {
   images: string[];
   isAvailable: boolean;
   vehicleNumber: string;
-  driverName: string;
-  driverPhone: string;
-  driverLicense: string;
 }
 
 const initialState: VehicleFormData = {
+  driverId: '',
   type: '',
   make: '',
   model: '',
@@ -31,9 +31,6 @@ const initialState: VehicleFormData = {
   images: [],
   isAvailable: true,
   vehicleNumber: '',
-  driverName: '',
-  driverPhone: '',
-  driverLicense: '',
 };
 
 const VehicleForm = () => {
@@ -43,9 +40,20 @@ const VehicleForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<VehicleFormData>(initialState);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetchingVehicle, setFetchingVehicle] = useState(false);
+  const [fetchingDrivers, setFetchingDrivers] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFetchingDrivers(true);
+    transportService
+      .getDrivers()
+      .then((result) => setDrivers(result))
+      .catch(() => setError('Failed to load drivers'))
+      .finally(() => setFetchingDrivers(false));
+  }, []);
 
   useEffect(() => {
     if (!isEdit || !id) {
@@ -57,6 +65,7 @@ const VehicleForm = () => {
       .getVehicleById(id)
       .then((vehicle) => {
         setFormData({
+          driverId: vehicle.driverId,
           type: vehicle.type,
           make: vehicle.make,
           model: vehicle.model,
@@ -66,16 +75,15 @@ const VehicleForm = () => {
           images: vehicle.images || [],
           isAvailable: vehicle.isAvailable,
           vehicleNumber: vehicle.vehicleNumber || '',
-          driverName: vehicle.driverName || '',
-          driverPhone: vehicle.driverPhone || '',
-          driverLicense: vehicle.driverLicense || '',
         });
       })
       .catch(() => setError('Failed to load vehicle details'))
       .finally(() => setFetchingVehicle(false));
   }, [id, isEdit]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value, type } = event.target;
     setFormData((current) => ({
       ...current,
@@ -95,9 +103,9 @@ const VehicleForm = () => {
 
     try {
       if (isEdit && id) {
-        await dispatch(updateVehicle({ id, data: formData }) as any);
+        await dispatch(updateVehicle({ id, data: formData }) as any).unwrap();
       } else {
-        await dispatch(createVehicle(formData) as any);
+        await dispatch(createVehicle(formData) as any).unwrap();
       }
       navigate('/transport');
       dispatch(fetchVehicles({ limit: 20 }) as any);
@@ -108,11 +116,16 @@ const VehicleForm = () => {
     }
   };
 
-  if (fetchingVehicle) {
+  const selectedDriver = drivers.find((driver) => driver.id === formData.driverId) || null;
+  const selectableDrivers = drivers.filter(
+    (driver) => driver.status === 'ACTIVE' && (!driver.vehicleId || driver.id === selectedDriver?.id),
+  );
+
+  if (fetchingVehicle || fetchingDrivers) {
     return (
       <div className="surface px-6 py-14 text-center">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
-        <p className="mt-4 text-sm text-[var(--text-muted)]">Loading vehicle details...</p>
+        <p className="mt-4 text-sm text-[var(--text-muted)]">Loading vehicle workspace...</p>
       </div>
     );
   }
@@ -131,155 +144,162 @@ const VehicleForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="surface px-6 py-6">
-            <div className="surface-header px-0 pt-0">
-              <div>
-                <h2>Vehicle information</h2>
-                <p>Core fleet data used in pricing and dispatch planning.</p>
-              </div>
+          <div className="surface-header px-0 pt-0">
+            <div>
+              <h2>Vehicle information</h2>
+              <p>Core fleet data used in pricing and dispatch planning.</p>
             </div>
-            <div className="mt-5 grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Vehicle type</label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  required
-                  className="app-field"
-                >
-                  <option value="">Select type</option>
-                  <option value="CAR">Car</option>
-                  <option value="SUV">SUV</option>
-                  <option value="VAN">Van</option>
-                  <option value="BUS">Bus</option>
-                  <option value="MOTORCYCLE">Motorcycle</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Registration number</label>
-                <input
-                  type="text"
-                  name="vehicleNumber"
-                  value={formData.vehicleNumber}
-                  onChange={handleChange}
-                  required
-                  className="app-field"
-                  placeholder="ABC-1234"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Make</label>
-                <input
-                  type="text"
-                  name="make"
-                  value={formData.make}
-                  onChange={handleChange}
-                  required
-                  className="app-field"
-                  placeholder="Toyota"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Model</label>
-                <input
-                  type="text"
-                  name="model"
-                  value={formData.model}
-                  onChange={handleChange}
-                  required
-                  className="app-field"
-                  placeholder="Corolla"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Year</label>
-                <input
-                  type="number"
-                  name="year"
-                  value={formData.year}
-                  onChange={handleChange}
-                  min="1900"
-                  max={new Date().getFullYear() + 1}
-                  className="app-field"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Seats</label>
-                <input
-                  type="number"
-                  name="capacity"
-                  value={formData.capacity}
-                  onChange={handleChange}
-                  min="1"
-                  className="app-field"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Price per day (PKR)</label>
-                <input
-                  type="number"
-                  name="pricePerDay"
-                  value={formData.pricePerDay}
-                  onChange={handleChange}
-                  min="0"
-                  step="1"
-                  className="app-field"
-                />
-              </div>
+          </div>
+          <div className="mt-5 grid gap-5 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Vehicle type</label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                required
+                className="app-field"
+              >
+                <option value="">Select type</option>
+                <option value="CAR">Car</option>
+                <option value="SUV">SUV</option>
+                <option value="VAN">Van</option>
+                <option value="BUS">Bus</option>
+                <option value="MOTORCYCLE">Motorcycle</option>
+              </select>
             </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Registration number</label>
+              <input
+                type="text"
+                name="vehicleNumber"
+                value={formData.vehicleNumber}
+                onChange={handleChange}
+                required
+                className="app-field"
+                placeholder="ABC-1234"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Make</label>
+              <input
+                type="text"
+                name="make"
+                value={formData.make}
+                onChange={handleChange}
+                required
+                className="app-field"
+                placeholder="Toyota"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Model</label>
+              <input
+                type="text"
+                name="model"
+                value={formData.model}
+                onChange={handleChange}
+                required
+                className="app-field"
+                placeholder="Corolla"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Year</label>
+              <input
+                type="number"
+                name="year"
+                value={formData.year}
+                onChange={handleChange}
+                min="1900"
+                max={new Date().getFullYear() + 1}
+                className="app-field"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Seats</label>
+              <input
+                type="number"
+                name="capacity"
+                value={formData.capacity}
+                onChange={handleChange}
+                min="1"
+                className="app-field"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Price per day (PKR)</label>
+              <input
+                type="number"
+                name="pricePerDay"
+                value={formData.pricePerDay}
+                onChange={handleChange}
+                min="0"
+                step="1"
+                className="app-field"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="surface px-6 py-6">
-            <div className="surface-header px-0 pt-0">
-              <div>
-                <h2>Driver information</h2>
-                <p>Attach the operator details needed for real bookings.</p>
-              </div>
+          <div className="surface-header px-0 pt-0">
+            <div>
+              <h2>Assigned driver</h2>
+              <p>Each vehicle must be paired with one active driver from your roster.</p>
             </div>
-            <div className="mt-5 grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver name</label>
-                <input
-                  type="text"
-                  name="driverName"
-                  value={formData.driverName}
-                  onChange={handleChange}
-                  required
-                  className="app-field"
-                  placeholder="Driver full name"
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver phone</label>
-                <input
-                  type="tel"
-                  name="driverPhone"
-                  value={formData.driverPhone}
-                  onChange={handleChange}
-                  required
-                  className="app-field"
-                  placeholder="+92 300 1234567"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver license</label>
-                <input
-                  type="text"
-                  name="driverLicense"
-                  value={formData.driverLicense}
-                  onChange={handleChange}
-                  required
-                  className="app-field"
-                  placeholder="License number"
-                />
-              </div>
+            <button
+              type="button"
+              onClick={() => navigate('/drivers')}
+              className="app-btn-secondary app-btn-md"
+            >
+              Manage drivers
+            </button>
+          </div>
+          <div className="mt-5 grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver</label>
+              <select
+                name="driverId"
+                value={formData.driverId}
+                onChange={handleChange}
+                required
+                className="app-field"
+              >
+                <option value="">Select driver</option>
+                {selectableDrivers.map((driver) => (
+                  <option key={driver.id} value={driver.id}>
+                    {driver.name} - {driver.phone || 'No phone'}{driver.vehicleLabel ? ` (Currently ${driver.vehicleLabel})` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {selectedDriver ? (
+              <>
+                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4 text-sm text-[var(--text-muted)]">
+                  <div className="text-xs uppercase tracking-[0.14em] text-[var(--text-soft)]">Phone</div>
+                  <div className="mt-2 font-semibold text-[var(--text)]">{selectedDriver.phone || '--'}</div>
+                </div>
+                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4 text-sm text-[var(--text-muted)]">
+                  <div className="text-xs uppercase tracking-[0.14em] text-[var(--text-soft)]">License</div>
+                  <div className="mt-2 font-semibold text-[var(--text)]">{selectedDriver.licenseNumber || '--'}</div>
+                </div>
+              </>
+            ) : null}
+
+            {drivers.length === 0 ? (
+              <div className="md:col-span-2 rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4 text-sm text-[var(--text-muted)]">
+                No drivers available yet. Create a driver before listing a vehicle.
+              </div>
+            ) : null}
+          </div>
         </div>
 
         <ImageGalleryInput
@@ -290,24 +310,24 @@ const VehicleForm = () => {
         />
 
         <div className="surface px-6 py-6">
-            <div className="surface-header px-0 pt-0">
-              <div>
-                <h2>Availability</h2>
-                <p>Set whether the vehicle should be assignable right now.</p>
-              </div>
+          <div className="surface-header px-0 pt-0">
+            <div>
+              <h2>Availability</h2>
+              <p>Set whether the vehicle should be assignable right now.</p>
             </div>
-            <div className="mt-5">
-              <label className="flex items-center gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4">
-                <input
-                  type="checkbox"
-                  name="isAvailable"
-                  checked={formData.isAvailable}
-                  onChange={handleChange}
-                  className="h-4 w-4 rounded border-[var(--border)] text-[var(--primary)]"
-                />
-                <span className="text-sm leading-7 text-[var(--text)]">Vehicle is currently available for booking</span>
-              </label>
-            </div>
+          </div>
+          <div className="mt-5">
+            <label className="flex items-center gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4">
+              <input
+                type="checkbox"
+                name="isAvailable"
+                checked={formData.isAvailable}
+                onChange={handleChange}
+                className="h-4 w-4 rounded border-[var(--border)] text-[var(--primary)]"
+              />
+              <span className="text-sm leading-7 text-[var(--text)]">Vehicle is currently available for booking</span>
+            </label>
+          </div>
         </div>
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -320,7 +340,7 @@ const VehicleForm = () => {
           </button>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || drivers.length === 0}
             className="app-btn-primary h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? 'Saving...' : isEdit ? 'Update vehicle' : 'Create vehicle'}

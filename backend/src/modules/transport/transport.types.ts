@@ -7,6 +7,7 @@ import { z } from 'zod';
 // Create Vehicle Schema
 export const createVehicleSchema = z.object({
   body: z.object({
+    driverId: z.string().min(1, 'Driver is required'),
     type: z.string().min(1, 'Vehicle type is required'),
     make: z.string().min(1, 'Make is required'),
     model: z.string().min(1, 'Model is required'),
@@ -16,9 +17,6 @@ export const createVehicleSchema = z.object({
     images: z.array(z.string().url()).optional(),
     isAvailable: z.boolean().optional().default(true),
     vehicleNumber: z.string().min(1).optional(),
-    driverName: z.string().min(1).optional(),
-    driverPhone: z.string().min(1).optional(),
-    driverLicense: z.string().min(1).optional(),
   }),
 });
 
@@ -28,6 +26,7 @@ export const updateVehicleSchema = z.object({
     id: z.string().min(1, 'Vehicle ID is required'),
   }),
   body: z.object({
+    driverId: z.string().min(1).optional(),
     type: z.string().min(1).optional(),
     make: z.string().min(1).optional(),
     model: z.string().min(1).optional(),
@@ -37,9 +36,27 @@ export const updateVehicleSchema = z.object({
     images: z.array(z.string().url()).optional(),
     isAvailable: z.boolean().optional(),
     vehicleNumber: z.string().min(1).optional(),
-    driverName: z.string().min(1).optional(),
-    driverPhone: z.string().min(1).optional(),
-    driverLicense: z.string().min(1).optional(),
+  }),
+});
+
+export const createDriverSchema = z.object({
+  body: z.object({
+    name: z.string().min(1, 'Driver name is required'),
+    phone: z.string().min(1, 'Driver phone is required'),
+    licenseNumber: z.string().min(1, 'Driver license number is required'),
+    status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+  }),
+});
+
+export const updateDriverSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, 'Driver ID is required'),
+  }),
+  body: z.object({
+    name: z.string().min(1).optional(),
+    phone: z.string().min(1).optional(),
+    licenseNumber: z.string().min(1).optional(),
+    status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   }),
 });
 
@@ -56,11 +73,27 @@ export const getVehiclesQuerySchema = z.object({
 // TypeScript Types
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>['body'];
 export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>['body'];
+export type CreateDriverInput = z.infer<typeof createDriverSchema>['body'];
+export type UpdateDriverInput = z.infer<typeof updateDriverSchema>['body'];
+
+export interface DriverResponse {
+  id: string;
+  vehicleProviderId: string;
+  name: string;
+  phone: string | null;
+  licenseNumber: string | null;
+  status: string;
+  vehicleId: string | null;
+  vehicleLabel: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface VehicleResponse {
   id: string;
   vehicleProviderId: string;
   vehicleProviderName: string;
+  driverId: string;
   type: string;
   make: string;
   model: string;
@@ -71,9 +104,13 @@ export interface VehicleResponse {
   isAvailable: boolean;
   images: string[];
   vehicleNumber?: string | null;
-  driverName?: string | null;
-  driverPhone?: string | null;
-  driverLicense?: string | null;
+  driver: {
+    id: string;
+    name: string;
+    phone: string | null;
+    licenseNumber: string | null;
+    status: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

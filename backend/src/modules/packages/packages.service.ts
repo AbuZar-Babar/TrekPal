@@ -3,6 +3,7 @@ import { APPROVAL_STATUS, BOOKING_STATUS, ROLES } from '../../config/constants';
 import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.service';
 import { resolveMediaUrls } from '../../services/media-storage.service';
 import { emitOfferUpdated } from '../../ws/socket.emitter';
+import { bookingAllocationService } from '../bookings/booking-allocation.service';
 import {
   ApplyPackageInput,
   CreatePackageInput,
@@ -807,6 +808,9 @@ export class PackagesService {
       }
 
       if (activeBookingCount > 0 && nextWindow) {
+        const driverSnapshot = await bookingAllocationService.getVehicleDriverSnapshot(
+          input.vehicleId !== undefined ? input.vehicleId ?? null : existing.vehicleId ?? null,
+        );
         await tx.booking.updateMany({
           where: {
             packageId: id,
@@ -819,9 +823,18 @@ export class PackagesService {
             startDate: nextWindow.start,
             endDate: nextWindow.endExclusive,
             ...(input.vehicleId !== undefined ? { vehicleId: input.vehicleId ?? null } : {}),
+            ...(input.vehicleId !== undefined
+              ? {
+                  driverId: driverSnapshot.driverId,
+                  driverNameSnapshot: driverSnapshot.driverNameSnapshot,
+                  driverPhoneSnapshot: driverSnapshot.driverPhoneSnapshot,
+                  vehicleNumberSnapshot: driverSnapshot.vehicleNumberSnapshot,
+                }
+              : {}),
           },
         });
       } else if (input.vehicleId !== undefined) {
+        const driverSnapshot = await bookingAllocationService.getVehicleDriverSnapshot(input.vehicleId ?? null);
         await tx.booking.updateMany({
           where: {
             packageId: id,
@@ -831,6 +844,10 @@ export class PackagesService {
           },
           data: {
             vehicleId: input.vehicleId ?? null,
+            driverId: driverSnapshot.driverId,
+            driverNameSnapshot: driverSnapshot.driverNameSnapshot,
+            driverPhoneSnapshot: driverSnapshot.driverPhoneSnapshot,
+            vehicleNumberSnapshot: driverSnapshot.vehicleNumberSnapshot,
           },
         });
       }
@@ -1022,6 +1039,7 @@ export class PackagesService {
         packageId: tripPackage.id,
         hotelId: tripPackage.hotelId,
         vehicleId: tripPackage.vehicleId,
+        ...(await bookingAllocationService.getVehicleDriverSnapshot(tripPackage.vehicleId)),
         status: BOOKING_STATUS.PENDING,
         totalAmount: tripPackage.price,
         startDate: reservationWindow.start,

@@ -25,13 +25,23 @@ export interface BookingResponse {
   hotelId: string | null;
   roomId: string | null;
   vehicleId: string | null;
+  driverId: string | null;
   packageId: string | null;
+  driverNameSnapshot: string | null;
+  driverPhoneSnapshot: string | null;
+  vehicleNumberSnapshot: string | null;
   status: string;
   totalAmount: number;
   startDate: Date;
   endDate: Date;
   createdAt: Date;
   updatedAt: Date;
+  assignedDriver?: {
+    id: string;
+    name: string;
+    phone: string | null;
+    licenseNumber: string | null;
+  } | null;
   // Trip summary
   destination?: string;
   packageTravelerCount?: number;

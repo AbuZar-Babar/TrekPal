@@ -1,5 +1,5 @@
 import apiClient from '../../../shared/services/apiClient';
-import { Vehicle, PaginatedResponse } from '../../../shared/types';
+import { Driver, Vehicle, PaginatedResponse } from '../../../shared/types';
 
 /**
  * Transport Service
@@ -49,6 +49,7 @@ export const transportService = {
    * Create a new vehicle
    */
   async createVehicle(data: {
+    driverId: string;
     type: string;
     make: string;
     model: string;
@@ -58,9 +59,6 @@ export const transportService = {
     images?: string[];
     isAvailable?: boolean;
     vehicleNumber?: string;
-    driverName?: string;
-    driverPhone?: string;
-    driverLicense?: string;
   }): Promise<Vehicle> {
     const response = await apiClient.post('/transport', data);
     return response.data.data;
@@ -70,8 +68,9 @@ export const transportService = {
    * Update vehicle
    */
   async updateVehicle(
-    id: string,
+      id: string,
     data: {
+      driverId?: string;
       type?: string;
       make?: string;
       model?: string;
@@ -81,12 +80,37 @@ export const transportService = {
       images?: string[];
       isAvailable?: boolean;
       vehicleNumber?: string;
-      driverName?: string;
-      driverPhone?: string;
-      driverLicense?: string;
     }
   ): Promise<Vehicle> {
     const response = await apiClient.put(`/transport/${id}`, data);
+    return response.data.data;
+  },
+
+  async getDrivers(): Promise<Driver[]> {
+    const response = await apiClient.get('/transport/drivers');
+    return response.data.data;
+  },
+
+  async createDriver(data: {
+    name: string;
+    phone: string;
+    licenseNumber: string;
+    status?: 'ACTIVE' | 'INACTIVE';
+  }): Promise<Driver> {
+    const response = await apiClient.post('/transport/drivers', data);
+    return response.data.data;
+  },
+
+  async updateDriver(
+    id: string,
+    data: {
+      name?: string;
+      phone?: string;
+      licenseNumber?: string;
+      status?: 'ACTIVE' | 'INACTIVE';
+    },
+  ): Promise<Driver> {
+    const response = await apiClient.put(`/transport/drivers/${id}`, data);
     return response.data.data;
   },
 

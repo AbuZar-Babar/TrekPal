@@ -4,10 +4,13 @@ import { createSignedKycUrl, isHttpUrl } from '../../services/kyc-storage.servic
 import { emitTravelerBookingUpdated } from '../../ws/socket.emitter';
 import { BookingParticipantPreview, BookingResponse, HotelBookingResponse } from './bookings.types';
 import { roomAvailabilityService } from '../hotels/room-availability.service';
+import { bookingAllocationService } from './booking-allocation.service';
 
 const bookingInclude = {
   user: { select: { name: true } },
   agency: { select: { name: true, phone: true } },
+  driver: { select: { id: true, name: true, phone: true, licenseNumber: true } },
+  vehicle: { select: { vehicleProviderId: true } },
   tripRequest: { select: { destination: true } },
   package: {
     select: {
@@ -111,13 +114,25 @@ async function mapBooking(booking: any): Promise<BookingResponse> {
     hotelId: booking.hotelId,
     roomId: booking.roomId,
     vehicleId: booking.vehicleId,
+    driverId: booking.driverId ?? null,
     packageId: booking.packageId,
+    driverNameSnapshot: booking.driverNameSnapshot ?? null,
+    driverPhoneSnapshot: booking.driverPhoneSnapshot ?? null,
+    vehicleNumberSnapshot: booking.vehicleNumberSnapshot ?? null,
     status: booking.status,
     totalAmount: booking.totalAmount,
     startDate: booking.startDate,
     endDate: booking.endDate,
     createdAt: booking.createdAt,
     updatedAt: booking.updatedAt,
+    assignedDriver: booking.driver
+      ? {
+          id: booking.driver.id,
+          name: booking.driver.name,
+          phone: booking.driver.phone,
+          licenseNumber: booking.driver.licenseNumber,
+        }
+      : null,
     destination: booking.tripRequest?.destination ?? booking.package?.name ?? undefined,
     packageTravelerCount: booking.package?.bookings?.length,
     packageParticipants: booking.package?.bookings
@@ -223,6 +238,39 @@ export class BookingsService {
     const skip = (page - 1) * limit;
 
     const where: any = { agencyId };
+    if (status) where.status = status;
+
+    const [bookings, total] = await Promise.all([
+      prisma.booking.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: bookingInclude,
+      }),
+      prisma.booking.count({ where }),
+    ]);
+
+    return {
+      bookings: await Promise.all(bookings.map(mapBooking)),
+      total,
+      page,
+      limit,
+    };
+  }
+
+  async getVehicleProviderBookings(
+    vehicleProviderId: string,
+    filters: { status?: string; page?: number; limit?: number },
+  ): Promise<{ bookings: BookingResponse[]; total: number; page: number; limit: number }> {
+    const { status, page = 1, limit = 20 } = filters;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      vehicle: {
+        vehicleProviderId,
+      },
+    };
     if (status) where.status = status;
 
     const [bookings, total] = await Promise.all([
@@ -389,15 +437,32 @@ export class BookingsService {
   async updateBookingStatus(
     id: string,
     status: string,
-    actorAgencyId?: string
+    actorAgencyId?: string,
+    actorVehicleProviderId?: string,
   ): Promise<BookingResponse> {
-    const booking = await prisma.booking.findUnique({ where: { id } });
+    const booking = await prisma.booking.findUnique({
+      where: { id },
+      include: {
+        vehicle: {
+          select: {
+            vehicleProviderId: true,
+          },
+        },
+      },
+    });
 
     if (!booking) throw new Error('Booking not found');
 
     // If the actor is an agency, verify they own the booking
     if (actorAgencyId && booking.agencyId !== actorAgencyId) {
       throw new Error('Unauthorized: booking does not belong to your agency');
+    }
+
+    if (
+      actorVehicleProviderId &&
+      booking.vehicle?.vehicleProviderId !== actorVehicleProviderId
+    ) {
+      throw new Error('Unauthorized: booking does not belong to your vehicle inventory');
     }
 
     const validTransitions: Record<string, string[]> = {
@@ -464,6 +529,14 @@ export class BookingsService {
           throw this.buildAvailabilityError('This trip offer has no reserved rooms left', 'OFFER_UNAVAILABLE');
         }
 
+        await bookingAllocationService.assertVehicleAndDriverAvailability({
+          bookingId: booking.id,
+          vehicleId: booking.vehicleId,
+          driverId: booking.driverId,
+          startDate: booking.startDate,
+          endDate: booking.endDate,
+        });
+
         return tx.booking.update({
           where: { id },
           data: { status },
@@ -471,6 +544,16 @@ export class BookingsService {
         });
       });
     } else {
+      if (status === BOOKING_STATUS.CONFIRMED) {
+        await bookingAllocationService.assertVehicleAndDriverAvailability({
+          bookingId: booking.id,
+          vehicleId: booking.vehicleId,
+          driverId: booking.driverId,
+          startDate: booking.startDate,
+          endDate: booking.endDate,
+        });
+      }
+
       // Handle inventory deduction/restoration
       await this.handleInventory(booking, booking.status, status);
       updated = await prisma.booking.update({

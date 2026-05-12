@@ -10,6 +10,16 @@ import { buildMediaObjectPath, createSignedMediaUrl, uploadMediaFile } from '../
  * Handles HTTP requests for transport/vehicles
  */
 export class TransportController {
+  private async getVehicleProviderByAuthUser(req: AuthRequest) {
+    if (!req.user) {
+      return null;
+    }
+
+    return prisma.vehicleProvider.findUnique({
+      where: { authUid: req.user.uid },
+    });
+  }
+
   async uploadImage(req: AuthRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
@@ -90,6 +100,66 @@ export class TransportController {
       sendSuccess(res, result, 'Vehicle created successfully', 201);
     } catch (error: any) {
       sendError(res, error.message || 'Failed to create vehicle', 400);
+    }
+  }
+
+  async getDrivers(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'Unauthorized', 401);
+        return;
+      }
+
+      const provider = await this.getVehicleProviderByAuthUser(req);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
+        return;
+      }
+
+      const result = await transportService.getOwnerDrivers(provider.id);
+      sendSuccess(res, result, 'Drivers retrieved successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to get drivers', 400);
+    }
+  }
+
+  async createDriver(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'Unauthorized', 401);
+        return;
+      }
+
+      const provider = await this.getVehicleProviderByAuthUser(req);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
+        return;
+      }
+
+      const result = await transportService.createDriver(provider.id, req.body);
+      sendSuccess(res, result, 'Driver created successfully', 201);
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to create driver', 400);
+    }
+  }
+
+  async updateDriver(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'Unauthorized', 401);
+        return;
+      }
+
+      const provider = await this.getVehicleProviderByAuthUser(req);
+      if (!provider) {
+        sendError(res, 'Vehicle provider not found', 404);
+        return;
+      }
+
+      const result = await transportService.updateDriver(req.params.id, provider.id, req.body);
+      sendSuccess(res, result, 'Driver updated successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to update driver', 400);
     }
   }
 

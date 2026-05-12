@@ -1,6 +1,7 @@
 import { prisma } from '../../config/database';
 import { BID_AWAITING_ACTION, BID_STATUS, BOOKING_STATUS, ROLES } from '../../config/constants';
 import { emitTravelerBidUpdated, emitTravelerBookingUpdated } from '../../ws/socket.emitter';
+import { bookingAllocationService } from '../bookings/booking-allocation.service';
 import {
   AgencyBidFiltersInput,
   BidActorRole,
@@ -538,6 +539,14 @@ export class BidsService {
         data: { status: 'ACCEPTED' },
       });
 
+      const driverSnapshot = await bookingAllocationService.getVehicleDriverSnapshot(bid.tripRequest.vehicleId);
+      await bookingAllocationService.assertVehicleAndDriverAvailability({
+        vehicleId: bid.tripRequest.vehicleId,
+        driverId: driverSnapshot.driverId,
+        startDate: bid.tripRequest.startDate,
+        endDate: bid.tripRequest.endDate,
+      });
+
       const booking = await tx.booking.create({
         data: {
           userId,
@@ -547,6 +556,10 @@ export class BidsService {
           hotelId: bid.tripRequest.hotelId,
           roomId: bid.tripRequest.roomId,
           vehicleId: bid.tripRequest.vehicleId,
+          driverId: driverSnapshot.driverId,
+          driverNameSnapshot: driverSnapshot.driverNameSnapshot,
+          driverPhoneSnapshot: driverSnapshot.driverPhoneSnapshot,
+          vehicleNumberSnapshot: driverSnapshot.vehicleNumberSnapshot,
           // Traveler-accepted custom trip bids are final and should appear
           // in Trips immediately, unlike package offer requests.
           status: BOOKING_STATUS.CONFIRMED,
