@@ -7,7 +7,11 @@ import { z } from 'zod';
 // Create Vehicle Schema
 export const createVehicleSchema = z.object({
   body: z.object({
-    driverId: z.string().min(1, 'Driver is required'),
+    driver: z.object({
+      name: z.string().min(1, 'Driver name is required'),
+      phone: z.string().trim().optional(),
+      licenseNumber: z.string().trim().optional(),
+    }),
     type: z.string().min(1, 'Vehicle type is required'),
     make: z.string().min(1, 'Make is required'),
     model: z.string().min(1, 'Model is required'),
@@ -26,7 +30,11 @@ export const updateVehicleSchema = z.object({
     id: z.string().min(1, 'Vehicle ID is required'),
   }),
   body: z.object({
-    driverId: z.string().min(1).optional(),
+    driver: z.object({
+      name: z.string().min(1).optional(),
+      phone: z.string().trim().optional(),
+      licenseNumber: z.string().trim().optional(),
+    }).optional(),
     type: z.string().min(1).optional(),
     make: z.string().min(1).optional(),
     model: z.string().min(1).optional(),

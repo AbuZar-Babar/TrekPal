@@ -40,7 +40,11 @@ export const fetchVehicles = createAsyncThunk(
 export const createVehicle = createAsyncThunk(
   'transport/createVehicle',
   async (data: {
-    driverId: string;
+    driver: {
+      name: string;
+      phone?: string;
+      licenseNumber?: string;
+    };
     type: string;
     make: string;
     model: string;
@@ -66,7 +70,11 @@ export const updateVehicle = createAsyncThunk(
   }: {
     id: string;
     data: {
-      driverId?: string;
+      driver?: {
+        name?: string;
+        phone?: string;
+        licenseNumber?: string;
+      };
       type?: string;
       make?: string;
       model?: string;

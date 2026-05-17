@@ -54,7 +54,6 @@ router.post(
 
 router.post(
   '/register/vehicle',
-  uploadKycDocuments as any,
   validateBody(vehicleRegisterSchema.shape.body),
   authController.registerVehicleProvider.bind(authController),
 );

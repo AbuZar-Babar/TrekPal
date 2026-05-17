@@ -45,8 +45,7 @@ export const authService = {
   },
 
   /**
-   * Register new vehicle provider with KYC documents - creates with PENDING status
-   * Uses FormData to send files along with text fields
+   * Register new vehicle provider with basic info - creates with PENDING status
    */
   async signup(data: {
     email: string;
@@ -54,52 +53,18 @@ export const authService = {
     name: string;
     phone: string;
     address: string;
-    officeCity: string;
-    jurisdiction: 'ICT' | 'Punjab' | 'Sindh' | 'KPK' | 'Balochistan' | 'AJK' | 'Gilgit-Baltistan';
-    legalEntityType: 'SOLE_PROPRIETOR' | 'PARTNERSHIP' | 'COMPANY';
-    license: string;
-    ntn: string;
     ownerName: string;
     cnic: string;
-    fieldOfOperations: string[];
-    capitalAvailablePkr: number;
-    cnicImage: File;
-    secpRegistrationNumber?: string;
-    partnershipRegistrationNumber?: string;
+    officeCity?: string;
+    license?: string;
+    ntn?: string;
   }): Promise<{ user: User; token: string; status: string }> {
     if (!data.email || !data.password || !data.name) {
       throw new Error('All fields are required');
     }
 
     try {
-      const formData = new FormData();
-      formData.append('email', data.email);
-      formData.append('password', data.password);
-      formData.append('name', data.name);
-      formData.append('phone', data.phone);
-      formData.append('address', data.address);
-      formData.append('officeCity', data.officeCity);
-      formData.append('jurisdiction', data.jurisdiction);
-      formData.append('legalEntityType', data.legalEntityType);
-      formData.append('license', data.license);
-      formData.append('ntn', data.ntn);
-      formData.append('ownerName', data.ownerName);
-      formData.append('cnic', data.cnic);
-      formData.append('fieldOfOperations', JSON.stringify(data.fieldOfOperations));
-      formData.append('capitalAvailablePkr', String(data.capitalAvailablePkr));
-      formData.append('cnicImage', data.cnicImage);
-      if (data.secpRegistrationNumber) {
-        formData.append('secpRegistrationNumber', data.secpRegistrationNumber);
-      }
-      if (data.partnershipRegistrationNumber) {
-        formData.append('partnershipRegistrationNumber', data.partnershipRegistrationNumber);
-      }
-
-      const response = await apiClient.post('/auth/register/vehicle', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await apiClient.post('/auth/register/vehicle', data);
 
       const { user, token } = response.data.data || response.data;
 

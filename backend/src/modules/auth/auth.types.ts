@@ -184,11 +184,11 @@ export const vehicleRegisterSchema = z.object({
     name: z.string().trim().min(2, 'Business name must be at least 2 characters'),
     phone: z.string().trim().min(5, 'Phone number is required'),
     address: z.string().trim().min(5, 'Address is required'),
-    officeCity: z.string().trim().min(2, 'Office city is required'),
-    license: z.string().trim().min(1, 'License number is required'),
-    ntn: z.string().trim().optional(),
     ownerName: z.string().trim().min(2, 'Owner name is required'),
     cnic: z.string().regex(/^\d{13}$/, 'CNIC must be exactly 13 digits'),
+    officeCity: z.string().trim().optional(),
+    license: z.string().trim().optional(),
+    ntn: z.string().trim().optional(),
   }),
 });
 

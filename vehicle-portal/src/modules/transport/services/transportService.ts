@@ -49,7 +49,11 @@ export const transportService = {
    * Create a new vehicle
    */
   async createVehicle(data: {
-    driverId: string;
+    driver: {
+      name: string;
+      phone?: string;
+      licenseNumber?: string;
+    };
     type: string;
     make: string;
     model: string;
@@ -70,7 +74,11 @@ export const transportService = {
   async updateVehicle(
       id: string,
     data: {
-      driverId?: string;
+      driver?: {
+        name?: string;
+        phone?: string;
+        licenseNumber?: string;
+      };
       type?: string;
       make?: string;
       model?: string;

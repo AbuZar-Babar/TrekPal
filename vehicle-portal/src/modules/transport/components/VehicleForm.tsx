@@ -5,10 +5,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createVehicle, fetchVehicles, updateVehicle } from '../store/transportSlice';
 import { transportService } from '../services/transportService';
 import ImageGalleryInput from '../../../shared/components/forms/ImageGalleryInput';
-import { Driver } from '../../../shared/types';
 
 interface VehicleFormData {
-  driverId: string;
   type: string;
   make: string;
   model: string;
@@ -18,10 +16,14 @@ interface VehicleFormData {
   images: string[];
   isAvailable: boolean;
   vehicleNumber: string;
+  driver: {
+    name: string;
+    phone: string;
+    licenseNumber: string;
+  };
 }
 
 const initialState: VehicleFormData = {
-  driverId: '',
   type: '',
   make: '',
   model: '',
@@ -31,6 +33,11 @@ const initialState: VehicleFormData = {
   images: [],
   isAvailable: true,
   vehicleNumber: '',
+  driver: {
+    name: '',
+    phone: '',
+    licenseNumber: '',
+  },
 };
 
 const VehicleForm = () => {
@@ -40,20 +47,9 @@ const VehicleForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<VehicleFormData>(initialState);
-  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetchingVehicle, setFetchingVehicle] = useState(false);
-  const [fetchingDrivers, setFetchingDrivers] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setFetchingDrivers(true);
-    transportService
-      .getDrivers()
-      .then((result) => setDrivers(result))
-      .catch(() => setError('Failed to load drivers'))
-      .finally(() => setFetchingDrivers(false));
-  }, []);
 
   useEffect(() => {
     if (!isEdit || !id) {
@@ -65,7 +61,6 @@ const VehicleForm = () => {
       .getVehicleById(id)
       .then((vehicle) => {
         setFormData({
-          driverId: vehicle.driverId,
           type: vehicle.type,
           make: vehicle.make,
           model: vehicle.model,
@@ -75,6 +70,11 @@ const VehicleForm = () => {
           images: vehicle.images || [],
           isAvailable: vehicle.isAvailable,
           vehicleNumber: vehicle.vehicleNumber || '',
+          driver: {
+            name: vehicle.driver.name || '',
+            phone: vehicle.driver.phone || '',
+            licenseNumber: vehicle.driver.licenseNumber || '',
+          },
         });
       })
       .catch(() => setError('Failed to load vehicle details'))
@@ -93,6 +93,19 @@ const VehicleForm = () => {
           : type === 'checkbox'
             ? (event.target as HTMLInputElement).checked
             : value,
+    }));
+  };
+
+  const handleDriverChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({
+      ...current,
+      driver: {
+        ...current.driver,
+        [name]: value,
+      },
     }));
   };
 
@@ -116,12 +129,7 @@ const VehicleForm = () => {
     }
   };
 
-  const selectedDriver = drivers.find((driver) => driver.id === formData.driverId) || null;
-  const selectableDrivers = drivers.filter(
-    (driver) => driver.status === 'ACTIVE' && (!driver.vehicleId || driver.id === selectedDriver?.id),
-  );
-
-  if (fetchingVehicle || fetchingDrivers) {
+  if (fetchingVehicle) {
     return (
       <div className="surface px-6 py-14 text-center">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
@@ -251,54 +259,45 @@ const VehicleForm = () => {
         <div className="surface px-6 py-6">
           <div className="surface-header px-0 pt-0">
             <div>
-              <h2>Assigned driver</h2>
-              <p>Each vehicle must be paired with one active driver from your roster.</p>
+              <h2>Driver information</h2>
+              <p>Every vehicle must have one assigned driver.</p>
             </div>
-            <button
-              type="button"
-              onClick={() => navigate('/drivers')}
-              className="app-btn-secondary app-btn-md"
-            >
-              Manage drivers
-            </button>
           </div>
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver</label>
-              <select
-                name="driverId"
-                value={formData.driverId}
-                onChange={handleChange}
+          <div className="mt-5 grid gap-5 md:grid-cols-3">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.driver.name}
+                onChange={handleDriverChange}
                 required
                 className="app-field"
-              >
-                <option value="">Select driver</option>
-                {selectableDrivers.map((driver) => (
-                  <option key={driver.id} value={driver.id}>
-                    {driver.name} - {driver.phone || 'No phone'}{driver.vehicleLabel ? ` (Currently ${driver.vehicleLabel})` : ''}
-                  </option>
-                ))}
-              </select>
+                placeholder="Ahmad Khan"
+              />
             </div>
-
-            {selectedDriver ? (
-              <>
-                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4 text-sm text-[var(--text-muted)]">
-                  <div className="text-xs uppercase tracking-[0.14em] text-[var(--text-soft)]">Phone</div>
-                  <div className="mt-2 font-semibold text-[var(--text)]">{selectedDriver.phone || '--'}</div>
-                </div>
-                <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4 text-sm text-[var(--text-muted)]">
-                  <div className="text-xs uppercase tracking-[0.14em] text-[var(--text-soft)]">License</div>
-                  <div className="mt-2 font-semibold text-[var(--text)]">{selectedDriver.licenseNumber || '--'}</div>
-                </div>
-              </>
-            ) : null}
-
-            {drivers.length === 0 ? (
-              <div className="md:col-span-2 rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4 text-sm text-[var(--text-muted)]">
-                No drivers available yet. Create a driver before listing a vehicle.
-              </div>
-            ) : null}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">Driver phone</label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.driver.phone}
+                onChange={handleDriverChange}
+                className="app-field"
+                placeholder="+92 300 1234567"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--text)]">License number</label>
+              <input
+                type="text"
+                name="licenseNumber"
+                value={formData.driver.licenseNumber}
+                onChange={handleDriverChange}
+                className="app-field"
+                placeholder="LIC-12345"
+              />
+            </div>
           </div>
         </div>
 
@@ -340,7 +339,7 @@ const VehicleForm = () => {
           </button>
           <button
             type="submit"
-            disabled={loading || drivers.length === 0}
+            disabled={loading}
             className="app-btn-primary h-11 px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? 'Saving...' : isEdit ? 'Update vehicle' : 'Create vehicle'}

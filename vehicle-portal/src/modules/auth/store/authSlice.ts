@@ -32,7 +32,7 @@ export const login = createAsyncThunk(
 );
 
 /**
- * Signup thunk - sends KYC documents with FormData
+ * Signup thunk - creates pending vehicle provider account
  */
 export const signup = createAsyncThunk(
   'auth/signup',
@@ -42,18 +42,11 @@ export const signup = createAsyncThunk(
     name: string;
     phone: string;
     address: string;
-    officeCity: string;
-    jurisdiction: 'ICT' | 'Punjab' | 'Sindh' | 'KPK' | 'Balochistan' | 'AJK' | 'Gilgit-Baltistan';
-    legalEntityType: 'SOLE_PROPRIETOR' | 'PARTNERSHIP' | 'COMPANY';
-    license: string;
-    ntn: string;
     ownerName: string;
     cnic: string;
-    fieldOfOperations: string[];
-    capitalAvailablePkr: number;
-    cnicImage: File;
-    secpRegistrationNumber?: string;
-    partnershipRegistrationNumber?: string;
+    officeCity?: string;
+    license?: string;
+    ntn?: string;
   }) => {
     const response = await authService.signup(data);
     // Don't store token/user if status is PENDING - they need approval first

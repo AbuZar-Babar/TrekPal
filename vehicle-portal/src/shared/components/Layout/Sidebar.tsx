@@ -22,16 +22,6 @@ const navItems = [
     ),
   },
   {
-    path: '/drivers',
-    label: 'Drivers',
-    shortLabel: 'Drivers',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 11a4 4 0 10-8 0 4 4 0 008 0zM12 14c-4.418 0-8 2.015-8 4.5V20h16v-1.5c0-2.485-3.582-4.5-8-4.5z" />
-      </svg>
-    ),
-  },
-  {
     path: '/bookings',
     label: 'Bookings',
     shortLabel: 'Trips',

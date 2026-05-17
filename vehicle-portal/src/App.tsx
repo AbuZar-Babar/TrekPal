@@ -8,7 +8,6 @@ import PendingApproval from './modules/auth/components/PendingApproval';
 import RegisterForm from './modules/auth/components/RegisterForm';
 import { getProfile } from './modules/auth/store/authSlice';
 import Dashboard from './modules/dashboard/components/Dashboard';
-import DriversPage from './modules/drivers/components/DriversPage';
 import BookingList from './modules/bookings/components/BookingList';
 import VehicleForm from './modules/transport/components/VehicleForm';
 import VehicleList from './modules/transport/components/VehicleList';
@@ -93,16 +92,6 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <VehicleList />
-                </Layout>
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/drivers"
-            element={(
-              <ProtectedRoute>
-                <Layout>
-                  <DriversPage />
                 </Layout>
               </ProtectedRoute>
             )}

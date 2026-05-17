@@ -103,35 +103,6 @@ export class TransportService {
     };
   }
 
-  private async ensureDriverAssignable(
-    vehicleProviderId: string,
-    driverId: string,
-    currentVehicleId?: string,
-  ): Promise<void> {
-    const driver = await prisma.driver.findUnique({
-      where: { id: driverId },
-      include: {
-        vehicle: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-
-    if (!driver || driver.vehicleProviderId !== vehicleProviderId) {
-      throw new Error('Selected driver was not found for this vehicle provider');
-    }
-
-    if (driver.status !== 'ACTIVE') {
-      throw new Error('Selected driver is inactive');
-    }
-
-    if (driver.vehicle && driver.vehicle.id !== currentVehicleId) {
-      throw new Error('Selected driver is already assigned to another vehicle');
-    }
-  }
-
   async createDriver(vehicleProviderId: string, input: CreateDriverInput): Promise<DriverResponse> {
     const driver = await prisma.driver.create({
       data: {
@@ -237,31 +208,41 @@ export class TransportService {
   }
 
   async createVehicle(vehicleProviderId: string, input: CreateVehicleInput): Promise<VehicleResponse> {
-    await this.ensureDriverAssignable(vehicleProviderId, input.driverId);
-
-    const vehicle = await prisma.vehicle.create({
-      data: {
-        vehicleProviderId,
-        driverId: input.driverId,
-        type: input.type,
-        make: input.make,
-        model: input.model,
-        year: input.year,
-        capacity: input.capacity,
-        pricePerDay: input.pricePerDay,
-        images: normalizeMediaStoragePaths(input.images || []),
-        status: APPROVAL_STATUS.PENDING,
-        isAvailable: input.isAvailable ?? true,
-        vehicleNumber: input.vehicleNumber ?? null,
-      },
-      include: {
-        vehicleProvider: {
-          select: {
-            name: true,
-          },
+    const vehicle = await prisma.$transaction(async (tx) => {
+      const driver = await tx.driver.create({
+        data: {
+          vehicleProviderId,
+          name: input.driver.name,
+          phone: input.driver.phone ?? null,
+          licenseNumber: input.driver.licenseNumber ?? null,
+          status: 'ACTIVE',
         },
-        driver: true,
-      },
+      });
+
+      return tx.vehicle.create({
+        data: {
+          vehicleProviderId,
+          driverId: driver.id,
+          type: input.type,
+          make: input.make,
+          model: input.model,
+          year: input.year,
+          capacity: input.capacity,
+          pricePerDay: input.pricePerDay,
+          images: normalizeMediaStoragePaths(input.images || []),
+          status: APPROVAL_STATUS.PENDING,
+          isAvailable: input.isAvailable ?? true,
+          vehicleNumber: input.vehicleNumber ?? null,
+        },
+        include: {
+          vehicleProvider: {
+            select: {
+              name: true,
+            },
+          },
+          driver: true,
+        },
+      });
     });
 
     return this.mapVehicleResponse(vehicle);
@@ -378,12 +359,7 @@ export class TransportService {
       throw new Error('Unauthorized: Vehicle does not belong to your account');
     }
 
-    if (input.driverId) {
-      await this.ensureDriverAssignable(vehicleProviderId, input.driverId, vehicleId);
-    }
-
     const updateData: any = {};
-    if (input.driverId !== undefined) updateData.driverId = input.driverId;
     if (input.type !== undefined) updateData.type = input.type;
     if (input.make !== undefined) updateData.make = input.make;
     if (input.model !== undefined) updateData.model = input.model;
@@ -395,17 +371,30 @@ export class TransportService {
     if (input.vehicleNumber !== undefined) updateData.vehicleNumber = input.vehicleNumber;
     updateData.status = APPROVAL_STATUS.PENDING;
 
-    const vehicle = await prisma.vehicle.update({
-      where: { id: vehicleId },
-      data: updateData,
-      include: {
-        vehicleProvider: {
-          select: {
-            name: true,
+    const vehicle = await prisma.$transaction(async (tx) => {
+      if (input.driver) {
+        await tx.driver.update({
+          where: { id: existingVehicle.driverId },
+          data: {
+            ...(input.driver.name !== undefined ? { name: input.driver.name } : {}),
+            ...(input.driver.phone !== undefined ? { phone: input.driver.phone || null } : {}),
+            ...(input.driver.licenseNumber !== undefined ? { licenseNumber: input.driver.licenseNumber || null } : {}),
           },
+        });
+      }
+
+      return tx.vehicle.update({
+        where: { id: vehicleId },
+        data: updateData,
+        include: {
+          vehicleProvider: {
+            select: {
+              name: true,
+            },
+          },
+          driver: true,
         },
-        driver: true,
-      },
+      });
     });
 
     await prisma.booking.updateMany({
