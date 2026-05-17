@@ -37,31 +37,6 @@ const Dashboard = () => {
   const confirmedRevenue = bookings
     .filter((booking) => booking.status === 'CONFIRMED' || booking.status === 'COMPLETED')
     .reduce((sum, booking) => sum + booking.totalAmount, 0);
-  const totalRooms = hotels.reduce(
-    (sum, hotel) => sum + (hotel.rooms || []).reduce((roomSum, room) => roomSum + (room.quantity || 0), 0),
-    0
-  );
-  const totalAvailableRooms = hotels.reduce(
-    (sum, hotel) =>
-      sum +
-      (hotel.rooms || []).reduce(
-        (roomSum, room) => roomSum + (room.availableQuantity ?? room.quantity ?? 0),
-        0
-      ),
-    0
-  );
-  const bookedRooms = Math.max(0, totalRooms - totalAvailableRooms);
-  const roomOccupancy = totalRooms > 0 ? Math.round((bookedRooms / totalRooms) * 100) : 0;
-  const vehicleUtilization =
-    vehicles.length > 0 ? Math.round(((vehicles.length - availableVehicles.length) / vehicles.length) * 100) : 0;
-  const bookingStatusCounts = {
-    CONFIRMED: bookings.filter((booking) => booking.status === 'CONFIRMED').length,
-    PENDING: bookings.filter((booking) => booking.status === 'PENDING').length,
-    COMPLETED: bookings.filter((booking) => booking.status === 'COMPLETED').length,
-    CANCELLED: bookings.filter((booking) => booking.status === 'CANCELLED').length,
-  };
-  const maxBookingStatusCount = Math.max(1, ...Object.values(bookingStatusCounts));
-
   const stats = [
     {
       label: 'Traveler requests',
@@ -122,64 +97,6 @@ const Dashboard = () => {
             <div className="mt-1 text-xs text-[var(--text-muted)]">{stat.note}</div>
           </div>
         ))}
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-2">
-        <div className="surface p-5">
-          <h3 className="text-lg font-semibold text-[var(--text)]">Booking Analytics</h3>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">Current distribution by booking status.</p>
-          <div className="mt-6 space-y-4">
-            {Object.entries(bookingStatusCounts).map(([status, count]) => {
-              const width = Math.max(8, Math.round((count / maxBookingStatusCount) * 100));
-              return (
-                <div key={status}>
-                  <div className="mb-1 flex items-center justify-between text-xs">
-                    <span className="font-semibold tracking-wide text-[var(--text-soft)]">{status}</span>
-                    <span className="text-[var(--text)]">{count}</span>
-                  </div>
-                  <div className="h-2.5 w-full rounded-full bg-[var(--panel-subtle)]">
-                    <div
-                      className="h-2.5 rounded-full bg-[var(--primary)]"
-                      style={{ width: `${count === 0 ? 0 : width}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="surface p-5">
-          <h3 className="text-lg font-semibold text-[var(--text)]">Inventory Utilization</h3>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">How much hotel and fleet capacity is actively in use.</p>
-          <div className="mt-6 space-y-5">
-            <div>
-              <div className="mb-1 flex items-center justify-between text-xs">
-                <span className="font-semibold tracking-wide text-[var(--text-soft)]">Room occupancy</span>
-                <span className="text-[var(--text)]">{roomOccupancy}%</span>
-              </div>
-              <div className="h-2.5 w-full rounded-full bg-[var(--panel-subtle)]">
-                <div className="h-2.5 rounded-full bg-emerald-500" style={{ width: `${roomOccupancy}%` }} />
-              </div>
-              <div className="mt-1 text-xs text-[var(--text-muted)]">
-                {bookedRooms} booked of {totalRooms} total rooms
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-1 flex items-center justify-between text-xs">
-                <span className="font-semibold tracking-wide text-[var(--text-soft)]">Vehicle utilization</span>
-                <span className="text-[var(--text)]">{vehicleUtilization}%</span>
-              </div>
-              <div className="h-2.5 w-full rounded-full bg-[var(--panel-subtle)]">
-                <div className="h-2.5 rounded-full bg-amber-500" style={{ width: `${vehicleUtilization}%` }} />
-              </div>
-              <div className="mt-1 text-xs text-[var(--text-muted)]">
-                {vehicles.length - availableVehicles.length} in use of {vehicles.length} vehicles
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
     </div>
