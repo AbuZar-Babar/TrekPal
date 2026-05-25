@@ -67,7 +67,7 @@ const Header = () => {
             type="button"
             onClick={toggleTheme}
             className="portal-icon-btn h-10 w-10 md:h-11 md:w-11"
-            aria-label="Toggle theme"
+            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
           >
             {theme === 'dark' ? (
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

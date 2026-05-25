@@ -6,6 +6,7 @@ import {
   PortalListItemTransition,
   PortalModalTransition,
 } from '../../../shared/components/motion/portalMotion';
+import PatternCardChrome from '../../../shared/components/UI/PatternCardChrome';
 
 interface AgencyCardProps {
   agency: Agency;
@@ -42,12 +43,12 @@ const DocumentCard = ({ label, url }: { label: string; url: string }) => (
     href={url}
     target="_blank"
     rel="noopener noreferrer"
-    className="group overflow-hidden rounded-[16px] border border-gray-200 transition-all hover:border-indigo-300 hover:bg-indigo-50/40"
+    className="group overflow-hidden rounded-[16px] border border-[var(--border)] bg-[var(--surface)] transition-all hover:border-white/25 hover:bg-[var(--surface-high)]"
   >
     {urlLooksLikeImage(url) ? (
       <img src={url} alt={label} className="h-24 w-full object-cover" />
     ) : (
-      <div className="flex h-24 items-center justify-center bg-gray-50 text-gray-500">
+      <div className="flex h-24 items-center justify-center bg-[var(--surface-low)] text-[var(--text-soft)]">
         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 21h10a2 2 0 002-2V8l-6-6H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 3v5h5" />
@@ -55,8 +56,8 @@ const DocumentCard = ({ label, url }: { label: string; url: string }) => (
       </div>
     )}
     <div className="px-3 py-2">
-      <div className="text-xs font-semibold text-gray-800">{label}</div>
-      <div className="mt-1 text-[11px] text-indigo-600 group-hover:underline">Open document</div>
+      <div className="text-xs font-semibold text-[var(--text)]">{label}</div>
+      <div className="mt-1 text-[11px] text-[var(--text-muted)] group-hover:underline">Open document</div>
     </div>
   </a>
 );
@@ -78,10 +79,10 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
   ].filter((entry): entry is { label: string; url: string } => !!entry.url);
 
   const statusBadge = {
-    PENDING: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-    APPROVED: 'bg-green-100 text-green-800 border border-green-200',
-    REJECTED: 'bg-red-100 text-red-800 border border-red-200',
-  }[agency.status] || 'bg-gray-100 text-gray-800';
+    PENDING: 'bg-[var(--warning-bg)] text-[var(--warning-text)] border border-white/10',
+    APPROVED: 'bg-[var(--success-bg)] text-[var(--success-text)] border border-white/10',
+    REJECTED: 'bg-[var(--danger-bg)] text-[var(--danger-text)] border border-white/10',
+  }[agency.status] || 'bg-[var(--neutral-bg)] text-[var(--neutral-text)]';
 
   const handleDeleteConfirm = async () => {
     setDeleting(true);
@@ -98,18 +99,19 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
 
   return (
     <>
-      <PortalListItemTransition className="overflow-hidden rounded-[18px] border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md">
-        <div className="p-5">
+      <PortalListItemTransition className="sovereign-pattern-card">
+        <PatternCardChrome />
+        <div className="sovereign-pattern-card-content p-5">
           <div className="mb-4 flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md">
-                <span className="text-lg font-bold text-white">
-                  {agency.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
+              <span className="sovereign-pattern-icon flex-shrink-0">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M3 21h18M5 21V7l7-4 7 4v14M9 10h6M9 14h6" />
+                </svg>
+              </span>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">{agency.name}</h3>
-                <p className="text-sm text-gray-500">{agency.email}</p>
+                <h3 className="text-lg font-semibold text-[var(--text)]">{agency.name}</h3>
+                <p className="text-sm text-[var(--text-muted)]">{agency.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -118,7 +120,7 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
               </span>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="rounded-[12px] p-1.5 text-gray-300 transition-all hover:bg-red-50 hover:text-red-500"
+                className="rounded-[12px] p-1.5 text-[var(--text-soft)] transition-all hover:bg-[var(--danger-bg)] hover:text-[var(--danger-text)]"
                 title="Delete agency"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,54 +131,54 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
           </div>
 
           <div className="mb-4 grid gap-6 text-sm md:grid-cols-2">
-            <div className="rounded-[16px] border border-gray-100 bg-gray-50 p-4">
-              <h4 className="mb-3 text-sm font-semibold text-gray-900">Business Summary</h4>
+            <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+              <h4 className="mb-3 text-sm font-semibold text-[var(--text)]">Business Summary</h4>
               <div className="space-y-2">
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Jurisdiction</span><span className="font-medium text-gray-800">{agency.jurisdiction || 'Not provided'}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Legal Entity</span><span className="font-medium text-gray-800">{formatLegalEntityType(agency.legalEntityType)}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Tourism License</span><span className="font-medium text-gray-800">{agency.license || 'Not provided'}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">NTN</span><span className="font-medium text-gray-800">{agency.ntn || 'Not provided'}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Office City</span><span className="font-medium text-gray-800">{agency.officeCity || 'Not provided'}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Capital</span><span className="font-medium text-gray-800">{agency.capitalAvailablePkr ? currencyFormatter.format(agency.capitalAvailablePkr) : 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Jurisdiction</span><span className="font-medium text-[var(--text)]">{agency.jurisdiction || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Legal Entity</span><span className="font-medium text-[var(--text)]">{formatLegalEntityType(agency.legalEntityType)}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Tourism License</span><span className="font-medium text-[var(--text)]">{agency.license || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">NTN</span><span className="font-medium text-[var(--text)]">{agency.ntn || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Office City</span><span className="font-medium text-[var(--text)]">{agency.officeCity || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Capital</span><span className="font-medium text-[var(--text)]">{agency.capitalAvailablePkr ? currencyFormatter.format(agency.capitalAvailablePkr) : 'Not provided'}</span></div>
               </div>
             </div>
 
-            <div className="rounded-[16px] border border-gray-100 bg-gray-50 p-4">
-              <h4 className="mb-3 text-sm font-semibold text-gray-900">Representative</h4>
+            <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-low)] p-4">
+              <h4 className="mb-3 text-sm font-semibold text-[var(--text)]">Representative</h4>
               <div className="space-y-2">
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Name</span><span className="font-medium text-gray-800">{agency.ownerName || 'Not provided'}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">CNIC</span><span className="font-mono font-medium text-gray-800">{agency.cnic || 'Not provided'}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Phone</span><span className="font-medium text-gray-800">{agency.phone || 'Not provided'}</span></div>
-                <div className="flex justify-between gap-4"><span className="text-gray-500">Submitted</span><span className="font-medium text-gray-800">{new Date(agency.applicationSubmittedAt || agency.createdAt).toLocaleDateString()}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Name</span><span className="font-medium text-[var(--text)]">{agency.ownerName || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">CNIC</span><span className="font-mono font-medium text-[var(--text)]">{agency.cnic || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Phone</span><span className="font-medium text-[var(--text)]">{agency.phone || 'Not provided'}</span></div>
+                <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Submitted</span><span className="font-medium text-[var(--text)]">{new Date(agency.applicationSubmittedAt || agency.createdAt).toLocaleDateString()}</span></div>
                 {agency.secpRegistrationNumber ? (
-                  <div className="flex justify-between gap-4"><span className="text-gray-500">SECP Registration</span><span className="font-medium text-gray-800">{agency.secpRegistrationNumber}</span></div>
+                  <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">SECP Registration</span><span className="font-medium text-[var(--text)]">{agency.secpRegistrationNumber}</span></div>
                 ) : null}
                 {agency.partnershipRegistrationNumber ? (
-                  <div className="flex justify-between gap-4"><span className="text-gray-500">Partnership Registration</span><span className="font-medium text-gray-800">{agency.partnershipRegistrationNumber}</span></div>
+                  <div className="flex justify-between gap-4"><span className="text-[var(--text-soft)]">Partnership Registration</span><span className="font-medium text-[var(--text)]">{agency.partnershipRegistrationNumber}</span></div>
                 ) : null}
               </div>
             </div>
           </div>
 
           {(agency.address || agency.fieldOfOperations.length > 0) ? (
-            <div className="mt-4 border-t border-gray-100 pt-4">
-              <h4 className="mb-3 text-sm font-semibold text-gray-800">Operational Details</h4>
+            <div className="mt-4 border-t border-[var(--border)] pt-4">
+              <h4 className="mb-3 text-sm font-semibold text-[var(--text)]">Operational Details</h4>
               <div className="grid gap-4 text-sm md:grid-cols-2">
                 <div>
-                  <div className="mb-1 text-gray-500">Office Address</div>
-                  <div className="font-medium text-gray-800">{agency.address || 'Not provided'}</div>
+                  <div className="mb-1 text-[var(--text-soft)]">Office Address</div>
+                  <div className="font-medium text-[var(--text)]">{agency.address || 'Not provided'}</div>
                 </div>
                 <div>
-                  <div className="mb-1 text-gray-500">Field of Operations</div>
+                  <div className="mb-1 text-[var(--text-soft)]">Field of Operations</div>
                   <div className="flex flex-wrap gap-2">
                     {agency.fieldOfOperations.length > 0 ? (
                       agency.fieldOfOperations.map((item) => (
-                        <span key={item} className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
+                        <span key={item} className="rounded-full bg-[var(--neutral-bg)] px-2.5 py-1 text-xs font-medium text-[var(--neutral-text)]">
                           {item}
                         </span>
                       ))
                     ) : (
-                      <span className="font-medium text-gray-800">Not provided</span>
+                      <span className="font-medium text-[var(--text)]">Not provided</span>
                     )}
                   </div>
                 </div>
@@ -185,8 +187,8 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
           ) : null}
 
           {documentEntries.length > 0 ? (
-            <div className="mt-4 border-t border-gray-100 pt-4">
-              <h4 className="mb-3 text-sm font-semibold text-gray-800">Application Documents</h4>
+            <div className="mt-4 border-t border-[var(--border)] pt-4">
+              <h4 className="mb-3 text-sm font-semibold text-[var(--text)]">Application Documents</h4>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {documentEntries.map((document) => (
                   <DocumentCard key={document.label} label={document.label} url={document.url} />
@@ -196,7 +198,7 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
           ) : null}
 
           {isPending ? (
-            <div className="mt-5 flex gap-3 border-t border-gray-100 pt-4">
+            <div className="mt-5 flex gap-3 border-t border-[var(--border)] pt-4">
               <button
                 onClick={() => onApprove(agency.id)}
                 className="flex flex-1 items-center justify-center gap-1.5 rounded-[14px] bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-green-600 hover:to-emerald-700 hover:shadow-md"
@@ -208,7 +210,7 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
               </button>
               <button
                 onClick={() => onReject(agency.id)}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-[14px] border-2 border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 shadow-sm transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-[14px] border-2 border-red-400/30 bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--danger-text)] shadow-sm transition-all duration-200 hover:border-red-400/50 hover:bg-[var(--danger-bg)] hover:shadow-md"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -231,19 +233,19 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
               transition={{ duration: 0.2 }}
               onClick={() => !deleting && setShowDeleteConfirm(false)}
             />
-            <PortalModalTransition className="relative mx-4 w-full max-w-sm rounded-[18px] bg-white p-6 shadow-2xl">
+            <PortalModalTransition className="relative mx-4 w-full max-w-sm rounded-[18px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
                 <svg className="h-7 w-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
 
-              <h3 className="mb-1 text-center text-lg font-bold text-gray-900">
+              <h3 className="mb-1 text-center text-lg font-bold text-[var(--text)]">
                 Delete Agency
               </h3>
-              <p className="mb-2 text-center text-sm text-gray-500">
+              <p className="mb-2 text-center text-sm text-[var(--text-muted)]">
                 Are you sure you want to permanently delete{' '}
-                <span className="font-semibold text-gray-700">{agency.name}</span>?
+                <span className="font-semibold text-[var(--text)]">{agency.name}</span>?
               </p>
               <p className="mb-4 rounded-[14px] bg-red-50 px-3 py-2 text-center text-xs text-red-500">
                 Warning: this also removes the agency&apos;s hotels, vehicles, and bookings. This action cannot be undone.
@@ -262,7 +264,7 @@ const AgencyCard = ({ agency, onApprove, onReject, onDelete }: AgencyCardProps) 
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={deleting}
-                  className="flex-1 rounded-[14px] bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-200 disabled:opacity-50"
+                className="flex-1 rounded-[14px] bg-[var(--surface-high)] px-4 py-2.5 text-sm font-semibold text-[var(--text)] transition-all hover:bg-[var(--surface-strong)] disabled:opacity-50"
                 >
                   Cancel
                 </button>

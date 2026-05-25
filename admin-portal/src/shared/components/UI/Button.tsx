@@ -11,10 +11,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-sm',
-  secondary: 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50',
+    'bg-[linear-gradient(135deg,var(--button-primary-start),var(--button-primary-end))] text-[var(--button-primary-text)] shadow-sm hover:opacity-95',
+  secondary: 'bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--surface-high)]',
   danger: 'bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 shadow-sm',
-  ghost: 'bg-transparent text-gray-700 hover:bg-gray-100',
+  ghost: 'bg-transparent text-[var(--text-muted)] hover:bg-[var(--neutral-bg)] hover:text-[var(--text)]',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -38,7 +38,7 @@ const Button = ({
     <button
       className={[
         'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+        'focus:outline-none focus:ring-2 focus:ring-white/15',
         'disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]',
         variantClasses[variant],
         sizeClasses[size],

@@ -72,7 +72,7 @@ const PackageList = () => {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {packages.map((pkg) => (
-            <article key={pkg.id} className="surface flex flex-col p-5">
+            <article key={pkg.id} className="surface surface-card flex flex-col p-5">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-[var(--text)]">{pkg.name}</h3>

@@ -204,6 +204,21 @@ const VehicleProviderList = () => {
       ].filter((entry): entry is { label: string; url: string } => Boolean(entry.url))
     : [];
 
+  const detailFooter = selected ? (
+    <div className="flex flex-wrap gap-3">
+      {selected.status !== 'APPROVED' ? (
+        <button type="button" onClick={() => handleApprove(selected.id)} className="sovereign-button-primary h-11 px-5">
+          Approve
+        </button>
+      ) : null}
+      {selected.status !== 'REJECTED' ? (
+        <button type="button" onClick={() => handleReject(selected.id)} className="sovereign-button-danger h-11 px-5">
+          Reject
+        </button>
+      ) : null}
+    </div>
+  ) : null;
+
   return (
     <>
       <ManagementPageShell filters={filters} list={list} />
@@ -211,6 +226,7 @@ const VehicleProviderList = () => {
         open={isDetailOpen && Boolean(selected)}
         title={selected?.name || 'Vehicle provider details'}
         subtitle={selected?.email}
+        footer={detailFooter}
         onClose={() => setIsDetailOpen(false)}
       >
         {selected ? (
@@ -239,19 +255,6 @@ const VehicleProviderList = () => {
               <div className="mt-3">
                 <DocumentGrid entries={documents} emptyMessage="No KYC files uploaded." />
               </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
-              {selected.status !== 'APPROVED' ? (
-                <button type="button" onClick={() => handleApprove(selected.id)} className="sovereign-button-primary h-11 px-5">
-                  Approve
-                </button>
-              ) : null}
-              {selected.status !== 'REJECTED' ? (
-                <button type="button" onClick={() => handleReject(selected.id)} className="sovereign-button-danger h-11 px-5">
-                  Reject
-                </button>
-              ) : null}
             </div>
           </div>
         ) : null}

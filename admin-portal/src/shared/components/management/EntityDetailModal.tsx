@@ -8,10 +8,11 @@ interface EntityDetailModalProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
+  footer?: ReactNode;
   onClose: () => void;
 }
 
-const EntityDetailModal = ({ open, title, subtitle, children, onClose }: EntityDetailModalProps) => {
+const EntityDetailModal = ({ open, title, subtitle, children, footer, onClose }: EntityDetailModalProps) => {
   return (
     <AnimatePresence>
       {open ? (
@@ -24,8 +25,8 @@ const EntityDetailModal = ({ open, title, subtitle, children, onClose }: EntityD
             transition={{ duration: 0.2 }}
             onClick={onClose}
           />
-          <PortalModalTransition className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[20px] border border-[var(--border)] bg-[var(--background)] p-6 shadow-[0_30px_60px_rgba(0,0,0,0.18)]">
-            <div className="flex items-start justify-between gap-4">
+          <PortalModalTransition className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[20px] border border-[var(--border)] bg-[var(--background)] shadow-[0_30px_60px_rgba(0,0,0,0.18)]">
+            <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[var(--border)] bg-[var(--background)] px-6 py-6">
               <div>
                 <div className="sovereign-label">Details</div>
                 <h3 className="mt-2 font-headline text-2xl font-bold text-[var(--text)]">{title}</h3>
@@ -36,7 +37,12 @@ const EntityDetailModal = ({ open, title, subtitle, children, onClose }: EntityD
               </button>
             </div>
 
-            <div className="mt-6">{children}</div>
+            <div className="flex-1 overflow-y-auto px-6 py-6">{children}</div>
+            {footer ? (
+              <div className="border-t border-[var(--border)] bg-[var(--background)] px-6 py-4">
+                {footer}
+              </div>
+            ) : null}
           </PortalModalTransition>
         </div>
       ) : null}

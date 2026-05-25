@@ -115,7 +115,7 @@ const Dashboard = () => {
 
       <section className="grid gap-4 lg:grid-cols-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="surface flex flex-col items-center justify-center p-5 text-center">
+          <div key={stat.label} className="surface surface-card flex flex-col items-center justify-center p-5 text-center">
             <div className="mb-2 text-[var(--text-soft)]">{stat.icon}</div>
             <div className="text-3xl font-bold text-[var(--text)]">{stat.value}</div>
             <div className="mt-2 text-sm font-medium text-[var(--text-soft)]">{stat.label}</div>
@@ -125,7 +125,7 @@ const Dashboard = () => {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        <div className="surface p-5">
+        <div className="surface surface-card p-5">
           <h3 className="text-lg font-semibold text-[var(--text)]">Booking Analytics</h3>
           <p className="mt-1 text-sm text-[var(--text-muted)]">Current distribution by booking status.</p>
           <div className="mt-6 space-y-4">
@@ -149,7 +149,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="surface p-5">
+        <div className="surface surface-card p-5">
           <h3 className="text-lg font-semibold text-[var(--text)]">Inventory Utilization</h3>
           <p className="mt-1 text-sm text-[var(--text-muted)]">How much hotel and fleet capacity is actively in use.</p>
           <div className="mt-6 space-y-5">

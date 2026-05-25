@@ -78,14 +78,14 @@ const ReportCharts = ({ revenueData, bookingsData, userGrowthData }: ReportChart
         <ChartCard
           title="Bookings Trend"
           subtitle="Confirmed booking volume by reporting period."
-          color="#526074"
+          color="#d4d4d4"
           values={bookingsValues}
           valueFormatter={(value) => value.toLocaleString()}
         />
         <ChartCard
           title="User Growth"
           subtitle="Traveler growth curve for the same reporting window."
-          color="#595e78"
+          color="#a3a3a3"
           values={userGrowthValues}
           valueFormatter={(value) => value.toLocaleString()}
         />

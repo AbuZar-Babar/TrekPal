@@ -32,6 +32,11 @@
   --danger-text: #b53e33;
   --shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.06);
   --shadow-strong: 0 28px 70px rgba(15, 23, 42, 0.1);
+  --pattern-card-shine: conic-gradient(from 220deg at 50% 50%, rgba(37, 99, 235, 0) 0deg, color-mix(in srgb, var(--accent) 85%, white) 24deg, color-mix(in srgb, var(--primary) 30%, white) 300deg, rgba(37, 99, 235, 0) 360deg);
+  --pattern-card-shine-opacity: 0.22;
+  --pattern-card-line: color-mix(in srgb, var(--border-strong) 72%, transparent);
+  --pattern-card-tile: color-mix(in srgb, var(--accent) 16%, transparent);
+  --pattern-card-hover-border: color-mix(in srgb, var(--accent) 32%, var(--border));
 }
 
 html[data-theme='dark'] {
@@ -60,6 +65,11 @@ html[data-theme='dark'] {
   --danger-text: #f4a4a1;
   --shadow-soft: 0 18px 42px rgba(2, 8, 18, 0.28);
   --shadow-strong: 0 30px 80px rgba(2, 8, 18, 0.42);
+  --pattern-card-shine: conic-gradient(from 205deg at 50% 50%, rgba(37, 99, 235, 0) 0deg, color-mix(in srgb, var(--accent) 84%, white) 25deg, color-mix(in srgb, var(--primary) 22%, transparent) 295deg, rgba(37, 99, 235, 0) 360deg);
+  --pattern-card-shine-opacity: 0.1;
+  --pattern-card-line: color-mix(in srgb, var(--border-strong) 74%, transparent);
+  --pattern-card-tile: color-mix(in srgb, var(--accent) 20%, transparent);
+  --pattern-card-hover-border: color-mix(in srgb, var(--accent) 28%, var(--border));
 }
 
 @layer base {
@@ -322,6 +332,128 @@ html[data-theme='dark'] {
     background: var(--panel);
     border-radius: 16px;
     box-shadow: var(--shadow-soft);
+  }
+
+  .portal-pattern-card,
+  .app-card,
+  .app-card-subtle,
+  .record-card,
+  .stat-card,
+  .app-kpi,
+  .surface-card,
+  .portal-partner-card {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .portal-pattern-card::before,
+  .app-card::before,
+  .app-card-subtle::before,
+  .record-card::before,
+  .stat-card::before,
+  .app-kpi::before,
+  .surface-card::before,
+  .portal-partner-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 280ms ease;
+    background:
+      radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 38%),
+      radial-gradient(circle at 70% 18%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 34%),
+      linear-gradient(180deg, transparent, transparent);
+  }
+
+  .portal-pattern-card::after,
+  .app-card::after,
+  .app-card-subtle::after,
+  .record-card::after,
+  .stat-card::after,
+  .app-kpi::after,
+  .surface-card::after,
+  .portal-partner-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transform: scale(1.02);
+    transition: opacity 220ms ease, transform 320ms ease;
+    background:
+      linear-gradient(var(--pattern-card-line), var(--pattern-card-line)) 0 10% / 0 1px no-repeat,
+      linear-gradient(var(--pattern-card-line), var(--pattern-card-line)) 0 32.5% / 0 1px no-repeat,
+      linear-gradient(var(--pattern-card-line), var(--pattern-card-line)) 0 55% / 0 1px no-repeat,
+      linear-gradient(var(--pattern-card-line), var(--pattern-card-line)) 22.5% 0 / 1px 0 no-repeat,
+      linear-gradient(var(--pattern-card-line), var(--pattern-card-line)) 50% 0 / 1px 0 no-repeat,
+      linear-gradient(var(--pattern-card-line), var(--pattern-card-line)) 77.5% 0 / 1px 0 no-repeat,
+      linear-gradient(var(--pattern-card-tile), var(--pattern-card-tile)) 0 0 / 22.5% 10% no-repeat,
+      linear-gradient(var(--pattern-card-tile), var(--pattern-card-tile)) 22.5% 0 / 27.5% 10% no-repeat,
+      linear-gradient(var(--pattern-card-tile), var(--pattern-card-tile)) 50% 10% / 27.5% 22.5% no-repeat,
+      linear-gradient(var(--pattern-card-tile), var(--pattern-card-tile)) 77.5% 32.5% / 22.5% 22.5% no-repeat;
+    -webkit-mask-image: radial-gradient(circle at 60% 5%, black 0%, black 18%, transparent 62%);
+    mask-image: radial-gradient(circle at 60% 5%, black 0%, black 18%, transparent 62%);
+  }
+
+  .portal-pattern-card > *,
+  .app-card > *,
+  .app-card-subtle > *,
+  .record-card > *,
+  .stat-card > *,
+  .app-kpi > *,
+  .surface-card > *,
+  .portal-partner-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .portal-pattern-card:hover,
+  .app-card:hover,
+  .app-card-subtle:hover,
+  .record-card:hover,
+  .stat-card:hover,
+  .app-kpi:hover,
+  .surface-card:hover,
+  .portal-partner-card:hover {
+    border-color: var(--pattern-card-hover-border);
+    box-shadow: var(--shadow-strong);
+  }
+
+  .portal-pattern-card:hover::before,
+  .app-card:hover::before,
+  .app-card-subtle:hover::before,
+  .record-card:hover::before,
+  .stat-card:hover::before,
+  .app-kpi:hover::before,
+  .surface-card:hover::before,
+  .portal-partner-card:hover::before {
+    opacity: 1;
+  }
+
+  .portal-pattern-card:hover::after,
+  .app-card:hover::after,
+  .app-card-subtle:hover::after,
+  .record-card:hover::after,
+  .stat-card:hover::after,
+  .app-kpi:hover::after,
+  .surface-card:hover::after,
+  .portal-partner-card:hover::after {
+    opacity: 1;
+    transform: scale(1);
+    background-size:
+      100% 1px,
+      100% 1px,
+      100% 1px,
+      1px 100%,
+      1px 100%,
+      1px 100%,
+      22.5% 10%,
+      27.5% 10%,
+      27.5% 22.5%,
+      22.5% 22.5%;
   }
 
   .portal-shell {
@@ -807,5 +939,52 @@ html[data-theme='dark'] {
     .auth-main {
       padding: 2rem 2.25rem;
     }
+  }
+
+  html[data-portal='agency'] .portal-pattern-card,
+  html[data-portal='agency'] .app-card,
+  html[data-portal='agency'] .app-card-subtle,
+  html[data-portal='agency'] .record-card,
+  html[data-portal='agency'] .stat-card,
+  html[data-portal='agency'] .app-kpi,
+  html[data-portal='agency'] .surface-card,
+  html[data-portal='agency'] .portal-partner-card {
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  html[data-portal='agency'] .portal-pattern-card::after,
+  html[data-portal='agency'] .app-card::after,
+  html[data-portal='agency'] .app-card-subtle::after,
+  html[data-portal='agency'] .record-card::after,
+  html[data-portal='agency'] .stat-card::after,
+  html[data-portal='agency'] .app-kpi::after,
+  html[data-portal='agency'] .surface-card::after,
+  html[data-portal='agency'] .portal-partner-card::after,
+  html[data-portal='agency'] .portal-pattern-card:hover::after,
+  html[data-portal='agency'] .app-card:hover::after,
+  html[data-portal='agency'] .app-card-subtle:hover::after,
+  html[data-portal='agency'] .record-card:hover::after,
+  html[data-portal='agency'] .stat-card:hover::after,
+  html[data-portal='agency'] .app-kpi:hover::after,
+  html[data-portal='agency'] .surface-card:hover::after,
+  html[data-portal='agency'] .portal-partner-card:hover::after {
+    opacity: 0;
+    transform: none;
+    background-size: 0 0;
+  }
+
+  html[data-portal='agency'] .portal-pattern-card:hover,
+  html[data-portal='agency'] .app-card:hover,
+  html[data-portal='agency'] .app-card-subtle:hover,
+  html[data-portal='agency'] .record-card:hover,
+  html[data-portal='agency'] .stat-card:hover,
+  html[data-portal='agency'] .app-kpi:hover,
+  html[data-portal='agency'] .surface-card:hover,
+  html[data-portal='agency'] .portal-partner-card:hover {
+    transform: translateY(-2px);
   }
 }

@@ -8,6 +8,17 @@
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
+    --hotel-card-shine: conic-gradient(
+      from 205deg at 50% 50%,
+      color-mix(in srgb, var(--tp-accent) 0%, transparent) 0deg,
+      color-mix(in srgb, var(--tp-accent) 86%, white) 24deg,
+      color-mix(in srgb, var(--tp-primary) 24%, transparent) 295deg,
+      color-mix(in srgb, var(--tp-accent) 0%, transparent) 360deg
+    );
+    --hotel-card-shine-opacity: 0.1;
+    --hotel-card-line: color-mix(in srgb, var(--tp-border-strong) 74%, transparent);
+    --hotel-card-tile: color-mix(in srgb, var(--tp-accent) 18%, transparent);
+    --hotel-card-hover-border: color-mix(in srgb, var(--tp-accent) 28%, var(--tp-border));
     background:
       radial-gradient(circle at top left, color-mix(in srgb, var(--tp-primary) 10%, transparent), transparent 22%),
       radial-gradient(circle at bottom right, color-mix(in srgb, var(--tp-accent) 8%, transparent), transparent 18%),
@@ -15,6 +26,13 @@
     color: var(--tp-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  html[data-theme='light'] body {
+    --hotel-card-shine-opacity: 0.22;
+    --hotel-card-line: color-mix(in srgb, var(--tp-border-strong) 72%, transparent);
+    --hotel-card-tile: color-mix(in srgb, var(--tp-accent) 14%, transparent);
+    --hotel-card-hover-border: color-mix(in srgb, var(--tp-accent) 32%, var(--tp-border));
   }
 }
 
@@ -71,6 +89,62 @@
     border-radius: 1rem;
     box-shadow: var(--tp-shadow-soft);
     overflow: hidden;
+  }
+
+  .card,
+  .portal-partner-card {
+    position: relative;
+    isolation: isolate;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .card::before,
+  .portal-partner-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 280ms ease;
+    background:
+      radial-gradient(circle at 50% -18%, var(--hotel-card-shine) 0, transparent 54%),
+      radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--tp-accent) 10%, transparent), transparent 38%),
+      radial-gradient(circle at 70% 18%, color-mix(in srgb, var(--tp-primary) 10%, transparent), transparent 34%);
+    filter: blur(2px);
+  }
+
+  .card > *,
+  .portal-partner-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card:hover,
+  .portal-partner-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--hotel-card-hover-border);
+    box-shadow: var(--tp-shadow-strong);
+  }
+
+  .card:hover::before,
+  .portal-partner-card:hover::before {
+    opacity: var(--hotel-card-shine-opacity);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .portal-partner-card {
+    transition: box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .card:hover,
+  .portal-partner-card:hover {
+    transform: none;
   }
 }
 

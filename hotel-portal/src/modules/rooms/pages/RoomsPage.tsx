@@ -132,7 +132,7 @@ const RoomsPage: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="card group hover:border-primary-200 transition-colors"
+              className="card group"
             >
               <div className="relative h-48 overflow-hidden bg-[var(--tp-panel-strong)]">
                   {room.images?.[0] ? (

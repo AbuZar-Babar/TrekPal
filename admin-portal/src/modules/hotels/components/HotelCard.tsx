@@ -1,5 +1,6 @@
 import { Hotel } from '../../../shared/types';
 import { PortalListItemTransition } from '../../../shared/components/motion/portalMotion';
+import PatternCardChrome from '../../../shared/components/UI/PatternCardChrome';
 
 interface HotelCardProps {
   hotel: Hotel;
@@ -11,31 +12,33 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
   const isPending = hotel.status === 'PENDING';
 
   const statusBadge = {
-    PENDING: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-    APPROVED: 'bg-green-100 text-green-800 border border-green-200',
-    REJECTED: 'bg-red-100 text-red-800 border border-red-200',
-  }[hotel.status] || 'bg-gray-100 text-gray-800';
+    PENDING: 'bg-[var(--warning-bg)] text-[var(--warning-text)] border border-white/10',
+    APPROVED: 'bg-[var(--success-bg)] text-[var(--success-text)] border border-white/10',
+    REJECTED: 'bg-[var(--danger-bg)] text-[var(--danger-text)] border border-white/10',
+  }[hotel.status] || 'bg-[var(--neutral-bg)] text-[var(--neutral-text)]';
 
   return (
-    <PortalListItemTransition className="rounded-[18px] border border-gray-100 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md">
-      <div className="flex justify-between items-start">
+    <PortalListItemTransition className="sovereign-pattern-card p-5">
+      <PatternCardChrome />
+      <div className="sovereign-pattern-card-content flex justify-between items-start">
         <div className="flex gap-4 flex-1">
-          {/* Avatar */}
-          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[14px] flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
-            {hotel.name.charAt(0).toUpperCase()}
-          </div>
+          <span className="sovereign-pattern-icon flex-shrink-0">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M3 21h18M5 21V5h14v16M9 9h2m4 0h2m-8 4h2m4 0h2" />
+            </svg>
+          </span>
 
           <div className="flex-1 min-w-0">
             {/* Header */}
             <div className="flex items-center gap-2.5 mb-1.5">
-              <h3 className="text-base font-bold text-gray-900 truncate">{hotel.name}</h3>
+              <h3 className="text-base font-bold text-[var(--text)] truncate">{hotel.name}</h3>
               <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${statusBadge}`}>
                 {hotel.status}
               </span>
             </div>
 
             {/* Agency */}
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-2">
+            <div className="flex items-center gap-1.5 text-sm text-[var(--text-muted)] mb-2">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
               </svg>
@@ -43,7 +46,7 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
             </div>
 
             {/* Location */}
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-2">
+            <div className="flex items-center gap-1.5 text-sm text-[var(--text-muted)] mb-2">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -52,13 +55,13 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
             </div>
 
             {/* Meta Row */}
-            <div className="flex items-center gap-4 text-xs text-gray-400 mb-3">
+            <div className="flex items-center gap-4 text-xs text-[var(--text-soft)] mb-3">
               {hotel.rating && (
                 <div className="flex items-center gap-1">
                   <svg className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
-                  <span className="text-gray-600 font-medium">{hotel.rating}</span>
+                  <span className="text-[var(--text-muted)] font-medium">{hotel.rating}</span>
                 </div>
               )}
               <div className="flex items-center gap-1">
@@ -77,7 +80,7 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
 
             {/* Description */}
             {hotel.description && (
-              <p className="text-xs text-gray-500 mb-3 line-clamp-2">{hotel.description}</p>
+              <p className="text-xs text-[var(--text-muted)] mb-3 line-clamp-2">{hotel.description}</p>
             )}
 
             {/* Amenities */}
@@ -86,13 +89,13 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
                 {hotel.amenities.slice(0, 5).map((amenity, idx) => (
                   <span
                     key={idx}
-                    className="rounded-[10px] border border-gray-100 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-600"
+                    className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-low)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-muted)]"
                   >
                     {amenity}
                   </span>
                 ))}
                 {hotel.amenities.length > 5 && (
-                    <span className="rounded-[10px] border border-gray-100 bg-gray-50 px-2 py-0.5 text-[11px] text-gray-400">
+                    <span className="rounded-[10px] border border-[var(--border)] bg-[var(--surface-low)] px-2 py-0.5 text-[11px] text-[var(--text-soft)]">
                     +{hotel.amenities.length - 5} more
                   </span>
                 )}

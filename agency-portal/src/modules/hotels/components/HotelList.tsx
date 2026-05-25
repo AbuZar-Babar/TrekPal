@@ -130,7 +130,7 @@ const HotelList = () => {
             <PortalListItemTransition
               key={hotel.id}
               delay={index * 0.03}
-              className="surface flex flex-col overflow-hidden"
+              className="surface surface-card flex flex-col overflow-hidden"
             >
               <div className="aspect-video w-full bg-[var(--panel-subtle)]">
                 {hotel.images?.[0] ? (
@@ -231,7 +231,7 @@ const HotelList = () => {
           <PortalListItemTransition
             key={vehicle.id}
             delay={index * 0.03}
-            className="surface flex flex-col overflow-hidden"
+            className="surface surface-card flex flex-col overflow-hidden"
           >
             <div className="aspect-video w-full bg-[var(--panel-subtle)]">
               {vehicle.images?.[0] ? (
@@ -370,8 +370,8 @@ const HotelList = () => {
               transition={{ duration: 0.2 }}
               onClick={() => setSelectedHotel(null)}
             />
-            <PortalModalTransition className="surface relative max-h-[90vh] w-full max-w-3xl overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+            <PortalModalTransition className="surface relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden">
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border)] bg-[var(--panel)] px-6 py-4">
                 <div>
                   <h3 className="text-xl font-semibold text-[var(--text)]">{selectedHotel.name}</h3>
                   <p className="text-sm text-[var(--text-muted)]">
@@ -387,7 +387,7 @@ const HotelList = () => {
                 </button>
               </div>
 
-              <div className="space-y-5 px-6 py-5">
+              <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
                 {selectedHotel.images?.[0] ? (
                   <img
                     src={selectedHotel.images[0]}
@@ -471,8 +471,8 @@ const HotelList = () => {
               transition={{ duration: 0.2 }}
               onClick={() => setSelectedVehicle(null)}
             />
-            <PortalModalTransition className="surface relative max-h-[90vh] w-full max-w-2xl overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+            <PortalModalTransition className="surface relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden">
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border)] bg-[var(--panel)] px-6 py-4">
                 <div>
                   <h3 className="text-xl font-semibold text-[var(--text)]">
                     {selectedVehicle.make} {selectedVehicle.model}
@@ -488,7 +488,7 @@ const HotelList = () => {
                 </button>
               </div>
 
-              <div className="space-y-5 px-6 py-5">
+              <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
                 {selectedVehicle.images?.[0] ? (
                   <img
                     src={selectedVehicle.images[0]}
