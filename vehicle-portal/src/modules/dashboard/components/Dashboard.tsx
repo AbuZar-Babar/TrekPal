@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchAgencyBids } from '../../bids/store/bidsSlice';
 import { fetchBookings } from '../../bookings/store/bookingsSlice';
-import { fetchHotels } from '../../hotels/store/hotelsSlice';
-import { fetchPackages } from '../../packages/store/packagesSlice';
-import { fetchTripRequests } from '../../tripRequests/store/tripRequestsSlice';
 import { fetchVehicles } from '../../transport/store/transportSlice';
 import { RootState } from '../../../store';
 import { formatCurrency } from '../../../shared/utils/formatters';
@@ -15,66 +11,58 @@ const Dashboard = () => {
 
   const { user } = useSelector((state: RootState) => state.auth);
   const { vehicles } = useSelector((state: RootState) => state.transport);
-  const { hotels } = useSelector((state: RootState) => state.hotels);
-  const { packages } = useSelector((state: RootState) => state.packages);
-  const { bids } = useSelector((state: RootState) => state.bids);
   const { bookings } = useSelector((state: RootState) => state.bookings);
-  const { tripRequests } = useSelector((state: RootState) => state.tripRequests);
 
   useEffect(() => {
     dispatch(fetchVehicles({ limit: 100 }) as any);
-    dispatch(fetchHotels({ limit: 100 }) as any);
-    dispatch(fetchPackages({ limit: 100 }) as any);
-    dispatch(fetchAgencyBids({ limit: 100 }) as any);
     dispatch(fetchBookings({ limit: 100 }) as any);
-    dispatch(fetchTripRequests({ limit: 100 }) as any);
   }, [dispatch]);
 
-  const activeOffers = packages.filter((item) => item.isActive);
-  const liveBookings = bookings.filter((item) => item.status !== 'CANCELLED');
-  const urgentNegotiations = bids.filter((bid) => bid.awaitingActionBy === 'AGENCY' && bid.status === 'PENDING');
+  const pendingBookings = bookings.filter((booking) => booking.status === 'PENDING');
+  const confirmedBookings = bookings.filter((booking) => booking.status === 'CONFIRMED');
+  const completedBookings = bookings.filter((booking) => booking.status === 'COMPLETED');
   const availableVehicles = vehicles.filter((vehicle) => vehicle.isAvailable);
   const confirmedRevenue = bookings
     .filter((booking) => booking.status === 'CONFIRMED' || booking.status === 'COMPLETED')
     .reduce((sum, booking) => sum + booking.totalAmount, 0);
   const stats = [
     {
-      label: 'Traveler requests',
-      value: tripRequests.length,
-      note: `${urgentNegotiations.length} need a reply`,
+      label: 'Fleet size',
+      value: vehicles.length,
+      note: `${availableVehicles.length} currently available`,
       icon: (
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h10" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 13h18l-1.5-5.25A2 2 0 0017.58 6H6.42a2 2 0 00-1.92 1.75L3 13zm2 0v4a1 1 0 001 1h1a2 2 0 104 0h6a2 2 0 104 0h1a1 1 0 001-1v-4" />
         </svg>
       ),
     },
     {
-      label: 'Published offers',
-      value: activeOffers.length,
-      note: `${packages.length - activeOffers.length} still hidden`,
+      label: 'Pending bookings',
+      value: pendingBookings.length,
+      note: `${confirmedBookings.length} already confirmed`,
       icon: (
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 7l8-4 8 4-8 4-8-4zm0 5l8 4 8-4m-16 5l8 4 8-4" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 4h10l3 3v13H4V7l3-3zm0 5h10M8 13h8M8 17h5" />
         </svg>
       ),
     },
     {
-      label: 'Live bookings',
-      value: liveBookings.length,
+      label: 'Completed trips',
+      value: completedBookings.length,
       note: `${formatCurrency(confirmedRevenue)} secured`,
       icon: (
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 4h10l3 3v13H4V7l3-3zm0 5h10M8 13h3m2 0h3" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5 13l4 4L19 7" />
         </svg>
       ),
     },
     {
-      label: 'Ready inventory',
-      value: hotels.length + availableVehicles.length,
-      note: `${availableVehicles.length} vehicles available`,
+      label: 'Unavailable vehicles',
+      value: vehicles.length - availableVehicles.length,
+      note: `${bookings.length} total bookings on record`,
       icon: (
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 21h18M5 21V5h14v16M7 13l2-4h6l2 4M8 18a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 13h18m-4 4h.01M7 17h.01M5 13l1.5-5.25A2 2 0 018.42 6h7.16a2 2 0 011.92 1.75L19 13m-14 0v4a1 1 0 001 1h1a2 2 0 104 0h2a2 2 0 104 0h1a1 1 0 001-1v-4" />
         </svg>
       ),
     },
@@ -84,7 +72,7 @@ const Dashboard = () => {
     <div className="space-y-6">
       <section className="section-title-row">
         <h2 className="section-title">
-          Welcome back, {user?.name || 'Agency'}
+          Welcome back, {user?.name || 'Vehicle partner'}
         </h2>
       </section>
 

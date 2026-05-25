@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { bookingsController } from './bookings.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
-import { requireAgencyOrAdmin, requireTraveler } from '../../middlewares/roleGuard.middleware';
+import { requireRole, requireTraveler } from '../../middlewares/roleGuard.middleware';
+import { ROLES } from '../../config/constants';
 
 const router = Router();
 
@@ -36,11 +37,11 @@ router.post(
 /**
  * @route   PUT /api/bookings/:id/status
  * @desc    Update booking status (CONFIRMED, CANCELLED, COMPLETED)
- * @access  Private (Agency or Admin)
+ * @access  Private (Agency, Vehicle, or Admin)
  */
 router.put(
   '/:id/status',
-  requireAgencyOrAdmin,
+  requireRole(ROLES.AGENCY, ROLES.VEHICLE, ROLES.ADMIN),
   bookingsController.updateBookingStatus.bind(bookingsController)
 );
 

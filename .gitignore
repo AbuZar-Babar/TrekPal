@@ -60,9 +60,10 @@ uploads/
 # graphify temporary artifacts (keep generated graph outputs in git)
 **/.graphify_*
 .graphify_*
+**/graphify-out/
 **/graphify-out/cache/
 **/graphify-out/obsidian/
 **/graphify-out/.questions.json
 **/graphify-out/.sections.txt
 
-.obsidian
+.obsidian/

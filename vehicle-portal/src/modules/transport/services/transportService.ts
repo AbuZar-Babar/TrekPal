@@ -38,6 +38,25 @@ export const transportService = {
   },
 
   /**
+   * Get marketplace vehicles (all visible vehicles)
+   */
+  async getMarketplaceVehicles(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  }): Promise<PaginatedResponse<Vehicle>> {
+    const response = await apiClient.get('/transport', { params });
+    const result = response.data.data;
+    return {
+      data: result.vehicles || result.data || [],
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+    };
+  },
+
+  /**
    * Get vehicle by ID
    */
   async getVehicleById(id: string): Promise<Vehicle> {

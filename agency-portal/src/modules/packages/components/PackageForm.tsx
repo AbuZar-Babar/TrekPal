@@ -157,15 +157,20 @@ const PackageForm = () => {
 
     const loadInventory = async () => {
       try {
-        const vehiclesPromise = transportService.getVehicles({ limit: 100 });
-        const hotelsPromise = reservationWindow
-          ? hotelsService.getHotels({
-              limit: 100,
-              discovery: true,
-              startDate: reservationWindow.startDate,
-              endDate: reservationWindow.endDate,
-            })
-          : Promise.resolve({ data: [] as Hotel[] });
+        const vehiclesPromise = transportService.getMarketplaceVehicles({
+          limit: 100,
+          status: 'APPROVED',
+        });
+        const hotelsPromise = hotelsService.getHotels({
+          limit: 100,
+          discovery: true,
+          ...(reservationWindow
+            ? {
+                startDate: reservationWindow.startDate,
+                endDate: reservationWindow.endDate,
+              }
+            : {}),
+        });
         const [hotelsResult, vehiclesResult] = await Promise.all([hotelsPromise, vehiclesPromise]);
 
         if (!mounted) {
@@ -174,9 +179,7 @@ const PackageForm = () => {
 
         setHotels(hotelsResult.data);
         setVehicles(vehiclesResult.data);
-        if (!reservationWindow) {
-          setInventoryError(null);
-        } else if (hotelsResult.data.length === 0) {
+        if (hotelsResult.data.length === 0) {
           setInventoryError('No hotels were found in the marketplace.');
         } else if (!hotelsResult.data.some((hotel) => hotel.status === 'APPROVED')) {
           setInventoryError('No approved marketplace hotels are available for publishing active trip offers.');

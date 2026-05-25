@@ -38,6 +38,7 @@ const renderPortalOrigins = [
   'https://trekpal-hotel-portal.onrender.com',
   'https://trekpal-agency-portal.onrender.com',
   'https://trekpal-admin-portal.onrender.com',
+  'https://trekpal-vehicle-portal.onrender.com',
 ];
 
 const localPortalOrigins = [

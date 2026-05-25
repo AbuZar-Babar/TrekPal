@@ -230,7 +230,7 @@ export class TransportService {
           capacity: input.capacity,
           pricePerDay: input.pricePerDay,
           images: normalizeMediaStoragePaths(input.images || []),
-          status: APPROVAL_STATUS.PENDING,
+          status: APPROVAL_STATUS.APPROVED,
           isAvailable: input.isAvailable ?? true,
           vehicleNumber: input.vehicleNumber ?? null,
         },
@@ -369,7 +369,6 @@ export class TransportService {
     if (input.images !== undefined) updateData.images = normalizeMediaStoragePaths(input.images);
     if (input.isAvailable !== undefined) updateData.isAvailable = input.isAvailable;
     if (input.vehicleNumber !== undefined) updateData.vehicleNumber = input.vehicleNumber;
-    updateData.status = APPROVAL_STATUS.PENDING;
 
     const vehicle = await prisma.$transaction(async (tx) => {
       if (input.driver) {
