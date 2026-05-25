@@ -78,7 +78,7 @@ const LoginForm = () => {
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>
           {formError && (
-            <div className="rounded-[20px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+            <div className="rounded-2xl border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
               {formError}
             </div>
           )}

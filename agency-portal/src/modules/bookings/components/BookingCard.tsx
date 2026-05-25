@@ -1,4 +1,5 @@
 import { Booking } from '../../../shared/types';
+import { PortalListItemTransition } from '../../../shared/components/motion/portalMotion';
 
 interface BookingCardProps {
   booking: Booking;
@@ -28,58 +29,58 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
         : [];
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <PortalListItemTransition className="portal-pattern-card rounded-[18px] border border-[var(--border)] bg-[var(--panel)] p-6 hover:-translate-y-1">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-xl font-bold text-gray-900">{booking.destination || 'Trip Booking'}</h3>
+              <h3 className="text-xl font-bold text-[var(--text)]">{booking.destination || 'Trip Booking'}</h3>
               <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusClasses[booking.status]}`}>
                 {booking.status}
               </span>
             </div>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
               Traveler: {booking.userName || 'Traveler'} | Booking ID: {booking.id.slice(0, 8)}
             </p>
           </div>
 
-          <div className="grid gap-3 text-sm text-gray-600 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
-              <div className="text-xs uppercase tracking-wide text-gray-400">Travel Window</div>
-              <div className="mt-1 font-semibold text-gray-900">
+          <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-[14px] bg-[var(--panel-subtle)] px-4 py-3">
+              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Travel Window</div>
+              <div className="mt-1 font-semibold text-[var(--text)]">
                 {new Date(booking.startDate).toLocaleDateString()} -{' '}
                 {new Date(booking.endDate).toLocaleDateString()}
               </div>
             </div>
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
-              <div className="text-xs uppercase tracking-wide text-gray-400">Amount</div>
-              <div className="mt-1 font-semibold text-gray-900">
+            <div className="rounded-[14px] bg-[var(--panel-subtle)] px-4 py-3">
+              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Amount</div>
+              <div className="mt-1 font-semibold text-[var(--text)]">
                 PKR {booking.totalAmount.toLocaleString()}
               </div>
             </div>
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
-              <div className="text-xs uppercase tracking-wide text-gray-400">Created</div>
-              <div className="mt-1 font-semibold text-gray-900">
+            <div className="rounded-[14px] bg-[var(--panel-subtle)] px-4 py-3">
+              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Created</div>
+              <div className="mt-1 font-semibold text-[var(--text)]">
                 {new Date(booking.createdAt).toLocaleDateString()}
               </div>
             </div>
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
-              <div className="text-xs uppercase tracking-wide text-gray-400">Bid Reference</div>
-              <div className="mt-1 font-semibold text-gray-900">
+            <div className="rounded-[14px] bg-[var(--panel-subtle)] px-4 py-3">
+              <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Bid Reference</div>
+              <div className="mt-1 font-semibold text-[var(--text)]">
                 {booking.bidId ? booking.bidId.slice(0, 8) : 'N/A'}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="min-w-[240px] rounded-2xl border border-gray-100 bg-gray-50 p-5">
-          <div className="text-xs uppercase tracking-wide text-gray-400">Booking Actions</div>
-          <div className="mt-2 text-sm text-gray-500">
+        <div className="min-w-[240px] rounded-[18px] border border-[var(--border)] bg-[var(--panel-subtle)] p-5">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-soft)]">Booking Actions</div>
+          <div className="mt-2 text-sm text-[var(--text-muted)]">
             Confirm accepted bookings, close completed trips, or cancel when plans change.
           </div>
           <div className="mt-5 space-y-2">
             {actions.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-500">
+              <div className="rounded-[14px] border border-dashed border-[var(--border)] px-4 py-3 text-sm text-[var(--text-muted)]">
                 No further actions available for this booking.
               </div>
             ) : (
@@ -89,7 +90,7 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
                   type="button"
                   disabled={isUpdating}
                   onClick={() => onUpdateStatus(booking.id, action.status)}
-                  className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold transition ${action.classes} disabled:cursor-not-allowed disabled:opacity-70`}
+                  className={`w-full rounded-[14px] px-4 py-2.5 text-sm font-semibold transition ${action.classes} disabled:cursor-not-allowed disabled:opacity-70`}
                 >
                   {isUpdating ? 'Updating...' : action.label}
                 </button>
@@ -98,7 +99,7 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
           </div>
         </div>
       </div>
-    </div>
+    </PortalListItemTransition>
   );
 };
 

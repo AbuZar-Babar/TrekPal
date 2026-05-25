@@ -7,6 +7,8 @@ import './index.css';
 import { store } from './store';
 import { ThemeProvider } from './shared/theme/ThemeProvider';
 
+document.documentElement.dataset.portal = 'vehicle';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>

@@ -83,6 +83,29 @@ const HotelApprovalList = () => {
     );
   }
 
+  const detailFooter = selectedHotel ? (
+    <div className="flex flex-wrap gap-3">
+      {selectedHotel.status !== 'APPROVED' && (
+        <button
+          type="button"
+          onClick={() => handleApprove(selectedHotel.id)}
+          className="sovereign-button-primary h-12 px-5"
+        >
+          Approve Hotel
+        </button>
+      )}
+      {selectedHotel.status !== 'REJECTED' && (
+        <button
+          type="button"
+          onClick={() => handleReject(selectedHotel.id)}
+          className="sovereign-button-danger h-12 px-5"
+        >
+          Reject Hotel
+        </button>
+      )}
+    </div>
+  ) : null;
+
   if (error) {
     return (
       <div className="sovereign-panel p-8 text-center">
@@ -248,6 +271,7 @@ const HotelApprovalList = () => {
         open={isDetailOpen && Boolean(selectedHotel)}
         title={selectedHotel?.name || 'Hotel details'}
         subtitle={selectedHotel?.agencyName || 'Independent Hotel'}
+        footer={detailFooter}
         onClose={() => setIsDetailOpen(false)}
       >
         {selectedHotel ? (
@@ -401,26 +425,6 @@ const HotelApprovalList = () => {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
-                {selectedHotel.status !== 'APPROVED' && (
-                  <button
-                    type="button"
-                    onClick={() => handleApprove(selectedHotel.id)}
-                    className="sovereign-button-primary h-12 px-5"
-                  >
-                    Approve Hotel
-                  </button>
-                )}
-                {selectedHotel.status !== 'REJECTED' && (
-                  <button
-                    type="button"
-                    onClick={() => handleReject(selectedHotel.id)}
-                    className="sovereign-button-danger h-12 px-5"
-                  >
-                    Reject Hotel
-                  </button>
-                )}
-              </div>
           </div>
         ) : null}
       </EntityDetailModal>

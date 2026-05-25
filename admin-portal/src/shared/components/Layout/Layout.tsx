@@ -1,4 +1,8 @@
 import { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+
+import { PortalPageTransition } from '../motion/portalMotion';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
@@ -7,16 +11,22 @@ interface LayoutProps {
 }
 
 const Layout = ({ children }: LayoutProps) => {
+  const location = useLocation();
+
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--text)]">
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <Header />
-          <main className="flex-1 overflow-y-auto px-4 pb-8 pt-4 md:px-6 xl:px-8">
-            <div className="mx-auto w-full max-w-[1680px]">{children}</div>
-          </main>
-        </div>
+    <div className="portal-shell bg-[var(--background)] text-[var(--text)]">
+      <Sidebar />
+      <div className="portal-content">
+        <Header />
+        <main className="portal-main">
+          <div className="portal-container">
+            <AnimatePresence mode="wait" initial={false}>
+              <PortalPageTransition key={`${location.pathname}${location.search}`}>
+                {children}
+              </PortalPageTransition>
+            </AnimatePresence>
+          </div>
+        </main>
       </div>
     </div>
   );

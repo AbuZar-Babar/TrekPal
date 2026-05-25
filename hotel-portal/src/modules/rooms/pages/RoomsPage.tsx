@@ -87,7 +87,7 @@ const RoomsPage: React.FC = () => {
   if (isError) {
     return (
       <div className="card p-6">
-        <h1 className="text-xl font-bold text-slate-900">Room Management</h1>
+        <h1 className="text-xl font-bold text-[var(--tp-text)]">Room Management</h1>
         <p className="mt-3 text-sm text-rose-600">Failed to load hotel profile. Please sign in again.</p>
       </div>
     );
@@ -97,8 +97,8 @@ const RoomsPage: React.FC = () => {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Room Management</h1>
-          <p className="text-slate-500">Add and manage your hotel room types and availability</p>
+          <h1 className="text-2xl font-bold text-[var(--tp-text)]">Room Management</h1>
+          <p className="text-[var(--tp-text-muted)]">Add and manage your hotel room types and availability</p>
         </div>
         <button 
           onClick={() => setIsAdding(true)}
@@ -110,7 +110,7 @@ const RoomsPage: React.FC = () => {
       </div>
 
       {actionError && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-xl border border-rose-500/25 bg-rose-500/10 px-4 py-3 text-sm text-rose-400">
           {actionError}
         </div>
       )}
@@ -132,13 +132,13 @@ const RoomsPage: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="card group hover:border-primary-200 transition-colors"
+              className="card group"
             >
-              <div className="h-48 bg-slate-100 relative overflow-hidden">
+              <div className="relative h-48 overflow-hidden bg-[var(--tp-panel-strong)]">
                   {room.images?.[0] ? (
                   <img src={room.images[0]} alt={room.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                  <div className="flex h-full w-full flex-col items-center justify-center text-[var(--tp-text-soft)]">
                     <ImageIcon className="w-10 h-10 mb-2" />
                     <span className="text-xs">No image uploaded</span>
                   </div>
@@ -146,7 +146,7 @@ const RoomsPage: React.FC = () => {
                 <div className="absolute top-4 right-4 flex gap-2">
                   <button 
                     onClick={() => setEditingRoom(room)}
-                    className="p-2 bg-white/90 backdrop-blur shadow-sm rounded-lg text-slate-600 hover:text-primary-600 transition-colors"
+                    className="rounded-lg bg-[color:color-mix(in_srgb,var(--tp-panel)_88%,transparent)] p-2 text-[var(--tp-text-muted)] shadow-sm shadow-black/10 backdrop-blur transition-colors hover:text-primary-600"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
@@ -156,31 +156,31 @@ const RoomsPage: React.FC = () => {
                         deleteMutation.mutate(room.id);
                       }
                     }}
-                    className="p-2 bg-white/90 backdrop-blur shadow-sm rounded-lg text-slate-600 hover:text-red-600 transition-colors"
+                    className="rounded-lg bg-[color:color-mix(in_srgb,var(--tp-panel)_88%,transparent)] p-2 text-[var(--tp-text-muted)] shadow-sm shadow-black/10 backdrop-blur transition-colors hover:text-red-500"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
                 <div className="absolute bottom-4 left-4">
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur rounded-full text-xs font-bold text-primary-700 shadow-sm">
+                  <span className="rounded-full bg-[color:color-mix(in_srgb,var(--tp-panel)_88%,transparent)] px-3 py-1 text-xs font-bold text-primary-600 shadow-sm shadow-black/10 backdrop-blur">
                     PKR {room.price.toLocaleString()}/night
                   </span>
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{room.type}</h3>
-                <p className="text-sm text-slate-500 mb-4 line-clamp-2">Capacity: {room.capacity} guests</p>
+                <h3 className="mb-2 text-lg font-bold text-[var(--tp-text)]">{room.type}</h3>
+                <p className="mb-4 line-clamp-2 text-sm text-[var(--tp-text-muted)]">Capacity: {room.capacity} guests</p>
                 
-                <div className="flex items-center gap-4 text-sm text-slate-600 mb-4">
+                <div className="mb-4 flex items-center gap-4 text-sm text-[var(--tp-text-muted)]">
                   <div className="flex items-center gap-1.5">
-                    <BedDouble className="w-4 h-4 text-slate-400" />
+                    <BedDouble className="w-4 h-4 text-[var(--tp-text-soft)]" />
                     <span>{room.quantity} Rooms Total</span>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   {room.amenities.map((amenity, i) => (
-                    <span key={i} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-semibold uppercase tracking-wider">
+                    <span key={i} className="rounded bg-[var(--tp-panel-strong)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--tp-text-muted)]">
                       {amenity}
                     </span>
                   ))}
@@ -193,8 +193,8 @@ const RoomsPage: React.FC = () => {
 
       {rooms.length === 0 && !isAdding && (
         <div className="card p-8 text-center">
-          <h2 className="text-lg font-bold text-slate-900">No rooms found</h2>
-          <p className="mt-2 text-sm text-slate-500">
+          <h2 className="text-lg font-bold text-[var(--tp-text)]">No rooms found</h2>
+          <p className="mt-2 text-sm text-[var(--tp-text-muted)]">
             This hotel does not have any room types saved yet for the current account.
           </p>
         </div>
@@ -242,16 +242,16 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, onClose, onSubmit, isLoading 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+        className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--tp-border)] bg-[var(--tp-panel)] shadow-2xl shadow-black/20"
       >
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-900">{room ? 'Edit Room' : 'Add New Room Type'}</h2>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-            <X className="w-5 h-5 text-slate-500" />
+        <div className="flex items-center justify-between border-b border-[var(--tp-border)] p-6">
+          <h2 className="text-xl font-bold text-[var(--tp-text)]">{room ? 'Edit Room' : 'Add New Room Type'}</h2>
+          <button onClick={onClose} className="rounded-lg p-2 transition-colors hover:bg-[var(--tp-panel-subtle)]">
+            <X className="w-5 h-5 text-[var(--tp-text-muted)]" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -301,7 +301,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, onClose, onSubmit, isLoading 
               value={formData.quantity}
               onChange={e => setFormData({...formData, quantity: Number(e.target.value)})}
             />
-            <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+            <p className="mt-1 flex items-center gap-1 text-[10px] text-[var(--tp-text-soft)]">
               <Info className="w-3 h-3" /> This will be used to track daily availability
             </p>
           </div>

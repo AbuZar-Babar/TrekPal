@@ -1,18 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "../../shared/ui/styles/tokens.css";
+@import "../../shared/ui/styles/portal-layout.css";
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
     font-family: 'Inter', sans-serif;
+    --hotel-card-shine: conic-gradient(
+      from 205deg at 50% 50%,
+      color-mix(in srgb, var(--tp-accent) 0%, transparent) 0deg,
+      color-mix(in srgb, var(--tp-accent) 86%, white) 24deg,
+      color-mix(in srgb, var(--tp-primary) 24%, transparent) 295deg,
+      color-mix(in srgb, var(--tp-accent) 0%, transparent) 360deg
+    );
+    --hotel-card-shine-opacity: 0.1;
+    --hotel-card-line: color-mix(in srgb, var(--tp-border-strong) 74%, transparent);
+    --hotel-card-tile: color-mix(in srgb, var(--tp-accent) 18%, transparent);
+    --hotel-card-hover-border: color-mix(in srgb, var(--tp-accent) 28%, var(--tp-border));
+    background:
+      radial-gradient(circle at top left, color-mix(in srgb, var(--tp-primary) 10%, transparent), transparent 22%),
+      radial-gradient(circle at bottom right, color-mix(in srgb, var(--tp-accent) 8%, transparent), transparent 18%),
+      var(--tp-bg);
+    color: var(--tp-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html[data-theme='light'] body {
+    --hotel-card-shine-opacity: 0.22;
+    --hotel-card-line: color-mix(in srgb, var(--tp-border-strong) 72%, transparent);
+    --hotel-card-tile: color-mix(in srgb, var(--tp-accent) 14%, transparent);
+    --hotel-card-hover-border: color-mix(in srgb, var(--tp-accent) 32%, var(--tp-border));
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+    background: color-mix(in srgb, var(--tp-panel) 82%, transparent);
+    backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--tp-border) 55%, transparent);
+    box-shadow: var(--tp-shadow-strong);
   }
   
   .btn-primary {
@@ -20,19 +49,102 @@
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium active:scale-95;
+    @apply px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium active:scale-95;
+    background: var(--tp-panel);
+    border: 1px solid var(--tp-border);
+    color: var(--tp-text-muted);
+  }
+
+  .btn-secondary:hover {
+    background: var(--tp-panel-subtle);
+    color: var(--tp-text);
   }
 
   .input-field {
-    @apply w-full px-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200;
+    @apply w-full px-4 py-2 rounded-lg transition-all duration-200;
+    background: var(--tp-panel);
+    border: 1px solid var(--tp-border);
+    color: var(--tp-text);
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--tp-primary) 65%, var(--tp-border));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tp-primary) 16%, transparent);
+  }
+
+  .input-field::placeholder {
+    color: var(--tp-text-soft);
   }
 
   .label {
-    @apply block text-sm font-medium text-slate-700 mb-1;
+    @apply block text-sm font-medium mb-1;
+    color: var(--tp-text-muted);
   }
 
   .card {
-    @apply bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden;
+    border: 1px solid var(--tp-border);
+    background: var(--tp-panel);
+    color: var(--tp-text);
+    border-radius: 1rem;
+    box-shadow: var(--tp-shadow-soft);
+    overflow: hidden;
+  }
+
+  .card,
+  .portal-partner-card {
+    position: relative;
+    isolation: isolate;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .card::before,
+  .portal-partner-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 280ms ease;
+    background:
+      radial-gradient(circle at 50% -18%, var(--hotel-card-shine) 0, transparent 54%),
+      radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--tp-accent) 10%, transparent), transparent 38%),
+      radial-gradient(circle at 70% 18%, color-mix(in srgb, var(--tp-primary) 10%, transparent), transparent 34%);
+    filter: blur(2px);
+  }
+
+  .card > *,
+  .portal-partner-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card:hover,
+  .portal-partner-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--hotel-card-hover-border);
+    box-shadow: var(--tp-shadow-strong);
+  }
+
+  .card:hover::before,
+  .portal-partner-card:hover::before {
+    opacity: var(--hotel-card-shine-opacity);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .portal-partner-card {
+    transition: box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .card:hover,
+  .portal-partner-card:hover {
+    transform: none;
   }
 }
 
@@ -47,5 +159,6 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+  @apply rounded-full transition-colors;
+  background: color-mix(in srgb, var(--tp-text-soft) 42%, transparent);
 }

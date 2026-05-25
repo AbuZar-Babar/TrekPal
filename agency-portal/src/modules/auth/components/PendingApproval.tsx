@@ -16,11 +16,11 @@ const PendingApproval = () => {
     <AuthShell
       badge="Pending review"
       title="Application under review"
-      subtitle="Your agency stays in the waiting queue until admin approval."
+      subtitle="Your agency access unlocks after the admin review is complete."
     >
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <div className="space-y-6">
-          <div className="rounded-[22px] border border-[var(--warning-bg)] bg-[var(--warning-bg)] px-5 py-5">
+          <div className="rounded-[18px] border border-[var(--warning-bg)] bg-[var(--warning-bg)] px-5 py-5">
             <div className="text-lg font-semibold tracking-tight text-[var(--warning-text)]">
               {name || 'Agency application'}
             </div>

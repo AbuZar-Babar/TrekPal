@@ -50,8 +50,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
             // Default error UI
             return (
-                <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                    <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
+                <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+                    <div className="max-w-md w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 shadow-lg">
                         <div className="flex mb-4">
                             <div className="flex-shrink-0">
                                 <svg className="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,13 +59,13 @@ export class ErrorBoundary extends Component<Props, State> {
                                 </svg>
                             </div>
                             <div className="ml-3">
-                                <h3 className="text-sm font-medium text-gray-800">
+                                <h3 className="text-sm font-medium text-[var(--text)]">
                                     Oops! Something went wrong
                                 </h3>
-                                <div className="mt-2 text-sm text-gray-500">
+                                <div className="mt-2 text-sm text-[var(--text-muted)]">
                                     <p>The application encountered an unexpected error.</p>
                                     {this.state.error && (
-                                        <p className="mt-2 text-xs text-gray-400 font-mono">
+                                        <p className="mt-2 text-xs text-[var(--text-soft)] font-mono">
                                             {this.state.error.message}
                                         </p>
                                     )}
@@ -73,7 +73,7 @@ export class ErrorBoundary extends Component<Props, State> {
                                 <div className="mt-4">
                                     <button
                                         onClick={() => window.location.reload()}
-                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        className="inline-flex items-center rounded-md border border-transparent bg-gradient-to-r from-zinc-100 to-zinc-400 px-3 py-2 text-sm font-medium leading-4 text-black hover:from-white hover:to-zinc-300 focus:outline-none focus:ring-2 focus:ring-white/15"
                                     >
                                         Reload Page
                                     </button>

@@ -119,7 +119,7 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => (
     {STEPS.map((label, index) => (
       <div
         key={label}
-        className={`rounded-[18px] border px-3 py-3 text-center text-sm font-medium ${
+        className={`rounded-2xl border px-3 py-3 text-center text-sm font-medium ${
           index === currentStep
             ? 'border-[var(--primary)] bg-[var(--panel)] text-[var(--primary)]'
             : index < currentStep
@@ -230,7 +230,7 @@ const FileUploadCard = ({
       htmlFor={id}
       onDrop={onDrop}
       onDragOver={(event) => event.preventDefault()}
-      className="block cursor-pointer rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-5 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--panel)]"
+      className="block cursor-pointer rounded-[18px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-5 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--panel)]"
     >
       <input
         id={id}
@@ -557,7 +557,7 @@ const RegisterForm = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           {formError && (
-            <div className="rounded-[20px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+            <div className="rounded-2xl border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
               {formError}
             </div>
           )}

@@ -77,6 +77,29 @@ const VehicleApprovalList = () => {
     }
   };
 
+  const detailFooter = selectedVehicle ? (
+    <div className="flex flex-wrap gap-3">
+      {selectedVehicle.status !== 'APPROVED' && (
+        <button
+          type="button"
+          onClick={() => handleApprove(selectedVehicle.id)}
+          className="sovereign-button-primary h-12 px-5"
+        >
+          Approve Vehicle
+        </button>
+      )}
+      {selectedVehicle.status !== 'REJECTED' && (
+        <button
+          type="button"
+          onClick={() => handleReject(selectedVehicle.id)}
+          className="sovereign-button-danger h-12 px-5"
+        >
+          Reject Vehicle
+        </button>
+      )}
+    </div>
+  ) : null;
+
   if (loading && vehicles.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -244,6 +267,7 @@ const VehicleApprovalList = () => {
         open={isDetailOpen && Boolean(selectedVehicle)}
         title={selectedVehicle ? `${selectedVehicle.make} ${selectedVehicle.model}` : 'Vehicle details'}
         subtitle={selectedVehicle?.vehicleProviderName || undefined}
+        footer={detailFooter}
         onClose={() => setIsDetailOpen(false)}
       >
         {selectedVehicle ? (
@@ -311,26 +335,6 @@ const VehicleApprovalList = () => {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
-                {selectedVehicle.status !== 'APPROVED' && (
-                  <button
-                    type="button"
-                    onClick={() => handleApprove(selectedVehicle.id)}
-                    className="sovereign-button-primary h-12 px-5"
-                  >
-                    Approve Vehicle
-                  </button>
-                )}
-                {selectedVehicle.status !== 'REJECTED' && (
-                  <button
-                    type="button"
-                    onClick={() => handleReject(selectedVehicle.id)}
-                    className="sovereign-button-danger h-12 px-5"
-                  >
-                    Reject Vehicle
-                  </button>
-                )}
-              </div>
           </div>
         ) : null}
       </EntityDetailModal>

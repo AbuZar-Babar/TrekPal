@@ -475,21 +475,24 @@ const UserList = () => {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
-        {canReviewTraveler && selectedUser.travelerKycStatus !== 'VERIFIED' ? (
-          <button type="button" onClick={handleApprove} className="sovereign-button-primary h-11 px-5">
-            Approve
-          </button>
-        ) : null}
-        {canReviewTraveler && selectedUser.travelerKycStatus !== 'REJECTED' ? (
-          <button type="button" onClick={handleReject} className="sovereign-button-danger h-11 px-5">
-            Reject
-          </button>
-        ) : null}
-        <button type="button" onClick={openEditModal} className="sovereign-button-secondary h-11 px-5">
-          Edit
+    </div>
+  ) : null;
+
+  const detailFooter = selectedUser ? (
+    <div className="flex flex-wrap gap-3">
+      {canReviewTraveler && selectedUser.travelerKycStatus !== 'VERIFIED' ? (
+        <button type="button" onClick={handleApprove} className="sovereign-button-primary h-11 px-5">
+          Approve
         </button>
-      </div>
+      ) : null}
+      {canReviewTraveler && selectedUser.travelerKycStatus !== 'REJECTED' ? (
+        <button type="button" onClick={handleReject} className="sovereign-button-danger h-11 px-5">
+          Reject
+        </button>
+      ) : null}
+      <button type="button" onClick={openEditModal} className="sovereign-button-secondary h-11 px-5">
+        Edit
+      </button>
     </div>
   ) : null;
 
@@ -504,6 +507,7 @@ const UserList = () => {
         open={isDetailOpen && Boolean(selectedUser)}
         title={selectedUser?.name || 'Traveler details'}
         subtitle={selectedUser?.email}
+        footer={detailFooter}
         onClose={() => setIsDetailOpen(false)}
       >
         {detailContent}

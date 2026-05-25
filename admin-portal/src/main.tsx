@@ -8,6 +8,8 @@ import App from './App';
 import './index.css';
 import { ThemeProvider } from './shared/theme/ThemeProvider';
 
+document.documentElement.dataset.portal = 'admin';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

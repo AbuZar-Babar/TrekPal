@@ -420,21 +420,24 @@ const AgencyList = () => {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-3 border-t border-[var(--border)] pt-6">
-        {selectedAgency.status !== 'APPROVED' ? (
-          <button type="button" onClick={handleApprove} className="sovereign-button-primary h-11 px-5">
-            Approve
-          </button>
-        ) : null}
-        {selectedAgency.status !== 'REJECTED' ? (
-          <button type="button" onClick={handleReject} className="sovereign-button-danger h-11 px-5">
-            Reject
-          </button>
-        ) : null}
-        <button type="button" onClick={openEditModal} className="sovereign-button-secondary h-11 px-5">
-          Edit
+    </div>
+  ) : null;
+
+  const detailFooter = selectedAgency ? (
+    <div className="flex flex-wrap gap-3">
+      {selectedAgency.status !== 'APPROVED' ? (
+        <button type="button" onClick={handleApprove} className="sovereign-button-primary h-11 px-5">
+          Approve
         </button>
-      </div>
+      ) : null}
+      {selectedAgency.status !== 'REJECTED' ? (
+        <button type="button" onClick={handleReject} className="sovereign-button-danger h-11 px-5">
+          Reject
+        </button>
+      ) : null}
+      <button type="button" onClick={openEditModal} className="sovereign-button-secondary h-11 px-5">
+        Edit
+      </button>
     </div>
   ) : null;
 
@@ -449,6 +452,7 @@ const AgencyList = () => {
         open={isDetailOpen && Boolean(selectedAgency)}
         title={selectedAgency?.name || 'Agency details'}
         subtitle={selectedAgency?.email}
+        footer={detailFooter}
         onClose={() => setIsDetailOpen(false)}
       >
         {detailContent}

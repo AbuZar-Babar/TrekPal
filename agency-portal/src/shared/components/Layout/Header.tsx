@@ -1,20 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import { logout } from '../../../modules/auth/store/authSlice';
 import { RootState } from '../../../store';
 import { useTheme } from '../../theme/ThemeProvider';
 import { formatDate } from '../../utils/formatters';
 
 const Header = () => {
-  const dispatch = useDispatch();
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.auth);
   const { theme, toggleTheme } = useTheme();
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
 
   const routeMeta = [
     { match: '/dashboard', title: 'Agency dashboard', description: 'The cleanest view of requests, offers, bookings, and inventory.' },
@@ -39,7 +33,7 @@ const Header = () => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 md:justify-end">
+        <div className="portal-header-actions">
           <div className="hidden rounded-full border border-[var(--border)] bg-[var(--panel)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-soft)] md:inline-flex">
             {formatDate(new Date(), { weekday: 'short', month: 'short', day: 'numeric' })}
           </div>
@@ -56,8 +50,6 @@ const Header = () => {
             )}
           </button>
 
-          <div className="app-pill app-pill-success hidden sm:inline-flex">Approved</div>
-
           <div className="portal-user-card">
             <div className="portal-avatar">{user?.name?.charAt(0).toUpperCase() || 'A'}</div>
             <div className="hidden min-w-0 sm:block">
@@ -70,15 +62,6 @@ const Header = () => {
             </div>
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="app-btn-secondary h-10 px-3 text-xs text-[var(--danger-text)] sm:h-11 sm:px-4 sm:text-sm"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span className="hidden sm:inline">Logout</span>
-          </button>
         </div>
       </div>
     </header>

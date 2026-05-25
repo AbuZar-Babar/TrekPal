@@ -8,7 +8,7 @@ interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const STORAGE_KEY = 'trekpal-agency-theme';
+const STORAGE_KEY = 'trekpal-vehicle-theme';
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 

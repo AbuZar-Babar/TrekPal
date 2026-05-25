@@ -165,7 +165,7 @@ const TripRequestList = () => {
           {tripRequests.map((tripRequest) => {
             const existingBid = bidsByTripRequestId[tripRequest.id];
             return (
-              <div key={tripRequest.id} className="surface flex flex-col p-5">
+              <div key={tripRequest.id} className="surface surface-card flex flex-col p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-[var(--text)]">{tripRequest.destination}</h3>

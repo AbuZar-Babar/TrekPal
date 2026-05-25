@@ -1,9 +1,13 @@
+import { useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
+
+import { logout } from '../../../modules/auth/store/authSlice';
 
 const navItems = [
   {
     path: '/dashboard',
     label: 'Dashboard',
+    shortLabel: 'Home',
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -18,6 +22,7 @@ const navItems = [
   {
     path: '/agencies',
     label: 'Agencies',
+    shortLabel: 'Agencies',
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -32,6 +37,7 @@ const navItems = [
   {
     path: '/travelers',
     label: 'Travelers',
+    shortLabel: 'Travelers',
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -46,6 +52,7 @@ const navItems = [
   {
     path: '/hotels',
     label: 'Hotels',
+    shortLabel: 'Hotels',
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -60,6 +67,7 @@ const navItems = [
   {
     path: '/vehicle-providers',
     label: 'Vehicle Providers',
+    shortLabel: 'Providers',
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -74,6 +82,7 @@ const navItems = [
   {
     path: '/inventory',
     label: 'Inventory',
+    shortLabel: 'Inventory',
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -88,6 +97,7 @@ const navItems = [
   {
     path: '/analytics',
     label: 'Analytics',
+    shortLabel: 'Reports',
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -102,34 +112,64 @@ const navItems = [
 ];
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
 
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
-    <aside className="sticky top-0 flex h-screen w-[88px] flex-col border-r border-[var(--border)] bg-[var(--sidebar)] xl:w-[240px]">
-      <div className="border-b border-[var(--border)] px-4 py-5 xl:px-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[var(--surface)] text-[var(--primary)] shadow-[0_12px_24px_rgba(42,52,57,0.08)]">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.8}
-                d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3zm-2.25 9.25l1.75 1.75 3.75-3.75"
-              />
-            </svg>
+    <>
+      <aside className="portal-sidebar">
+        <div className="portal-sidebar-desktop">
+          <div className="portal-brand">
+            <div className="portal-brand-mark">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.8}
+                  d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3zm-2.25 9.25l1.75 1.75 3.75-3.75"
+                />
+              </svg>
+            </div>
+            <div>
+              <div className="portal-brand-title font-headline">TrekPal Admin</div>
+              <div className="portal-brand-subtitle">Review workspace</div>
+            </div>
           </div>
-          <div className="hidden xl:block">
-            <h1 className="font-headline text-xl font-extrabold tracking-tight text-[var(--text)]">
-              TrekPal Admin
-            </h1>
-            <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-soft)]">
-              Review workspace
-            </p>
+
+          <nav className="portal-nav">
+            {navItems.map((item) => {
+              const isActive =
+                location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`portal-nav-link ${isActive ? 'portal-nav-link-active' : ''}`}
+                >
+                  <span>{item.icon}</span>
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="portal-sidebar-footer">
+            <button type="button" onClick={handleLogout} className="portal-sidebar-logout">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Logout</span>
+            </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <nav className="flex-1 space-y-1 px-3 py-5 xl:px-4">
+      <nav className="portal-mobile-nav lg:hidden" aria-label="Mobile navigation">
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
@@ -138,21 +178,21 @@ const Sidebar = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`group flex items-center justify-center gap-3 rounded-[18px] px-3 py-3 text-sm font-semibold transition-all duration-200 xl:justify-start ${
-                isActive
-                  ? 'bg-[var(--sidebar-elevated)] text-[var(--primary)] shadow-[0_14px_28px_rgba(42,52,57,0.08)]'
-                  : 'text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]'
-              }`}
+              className={`portal-mobile-link ${isActive ? 'portal-mobile-link-active' : ''}`}
             >
-              <span className={`transition-transform duration-200 ${isActive ? 'scale-105' : 'group-hover:scale-105'}`}>
-                {item.icon}
-              </span>
-              <span className="hidden xl:block">{item.label}</span>
+              <span>{item.icon}</span>
+              <span>{item.shortLabel}</span>
             </Link>
           );
         })}
+        <button type="button" onClick={handleLogout} className="portal-mobile-link portal-mobile-logout">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>Logout</span>
+        </button>
       </nav>
-    </aside>
+    </>
   );
 };
 

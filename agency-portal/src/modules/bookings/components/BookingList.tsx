@@ -92,7 +92,7 @@ const BookingList = () => {
                   : [];
 
             return (
-              <article key={booking.id} className="surface flex flex-col p-5">
+              <article key={booking.id} className="surface surface-card flex flex-col p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-[var(--text)]">

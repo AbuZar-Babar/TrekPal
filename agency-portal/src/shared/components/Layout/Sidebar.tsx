@@ -1,4 +1,7 @@
+import { useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
+
+import { logout } from '../../../modules/auth/store/authSlice';
 
 const navItems = [
   {
@@ -54,10 +57,15 @@ const navItems = [
 ];
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
 
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <>
@@ -88,6 +96,20 @@ const Sidebar = () => {
             ))}
           </nav>
 
+          <div className="portal-sidebar-footer">
+            <div className="portal-partner-card">
+              <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--success-text)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--success-text)]"></span>
+                AGENCY PARTNER
+              </p>
+            </div>
+            <button type="button" onClick={handleLogout} className="portal-sidebar-logout">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -102,6 +124,12 @@ const Sidebar = () => {
             <span>{item.shortLabel}</span>
           </Link>
         ))}
+        <button type="button" onClick={handleLogout} className="portal-mobile-link portal-mobile-logout">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>Logout</span>
+        </button>
       </nav>
     </>
   );

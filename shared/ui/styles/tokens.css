@@ -1,0 +1,116 @@
+:root {
+  --tp-font-sans: Inter, "Segoe UI", "Segoe UI Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --tp-font-headline: Manrope, Inter, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+
+  --tp-bg: #f4f7fb;
+  --tp-canvas: #fcfdff;
+  --tp-panel: #ffffff;
+  --tp-panel-subtle: #f6f8fb;
+  --tp-panel-strong: #e8edf4;
+  --tp-text: #102033;
+  --tp-text-muted: #526579;
+  --tp-text-soft: #7f91a5;
+  --tp-border: #dde5ee;
+  --tp-border-strong: #cfd9e4;
+
+  --tp-primary: #2563eb;
+  --tp-primary-strong: #1d4ed8;
+  --tp-primary-soft: #e8f0ff;
+  --tp-accent: #0f766e;
+
+  --tp-success-bg: #eaf8ef;
+  --tp-success-text: #167549;
+  --tp-warning-bg: #fff3dd;
+  --tp-warning-text: #9a6408;
+  --tp-danger-bg: #fdecea;
+  --tp-danger-text: #b53e33;
+  --tp-neutral-bg: #e8edf4;
+  --tp-neutral-text: #526579;
+
+  --tp-radius-sm: 12px;
+  --tp-radius-md: 16px;
+  --tp-radius-lg: 20px;
+  --tp-radius-xl: 24px;
+  --tp-radius-2xl: 28px;
+  --tp-shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.06);
+  --tp-shadow-strong: 0 28px 70px rgba(15, 23, 42, 0.1);
+
+  --tp-motion-fast: 140ms ease;
+  --tp-motion-base: 180ms ease;
+}
+
+html[data-theme='dark'] {
+  --tp-bg: #0a1320;
+  --tp-canvas: #0e1827;
+  --tp-panel: #121f31;
+  --tp-panel-subtle: #172537;
+  --tp-panel-strong: #213248;
+  --tp-text: #eff4fa;
+  --tp-text-muted: #a8b6c6;
+  --tp-text-soft: #7f95aa;
+  --tp-border: #233346;
+  --tp-border-strong: #2c425a;
+  --tp-primary: #7aa8ff;
+  --tp-primary-strong: #9bbdff;
+  --tp-primary-soft: rgba(122, 168, 255, 0.14);
+  --tp-accent: #4fd1c5;
+  --tp-success-bg: rgba(34, 197, 94, 0.16);
+  --tp-success-text: #8ae0ae;
+  --tp-warning-bg: rgba(245, 158, 11, 0.16);
+  --tp-warning-text: #f7c977;
+  --tp-danger-bg: rgba(239, 68, 68, 0.16);
+  --tp-danger-text: #f4a4a1;
+  --tp-neutral-bg: #213248;
+  --tp-neutral-text: #a8b6c6;
+  --tp-shadow-soft: 0 18px 42px rgba(2, 8, 18, 0.28);
+  --tp-shadow-strong: 0 30px 80px rgba(2, 8, 18, 0.42);
+}
+
+html[data-portal='admin'] {
+  --tp-bg: #f2f2f5;
+  --tp-canvas: #f7f7fa;
+  --tp-panel: #ffffff;
+  --tp-panel-subtle: #ececf1;
+  --tp-panel-strong: #e2e2e9;
+  --tp-text: #1f1f27;
+  --tp-text-muted: #52525d;
+  --tp-text-soft: #747480;
+  --tp-border: rgba(31, 31, 39, 0.09);
+  --tp-border-strong: rgba(31, 31, 39, 0.14);
+  --tp-primary: #3f3f48;
+  --tp-primary-strong: #2d2d35;
+  --tp-primary-soft: rgba(63, 63, 72, 0.08);
+  --tp-accent: #5b5b67;
+  --tp-neutral-bg: rgba(31, 31, 39, 0.06);
+  --tp-neutral-text: #4f4f5a;
+  --tp-shadow-soft: 0 18px 42px rgba(15, 15, 20, 0.08);
+  --tp-shadow-strong: 0 28px 68px rgba(15, 15, 20, 0.14);
+}
+
+html[data-theme='dark'][data-portal='admin'] {
+  --tp-bg: #18181c;
+  --tp-canvas: #1b1b20;
+  --tp-panel: #202026;
+  --tp-panel-subtle: #25252c;
+  --tp-panel-strong: #31313a;
+  --tp-text: #f3f3f5;
+  --tp-text-muted: #b9b9c1;
+  --tp-text-soft: #90909a;
+  --tp-border: rgba(255, 255, 255, 0.08);
+  --tp-border-strong: rgba(255, 255, 255, 0.14);
+  --tp-primary: #dddde3;
+  --tp-primary-strong: #f1f1f4;
+  --tp-primary-soft: rgba(255, 255, 255, 0.08);
+  --tp-accent: #d1d1d8;
+  --tp-neutral-bg: rgba(255, 255, 255, 0.06);
+  --tp-neutral-text: #d1d1d8;
+  --tp-shadow-soft: 0 18px 42px rgba(0, 0, 0, 0.24);
+  --tp-shadow-strong: 0 28px 68px rgba(0, 0, 0, 0.38);
+}
+
+html[data-portal='hotel'] {
+  --tp-primary: #0284c7;
+  --tp-primary-strong: #0369a1;
+  --tp-primary-soft: #e0f2fe;
+  --tp-accent: #0f766e;
+}
