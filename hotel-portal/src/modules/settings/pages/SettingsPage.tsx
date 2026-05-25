@@ -122,8 +122,8 @@ const SettingsPage: React.FC = () => {
   if (!hotel) {
     return (
       <div className="card p-6">
-        <h2 className="text-xl font-bold text-slate-900">Hotel Profile</h2>
-        <p className="mt-2 text-sm text-slate-500">No hotel profile found for this account.</p>
+        <h2 className="text-xl font-bold text-[var(--tp-text)]">Hotel Profile</h2>
+        <p className="mt-2 text-sm text-[var(--tp-text-muted)]">No hotel profile found for this account.</p>
       </div>
     );
   }
@@ -131,13 +131,13 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold text-slate-900">Hotel Profile Settings</h1>
-        <p className="text-slate-500">Update your hotel description, location, images, and public details visible to agencies.</p>
+        <h1 className="text-2xl font-bold text-[var(--tp-text)]">Hotel Profile Settings</h1>
+        <p className="text-[var(--tp-text-muted)]">Update your hotel description, location, images, and public details visible to agencies.</p>
       </header>
 
       <form onSubmit={onSubmit} className="card p-6 space-y-5">
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="rounded-lg border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-400">
             {error}
           </div>
         )}
@@ -258,7 +258,7 @@ const SettingsPage: React.FC = () => {
         {imageList.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {imageList.slice(0, 8).map((src) => (
-              <img key={src} src={src} alt="Hotel preview" className="h-20 w-full object-cover rounded-lg border border-slate-200" />
+              <img key={src} src={src} alt="Hotel preview" className="h-20 w-full rounded-lg border border-[var(--tp-border)] object-cover" />
             ))}
           </div>
         )}

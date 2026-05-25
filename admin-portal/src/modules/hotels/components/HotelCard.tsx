@@ -1,4 +1,5 @@
 import { Hotel } from '../../../shared/types';
+import { PortalListItemTransition } from '../../../shared/components/motion/portalMotion';
 
 interface HotelCardProps {
   hotel: Hotel;
@@ -16,11 +17,11 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
   }[hotel.status] || 'bg-gray-100 text-gray-800';
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300">
+    <PortalListItemTransition className="rounded-[18px] border border-gray-100 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md">
       <div className="flex justify-between items-start">
         <div className="flex gap-4 flex-1">
           {/* Avatar */}
-          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[14px] flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
             {hotel.name.charAt(0).toUpperCase()}
           </div>
 
@@ -85,13 +86,13 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
                 {hotel.amenities.slice(0, 5).map((amenity, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-0.5 text-[11px] bg-gray-50 text-gray-600 rounded-lg border border-gray-100 font-medium"
+                    className="rounded-[10px] border border-gray-100 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-600"
                   >
                     {amenity}
                   </span>
                 ))}
                 {hotel.amenities.length > 5 && (
-                  <span className="px-2 py-0.5 text-[11px] bg-gray-50 text-gray-400 rounded-lg border border-gray-100">
+                    <span className="rounded-[10px] border border-gray-100 bg-gray-50 px-2 py-0.5 text-[11px] text-gray-400">
                     +{hotel.amenities.length - 5} more
                   </span>
                 )}
@@ -105,7 +106,7 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
           <div className="flex gap-2 ml-4 flex-shrink-0">
             <button
               onClick={() => onApprove(hotel.id)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 shadow-sm transition-all active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-[14px] bg-gradient-to-r from-green-500 to-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-all active:scale-95 hover:from-green-600 hover:to-emerald-700"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -114,7 +115,7 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
             </button>
             <button
               onClick={() => onReject(hotel.id)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white text-xs font-semibold rounded-xl hover:from-red-600 hover:to-rose-700 shadow-sm transition-all active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-[14px] bg-gradient-to-r from-red-500 to-rose-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-all active:scale-95 hover:from-red-600 hover:to-rose-700"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -124,7 +125,7 @@ const HotelCard = ({ hotel, onApprove, onReject }: HotelCardProps) => {
           </div>
         )}
       </div>
-    </div>
+    </PortalListItemTransition>
   );
 };
 

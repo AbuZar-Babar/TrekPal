@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 import { useAuthStore } from '../store/useAuthStore';
 import { motion } from 'framer-motion';
 
@@ -12,17 +13,21 @@ const DashboardLayout: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="portal-shell">
       <Sidebar />
-      <main className="flex-1 p-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Outlet />
-        </motion.div>
-      </main>
+      <div className="portal-content">
+        <Header />
+        <main className="portal-main">
+          <motion.div
+            className="portal-container"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Outlet />
+          </motion.div>
+        </main>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
+@import "../../shared/ui/styles/tokens.css";
+@import "../../shared/ui/styles/portal-layout.css";
 
 @tailwind base;
 @tailwind components;
@@ -138,14 +140,14 @@ html[data-theme='dark'] {
   .sovereign-panel {
     border: 1px solid var(--border);
     background: var(--surface);
-    border-radius: 28px;
+    border-radius: 20px;
     box-shadow: var(--shadow-soft);
   }
 
   .sovereign-panel-muted {
     border: 1px solid var(--border);
     background: var(--surface-low);
-    border-radius: 24px;
+    border-radius: 16px;
   }
 
   .sovereign-dark-panel {
@@ -153,7 +155,7 @@ html[data-theme='dark'] {
     background:
       radial-gradient(circle at top right, rgba(154, 188, 227, 0.16), transparent 28%),
       linear-gradient(180deg, color-mix(in srgb, var(--hero) 82%, #18293a 18%), var(--hero));
-    border-radius: 28px;
+    border-radius: 20px;
     box-shadow: var(--shadow-strong);
     color: #f5f7fb;
   }
@@ -164,7 +166,7 @@ html[data-theme='dark'] {
     background:
       radial-gradient(circle at top right, rgba(154, 188, 227, 0.2), transparent 26%),
       linear-gradient(135deg, color-mix(in srgb, var(--hero) 88%, #20374d 12%), #0b1420);
-    border-radius: 32px;
+    border-radius: 22px;
     box-shadow: var(--shadow-strong);
     color: #f6f7ff;
   }
@@ -176,7 +178,7 @@ html[data-theme='dark'] {
     border: 1px solid transparent;
     background: var(--surface-low);
     color: var(--text);
-    border-radius: 16px;
+    border-radius: 14px;
     padding: 0.85rem 1rem;
     transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
   }
@@ -203,7 +205,7 @@ html[data-theme='dark'] {
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
-    border-radius: 14px;
+    border-radius: 12px;
     font-size: 0.84rem;
     font-weight: 700;
     transition: transform 140ms ease, opacity 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
@@ -277,14 +279,14 @@ html[data-theme='dark'] {
   .sovereign-kpi {
     border: 1px solid var(--border);
     background: var(--surface);
-    border-radius: 24px;
+    border-radius: 18px;
     box-shadow: var(--shadow-soft);
   }
 
   .sovereign-table-shell {
     border: 1px solid var(--border);
     background: var(--surface);
-    border-radius: 28px;
+    border-radius: 20px;
     overflow: hidden;
     box-shadow: var(--shadow-soft);
   }

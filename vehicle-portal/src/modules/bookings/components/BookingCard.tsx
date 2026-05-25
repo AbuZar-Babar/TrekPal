@@ -1,4 +1,5 @@
 import { Booking } from '../../../shared/types';
+import { PortalListItemTransition } from '../../../shared/components/motion/portalMotion';
 
 interface BookingCardProps {
   booking: Booking;
@@ -28,7 +29,7 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
         : [];
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <PortalListItemTransition className="rounded-[18px] border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-4">
           <div>
@@ -44,26 +45,26 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
           </div>
 
           <div className="grid gap-3 text-sm text-gray-600 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
+            <div className="rounded-[14px] bg-gray-50 px-4 py-3">
               <div className="text-xs uppercase tracking-wide text-gray-400">Travel Window</div>
               <div className="mt-1 font-semibold text-gray-900">
                 {new Date(booking.startDate).toLocaleDateString()} -{' '}
                 {new Date(booking.endDate).toLocaleDateString()}
               </div>
             </div>
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
+            <div className="rounded-[14px] bg-gray-50 px-4 py-3">
               <div className="text-xs uppercase tracking-wide text-gray-400">Amount</div>
               <div className="mt-1 font-semibold text-gray-900">
                 PKR {booking.totalAmount.toLocaleString()}
               </div>
             </div>
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
+            <div className="rounded-[14px] bg-gray-50 px-4 py-3">
               <div className="text-xs uppercase tracking-wide text-gray-400">Created</div>
               <div className="mt-1 font-semibold text-gray-900">
                 {new Date(booking.createdAt).toLocaleDateString()}
               </div>
             </div>
-            <div className="rounded-xl bg-gray-50 px-4 py-3">
+            <div className="rounded-[14px] bg-gray-50 px-4 py-3">
               <div className="text-xs uppercase tracking-wide text-gray-400">Bid Reference</div>
               <div className="mt-1 font-semibold text-gray-900">
                 {booking.bidId ? booking.bidId.slice(0, 8) : 'N/A'}
@@ -72,14 +73,14 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
           </div>
         </div>
 
-        <div className="min-w-[240px] rounded-2xl border border-gray-100 bg-gray-50 p-5">
+        <div className="min-w-[240px] rounded-[18px] border border-gray-100 bg-gray-50 p-5">
           <div className="text-xs uppercase tracking-wide text-gray-400">Booking Actions</div>
           <div className="mt-2 text-sm text-gray-500">
             Confirm accepted bookings, close completed trips, or cancel when plans change.
           </div>
           <div className="mt-5 space-y-2">
             {actions.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-500">
+              <div className="rounded-[14px] border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-500">
                 No further actions available for this booking.
               </div>
             ) : (
@@ -89,7 +90,7 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
                   type="button"
                   disabled={isUpdating}
                   onClick={() => onUpdateStatus(booking.id, action.status)}
-                  className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold transition ${action.classes} disabled:cursor-not-allowed disabled:opacity-70`}
+                  className={`w-full rounded-[14px] px-4 py-2.5 text-sm font-semibold transition ${action.classes} disabled:cursor-not-allowed disabled:opacity-70`}
                 >
                   {isUpdating ? 'Updating...' : action.label}
                 </button>
@@ -98,7 +99,7 @@ const BookingCard = ({ booking, isUpdating, onUpdateStatus }: BookingCardProps) 
           </div>
         </div>
       </div>
-    </div>
+    </PortalListItemTransition>
   );
 };
 

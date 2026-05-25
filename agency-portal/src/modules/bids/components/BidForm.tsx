@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 
 import { Bid, OfferDetails, TripRequest } from '../../../shared/types';
+import { PortalModalTransition } from '../../../shared/components/motion/portalMotion';
 import {
   formatCurrency,
   formatDateRange,
@@ -123,7 +125,15 @@ const BidForm = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 px-4 py-6 backdrop-blur-md">
-      <div className="app-card max-h-[94vh] w-full max-w-6xl overflow-hidden">
+      <motion.div
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={onCancel}
+      />
+      <PortalModalTransition className="app-card relative max-h-[94vh] w-full max-w-6xl overflow-hidden">
         <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
           <div>
             <div className="app-section-label">Negotiation thread</div>
@@ -167,7 +177,7 @@ const BidForm = ({
                 </div>
               </div>
 
-              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel-subtle)] px-5 py-4 text-sm leading-7 text-[var(--text-muted)]">
+              <div className="rounded-[16px] border border-[var(--border)] bg-[var(--panel-subtle)] px-5 py-4 text-sm leading-7 text-[var(--text-muted)]">
                 {statusMessage}
               </div>
 
@@ -333,7 +343,7 @@ const BidForm = ({
                     {existingBid.revisions.map((revision) => (
                       <div
                         key={revision.id}
-                        className={`rounded-[20px] border px-4 py-4 text-sm ${
+                        className={`rounded-[16px] border px-4 py-4 text-sm ${
                           revision.actorRole === 'AGENCY'
                             ? 'border-[var(--border)] bg-[var(--panel-subtle)]'
                             : 'border-[var(--warning-bg)] bg-[var(--warning-bg)]'
@@ -358,7 +368,7 @@ const BidForm = ({
           </div>
 
           {error && (
-            <div className="mt-5 rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+            <div className="mt-5 rounded-[16px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
               {error}
             </div>
           )}
@@ -382,7 +392,7 @@ const BidForm = ({
             )}
           </div>
         </form>
-      </div>
+      </PortalModalTransition>
     </div>
   );
 };

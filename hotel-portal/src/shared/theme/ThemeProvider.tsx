@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 type ThemeMode = 'light' | 'dark';
 
@@ -8,7 +8,7 @@ interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const STORAGE_KEY = 'trekpal-vehicle-theme';
+const STORAGE_KEY = 'trekpal-hotel-theme';
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 

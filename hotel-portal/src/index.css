@@ -1,18 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "../../shared/ui/styles/tokens.css";
+@import "../../shared/ui/styles/portal-layout.css";
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
     font-family: 'Inter', sans-serif;
+    background:
+      radial-gradient(circle at top left, color-mix(in srgb, var(--tp-primary) 10%, transparent), transparent 22%),
+      radial-gradient(circle at bottom right, color-mix(in srgb, var(--tp-accent) 8%, transparent), transparent 18%),
+      var(--tp-bg);
+    color: var(--tp-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+    background: color-mix(in srgb, var(--tp-panel) 82%, transparent);
+    backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--tp-border) 55%, transparent);
+    box-shadow: var(--tp-shadow-strong);
   }
   
   .btn-primary {
@@ -20,19 +31,46 @@
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium active:scale-95;
+    @apply px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium active:scale-95;
+    background: var(--tp-panel);
+    border: 1px solid var(--tp-border);
+    color: var(--tp-text-muted);
+  }
+
+  .btn-secondary:hover {
+    background: var(--tp-panel-subtle);
+    color: var(--tp-text);
   }
 
   .input-field {
-    @apply w-full px-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200;
+    @apply w-full px-4 py-2 rounded-lg transition-all duration-200;
+    background: var(--tp-panel);
+    border: 1px solid var(--tp-border);
+    color: var(--tp-text);
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--tp-primary) 65%, var(--tp-border));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tp-primary) 16%, transparent);
+  }
+
+  .input-field::placeholder {
+    color: var(--tp-text-soft);
   }
 
   .label {
-    @apply block text-sm font-medium text-slate-700 mb-1;
+    @apply block text-sm font-medium mb-1;
+    color: var(--tp-text-muted);
   }
 
   .card {
-    @apply bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden;
+    border: 1px solid var(--tp-border);
+    background: var(--tp-panel);
+    color: var(--tp-text);
+    border-radius: 1rem;
+    box-shadow: var(--tp-shadow-soft);
+    overflow: hidden;
   }
 }
 
@@ -47,5 +85,6 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+  @apply rounded-full transition-colors;
+  background: color-mix(in srgb, var(--tp-text-soft) 42%, transparent);
 }

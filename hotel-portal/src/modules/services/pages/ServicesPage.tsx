@@ -77,8 +77,8 @@ const ServicesPage: React.FC = () => {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Hotel Services</h1>
-          <p className="text-slate-500">Manage extra services like WiFi, Breakfast, etc.</p>
+          <h1 className="text-2xl font-bold text-[var(--tp-text)]">Hotel Services</h1>
+          <p className="text-[var(--tp-text-muted)]">Manage extra services like WiFi, Breakfast, etc.</p>
         </div>
         <button 
           onClick={() => setIsAdding(true)}
@@ -108,27 +108,27 @@ const ServicesPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="card p-6 flex items-start gap-4 group"
               >
-                <div className="bg-primary-50 p-3 rounded-xl text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
+                <div className="rounded-xl bg-primary-500/12 p-3 text-primary-500 transition-colors duration-300 group-hover:bg-primary-600 group-hover:text-white">
                   <Icon className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-bold text-slate-900">{service.name}</h3>
+                    <h3 className="font-bold text-[var(--tp-text)]">{service.name}</h3>
                     <div className="flex gap-2">
-                      <button onClick={() => setEditingService(service)} className="text-slate-400 hover:text-primary-600 transition-colors">
+                      <button onClick={() => setEditingService(service)} className="text-[var(--tp-text-soft)] transition-colors hover:text-primary-600">
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button onClick={() => deleteMutation.mutate(service.id)} className="text-slate-400 hover:text-red-600 transition-colors">
+                      <button onClick={() => deleteMutation.mutate(service.id)} className="text-[var(--tp-text-soft)] transition-colors hover:text-red-500">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500 mb-3">Additional service</p>
+                  <p className="mb-3 text-sm text-[var(--tp-text-muted)]">Additional service</p>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="text-sm font-bold text-slate-900">
+                    <span className="text-sm font-bold text-[var(--tp-text)]">
                       {service.price && service.price > 0 ? `PKR ${service.price.toLocaleString()}` : 'Free'}
                     </span>
-                    <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded uppercase tracking-wider">
+                    <span className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-500 bg-primary-500/12">
                       Active
                     </span>
                   </div>
@@ -173,16 +173,16 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ service, onClose, onSubmit, i
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="w-full max-w-md overflow-hidden rounded-2xl border border-[var(--tp-border)] bg-[var(--tp-panel)] shadow-2xl shadow-black/20"
       >
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-900">{service ? 'Edit Service' : 'Add New Service'}</h2>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-            <X className="w-5 h-5 text-slate-500" />
+        <div className="flex items-center justify-between border-b border-[var(--tp-border)] p-6">
+          <h2 className="text-xl font-bold text-[var(--tp-text)]">{service ? 'Edit Service' : 'Add New Service'}</h2>
+          <button onClick={onClose} className="rounded-lg p-2 transition-colors hover:bg-[var(--tp-panel-subtle)]">
+            <X className="w-5 h-5 text-[var(--tp-text-muted)]" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
