@@ -1,134 +1,122 @@
 import { useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-
 import { logout } from '../../../modules/auth/store/authSlice';
 
-const navItems = [
-  {
-    path: '/dashboard',
-    label: 'Dashboard',
-    shortLabel: 'Home',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 13a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1h-4a1 1 0 01-1-1v-5z" />
-      </svg>
-    ),
-  },
-  {
-    path: '/packages',
-    label: 'Offers',
-    shortLabel: 'Offers',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2m0 18 6-3m-6 3V2m6 15 6-3m-6 3V5m6 9V4m0 0L15 5" />
-      </svg>
-    ),
-  },
-  {
-    path: '/trip-requests',
-    label: 'Requests',
-    shortLabel: 'Requests',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h10m6 0h.01M16 18h.01" />
-      </svg>
-    ),
-  },
-  {
-    path: '/bookings',
-    label: 'Bookings',
-    shortLabel: 'Bookings',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    path: '/hotels',
-    label: 'Marketplace',
-    shortLabel: 'Market',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-    ),
-  },
+type NavItem = { path: string; label: string; shortLabel: string; icon: React.ReactNode };
+
+const ic = (d: string) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+    strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
+const overviewNav: NavItem[] = [
+  { path: '/dashboard',   label: 'Dashboard',  shortLabel: 'Home',    icon: ic('M3 12 12 4l9 8M5 10v10h4v-6h6v6h4V10') },
 ];
 
+const workNav: NavItem[] = [
+  { path: '/trip-requests', label: 'Requests',  shortLabel: 'Requests', icon: ic('M4 6h16M4 12h16M4 18h10') },
+  { path: '/bookings',      label: 'Bookings',  shortLabel: 'Bookings', icon: ic('M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z') },
+  { path: '/bids',          label: 'Bids',      shortLabel: 'Bids',     icon: ic('M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 000 4h6a2 2 0 000-4M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4') },
+];
+
+const manageNav: NavItem[] = [
+  { path: '/packages', label: 'Offers',      shortLabel: 'Offers',   icon: ic('M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10') },
+  { path: '/hotels',   label: 'Hotels',      shortLabel: 'Hotels',   icon: ic('M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2') },
+  { path: '/transport',label: 'Vehicles',    shortLabel: 'Vehicles', icon: ic('M5 13l1.5-5h11L19 13M5 13v5h2m12-5v5h-2M5 13h14') },
+];
+
+const allNav = [...overviewNav, ...workNav, ...manageNav];
+
 const Sidebar = () => {
-  const dispatch = useDispatch();
-  const location = useLocation();
+  const dispatch  = useDispatch();
+  const location  = useLocation();
 
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(`${path}/`);
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+  const renderGroup = (label: string, items: NavItem[]) => (
+    <>
+      <div className="ap-nav-group">{label}</div>
+      {items.map((item) => (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={`portal-nav-link ${isActive(item.path) ? 'portal-nav-link-active' : ''}`}
+        >
+          <span style={{ display: 'inline-flex', width: '1rem', height: '1rem' }}>{item.icon}</span>
+          <span>{item.label}</span>
+        </Link>
+      ))}
+    </>
+  );
 
   return (
     <>
       <aside className="portal-sidebar">
         <div className="portal-sidebar-desktop">
+          {/* Brand */}
           <div className="portal-brand">
             <div className="portal-brand-mark">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M4 20h16M6 20V9l6-3 6 3v11M9 12h6M9 15h4m8-8l-5 5" />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+                strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                <path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" />
               </svg>
             </div>
             <div>
-              <div className="text-sm font-semibold tracking-tight text-[var(--text)]">TrekPal</div>
-              <div className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[var(--sidebar-muted)]">Agency portal</div>
+              <div className="portal-brand-title">TrekPal</div>
+              <div className="portal-brand-subtitle">Agency</div>
             </div>
           </div>
 
+          {/* Nav */}
           <nav className="portal-nav">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`portal-nav-link ${isActive(item.path) ? 'portal-nav-link-active' : ''}`}
-              >
-                <span>{item.icon}</span>
-                <span className="text-sm font-medium">{item.label}</span>
-              </Link>
-            ))}
+            {renderGroup('Overview', overviewNav)}
+            {renderGroup('Work', workNav)}
+            {renderGroup('Manage', manageNav)}
           </nav>
 
+          {/* Footer */}
           <div className="portal-sidebar-footer">
-            <div className="portal-partner-card">
-              <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--success-text)]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--success-text)]"></span>
-                AGENCY PARTNER
-              </p>
-            </div>
-            <button type="button" onClick={handleLogout} className="portal-sidebar-logout">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            <button
+              type="button"
+              onClick={() => dispatch(logout())}
+              className="portal-sidebar-logout"
+              style={{ padding: '0.5rem 0.65rem', fontSize: '0.8125rem', borderRadius: '7px' }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+                strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <span>Logout</span>
+              <span>Sign out</span>
             </button>
           </div>
         </div>
       </aside>
 
+      {/* Mobile nav */}
       <nav className="portal-mobile-nav lg:hidden" aria-label="Mobile navigation">
-        {navItems.map((item) => (
+        {allNav.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             className={`portal-mobile-link ${isActive(item.path) ? 'portal-mobile-link-active' : ''}`}
           >
-            <span>{item.icon}</span>
+            <span style={{ display: 'inline-flex', width: '1rem', height: '1rem' }}>{item.icon}</span>
             <span>{item.shortLabel}</span>
           </Link>
         ))}
-        <button type="button" onClick={handleLogout} className="portal-mobile-link portal-mobile-logout">
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        <button
+          type="button"
+          onClick={() => dispatch(logout())}
+          className="portal-mobile-link portal-mobile-logout"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+            strokeLinecap="round" strokeLinejoin="round" style={{ width: '1rem', height: '1rem' }}>
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span>Logout</span>
+          <span>Sign out</span>
         </button>
       </nav>
     </>
