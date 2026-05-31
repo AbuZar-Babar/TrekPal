@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useLayoutEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Bid, BidRevision, OfferDetails, TripRequest } from '../../../shared/types';
@@ -140,6 +140,13 @@ const StatusBadge = ({ bid }: { bid?: Bid }) => {
 
 // ── Main component ────────────────────────────────────────────────────────────
 const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidFormProps) => {
+  // Lock background scroll while modal is open
+  useLayoutEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   const [price, setPrice]                   = useState('');
   const [description, setDescription]       = useState('');
   const [stayIncluded, setStayIncluded]     = useState(false);
