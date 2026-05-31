@@ -89,8 +89,10 @@ const PackageForm = () => {
   const [vehicles, setVehicles]       = useState<Vehicle[]>([]);
 
   const [isHotelPickerOpen, setIsHotelPickerOpen] = useState(false);
+  const [isVehiclePickerOpen, setIsVehiclePickerOpen] = useState(false);
   const [detailHotel, setDetailHotel] = useState<Hotel | null>(null);
   const [hotelSearch, setHotelSearch] = useState('');
+  const [vehicleSearch, setVehicleSearch] = useState('');
 
   const [errors, setErrors]           = useState<FormErrors>({});
   const [formError, setFormError]     = useState<string | null>(null);
@@ -418,30 +420,34 @@ const PackageForm = () => {
 
             {/* Transport */}
             <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] overflow-hidden">
-              <div className="border-b border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-3">
-                <div className="text-sm font-semibold text-[var(--text)]">Transport</div>
-                <div className="text-[10px] text-[var(--text-soft)]">Optional</div>
+              <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-3">
+                <div>
+                  <div className="text-sm font-semibold text-[var(--text)]">Transport</div>
+                  <div className="text-[10px] text-[var(--text-soft)]">Optional</div>
+                </div>
+                <button type="button" onClick={() => setIsVehiclePickerOpen(true)}
+                  className="h-7 rounded-lg bg-[var(--primary)] px-3 text-xs font-semibold text-white hover:opacity-90 transition-opacity">
+                  {vehicleId ? 'Change' : 'Select'}
+                </button>
               </div>
-              <div className="p-4 space-y-2">
-                {vehicles.length === 0 ? (
-                  <p className="text-xs text-center text-[var(--text-soft)] py-2">No approved vehicles available</p>
-                ) : (
-                  <>
-                    <button type="button" onClick={() => setVehicleId('')}
-                      className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${!vehicleId ? 'border-[var(--primary)] bg-[var(--primary-soft)]' : 'border-[var(--border)] hover:border-[var(--text-soft)]'}`}>
-                      <div className="text-xs font-medium text-[var(--text-muted)]">No vehicle</div>
-                    </button>
-                    {vehicles.map((v) => (
-                      <button key={v.id} type="button" onClick={() => setVehicleId(v.id)}
-                        className={`w-full rounded-lg border text-left overflow-hidden transition-colors ${vehicleId === v.id ? 'border-[var(--primary)] bg-[var(--primary-soft)]' : 'border-[var(--border)] hover:border-[var(--text-soft)]'}`}>
-                        {v.images?.[0] && <img src={v.images[0]} alt="" className="h-20 w-full object-cover" />}
-                        <div className="px-3 py-2">
+              <div className="p-4">
+                {!vehicleId ? (
+                  <p className="text-xs text-center text-[var(--text-soft)] py-2">No vehicle selected</p>
+                ) : vehicles.find((v) => v.id === vehicleId) ? (
+                  (() => {
+                    const v = vehicles.find((v) => v.id === vehicleId)!;
+                    return (
+                      <div className="rounded-lg border border-[var(--border)] bg-[var(--panel-subtle)] overflow-hidden">
+                        {v.images?.[0] && <img src={v.images[0]} alt="" className="h-24 w-full object-cover" />}
+                        <div className="px-3 py-2.5">
                           <div className="text-xs font-semibold text-[var(--text)]">{v.make} {v.model}</div>
                           <div className="text-[10px] text-[var(--text-soft)]">{v.type} · {v.capacity} seats</div>
                         </div>
-                      </button>
-                    ))}
-                  </>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <p className="text-xs text-center text-[var(--text-soft)] py-2">Vehicle not found</p>
                 )}
               </div>
             </div>
@@ -503,6 +509,18 @@ const PackageForm = () => {
           onClear={() => { setSelectedHotelIds([]); setSelectedHotelRooms({}); setSelectedHotelRoomTypes({}); setSelectedHotelServices({}); }}
           onDone={() => setIsHotelPickerOpen(false)}
           onDetailHotel={setDetailHotel}
+        />
+      )}
+
+      {/* Vehicle picker modal */}
+      {isVehiclePickerOpen && (
+        <VehiclePickerModal
+          vehicles={vehicles}
+          selectedVehicleId={vehicleId}
+          vehicleSearch={vehicleSearch}
+          onSearchChange={setVehicleSearch}
+          onSelectVehicle={setVehicleId}
+          onDone={() => setIsVehiclePickerOpen(false)}
         />
       )}
 
@@ -791,6 +809,100 @@ const RoomDetailModal = ({
               Done
             </button>
           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Vehicle Picker Modal ───────────────────────────────────────────────────────
+interface VehiclePickerProps {
+  vehicles: Vehicle[];
+  selectedVehicleId: string;
+  vehicleSearch: string;
+  onSearchChange: (v: string) => void;
+  onSelectVehicle: (id: string) => void;
+  onDone: () => void;
+}
+
+const VehiclePickerModal = ({
+  vehicles, selectedVehicleId, vehicleSearch, onSearchChange, onSelectVehicle, onDone,
+}: VehiclePickerProps) => {
+  useLayoutEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  const filtered = vehicleSearch.trim()
+    ? vehicles.filter((v) => `${v.make} ${v.model} ${v.type}`.toLowerCase().includes(vehicleSearch.toLowerCase()))
+    : vehicles;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 py-6">
+      <div className="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-[var(--panel)] shadow-2xl" style={{ maxHeight: '88vh' }}>
+        <div className="shrink-0 border-b border-[var(--border)] px-5 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-base font-semibold text-[var(--text)]">Select vehicle</h3>
+              <p className="text-xs text-[var(--text-soft)]">Choose one vehicle or none</p>
+            </div>
+            <button onClick={onDone} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="mt-3 flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--panel-subtle)] px-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4 shrink-0 text-[var(--text-soft)]">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input value={vehicleSearch} onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search by make, model, or type…"
+              className="flex-1 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:outline-none" />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {filtered.length === 0 ? (
+            <div className="flex h-32 items-center justify-center text-sm text-[var(--text-soft)]">No vehicles found</div>
+          ) : (
+            <>
+              <button type="button" onClick={() => { onSelectVehicle(''); onDone(); }}
+                className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
+                  !selectedVehicleId
+                    ? 'border-[var(--primary)] bg-[var(--primary-soft)]'
+                    : 'border-[var(--border)] hover:border-[var(--primary)]'
+                }`}>
+                <div className="text-xs font-medium text-[var(--text-muted)]">No vehicle</div>
+              </button>
+              {filtered.map((v) => (
+                <button key={v.id} type="button" onClick={() => { onSelectVehicle(v.id); onDone(); }}
+                  className={`w-full rounded-lg border overflow-hidden transition-colors ${
+                    selectedVehicleId === v.id
+                      ? 'border-[var(--primary)] bg-[var(--primary-soft)]'
+                      : 'border-[var(--border)] hover:border-[var(--primary)]'
+                  }`}>
+                  {v.images?.[0] && <img src={v.images[0]} alt="" className="h-24 w-full object-cover" />}
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold text-[var(--text)]">{v.make} {v.model}</span>
+                      {selectedVehicleId === v.id && (
+                        <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[9px] font-semibold text-white">SELECTED</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-[var(--text-soft)]">{v.type} · {v.capacity} seats</div>
+                  </div>
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+
+        <div className="shrink-0 flex items-center justify-end border-t border-[var(--border)] gap-2 px-5 py-3">
+          <button onClick={onDone} type="button" className="h-8 rounded-lg bg-[var(--primary)] px-4 text-xs font-semibold text-white hover:opacity-90 transition-opacity">
+            Done
+          </button>
         </div>
       </div>
     </div>
