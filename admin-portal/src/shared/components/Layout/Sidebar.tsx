@@ -3,121 +3,98 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { logout } from '../../../modules/auth/store/authSlice';
 
-const navItems = [
+type NavItem = {
+  path: string;
+  label: string;
+  shortLabel: string;
+  icon: React.ReactNode;
+};
+
+const icon = (d: string) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
+const overviewNav: NavItem[] = [
   {
     path: '/dashboard',
     label: 'Dashboard',
     shortLabel: 'Home',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 13a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1h-4a1 1 0 01-1-1v-5z"
-        />
-      </svg>
-    ),
-  },
-  {
-    path: '/agencies',
-    label: 'Agencies',
-    shortLabel: 'Agencies',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-        />
-      </svg>
-    ),
-  },
-  {
-    path: '/travelers',
-    label: 'Travelers',
-    shortLabel: 'Travelers',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-        />
-      </svg>
-    ),
-  },
-  {
-    path: '/hotels',
-    label: 'Hotels',
-    shortLabel: 'Hotels',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-        />
-      </svg>
-    ),
-  },
-  {
-    path: '/vehicle-providers',
-    label: 'Vehicle Providers',
-    shortLabel: 'Providers',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M17 20h5V9L12 4 2 9v11h5m10 0v-6H7v6m10 0H7"
-        />
-      </svg>
-    ),
-  },
-  {
-    path: '/inventory',
-    label: 'Inventory',
-    shortLabel: 'Inventory',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M4 7h16M4 12h16M4 17h16"
-        />
-      </svg>
-    ),
+    icon: icon('M3 12 12 4l9 8M5 10v10h4v-6h6v6h4V10'),
   },
   {
     path: '/analytics',
     label: 'Analytics',
     shortLabel: 'Reports',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M7 20V10m5 10V4m5 16v-6"
-        />
-      </svg>
-    ),
+    icon: icon('M4 19V5m0 14h16M8 16V11m4 5V8m4 8v-6'),
   },
 ];
+
+const manageNav: NavItem[] = [
+  {
+    path: '/agencies',
+    label: 'Agencies',
+    shortLabel: 'Agencies',
+    icon: icon('M3 21h18M5 21V8l7-4 7 4v13M9 12h2m2 0h2M9 16h2m2 0h2'),
+  },
+  {
+    path: '/travelers',
+    label: 'Travelers',
+    shortLabel: 'Travelers',
+    icon: icon('M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0ZM4 21a8 8 0 0 1 16 0'),
+  },
+  {
+    path: '/hotels',
+    label: 'Hotels',
+    shortLabel: 'Hotels',
+    icon: icon('M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2'),
+  },
+  {
+    path: '/vehicle-providers',
+    label: 'Vehicle providers',
+    shortLabel: 'Providers',
+    icon: icon('M5 13l1.5-5h11L19 13M5 13v5h2m12-5v5h-2M5 13h14M8 17h1m6 0h1'),
+  },
+];
+
+const operationsNav: NavItem[] = [
+  {
+    path: '/inventory',
+    label: 'Inventory',
+    shortLabel: 'Inventory',
+    icon: icon('M4 7h16M4 12h16M4 17h16'),
+  },
+];
+
+const allNav = [...overviewNav, ...manageNav, ...operationsNav];
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+  const handleLogout = () => dispatch(logout());
+
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+  const renderGroup = (label: string, items: NavItem[]) => (
+    <>
+      <div className="ap-nav-group">{label}</div>
+      {items.map((item) => (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={`portal-nav-link ${isActive(item.path) ? 'portal-nav-link-active' : ''}`}
+        >
+          <span className="ap-stat-icon" style={{ width: '1rem', height: '1rem' }}>
+            {item.icon}
+          </span>
+          <span>{item.label}</span>
+        </Link>
+      ))}
+    </>
+  );
 
   return (
     <>
@@ -125,69 +102,47 @@ const Sidebar = () => {
         <div className="portal-sidebar-desktop">
           <div className="portal-brand">
             <div className="portal-brand-mark">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.8}
-                  d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3zm-2.25 9.25l1.75 1.75 3.75-3.75"
-                />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                <path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3zm-2.25 9.25l1.75 1.75 3.75-3.75" />
               </svg>
             </div>
             <div>
-              <div className="portal-brand-title font-headline">TrekPal Admin</div>
-              <div className="portal-brand-subtitle">Review workspace</div>
+              <div className="portal-brand-title">TrekPal</div>
+              <div className="portal-brand-subtitle">Admin</div>
             </div>
           </div>
 
           <nav className="portal-nav">
-            {navItems.map((item) => {
-              const isActive =
-                location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
-
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`portal-nav-link ${isActive ? 'portal-nav-link-active' : ''}`}
-                >
-                  <span>{item.icon}</span>
-                  <span className="text-sm font-medium">{item.label}</span>
-                </Link>
-              );
-            })}
+            {renderGroup('Overview', overviewNav)}
+            {renderGroup('Manage', manageNav)}
+            {renderGroup('Operations', operationsNav)}
           </nav>
 
           <div className="portal-sidebar-footer">
-            <button type="button" onClick={handleLogout} className="portal-sidebar-logout">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            <button type="button" onClick={handleLogout} className="portal-sidebar-logout" style={{ padding: '0.5rem 0.65rem', fontSize: '0.8125rem', borderRadius: '7px' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <span>Logout</span>
+              <span>Sign out</span>
             </button>
           </div>
         </div>
       </aside>
 
       <nav className="portal-mobile-nav lg:hidden" aria-label="Mobile navigation">
-        {navItems.map((item) => {
-          const isActive =
-            location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
-
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`portal-mobile-link ${isActive ? 'portal-mobile-link-active' : ''}`}
-            >
-              <span>{item.icon}</span>
-              <span>{item.shortLabel}</span>
-            </Link>
-          );
-        })}
+        {allNav.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`portal-mobile-link ${isActive(item.path) ? 'portal-mobile-link-active' : ''}`}
+          >
+            <span style={{ display: 'inline-flex', width: '1rem', height: '1rem' }}>{item.icon}</span>
+            <span>{item.shortLabel}</span>
+          </Link>
+        ))}
         <button type="button" onClick={handleLogout} className="portal-mobile-link portal-mobile-logout">
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ width: '1rem', height: '1rem' }}>
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           <span>Logout</span>
         </button>

@@ -1,0 +1,296 @@
+/*
+ * Agency portal — blue theme tokens + auth page styles.
+ * Imported after provider-portal.css so these override the base.
+ */
+
+/* ── Blue token overrides for agency portal ─────────────────────────────── */
+html[data-portal='agency'] {
+  --primary:          #2563eb;
+  --primary-strong:   #1d4ed8;
+  --primary-soft:     rgba(37, 99, 235, 0.09);
+  --primary-dim:      #3b82f6;
+  --accent:           #0ea5e9;
+
+  --bg:               #f0f4ff;
+  --canvas:           #f7f9ff;
+  --panel:            #ffffff;
+  --panel-subtle:     #eef2fb;
+  --panel-strong:     #dde5f5;
+
+  --text:             #0f1c3f;
+  --text-muted:       #3d5278;
+  --text-soft:        #6b82a8;
+
+  --border:           rgba(37, 99, 235, 0.12);
+  --border-strong:    rgba(37, 99, 235, 0.2);
+
+  --shadow-soft:      0 4px 24px rgba(37, 99, 235, 0.07);
+  --shadow-strong:    0 12px 40px rgba(37, 99, 235, 0.13);
+
+  /* Focus ring colour used on fields */
+  --focus-ring:       rgba(37, 99, 235, 0.22);
+}
+
+html[data-theme='dark'][data-portal='agency'] {
+  --primary:          #60a5fa;
+  --primary-strong:   #93c5fd;
+  --primary-soft:     rgba(96, 165, 250, 0.12);
+  --primary-dim:      #3b82f6;
+  --accent:           #38bdf8;
+
+  --bg:               #080e1f;
+  --canvas:           #0c1425;
+  --panel:            #101c32;
+  --panel-subtle:     #14223c;
+  --panel-strong:     #1c2e4a;
+
+  --text:             #e8eeff;
+  --text-muted:       #94a8cc;
+  --text-soft:        #5f7299;
+
+  --border:           rgba(96, 165, 250, 0.12);
+  --border-strong:    rgba(96, 165, 250, 0.2);
+
+  --shadow-soft:      0 4px 24px rgba(0, 0, 0, 0.32);
+  --shadow-strong:    0 12px 48px rgba(0, 0, 0, 0.48);
+
+  --focus-ring:       rgba(96, 165, 250, 0.22);
+}
+
+/* ── Auth page layout ────────────────────────────────────────────────────── */
+@layer components {
+
+  .auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(ellipse 70% 40% at 60% -10%, rgba(37,99,235,0.08), transparent),
+      var(--bg);
+  }
+
+  html[data-theme='dark'] .auth-page {
+    background:
+      radial-gradient(ellipse 70% 40% at 60% -10%, rgba(37,99,235,0.14), transparent),
+      var(--bg);
+  }
+
+  /* Thin top nav bar */
+  .auth-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.5rem;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--panel) 90%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  /* Logo lockup */
+  .auth-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .auth-logo-mark {
+    display: inline-flex;
+    width: 1.875rem;
+    height: 1.875rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .auth-logo-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .auth-logo-tag {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+
+  /* Scrollable body area */
+  .auth-body {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3rem 1rem 4rem;
+  }
+
+  .auth-body-center {
+    align-items: center;
+  }
+
+  /* Form card */
+  .auth-card {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-strong);
+    padding: 2rem;
+  }
+
+  @media (min-width: 640px) {
+    .auth-card {
+      padding: 2.5rem;
+    }
+  }
+
+  /* Overridden field focus for agency blue */
+  html[data-portal='agency'] .app-field:focus {
+    border-color: rgba(37,99,235,0.45);
+    box-shadow: 0 0 0 4px var(--focus-ring);
+  }
+
+  html[data-theme='dark'][data-portal='agency'] .app-field:focus {
+    border-color: rgba(96,165,250,0.45);
+    box-shadow: 0 0 0 4px var(--focus-ring);
+  }
+
+  /* Step indicator */
+  .auth-steps {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .auth-step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    position: relative;
+    flex: 1;
+  }
+
+  .auth-step-circle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 2px solid var(--border-strong);
+    background: var(--panel);
+    color: var(--text-soft);
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-step-circle-active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+
+  .auth-step-circle-done {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .auth-step-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .auth-step-label-active {
+    color: var(--primary);
+  }
+
+  .auth-step-label-done {
+    color: var(--text-muted);
+  }
+
+  /* Connecting line between steps */
+  .auth-step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border-strong);
+    margin-bottom: 1.35rem;
+    transition: background 180ms ease;
+  }
+
+  .auth-step-line-done {
+    background: var(--primary);
+  }
+
+  /* Field group label */
+  .auth-field-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  /* File drop zone */
+  .auth-drop-zone {
+    display: block;
+    cursor: pointer;
+    border: 1.5px dashed var(--border-strong);
+    border-radius: 12px;
+    padding: 1rem;
+    background: var(--panel-subtle);
+    transition: border-color 150ms ease, background-color 150ms ease;
+  }
+
+  .auth-drop-zone:hover {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+
+  .auth-drop-zone-done {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+
+  /* Toggle pill buttons (field of operations) */
+  .auth-toggle {
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 0.55rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--panel-subtle);
+    transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+    text-align: left;
+  }
+
+  .auth-toggle:hover {
+    border-color: var(--primary);
+    color: var(--text);
+  }
+
+  .auth-toggle-active {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-weight: 600;
+  }
+}

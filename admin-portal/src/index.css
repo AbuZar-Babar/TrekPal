@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
 @import "../../shared/ui/styles/tokens.css";
 @import "../../shared/ui/styles/portal-layout.css";
+@import "./styles/admin-ui.css";
 
 @tailwind base;
 @tailwind components;
@@ -592,4 +593,10 @@ html[data-theme='dark'] {
     background: var(--neutral-bg);
     color: var(--text);
   }
+}
+
+/* Chart line draw-on animation */
+@keyframes chart-draw {
+  from { stroke-dashoffset: 2000; }
+  to   { stroke-dashoffset: 0; }
 }
