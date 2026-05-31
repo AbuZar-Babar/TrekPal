@@ -11,206 +11,266 @@ import {
 } from '../../bids/store/bidsSlice';
 import { RootState } from '../../../store';
 import { Bid, OfferDetails, TripRequest } from '../../../shared/types';
-import {
-  formatCurrency,
-  formatDate,
-  formatDateRange,
-  formatStatusLabel,
-} from '../../../shared/utils/formatters';
+import { formatCurrency, formatDateRange } from '../../../shared/utils/formatters';
 import { fetchTripRequests } from '../store/tripRequestsSlice';
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const pretty = (v: string) =>
+  v.toLowerCase().split('_').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+const BidStatusBadge = ({ bid }: { bid?: Bid }) => {
+  if (!bid) return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--panel-subtle)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-soft)]">
+      Open
+    </span>
+  );
+  if (bid.status === 'ACCEPTED') return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--success-bg)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--success-text)]">
+      Accepted
+    </span>
+  );
+  if (bid.status === 'REJECTED') return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--danger-bg)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--danger-text)]">
+      Rejected
+    </span>
+  );
+  if (bid.awaitingActionBy === 'AGENCY') return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--warning-bg)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--warning-text)]">
+      ● Your move
+    </span>
+  );
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--primary-soft)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--primary)]">
+      Awaiting traveler
+    </span>
+  );
+};
+
+// ── Component ─────────────────────────────────────────────────────────────────
 const TripRequestList = () => {
   const dispatch = useDispatch();
   const { tripRequests, loading, error, pagination } = useSelector((state: RootState) => state.tripRequests);
-  const {
-    bids,
-    selectedBid,
-    loading: bidsLoading,
-    error: bidsError,
-  } = useSelector((state: RootState) => state.bids);
+  const { bids, selectedBid, loading: bidsLoading, error: bidsError } = useSelector((state: RootState) => state.bids);
 
-  const [page, setPage] = useState(1);
+  const [page, setPage]   = useState(1);
   const [search, setSearch] = useState('');
-  const [selectedTripRequest, setSelectedTripRequest] = useState<TripRequest | null>(null);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [selected, setSelected] = useState<TripRequest | null>(null);
 
   useEffect(() => {
-    dispatch(
-      fetchTripRequests({
-        page,
-        limit: 20,
-        search: search || undefined,
-      }) as any,
-    );
+    dispatch(fetchTripRequests({ page, limit: 20, search: search || undefined }) as any);
   }, [dispatch, page, search]);
 
   useEffect(() => {
     dispatch(fetchAgencyBids({ limit: 100 }) as any);
   }, [dispatch]);
 
-  const bidsByTripRequestId = useMemo(
-    () => bids.reduce<Record<string, Bid>>((accumulator, bid) => ({ ...accumulator, [bid.tripRequestId]: bid }), {}),
+  const bidsByRequest = useMemo(
+    () => bids.reduce<Record<string, Bid>>((acc, b) => ({ ...acc, [b.tripRequestId]: b }), {}),
     [bids],
   );
 
   const modalBid = useMemo(() => {
-    if (!selectedTripRequest) return null;
-    if (selectedBid && selectedBid.tripRequestId === selectedTripRequest.id) return selectedBid;
-    return bidsByTripRequestId[selectedTripRequest.id] ?? null;
-  }, [bidsByTripRequestId, selectedBid, selectedTripRequest]);
+    if (!selected) return null;
+    if (selectedBid && selectedBid.tripRequestId === selected.id) return selectedBid;
+    return bidsByRequest[selected.id] ?? null;
+  }, [selected, selectedBid, bidsByRequest]);
 
-  const refreshMarketplace = () => {
-    dispatch(fetchAgencyBids({ limit: 100 }) as any);
-    dispatch(fetchTripRequests({ page, limit: 20, search: search || undefined }) as any);
+  const handleOpen = async (tr: TripRequest) => {
+    setSelected(tr);
+    const existing = bidsByRequest[tr.id];
+    if (!existing) { dispatch(clearSelectedBid()); return; }
+    try { await dispatch(fetchBidThread(existing.id) as any).unwrap(); } catch { /* handled */ }
   };
 
-  const handleOpenOffer = async (tripRequest: TripRequest) => {
-    setSelectedTripRequest(tripRequest);
-    const existingBid = bidsByTripRequestId[tripRequest.id];
-
-    if (!existingBid) {
-      dispatch(clearSelectedBid());
-      return;
-    }
-
-    try {
-      await dispatch(fetchBidThread(existingBid.id) as any).unwrap();
-    } catch {
-      // Error handled by store
-    }
-  };
-
-  const handleBidSubmit = async ({
-    price,
-    description,
-    offerDetails,
-  }: {
-    price: number;
-    description?: string;
-    offerDetails: OfferDetails;
+  const handleBidSubmit = async ({ price, description, offerDetails }: {
+    price: number; description?: string; offerDetails: OfferDetails;
   }) => {
-    if (!selectedTripRequest) return;
-
+    if (!selected) return;
     try {
       if (modalBid) {
-        await dispatch(
-          createCounterOffer({
-            bidId: modalBid.id,
-            price,
-            description,
-            offerDetails,
-          }) as any,
-        ).unwrap();
+        await dispatch(createCounterOffer({ bidId: modalBid.id, price, description, offerDetails }) as any).unwrap();
       } else {
-        await dispatch(
-          createBid({
-            tripRequestId: selectedTripRequest.id,
-            price,
-            description,
-            offerDetails,
-          }) as any,
-        ).unwrap();
+        await dispatch(createBid({ tripRequestId: selected.id, price, description, offerDetails }) as any).unwrap();
       }
-
-      setSelectedTripRequest(null);
+      setSelected(null);
       dispatch(clearSelectedBid());
-      refreshMarketplace();
-    } catch {
-      // Error handled by store
-    }
+      dispatch(fetchAgencyBids({ limit: 100 }) as any);
+      dispatch(fetchTripRequests({ page, limit: 20, search: search || undefined }) as any);
+    } catch { /* handled */ }
   };
 
-  return (
-    <div className="space-y-6">
-      <section className="section-title-row">
-        <h2 className="section-title">Traveler Requests</h2>
-        <div className="text-xs font-medium text-[var(--text-soft)] uppercase tracking-wider">
-          {pagination.total} Live Briefs
-        </div>
-      </section>
+  const STATUS_TABS = ['', 'PENDING', 'ACCEPTED', 'CANCELLED'] as const;
 
-      <div className="page-toolbar surface">
-        <div className="search-shell">
-          <svg className="h-5 w-5 text-[var(--text-soft)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  const filtered = useMemo(() => {
+    if (!statusFilter) return tripRequests;
+    return tripRequests.filter((t) => t.status === statusFilter);
+  }, [tripRequests, statusFilter]);
+
+  const totalPages = Math.ceil(pagination.total / pagination.limit);
+
+  return (
+    <div className="space-y-5">
+      {/* ── Page header ──────────────────────────────────────── */}
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[var(--border)] pb-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">Requests</h1>
+          <p className="mt-0.5 text-sm text-[var(--text-soft)]">
+            {pagination.total} live traveler briefs
+          </p>
+        </div>
+        {/* Search */}
+        <div className="flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-3 text-sm min-w-[200px]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4 shrink-0 text-[var(--text-soft)]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
             type="text"
             value={search}
-            onChange={(e) => {
-              setPage(1);
-              setSearch(e.target.value);
-            }}
-            placeholder="Filter requests..."
-            className="border-0 bg-transparent p-0 text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:outline-none focus:ring-0"
+            onChange={(e) => { setPage(1); setSearch(e.target.value); }}
+            placeholder="Search destination…"
+            className="flex-1 border-0 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:outline-none"
           />
         </div>
       </div>
 
+      {/* ── Status tabs ─────────────────────────────────────── */}
+      <div className="flex gap-1.5 flex-wrap">
+        {STATUS_TABS.map((s) => (
+          <button
+            key={s || 'ALL'}
+            type="button"
+            onClick={() => setStatusFilter(s)}
+            className={`h-8 rounded-lg px-3.5 text-xs font-semibold transition-colors ${
+              statusFilter === s
+                ? 'bg-[var(--primary)] text-white'
+                : 'border border-[var(--border)] bg-[var(--panel)] text-[var(--text-muted)] hover:text-[var(--text)]'
+            }`}
+          >
+            {s || 'All'}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Error ───────────────────────────────────────────── */}
       {(error || bidsError) && (
         <div className="rounded-xl border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
           {error || bidsError}
         </div>
       )}
 
+      {/* ── List ─────────────────────────────────────────────── */}
       {loading ? (
-        <div className="surface py-20 text-center">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
+        <div className="flex h-48 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
         </div>
-      ) : tripRequests.length === 0 ? (
-        <div className="surface py-20 text-center">
-          <p className="text-[var(--text-soft)]">No active requests found.</p>
+      ) : filtered.length === 0 ? (
+        <div className="flex h-48 flex-col items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--panel)]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-8 w-8 text-[var(--text-soft)]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          <p className="text-sm text-[var(--text-soft)]">No requests found</p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {tripRequests.map((tripRequest) => {
-            const existingBid = bidsByTripRequestId[tripRequest.id];
+        <div className="space-y-3">
+          {filtered.map((tr) => {
+            const bid = bidsByRequest[tr.id];
+            const actionLabel = !bid ? 'Submit offer' : bid.status !== 'PENDING' ? 'View thread' : bid.awaitingActionBy === 'AGENCY' ? 'Revise offer' : 'View thread';
+            const urgent = bid?.awaitingActionBy === 'AGENCY' && bid?.status === 'PENDING';
+
             return (
-              <div key={tripRequest.id} className="surface surface-card flex flex-col p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[var(--text)]">{tripRequest.destination}</h3>
-                    <p className="text-sm text-[var(--text-soft)]">
-                      {tripRequest.userName || 'Anonymous'} | {formatDate(tripRequest.createdAt)}
+              <div
+                key={tr.id}
+                className={`rounded-xl border bg-[var(--panel)] transition-colors ${
+                  urgent ? 'border-[var(--warning-text)]' : 'border-[var(--border)]'
+                }`}
+              >
+                {/* Card header */}
+                <div className="flex items-start justify-between gap-4 px-5 pt-4 pb-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <h3 className="text-base font-semibold text-[var(--text)] truncate">{tr.destination}</h3>
+                      <BidStatusBadge bid={bid} />
+                      {urgent && (
+                        <span className="text-[10px] font-bold text-[var(--warning-text)]">ACTION NEEDED</span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 text-xs text-[var(--text-soft)]">
+                      {tr.userName || 'Traveler'} · {new Date(tr.createdAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
-                  <span className={`app-pill ${
-                    !existingBid ? 'app-pill-neutral' : 
-                    existingBid.status === 'ACCEPTED' ? 'app-pill-success' : 
-                    existingBid.status === 'REJECTED' ? 'app-pill-danger' : 'app-pill-warning'
-                  }`}>
-                    {existingBid ? existingBid.status : 'Open'}
-                  </span>
+                  {bid && (
+                    <div className="shrink-0 text-right">
+                      <div className="text-xs text-[var(--text-soft)]">Your offer</div>
+                      <div className="text-sm font-semibold text-[var(--text)]">{formatCurrency(bid.price)}</div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-4">
-                  <div className="rounded-xl bg-[var(--panel-subtle)] p-3">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Budget</div>
-                    <div className="text-sm font-bold text-[var(--text)]">{formatCurrency(tripRequest.budget)}</div>
+                {/* Key metrics row */}
+                <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-[var(--border)] px-5 py-3">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Dates</div>
+                    <div className="text-xs font-medium text-[var(--text)]">{formatDateRange(tr.startDate, tr.endDate)}</div>
                   </div>
-                  <div className="rounded-xl bg-[var(--panel-subtle)] p-3">
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Travelers</div>
-                    <div className="text-sm font-bold text-[var(--text)]">{tripRequest.travelers} Persons</div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Travelers</div>
+                    <div className="text-xs font-medium text-[var(--text)]">{tr.travelers} persons</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Budget</div>
+                    <div className="text-xs font-medium text-[var(--text)]">{tr.budget ? formatCurrency(tr.budget) : 'Flexible'}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Stay</div>
+                    <div className="text-xs font-medium text-[var(--text)]">{pretty(tr.tripSpecs.stayType)}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Rooms</div>
+                    <div className="text-xs font-medium text-[var(--text)]">{tr.tripSpecs.roomCount}× {pretty(tr.tripSpecs.roomPreference)}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Meals</div>
+                    <div className="text-xs font-medium text-[var(--text)]">{pretty(tr.tripSpecs.mealPlan)}</div>
+                  </div>
+                  {tr.tripSpecs.transportRequired && (
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Transport</div>
+                      <div className="text-xs font-medium text-[var(--text)]">{pretty(tr.tripSpecs.transportType)}</div>
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">Bids</div>
+                    <div className="text-xs font-medium text-[var(--text)]">{tr.bidsCount}</div>
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="text-xs text-[var(--text-soft)] bg-[var(--panel-subtle)] px-2 py-1 rounded-md">
-                    {formatDateRange(tripRequest.startDate, tripRequest.endDate)}
-                  </span>
-                  <span className="text-xs text-[var(--text-soft)] bg-[var(--panel-subtle)] px-2 py-1 rounded-md">
-                    {formatStatusLabel(tripRequest.tripSpecs.stayType)}
-                  </span>
-                </div>
-
-                <div className="mt-6 flex items-center justify-between border-t border-[var(--border)] pt-4">
-                  <div className="text-xs text-[var(--text-muted)]">
-                    {existingBid ? `Current Bid: ${formatCurrency(existingBid.price)}` : 'No bid yet'}
+                {/* Description + action */}
+                {(tr.description || tr.tripSpecs.specialRequirements) && (
+                  <div className="border-t border-[var(--border)] px-5 py-3">
+                    {tr.description && (
+                      <p className="text-xs text-[var(--text-muted)] line-clamp-2">{tr.description}</p>
+                    )}
+                    {tr.tripSpecs.specialRequirements && (
+                      <p className="mt-1 text-xs text-[var(--warning-text)]">
+                        ⚠ {tr.tripSpecs.specialRequirements}
+                      </p>
+                    )}
                   </div>
+                )}
+
+                {/* Footer */}
+                <div className="flex items-center justify-end border-t border-[var(--border)] px-5 py-3">
                   <button
-                    onClick={() => handleOpenOffer(tripRequest)}
-                    className={`${existingBid ? 'app-btn-secondary' : 'app-btn-primary'} app-btn-sm`}
+                    type="button"
+                    onClick={() => handleOpen(tr)}
+                    className={`h-8 rounded-lg px-4 text-xs font-semibold transition-colors ${
+                      urgent || !bid
+                        ? 'bg-[var(--primary)] text-white hover:opacity-90'
+                        : 'border border-[var(--border)] bg-[var(--panel)] text-[var(--text-muted)] hover:text-[var(--text)]'
+                    }`}
                   >
-                    {existingBid ? 'View Thread' : 'Submit Offer'}
+                    {actionLabel}
                   </button>
                 </div>
               </div>
@@ -219,37 +279,28 @@ const TripRequestList = () => {
         </div>
       )}
 
-      {pagination.total > pagination.limit && (
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="app-btn-secondary app-btn-md disabled:opacity-50"
-          >
-            Previous
+      {/* ── Pagination ───────────────────────────────────────── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
+            className="h-8 rounded-lg border border-[var(--border)] px-3 text-xs font-medium disabled:opacity-40">
+            ← Prev
           </button>
-          <span className="text-xs font-medium text-[var(--text-soft)]">
-            Page {page} of {Math.ceil(pagination.total / pagination.limit)}
-          </span>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={page >= Math.ceil(pagination.total / pagination.limit)}
-            className="app-btn-secondary app-btn-md disabled:opacity-50"
-          >
-            Next
+          <span className="text-xs text-[var(--text-soft)]">Page {page} of {totalPages}</span>
+          <button onClick={() => setPage((p) => p + 1)} disabled={page >= totalPages}
+            className="h-8 rounded-lg border border-[var(--border)] px-3 text-xs font-medium disabled:opacity-40">
+            Next →
           </button>
         </div>
       )}
 
-      {selectedTripRequest && (
+      {/* ── Bid form modal ───────────────────────────────────── */}
+      {selected && (
         <BidForm
-          tripRequest={selectedTripRequest}
+          tripRequest={selected}
           existingBid={modalBid ?? undefined}
           loading={bidsLoading}
-          onCancel={() => {
-            setSelectedTripRequest(null);
-            dispatch(clearSelectedBid());
-          }}
+          onCancel={() => { setSelected(null); dispatch(clearSelectedBid()); }}
           onSubmit={handleBidSubmit}
         />
       )}
@@ -258,4 +309,3 @@ const TripRequestList = () => {
 };
 
 export default TripRequestList;
-
