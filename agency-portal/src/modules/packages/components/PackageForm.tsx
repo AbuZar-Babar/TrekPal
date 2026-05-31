@@ -151,6 +151,93 @@ const PackageForm = () => {
         quantity: selectedHotelRoomTypes[hotel.id]?.[room.id] || 0,
       }))
       .filter((entry) => entry.quantity > 0);
+  const selectedRoomCount = useMemo(
+    () =>
+      selectedHotelIds.reduce(
+        (sum, hotelId) => sum + getBookedRoomTypeTotal(hotelId),
+        0,
+      ),
+    [selectedHotelIds, selectedHotelRoomTypes],
+  );
+  const selectedServiceCount = useMemo(
+    () =>
+      Object.values(selectedHotelServices).reduce(
+        (sum, serviceIds) => sum + serviceIds.length,
+        0,
+      ),
+    [selectedHotelServices],
+  );
+  const selectedDestinationCount = useMemo(
+    () => splitList(destinations).length,
+    [destinations],
+  );
+  const isReadyToPublish =
+    Boolean(name.trim()) &&
+    Boolean(price) &&
+    Boolean(duration) &&
+    Boolean(startDate) &&
+    selectedHotelIds.length > 0 &&
+    selectedRoomCount > 0 &&
+    selectedHotelIds.every((hotelId) => getBookedRoomTypeTotal(hotelId) > 0) &&
+    selectedDestinationCount > 0;
+  const readinessItems = [
+    { label: 'Offer basics', complete: Boolean(name.trim()) && Boolean(price) && Boolean(duration) },
+    { label: 'Travel date', complete: Boolean(startDate) },
+    { label: 'Hotel selected', complete: selectedHotelIds.length > 0 },
+    { label: 'Rooms allocated', complete: selectedRoomCount > 0 },
+    { label: 'Destinations added', complete: selectedDestinationCount > 0 },
+  ];
+
+  const toggleHotelSelection = (hotel: Hotel, checked: boolean) => {
+    if (checked) {
+      setSelectedHotelIds((current) =>
+        current.includes(hotel.id) ? current : [...current, hotel.id],
+      );
+      setSelectedHotelRooms((current) => ({
+        ...current,
+        [hotel.id]: current[hotel.id] || 1,
+      }));
+      setSelectedHotelServices((current) => ({
+        ...current,
+        [hotel.id]: current[hotel.id] || [],
+      }));
+      setDetailHotel(hotel);
+      return;
+    }
+
+    setSelectedHotelIds((current) => current.filter((idValue) => idValue !== hotel.id));
+    setSelectedHotelRooms((current) => {
+      const { [hotel.id]: _removed, ...rest } = current;
+      return rest;
+    });
+    setSelectedHotelRoomTypes((current) => {
+      const { [hotel.id]: _removed, ...rest } = current;
+      return rest;
+    });
+    setSelectedHotelServices((current) => {
+      const { [hotel.id]: _removed, ...rest } = current;
+      return rest;
+    });
+  };
+
+  const updateRoomSelection = (hotelId: string, roomId: string, nextValue: number) => {
+    const nextSelections = {
+      ...(selectedHotelRoomTypes[hotelId] || {}),
+      [roomId]: nextValue,
+    };
+
+    setSelectedHotelRoomTypes((current) => ({
+      ...current,
+      [hotelId]: nextSelections,
+    }));
+    setSelectedHotelRooms((current) => ({
+      ...current,
+      [hotelId]: Math.max(
+        1,
+        Object.values(nextSelections).reduce((sum, value) => sum + value, 0) || 1,
+      ),
+    }));
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -475,7 +562,35 @@ const PackageForm = () => {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="surface space-y-6 px-6 py-6 md:px-8 md:py-8">
+      <div className="surface overflow-hidden">
+        <div className="border-b border-[var(--border)] bg-[var(--panel-subtle)] px-6 py-6 md:px-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="app-section-label">{isEditing ? 'Edit traveler offer' : 'New traveler offer'}</div>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)]">
+                {isEditing ? 'Refine trip offer' : 'Create a professional trip offer'}
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
+                Package the itinerary, stay allocation, and optional transport into one clean marketplace offer.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 rounded-[18px] border border-[var(--border)] bg-[var(--panel)] p-2 shadow-[var(--shadow-soft)]">
+              {[
+                { label: 'Hotels', value: selectedHotelIds.length },
+                { label: 'Rooms', value: selectedRoomCount },
+                { label: 'Stops', value: selectedDestinationCount },
+              ].map((item) => (
+                <div key={item.label} className="min-w-[86px] rounded-[12px] bg-[var(--panel-subtle)] px-3 py-2 text-center">
+                  <div className="text-lg font-semibold tabular-nums text-[var(--text)]">{item.value}</div>
+                  <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)]">
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 md:px-8 md:py-8">
         {formError && (
           <div className="rounded-[22px] border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
             {formError}
@@ -586,14 +701,27 @@ const PackageForm = () => {
                 if (!hasReservationWindow) {
                   return;
                 }
+                setDetailHotel(selectedHotels[0] || filteredHotels[0] || null);
                 setIsHotelPickerOpen(true);
               }}
               disabled={!hasReservationWindow}
-              className="app-btn-secondary h-11 w-full justify-center text-sm disabled:cursor-not-allowed disabled:opacity-60"
+              className="group flex min-h-[88px] w-full items-center justify-between gap-4 rounded-[16px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-3 text-left transition hover:border-[var(--border-strong)] hover:bg-[var(--panel)] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {selectedHotelIds.length > 0
-                ? `Selected ${selectedHotelIds.length} hotel${selectedHotelIds.length > 1 ? 's' : ''}`
-                : 'Select hotels'}
+              <span>
+                <span className="block text-sm font-semibold text-[var(--text)]">
+                  {selectedHotelIds.length > 0
+                    ? `${selectedHotelIds.length} hotel${selectedHotelIds.length > 1 ? 's' : ''} selected`
+                    : 'Select hotels and rooms'}
+                </span>
+                <span className="mt-1 block text-xs leading-5 text-[var(--text-muted)]">
+                  {selectedRoomCount > 0
+                    ? `${selectedRoomCount} room${selectedRoomCount > 1 ? 's' : ''} allocated across selected hotels`
+                    : 'Open the guided picker to compare hotels and reserve exact room quantities.'}
+                </span>
+              </span>
+              <span className="rounded-full bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-white group-disabled:bg-[var(--panel-strong)] group-disabled:text-[var(--text-muted)]">
+                Choose
+              </span>
             </button>
             {!hasReservationWindow && (
               <p className="mt-2 text-xs text-[var(--text-soft)]">
@@ -723,25 +851,57 @@ const PackageForm = () => {
           </div>
         </div>
 
-        <label className="flex items-center gap-3 rounded-[20px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-4">
-          <input
-            type="checkbox"
-            checked={isActive}
-            onChange={(event) => {
-              if (event.target.checked && (selectedHotelIds.length === 0 || !startDate)) {
-                setFormError('To publish this offer, select at least one hotel and start date first.');
-                return;
-              }
-              setFormError(null);
-              setIsActive(event.target.checked);
-            }}
-            className="h-4 w-4 rounded border-[var(--border)]"
-          />
+        <div className="grid gap-4 rounded-[20px] border border-[var(--border)] bg-[var(--panel-subtle)] p-4 lg:grid-cols-[minmax(0,1fr)_280px]">
           <div>
-            <div className="text-sm font-semibold text-[var(--text)]">Published</div>
-            <div className="text-sm text-[var(--text-muted)]">Turn this off to hide the offer.</div>
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-base font-semibold text-[var(--text)]">Offer readiness</h2>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                isReadyToPublish
+                  ? 'bg-[var(--success-bg)] text-[var(--success-text)]'
+                  : 'bg-[var(--warning-bg)] text-[var(--warning-text)]'
+              }`}>
+                {isReadyToPublish ? 'Ready to publish' : 'Needs attention'}
+              </span>
+            </div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {readinessItems.map((item) => (
+                <div key={item.label} className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                  <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
+                    item.complete
+                      ? 'bg-[var(--success-bg)] text-[var(--success-text)]'
+                      : 'bg-[var(--panel-strong)] text-[var(--text-soft)]'
+                  }`}>
+                    {item.complete ? 'OK' : '-'}
+                  </span>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 text-xs text-[var(--text-soft)]">
+              Optional services selected: <span className="font-semibold text-[var(--text)]">{selectedServiceCount}</span>
+            </div>
           </div>
-        </label>
+
+          <label className="flex items-start gap-3 rounded-[16px] border border-[var(--border)] bg-[var(--panel)] px-4 py-4">
+            <input
+              type="checkbox"
+              checked={isActive}
+              onChange={(event) => {
+                if (event.target.checked && (selectedHotelIds.length === 0 || !startDate)) {
+                  setFormError('To publish this offer, select at least one hotel and start date first.');
+                  return;
+                }
+                setFormError(null);
+                setIsActive(event.target.checked);
+              }}
+              className="mt-0.5 h-4 w-4 rounded border-[var(--border)]"
+            />
+            <div>
+              <div className="text-sm font-semibold text-[var(--text)]">Publish offer</div>
+              <div className="mt-1 text-sm leading-5 text-[var(--text-muted)]">Turn this off to keep the offer hidden as a draft.</div>
+            </div>
+          </label>
+        </div>
 
         <div className="flex flex-wrap gap-3">
           <button
@@ -760,38 +920,49 @@ const PackageForm = () => {
           </button>
         </div>
       </form>
+      </div>
 
       {isHotelPickerOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
-          <div className="w-full max-w-3xl rounded-[24px] border border-[var(--border)] bg-[var(--panel)] p-6 shadow-xl">
+          <div className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--panel)] shadow-xl">
+            <div className="border-b border-[var(--border)] px-6 py-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-xl font-semibold text-[var(--text)]">Select Hotels</h3>
+                <h3 className="text-xl font-semibold text-[var(--text)]">Build the hotel plan</h3>
                 <p className="mt-1 text-sm text-[var(--text-muted)]">
                   {isActive
-                    ? 'Choose approved hotels from the marketplace for this offer.'
-                    : 'Choose one or more hotels from the marketplace for this offer.'}
+                    ? 'Search approved marketplace hotels, select the right properties, then allocate rooms in the panel.'
+                    : 'Search marketplace hotels, select the right properties, then allocate rooms in the panel.'}
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => setIsHotelPickerOpen(false)}
+                onClick={() => {
+                  setIsHotelPickerOpen(false);
+                  setDetailHotel(null);
+                }}
                 className="app-btn-secondary h-10 px-4 text-sm"
               >
                 Close
               </button>
             </div>
 
-            <div className="mt-4">
+            <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
               <input
                 value={hotelSearch}
                 onChange={(event) => setHotelSearch(event.target.value)}
                 className="app-field"
-                placeholder="Search hotels by name or city"
+                placeholder="Search hotels by name, city, or country"
               />
+              <div className="rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] px-4 py-3 text-sm text-[var(--text-muted)]">
+                <span className="font-semibold text-[var(--text)]">{selectedHotelIds.length}</span> hotels,{' '}
+                <span className="font-semibold text-[var(--text)]">{selectedRoomCount}</span> rooms selected
+              </div>
+            </div>
             </div>
 
-            <div className="mt-4 max-h-[420px] space-y-2 overflow-y-auto rounded-[16px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+            <div className="grid min-h-0 flex-1 gap-0 lg:grid-cols-[minmax(0,1fr)_390px]">
+            <div className="min-h-0 space-y-2 overflow-y-auto bg-[var(--panel-subtle)] p-4">
               {filteredHotels.length === 0 ? (
                 <div className="px-2 py-4 text-sm text-[var(--text-muted)]">
                   {isActive
@@ -805,43 +976,32 @@ const PackageForm = () => {
                   return (
                     <div
                       key={hotel.id}
-                      className="rounded-[12px] border border-[var(--border)] bg-[var(--panel)] p-3"
+                      className={`rounded-[14px] border bg-[var(--panel)] p-3 transition ${
+                        checked ? 'border-[var(--primary)] shadow-[var(--shadow-soft)]' : 'border-[var(--border)]'
+                      }`}
                     >
                       <div className="flex items-start gap-3">
                         <input
                           type="checkbox"
                           checked={checked}
-                          onChange={(event) => {
-                            if (event.target.checked) {
-                              setSelectedHotelIds((current) => [...current, hotel.id]);
-                              setSelectedHotelRooms((current) => ({
-                                ...current,
-                                [hotel.id]: current[hotel.id] || 1,
-                              }));
-                              setSelectedHotelServices((current) => ({
-                                ...current,
-                                [hotel.id]: current[hotel.id] || [],
-                              }));
-                              return;
-                            }
-                            setSelectedHotelIds((current) => current.filter((idValue) => idValue !== hotel.id));
-                            setSelectedHotelRooms((current) => {
-                              const { [hotel.id]: _removed, ...rest } = current;
-                              return rest;
-                            });
-                            setSelectedHotelRoomTypes((current) => {
-                              const { [hotel.id]: _removed, ...rest } = current;
-                              return rest;
-                            });
-                            setSelectedHotelServices((current) => {
-                              const { [hotel.id]: _removed, ...rest } = current;
-                              return rest;
-                            });
-                          }}
+                          onChange={(event) => toggleHotelSelection(hotel, event.target.checked)}
                           className="mt-1 h-4 w-4 rounded border-[var(--border)]"
                         />
+                        {hotel.images?.[0] ? (
+                          <img src={hotel.images[0]} alt={hotel.name} className="h-20 w-24 rounded-[12px] object-cover" />
+                        ) : (
+                          <div className="flex h-20 w-24 items-center justify-center rounded-[12px] bg-[var(--panel-strong)] text-xs font-semibold text-[var(--text-soft)]">
+                            Hotel
+                          </div>
+                        )}
                         <div className="min-w-0 flex-1">
-                          <div className="text-sm font-semibold text-[var(--text)]">{hotel.name}</div>
+                          <button
+                            type="button"
+                            onClick={() => setDetailHotel(hotel)}
+                            className="block max-w-full truncate text-left text-sm font-semibold text-[var(--text)] hover:text-[var(--primary)]"
+                          >
+                            {hotel.name}
+                          </button>
                           <div className="text-sm text-[var(--text-muted)]">
                             {hotel.city}, {hotel.country}
                           </div>
@@ -875,7 +1035,7 @@ const PackageForm = () => {
                           onClick={() => setDetailHotel(hotel)}
                           className="app-btn-secondary h-9 px-3 text-xs"
                         >
-                          Book room
+                          {detailHotel?.id === hotel.id ? 'Viewing' : 'Rooms'}
                         </button>
                       </div>
                       {getBookedRoomTypeSummary(hotel).length > 0 ? (
@@ -887,6 +1047,146 @@ const PackageForm = () => {
                   );
                 })
               )}
+            </div>
+
+            <aside className="min-h-0 overflow-y-auto border-t border-[var(--border)] bg-[var(--panel)] p-5 lg:border-l lg:border-t-0">
+              {detailHotel ? (
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                      Room allocation
+                    </div>
+                    <h4 className="mt-2 text-lg font-semibold text-[var(--text)]">{detailHotel.name}</h4>
+                    <p className="mt-1 text-sm text-[var(--text-muted)]">
+                      {detailHotel.city}, {detailHotel.country}
+                    </p>
+                  </div>
+
+                  {!selectedHotelIds.includes(detailHotel.id) ? (
+                    <button
+                      type="button"
+                      onClick={() => toggleHotelSelection(detailHotel, true)}
+                      className="app-btn-primary h-10 w-full px-4 text-sm"
+                    >
+                      Add this hotel
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => toggleHotelSelection(detailHotel, false)}
+                      className="app-btn-secondary h-10 w-full px-4 text-sm"
+                    >
+                      Remove hotel
+                    </button>
+                  )}
+
+                  {detailHotel.description ? (
+                    <p className="rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3 text-sm leading-6 text-[var(--text-muted)]">
+                      {detailHotel.description}
+                    </p>
+                  ) : null}
+
+                  <div className="rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)]">Services</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {(detailHotel.services || []).length > 0 ? (
+                        (detailHotel.services || []).map((service) => {
+                          const isSelected = selectedHotelServices[detailHotel.id]?.includes(service.id) || false;
+                          return (
+                            <button
+                              key={service.id}
+                              type="button"
+                              disabled={!selectedHotelIds.includes(detailHotel.id)}
+                              onClick={() =>
+                                setSelectedHotelServices((current) => {
+                                  const existing = current[detailHotel.id] || [];
+                                  const next = existing.includes(service.id)
+                                    ? existing.filter((value) => value !== service.id)
+                                    : [...existing, service.id];
+
+                                  return {
+                                    ...current,
+                                    [detailHotel.id]: next,
+                                  };
+                                })
+                              }
+                              className={`rounded-md border px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 ${
+                                isSelected
+                                  ? 'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]'
+                                  : 'border-[var(--border)] bg-[var(--panel)] text-[var(--text)]'
+                              }`}
+                            >
+                              {service.name}
+                              {service.price > 0 ? ` (PKR ${service.price.toLocaleString()})` : ''}
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <span className="text-sm text-[var(--text-muted)]">No hotel services listed.</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {(detailHotel.rooms || []).length > 0 ? (
+                      (detailHotel.rooms || []).map((room) => {
+                        const selectedCount = selectedHotelRoomTypes[detailHotel.id]?.[room.id] || 0;
+                        return (
+                          <div key={room.id} className="rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <div className="text-sm font-semibold text-[var(--text)]">{room.type}</div>
+                                <div className="mt-1 text-xs text-[var(--text-muted)]">
+                                  Capacity {room.capacity} - PKR {room.price.toLocaleString()}
+                                </div>
+                              </div>
+                              <div className="text-right text-xs text-[var(--text-muted)]">
+                                <div className="font-semibold text-[var(--text)]">{getRoomAvailableQuantity(room)} available</div>
+                                <div>{getRoomBookedQuantity(room)} booked of {getRoomTotalQuantity(room)}</div>
+                              </div>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between gap-3">
+                              <span className="text-xs font-medium text-[var(--text-soft)]">Rooms to reserve</span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  disabled={!selectedHotelIds.includes(detailHotel.id) || selectedCount <= 0}
+                                  onClick={() => updateRoomSelection(detailHotel.id, room.id, Math.max(0, selectedCount - 1))}
+                                  className="app-btn-secondary h-8 w-8 p-0 text-base disabled:cursor-not-allowed disabled:opacity-60"
+                                  aria-label={`Decrease ${room.type} rooms`}
+                                >
+                                  -
+                                </button>
+                                <div className="flex h-8 w-12 items-center justify-center rounded-[10px] border border-[var(--border)] bg-[var(--panel)] text-sm font-semibold text-[var(--text)]">
+                                  {selectedCount}
+                                </div>
+                                <button
+                                  type="button"
+                                  disabled={!selectedHotelIds.includes(detailHotel.id) || selectedCount >= getRoomAvailableQuantity(room)}
+                                  onClick={() => updateRoomSelection(detailHotel.id, room.id, Math.min(getRoomAvailableQuantity(room), selectedCount + 1))}
+                                  className="app-btn-secondary h-8 w-8 p-0 text-base disabled:cursor-not-allowed disabled:opacity-60"
+                                  aria-label={`Increase ${room.type} rooms`}
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="rounded-[14px] border border-[var(--border)] bg-[var(--panel-subtle)] p-4 text-sm text-[var(--text-muted)]">
+                        No room inventory listed for this hotel yet.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex h-full min-h-[260px] items-center justify-center rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--panel-subtle)] p-6 text-center text-sm text-[var(--text-muted)]">
+                  Pick a hotel from the list to review services and reserve exact room quantities.
+                </div>
+              )}
+            </aside>
             </div>
 
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -901,6 +1201,7 @@ const PackageForm = () => {
                     setSelectedHotelRooms({});
                     setSelectedHotelRoomTypes({});
                     setSelectedHotelServices({});
+                    setDetailHotel(null);
                   }}
                   className="app-btn-secondary h-10 px-4 text-sm"
                 >
@@ -908,7 +1209,10 @@ const PackageForm = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsHotelPickerOpen(false)}
+                  onClick={() => {
+                    setIsHotelPickerOpen(false);
+                    setDetailHotel(null);
+                  }}
                   className="app-btn-primary h-10 px-4 text-sm"
                 >
                   Done
@@ -919,7 +1223,7 @@ const PackageForm = () => {
         </div>
       ) : null}
 
-      {detailHotel ? (
+      {detailHotel && !isHotelPickerOpen ? (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 px-4 py-6">
           <div className="w-full max-w-2xl rounded-[24px] border border-[var(--border)] bg-[var(--panel)] p-6 shadow-xl">
             <div className="flex items-start justify-between gap-4">
