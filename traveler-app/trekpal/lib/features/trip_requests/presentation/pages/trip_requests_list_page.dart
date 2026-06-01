@@ -50,8 +50,6 @@ class _TripRequestsListPageState extends State<TripRequestsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme cs = theme.colorScheme;
     final AuthProvider auth = context.watch<AuthProvider>();
     final String kycStatus = auth.currentUser?.travelerKycStatus ?? 'NOT_SUBMITTED';
     final TripRequestsProvider provider = context.watch<TripRequestsProvider>();

@@ -84,6 +84,12 @@ class BidRevisionModel extends BidRevisionEntity {
     required super.offerDetails,
     required super.createdAt,
     super.description,
+    super.hotelId,
+    super.hotelName,
+    super.roomId,
+    super.roomType,
+    super.vehicleId,
+    super.vehicleModel,
   });
 
   factory BidRevisionModel.fromJson(Map<String, dynamic> json) {

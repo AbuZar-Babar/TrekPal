@@ -51,8 +51,6 @@ class _PackagesListPageState extends State<PackagesListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme cs = theme.colorScheme;
     final AuthProvider auth = context.watch<AuthProvider>();
     final PackagesProvider provider = context.watch<PackagesProvider>();
     final BookingsProvider bookingsProvider = context.watch<BookingsProvider>();

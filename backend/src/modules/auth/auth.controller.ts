@@ -201,16 +201,12 @@ export class AuthController {
       );
     } catch (error: any) {
       if (uploadedObjectPaths.length > 0) {
-        const cleanupResults = await Promise.allSettled(
+        // Best-effort cleanup of uploaded KYC files; failures are non-fatal
+        await Promise.allSettled(
           uploadedObjectPaths.map((objectPath) => deleteKycFile(objectPath))
         );
-        const failedCleanupCount = cleanupResults.filter((result) => result.status === 'rejected').length;
-        if (failedCleanupCount > 0) {
-          console.error(`[Auth Controller] Failed to cleanup ${failedCleanupCount} uploaded KYC object(s)`);
-        }
       }
 
-      console.error('[Auth Controller] registerAgency error:', error.message || error);
       if (error.code === 'auth/email-already-exists') {
         sendError(res, 'Email already registered', 409);
       } else if (error.code === 'P2002') {
@@ -298,7 +294,6 @@ export class AuthController {
         );
       }
 
-      console.error('[Auth Controller] registerHotel error:', error.message || error);
       if (error.code === 'auth/email-already-exists') {
         sendError(res, 'Email already registered', 409);
       } else {

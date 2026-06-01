@@ -1,6 +1,3 @@
-// TODO: Implement formatters
-// Date, currency, phone number formatting
-
 import 'package:intl/intl.dart';
 
 class AppFormatters {

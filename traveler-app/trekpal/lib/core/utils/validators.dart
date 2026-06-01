@@ -1,6 +1,3 @@
-// TODO: Implement form validators
-// Email, password, CNIC, phone number validation
-
 class AppValidators {
   static String? requiredText(
     String? value, {

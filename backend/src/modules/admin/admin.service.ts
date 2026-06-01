@@ -65,8 +65,7 @@ export class AdminService {
 
     try {
       return await createSignedKycUrl(value);
-    } catch (error) {
-      console.error('[Admin Service] Failed to create signed KYC URL:', error);
+    } catch {
       return null;
     }
   }
@@ -129,8 +128,7 @@ export class AdminService {
   private async resolveMediaImages(values: string[] = []): Promise<string[]> {
     try {
       return await resolveMediaUrls(values);
-    } catch (error) {
-      console.error('[Admin Service] Failed to resolve media URLs:', error);
+    } catch {
       return values;
     }
   }
@@ -296,23 +294,11 @@ export class AdminService {
     status?: string,
     search?: string
   ): Promise<{ agencies: AgencyResponse[]; total: number; page: number; limit: number }> {
-    console.log('[Admin Service] Fetching agencies with filters:', {
-      page,
-      limit,
-      status,
-      search,
-    });
-
     const filters = { page, limit, status: status as any, search };
     const [agencies, total] = await Promise.all([
       this.agencyRepo.findMany(filters),
       this.agencyRepo.count(filters),
     ]);
-
-    console.log('[Admin Service] Found agencies:', {
-      count: agencies.length,
-      total,
-    });
 
     const agenciesResponse = await Promise.all(
       agencies.map((agency) => this.mapAgencyResponse(agency))

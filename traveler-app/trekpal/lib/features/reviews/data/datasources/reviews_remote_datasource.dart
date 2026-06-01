@@ -1,4 +1,3 @@
-import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_client.dart';
 import '../models/reviews_model.dart';
 

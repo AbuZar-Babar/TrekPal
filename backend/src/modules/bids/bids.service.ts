@@ -44,9 +44,6 @@ const bidDetailInclude = {
   ...bidSummaryInclude,
   revisions: {
     orderBy: { createdAt: 'asc' as const },
-    include: {
-      // BidRevision doesn't have relation objects, just store IDs
-    },
   },
 };
 

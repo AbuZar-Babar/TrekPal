@@ -14,15 +14,12 @@ export const requireRole = (...allowedRoles: UserRole[]) => {
     }
 
     const userRole = req.user.role as UserRole;
-    console.log(`[RoleGuard] Checking role - User role: ${userRole}, Allowed roles: ${allowedRoles.join(', ')}`);
-    
+
     if (!allowedRoles.includes(userRole)) {
-      console.log(`[RoleGuard] Access denied - User role ${userRole} not in allowed roles`);
       res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
       return;
     }
 
-    console.log(`[RoleGuard] Access granted - User role ${userRole} is allowed`);
     next();
   };
 };

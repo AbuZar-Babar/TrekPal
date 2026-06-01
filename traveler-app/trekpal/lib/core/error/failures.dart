@@ -1,6 +1,3 @@
-// TODO: Implement failure classes
-// ServerFailure, NetworkFailure, CacheFailure, etc.
-
 sealed class Failure {
   const Failure(this.message);
 

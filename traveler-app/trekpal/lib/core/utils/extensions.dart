@@ -1,6 +1,3 @@
-// TODO: Implement useful extensions
-// String, DateTime, BuildContext extensions
-
 import 'package:intl/intl.dart';
 
 extension DateTimeX on DateTime {

@@ -1,6 +1,3 @@
-// TODO: Implement API interceptor for request/response handling
-// Add authentication tokens, error handling, logging
-
 import 'dart:convert';
 
 import '../error/exceptions.dart';

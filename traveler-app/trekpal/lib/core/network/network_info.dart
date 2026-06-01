@@ -1,6 +1,3 @@
-// TODO: Implement network info checker
-// Check internet connectivity before making API calls
-
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';

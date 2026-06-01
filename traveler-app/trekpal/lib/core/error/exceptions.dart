@@ -1,6 +1,3 @@
-// TODO: Implement exception classes
-// ServerException, NetworkException, CacheException, etc.
-
 class AppException implements Exception {
   const AppException(this.message);
 
