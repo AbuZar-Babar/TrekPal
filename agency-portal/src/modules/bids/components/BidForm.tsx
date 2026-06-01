@@ -1,15 +1,26 @@
 import { FormEvent, useEffect, useLayoutEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { Bid, BidRevision, OfferDetails, TripRequest } from '../../../shared/types';
+import { Bid, BidRevision, Hotel, OfferDetails, TripRequest, Vehicle } from '../../../shared/types';
 import { formatCurrency, formatDateRange } from '../../../shared/utils/formatters';
+import { transportService } from '../../transport/services/transportService';
+import { fetchHotels } from '../../hotels/store/hotelsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store';
 
 interface BidFormProps {
   tripRequest: TripRequest;
   loading: boolean;
   existingBid?: Bid;
   onCancel: () => void;
-  onSubmit: (payload: { price: number; description?: string; offerDetails: OfferDetails }) => Promise<void>;
+  onSubmit: (payload: {
+    price: number;
+    description?: string;
+    offerDetails: OfferDetails;
+    hotelId?: string;
+    roomId?: string;
+    vehicleId?: string;
+  }) => Promise<void>;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -30,7 +41,6 @@ const ThreadMessage = ({ revision, isLatest }: { revision: BidRevision; isLatest
 
   return (
     <div className={`flex flex-col gap-1 ${isAgency ? 'items-end' : 'items-start'}`}>
-      {/* Actor label + time */}
       <div className={`flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-soft)] ${isAgency ? 'flex-row-reverse' : ''}`}>
         <span>{isAgency ? 'Your offer' : 'Traveler counter'}</span>
         <span>{shortDate(revision.createdAt)}</span>
@@ -41,18 +51,31 @@ const ThreadMessage = ({ revision, isLatest }: { revision: BidRevision; isLatest
         )}
       </div>
 
-      {/* Bubble */}
       <div className={`max-w-[90%] rounded-2xl px-4 py-3 ${
         isAgency
           ? 'rounded-tr-sm bg-[var(--primary-soft)] text-[var(--text)]'
           : 'rounded-tl-sm border border-[var(--border)] bg-[var(--panel-subtle)] text-[var(--text)]'
       }`}>
-        {/* Price */}
         <div className="text-xl font-semibold tracking-tight tabular-nums">
           {formatCurrency(revision.price)}
         </div>
 
-        {/* Inclusions chips */}
+        {/* Hotel/vehicle chips on agency revisions */}
+        {isAgency && (revision.hotel || revision.vehicle) && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {revision.hotel && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--primary)] px-2 py-0.5 text-[10px] font-semibold text-white">
+                🏨 {revision.hotel.name}{revision.room ? ` · ${revision.room.type}` : ''}
+              </span>
+            )}
+            {revision.vehicle && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--primary)] px-2 py-0.5 text-[10px] font-semibold text-white">
+                🚗 {revision.vehicle.make} {revision.vehicle.model}
+              </span>
+            )}
+          </div>
+        )}
+
         {inclusions.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5">
             {inclusions.map((inc) => (
@@ -70,7 +93,6 @@ const ThreadMessage = ({ revision, isLatest }: { revision: BidRevision; isLatest
           </div>
         )}
 
-        {/* Description */}
         {revision.description && (
           <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
             {revision.description}
@@ -83,11 +105,12 @@ const ThreadMessage = ({ revision, isLatest }: { revision: BidRevision; isLatest
 
 // ── Toggle switch ─────────────────────────────────────────────────────────────
 const Toggle = ({
-  checked, disabled, label, description, value, placeholder, onChange, onToggle,
+  checked, disabled, label, description, value, placeholder, onChange, onToggle, extra,
 }: {
   checked: boolean; disabled: boolean; label: string; description: string;
   value: string; placeholder: string;
   onChange: (v: string) => void; onToggle: (v: boolean) => void;
+  extra?: React.ReactNode;
 }) => (
   <div className={`rounded-xl border transition-colors ${checked ? 'border-[var(--primary-soft)] bg-[var(--primary-soft)]' : 'border-[var(--border)] bg-[var(--panel-subtle)]'}`}>
     <label className="flex cursor-pointer items-center justify-between gap-4 px-4 py-3">
@@ -95,7 +118,6 @@ const Toggle = ({
         <div className="text-sm font-medium text-[var(--text)]">{label}</div>
         <div className="text-xs text-[var(--text-soft)]">{description}</div>
       </div>
-      {/* Toggle pill */}
       <div
         onClick={() => !disabled && onToggle(!checked)}
         className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${checked ? 'bg-[var(--primary)]' : 'bg-[var(--panel-strong)]'} ${disabled ? 'opacity-50' : 'cursor-pointer'}`}
@@ -110,8 +132,9 @@ const Toggle = ({
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.18 }}
-          className="overflow-hidden px-4 pb-3"
+          className="overflow-hidden px-4 pb-3 space-y-2"
         >
+          {extra}
           <textarea
             rows={2}
             value={value}
@@ -138,9 +161,224 @@ const StatusBadge = ({ bid }: { bid?: Bid }) => {
   return <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-semibold text-[var(--primary)]">Traveler reviewing</span>;
 };
 
+// ── Inline hotel picker ───────────────────────────────────────────────────────
+const HotelPicker = ({
+  selectedHotelId, selectedRoomId, disabled,
+  onSelect,
+}: {
+  selectedHotelId: string | null;
+  selectedRoomId: string | null;
+  disabled: boolean;
+  onSelect: (hotelId: string | null, roomId: string | null, hotelName: string, roomType: string) => void;
+}) => {
+  const dispatch = useDispatch();
+  const { hotels } = useSelector((state: RootState) => state.hotels);
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [pickedHotel, setPickedHotel] = useState<Hotel | null>(null);
+
+  useEffect(() => {
+    if (open) dispatch(fetchHotels({ limit: 100, discovery: true }) as any);
+  }, [open, dispatch]);
+
+  const selectedHotel = hotels.find((h) => h.id === selectedHotelId);
+  const selectedRoom = selectedHotel?.rooms?.find((r) => r.id === selectedRoomId);
+
+  const filtered = hotels.filter((h) =>
+    `${h.name} ${h.city} ${h.country}`.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (disabled) {
+    if (!selectedHotelId) return null;
+    return (
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--panel)] px-3 py-2 text-xs">
+        <span className="font-semibold text-[var(--text)]">🏨 {selectedHotel?.name ?? selectedHotelId}</span>
+        {selectedRoom && <span className="text-[var(--text-soft)]"> · {selectedRoom.type}</span>}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {selectedHotelId ? (
+        <div className="flex items-center gap-2 rounded-lg border border-[var(--primary-soft)] bg-[var(--primary-soft)] px-3 py-2 text-xs">
+          <span className="font-semibold text-[var(--text)] flex-1">
+            🏨 {selectedHotel?.name ?? selectedHotelId}
+            {selectedRoom && <span className="font-normal text-[var(--text-soft)]"> · {selectedRoom.type}</span>}
+          </span>
+          <button type="button" onClick={() => onSelect(null, null, '', '')} className="text-[var(--text-soft)] hover:text-[var(--danger-text)]">✕</button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex h-8 w-full items-center gap-2 rounded-lg border border-dashed border-[var(--border)] px-3 text-xs text-[var(--text-soft)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3.5 w-3.5 shrink-0">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2" />
+          </svg>
+          Select hotel from marketplace
+        </button>
+      )}
+
+      {/* Hotel modal */}
+      {open && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--panel)] shadow-2xl" style={{ maxHeight: '80vh' }}>
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
+              <h3 className="text-sm font-semibold text-[var(--text)]">
+                {pickedHotel ? `Select room — ${pickedHotel.name}` : 'Select hotel'}
+              </h3>
+              <button type="button" onClick={() => { setOpen(false); setPickedHotel(null); setSearch(''); }}
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-muted)]">✕</button>
+            </div>
+
+            {!pickedHotel ? (
+              <>
+                <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4 shrink-0 text-[var(--text-soft)]">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input autoFocus type="text" placeholder="Search hotels…" value={search} onChange={(e) => setSearch(e.target.value)}
+                    className="flex-1 border-0 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:outline-none" />
+                </div>
+                <div className="overflow-y-auto" style={{ maxHeight: 'calc(80vh - 130px)' }}>
+                  {filtered.map((h) => (
+                    <button key={h.id} type="button" onClick={() => setPickedHotel(h)}
+                      className="flex w-full items-center gap-3 border-b border-[var(--border)] px-5 py-3 text-left hover:bg-[var(--panel-subtle)] transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-[var(--text)] truncate">{h.name}</div>
+                        <div className="text-xs text-[var(--text-soft)]">{h.city}, {h.country}</div>
+                      </div>
+                      {h.rating && <span className="text-xs text-[var(--warning-text)]">★ {h.rating}</span>}
+                    </button>
+                  ))}
+                  {filtered.length === 0 && (
+                    <div className="flex h-24 items-center justify-center text-sm text-[var(--text-soft)]">No hotels found</div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="border-b border-[var(--border)] px-5 py-3">
+                  <button type="button" onClick={() => setPickedHotel(null)} className="text-xs text-[var(--primary)] hover:underline">← Back to hotels</button>
+                  <div className="mt-1 text-sm font-semibold text-[var(--text)]">{pickedHotel.name}</div>
+                </div>
+                <div className="overflow-y-auto" style={{ maxHeight: 'calc(80vh - 150px)' }}>
+                  {(pickedHotel.rooms || []).length === 0 ? (
+                    <div className="flex h-24 items-center justify-center text-sm text-[var(--text-soft)]">No rooms configured</div>
+                  ) : (
+                    (pickedHotel.rooms || []).map((r) => (
+                      <button key={r.id} type="button"
+                        onClick={() => { onSelect(pickedHotel.id, r.id, pickedHotel.name, r.type); setOpen(false); setPickedHotel(null); setSearch(''); }}
+                        className="flex w-full items-center justify-between border-b border-[var(--border)] px-5 py-3 hover:bg-[var(--panel-subtle)] transition-colors">
+                        <div className="text-sm font-semibold text-[var(--text)]">{r.type}</div>
+                        <div className="text-xs text-[var(--text-soft)]">PKR {Number(r.price || 0).toLocaleString()} / night</div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Inline vehicle picker ─────────────────────────────────────────────────────
+const VehiclePicker = ({
+  selectedVehicleId, disabled, onSelect,
+}: {
+  selectedVehicleId: string | null;
+  disabled: boolean;
+  onSelect: (vehicleId: string | null, label: string) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    if (!open) return;
+    transportService.getMarketplaceVehicles({ limit: 100, status: 'APPROVED' })
+      .then((r) => setVehicles(r.data.filter((v) => v.isAvailable && v.status === 'APPROVED')))
+      .catch(() => {});
+  }, [open]);
+
+  const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
+  const selectedLabel = selectedVehicle ? `${selectedVehicle.make} ${selectedVehicle.model}` : selectedVehicleId ?? '';
+
+  const filtered = vehicles.filter((v) =>
+    `${v.make} ${v.model} ${v.type}`.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (disabled) {
+    if (!selectedVehicleId) return null;
+    return (
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--panel)] px-3 py-2 text-xs">
+        <span className="font-semibold text-[var(--text)]">🚗 {selectedLabel}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {selectedVehicleId ? (
+        <div className="flex items-center gap-2 rounded-lg border border-[var(--primary-soft)] bg-[var(--primary-soft)] px-3 py-2 text-xs">
+          <span className="font-semibold text-[var(--text)] flex-1">🚗 {selectedLabel}</span>
+          <button type="button" onClick={() => onSelect(null, '')} className="text-[var(--text-soft)] hover:text-[var(--danger-text)]">✕</button>
+        </div>
+      ) : (
+        <button type="button" onClick={() => setOpen(true)}
+          className="flex h-8 w-full items-center gap-2 rounded-lg border border-dashed border-[var(--border)] px-3 text-xs text-[var(--text-soft)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3.5 w-3.5 shrink-0">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l1.5-5h11L19 13M5 13v5h2m12-5v5h-2M5 13h14M7 18a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z" />
+          </svg>
+          Select vehicle from marketplace
+        </button>
+      )}
+
+      {open && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--panel)] shadow-2xl" style={{ maxHeight: '80vh' }}>
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
+              <h3 className="text-sm font-semibold text-[var(--text)]">Select vehicle</h3>
+              <button type="button" onClick={() => { setOpen(false); setSearch(''); }}
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-muted)]">✕</button>
+            </div>
+            <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4 shrink-0 text-[var(--text-soft)]">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input autoFocus type="text" placeholder="Search vehicles…" value={search} onChange={(e) => setSearch(e.target.value)}
+                className="flex-1 border-0 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-soft)] focus:outline-none" />
+            </div>
+            <div className="overflow-y-auto" style={{ maxHeight: 'calc(80vh - 130px)' }}>
+              {filtered.map((v) => (
+                <button key={v.id} type="button"
+                  onClick={() => { onSelect(v.id, `${v.make} ${v.model}`); setOpen(false); setSearch(''); }}
+                  className="flex w-full items-center justify-between border-b border-[var(--border)] px-5 py-3 hover:bg-[var(--panel-subtle)] transition-colors">
+                  <div>
+                    <div className="text-sm font-semibold text-[var(--text)]">{v.make} {v.model}</div>
+                    <div className="text-xs text-[var(--text-soft)]">{v.type} · {v.capacity} seats · {v.year}</div>
+                  </div>
+                  <div className="text-xs text-[var(--text-soft)]">PKR {Number(v.pricePerDay || 0).toLocaleString()} / day</div>
+                </button>
+              ))}
+              {filtered.length === 0 && (
+                <div className="flex h-24 items-center justify-center text-sm text-[var(--text-soft)]">No vehicles found</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ── Main component ────────────────────────────────────────────────────────────
 const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidFormProps) => {
-  // Lock background scroll while modal is open
   useLayoutEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -158,11 +396,17 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
   const [extras, setExtras]                 = useState('');
   const [error, setError]                   = useState<string | null>(null);
 
+  // Hotel/vehicle selection
+  const [selectedHotelId, setSelectedHotelId]   = useState<string | null>(null);
+  const [selectedRoomId, setSelectedRoomId]     = useState<string | null>(null);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+
   useEffect(() => {
     if (!existingBid) {
       setPrice(''); setDescription(''); setStayIncluded(false); setStayDetails('');
       setTransportIncluded(false); setTransportDetails('');
       setMealsIncluded(false); setMealDetails(''); setExtras('');
+      setSelectedHotelId(null); setSelectedRoomId(null); setSelectedVehicleId(null);
       return;
     }
     setPrice(existingBid.price.toString());
@@ -174,6 +418,9 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
     setMealsIncluded(existingBid.offerDetails.mealsIncluded);
     setMealDetails(existingBid.offerDetails.mealDetails);
     setExtras(existingBid.offerDetails.extras);
+    setSelectedHotelId(existingBid.hotelId ?? null);
+    setSelectedRoomId(existingBid.roomId ?? null);
+    setSelectedVehicleId(existingBid.vehicleId ?? null);
   }, [existingBid]);
 
   const isReadOnly = Boolean(
@@ -195,6 +442,9 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
         mealsIncluded, mealDetails: mealDetails.trim(),
         extras: extras.trim(),
       },
+      hotelId: selectedHotelId ?? undefined,
+      roomId: selectedRoomId ?? undefined,
+      vehicleId: selectedVehicleId ?? undefined,
     });
   };
 
@@ -203,7 +453,6 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center sm:px-4 sm:py-6">
-      {/* Backdrop */}
       <motion.div
         className="absolute inset-0"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -211,7 +460,6 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
         onClick={onCancel}
       />
 
-      {/* Modal */}
       <motion.div
         className="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-t-2xl bg-[var(--panel)] shadow-2xl sm:rounded-2xl"
         style={{ maxHeight: '92vh' }}
@@ -220,7 +468,7 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
         exit={{ y: 40, opacity: 0 }}
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* ── Modal header ───────────────────────────────────── */}
+        {/* Header */}
         <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[var(--border)] px-6 py-4">
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -233,18 +481,15 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
               {tripRequest.destination} · {formatDateRange(tripRequest.startDate, tripRequest.endDate)} · {tripRequest.travelers} travelers
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="h-8 w-8 shrink-0 rounded-lg border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
-          >
+          <button type="button" onClick={onCancel}
+            className="h-8 w-8 shrink-0 rounded-lg border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* ── Trip brief strip ───────────────────────────────── */}
+        {/* Trip brief strip */}
         <div className="shrink-0 flex flex-wrap gap-x-6 gap-y-2 border-b border-[var(--border)] bg-[var(--panel-subtle)] px-6 py-3">
           {[
             { label: 'Budget', value: formatCurrency(tripRequest.budget) },
@@ -262,11 +507,8 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
           ))}
         </div>
 
-        {/* ── Scrollable body ────────────────────────────────── */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex min-h-0 flex-1 flex-col overflow-hidden"
-        >
+        {/* Body */}
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <div className="flex min-h-0 flex-1 overflow-hidden">
             {/* Left: form */}
             <div className={`flex-1 min-w-0 overflow-y-auto px-6 py-5 space-y-4 ${hasThread ? 'border-r border-[var(--border)]' : ''}`}>
@@ -302,10 +544,7 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
                       Total offer (PKR)
                     </label>
                     <input
-                      type="number"
-                      min="1"
-                      step="1"
-                      value={price}
+                      type="number" min="1" step="1" value={price}
                       onChange={(e) => setPrice(e.target.value)}
                       className="app-field text-lg font-semibold"
                       placeholder="e.g. 85000"
@@ -321,13 +560,9 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
                     <label className="mb-1.5 block text-sm font-medium text-[var(--text-muted)]">
                       Message to traveler
                     </label>
-                    <textarea
-                      rows={3}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
+                    <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
                       className="app-field min-h-[80px] text-sm"
-                      placeholder="Explain your pricing, what makes your offer stand out, or any adjustments from the last revision."
-                    />
+                      placeholder="Explain your pricing, what makes your offer stand out, or any adjustments from the last revision." />
                   </div>
                 </div>
               )}
@@ -337,18 +572,36 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
                 <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)]">
                   What's included
                 </div>
+
                 <Toggle
                   checked={stayIncluded} disabled={isReadOnly}
                   label="Accommodation" description="Hotel, resort, or guesthouse"
-                  value={stayDetails} placeholder="Hotel name, tier, city, room type…"
+                  value={stayDetails} placeholder="Additional notes about the stay…"
                   onToggle={setStayIncluded} onChange={setStayDetails}
+                  extra={
+                    <HotelPicker
+                      selectedHotelId={selectedHotelId}
+                      selectedRoomId={selectedRoomId}
+                      disabled={isReadOnly}
+                      onSelect={(hId, rId) => { setSelectedHotelId(hId); setSelectedRoomId(rId); }}
+                    />
+                  }
                 />
+
                 <Toggle
                   checked={transportIncluded} disabled={isReadOnly}
                   label="Transport" description="Vehicles, transfers, driver"
-                  value={transportDetails} placeholder="Vehicle class, pickup points, driver included…"
+                  value={transportDetails} placeholder="Additional notes about transport…"
                   onToggle={setTransportIncluded} onChange={setTransportDetails}
+                  extra={
+                    <VehiclePicker
+                      selectedVehicleId={selectedVehicleId}
+                      disabled={isReadOnly}
+                      onSelect={(vId) => setSelectedVehicleId(vId)}
+                    />
+                  }
                 />
+
                 <Toggle
                   checked={mealsIncluded} disabled={isReadOnly}
                   label="Meals" description="Breakfast, half-board, full-board"
@@ -363,13 +616,9 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
                   <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)]">
                     Extras
                   </label>
-                  <textarea
-                    rows={2}
-                    value={extras}
-                    onChange={(e) => setExtras(e.target.value)}
+                  <textarea rows={2} value={extras} onChange={(e) => setExtras(e.target.value)}
                     className="app-field min-h-[64px] text-sm"
-                    placeholder="Guides, sightseeing, welcome kits, flexible timing…"
-                  />
+                    placeholder="Guides, sightseeing, welcome kits, flexible timing…" />
                 </div>
               )}
             </div>
@@ -382,38 +631,26 @@ const BidForm = ({ tripRequest, loading, existingBid, onCancel, onSubmit }: BidF
                 </div>
                 <div className="flex flex-col gap-4">
                   {revisions.map((rev, i) => (
-                    <ThreadMessage
-                      key={rev.id}
-                      revision={rev}
-                      isLatest={i === revisions.length - 1}
-                    />
+                    <ThreadMessage key={rev.id} revision={rev} isLatest={i === revisions.length - 1} />
                   ))}
                 </div>
               </div>
             )}
           </div>
 
-          {/* ── Footer ─────────────────────────────────────────── */}
+          {/* Footer */}
           <div className="shrink-0 flex items-center justify-between gap-3 border-t border-[var(--border)] px-6 py-4">
-            {error && (
-              <p className="text-sm text-[var(--danger-text)]">{error}</p>
-            )}
+            {error && <p className="text-sm text-[var(--danger-text)]">{error}</p>}
             {!error && <div />}
 
             <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="h-9 rounded-lg border border-[var(--border)] px-4 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
-              >
+              <button type="button" onClick={onCancel}
+                className="h-9 rounded-lg border border-[var(--border)] px-4 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
                 {isReadOnly ? 'Close' : 'Cancel'}
               </button>
               {!isReadOnly && (
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="h-9 rounded-lg bg-[var(--primary)] px-5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
-                >
+                <button type="submit" disabled={loading}
+                  className="h-9 rounded-lg bg-[var(--primary)] px-5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:cursor-not-allowed disabled:opacity-50">
                   {loading ? 'Saving…' : existingBid ? 'Send revision' : 'Submit offer'}
                 </button>
               )}

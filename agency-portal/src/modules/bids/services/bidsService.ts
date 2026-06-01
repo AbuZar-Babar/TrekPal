@@ -47,6 +47,9 @@ export const bidsService = {
     price: number;
     description?: string;
     offerDetails: OfferDetails;
+    hotelId?: string;
+    roomId?: string;
+    vehicleId?: string;
   }): Promise<Bid> {
     try {
       const response = await apiClient.post('/bids', data);
@@ -61,12 +64,18 @@ export const bidsService = {
     price: number;
     description?: string;
     offerDetails: OfferDetails;
+    hotelId?: string;
+    roomId?: string;
+    vehicleId?: string;
   }): Promise<Bid> {
     try {
       const response = await apiClient.post(`/bids/${data.bidId}/counteroffer`, {
         price: data.price,
         description: data.description,
         offerDetails: data.offerDetails,
+        hotelId: data.hotelId,
+        roomId: data.roomId,
+        vehicleId: data.vehicleId,
       });
       return response.data.data;
     } catch (error: any) {

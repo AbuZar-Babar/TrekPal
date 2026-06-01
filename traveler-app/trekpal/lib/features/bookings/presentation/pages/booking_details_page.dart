@@ -9,7 +9,9 @@ import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/participant_roster.dart';
 import '../../../chat/presentation/pages/chat_room_page.dart';
 import '../../../complaints/presentation/pages/complaint_form_page.dart';
+import '../../../reviews/domain/entities/review_entities.dart';
 import '../../../reviews/presentation/pages/review_form_page.dart';
+import '../../../reviews/presentation/providers/reviews_provider.dart';
 import '../../domain/entities/booking_entities.dart';
 import '../providers/bookings_provider.dart';
 
@@ -34,6 +36,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         await context.read<BookingsProvider>().fetchBookingById(
+          widget.bookingId,
+        );
+      } catch (_) {}
+      // Load existing review for this booking
+      try {
+        await context.read<ReviewsProvider>().loadReviewForBooking(
           widget.bookingId,
         );
       } catch (_) {}
@@ -90,6 +98,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     final BookingsProvider provider = context.watch<BookingsProvider>();
+    final ReviewsProvider reviewsProvider = context.watch<ReviewsProvider>();
     final BookingEntity? booking =
         provider.selectedBooking?.id == widget.bookingId
         ? provider.selectedBooking
@@ -129,6 +138,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           final DateTime now = DateTime.now();
           final bool canCancelTime = !now.isAfter(cancelCutoff);
           final bool canCancel = canCancelStatus && canCancelTime;
+          final ReviewEntity? existingReview =
+              reviewsProvider.reviewForBooking(widget.bookingId);
+          final bool isCompleted = booking.status == 'COMPLETED';
+
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: <Widget>[
@@ -336,24 +349,29 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         },
                       ),
                     ),
-                  SizedBox(
-                    width: 156,
-                    child: _ActionCard(
-                      icon: Icons.rate_review_outlined,
-                      label: 'Review',
-                      subtitle: 'Mockup',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => ReviewFormPage(
-                              bookingId: booking.id,
-                              subject: destination,
+                  if (isCompleted && existingReview == null)
+                    SizedBox(
+                      width: 156,
+                      child: _ActionCard(
+                        icon: Icons.star_rounded,
+                        label: 'Rate trip',
+                        subtitle: 'Share feedback',
+                        highlight: true,
+                        onTap: () async {
+                          final bool? submitted = await Navigator.of(context).push<bool>(
+                            MaterialPageRoute<bool>(
+                              builder: (_) => ReviewFormPage(
+                                bookingId: booking.id,
+                                destination: destination,
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                          if (submitted == true && context.mounted) {
+                            // Review was submitted — provider already updated
+                          }
+                        },
+                      ),
                     ),
-                  ),
                   SizedBox(
                     width: 156,
                     child: _ActionCard(
@@ -405,6 +423,16 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   ),
                 ],
               ),
+
+              // ── Your review (after submission) ──────────────
+              if (isCompleted && existingReview != null) ...<Widget>[
+                const SizedBox(height: 18),
+                ReviewCard(
+                  rating: existingReview.rating,
+                  comment: existingReview.comment,
+                  createdAt: existingReview.createdAt,
+                ),
+              ],
             ],
           );
         },
@@ -419,19 +447,33 @@ class _ActionCard extends StatelessWidget {
     required this.label,
     required this.subtitle,
     required this.onTap,
+    this.highlight = false,
   });
 
   final IconData icon;
   final String label;
   final String subtitle;
   final VoidCallback onTap;
+  final bool highlight;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
+    final bool dark = theme.brightness == Brightness.dark;
+
+    final Color iconBg = highlight
+        ? Colors.amber.withValues(alpha: dark ? 0.22 : 0.14)
+        : colorScheme.primary.withValues(alpha: 0.12);
+    final Color iconFg = highlight ? Colors.amber.shade700 : colorScheme.primary;
 
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+        side: highlight
+            ? BorderSide(color: Colors.amber.withValues(alpha: 0.4))
+            : BorderSide.none,
+      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(30),
         onTap: onTap,
@@ -440,8 +482,8 @@ class _ActionCard extends StatelessWidget {
           child: Column(
             children: <Widget>[
               CircleAvatar(
-                backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-                foregroundColor: colorScheme.primary,
+                backgroundColor: iconBg,
+                foregroundColor: iconFg,
                 child: Icon(icon),
               ),
               const SizedBox(height: 12),

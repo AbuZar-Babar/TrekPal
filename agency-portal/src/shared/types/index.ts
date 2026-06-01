@@ -196,6 +196,24 @@ export interface OfferDetails {
   extras: string;
 }
 
+export interface BidHotelInfo {
+  id: string;
+  name: string;
+  city: string;
+}
+
+export interface BidRoomInfo {
+  id: string;
+  type: string;
+}
+
+export interface BidVehicleInfo {
+  id: string;
+  make: string;
+  model: string;
+  type: string;
+}
+
 export interface BidRevision {
   id: string;
   bidId: string;
@@ -204,6 +222,12 @@ export interface BidRevision {
   price: number;
   description: string | null;
   offerDetails: OfferDetails;
+  hotelId: string | null;
+  roomId: string | null;
+  vehicleId: string | null;
+  hotel: BidHotelInfo | null;
+  room: BidRoomInfo | null;
+  vehicle: BidVehicleInfo | null;
   createdAt: string;
 }
 
@@ -220,8 +244,12 @@ export interface TripRequest {
   tripSpecs: TripSpecs;
   status: 'PENDING' | 'ACCEPTED' | 'CANCELLED';
   bidsCount: number;
+  hotelId?: string | null;
+  roomId?: string | null;
+  vehicleId?: string | null;
   hotel?: Hotel | null;
-  room?: any | null;
+  room?: { id: string; type: string; price: number } | null;
+  vehicle?: { id: string; type: string; make: string; model: string; pricePerDay: number } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -234,6 +262,12 @@ export interface Bid {
   price: number;
   description: string | null;
   offerDetails: OfferDetails;
+  hotelId: string | null;
+  roomId: string | null;
+  vehicleId: string | null;
+  hotel: BidHotelInfo | null;
+  room: BidRoomInfo | null;
+  vehicle: BidVehicleInfo | null;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   awaitingActionBy: 'TRAVELER' | 'AGENCY' | 'NONE';
   revisionCount: number;

@@ -162,6 +162,28 @@ class TripRequestDetailsPage extends StatelessWidget {
               icon: Icons.star_outline_rounded,
             ),
           ],
+          if (request.hotelId != null) ...<Widget>[
+            const SizedBox(height: 12),
+            _detailCard(
+              context,
+              title: 'Preferred hotel',
+              value: [
+                request.hotelName ?? 'Selected hotel',
+                if (request.roomType != null) request.roomType!,
+              ].join(' · '),
+              icon: Icons.hotel_outlined,
+            ),
+          ],
+          if (request.vehicleId != null &&
+              request.vehicleModel != null) ...<Widget>[
+            const SizedBox(height: 12),
+            _detailCard(
+              context,
+              title: 'Preferred vehicle',
+              value: request.vehicleModel!,
+              icon: Icons.directions_car_outlined,
+            ),
+          ],
           if (request.description != null &&
               request.description!.trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: 12),

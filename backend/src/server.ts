@@ -18,6 +18,7 @@ import bidRoutes from './modules/bids/bid.routes';
 import bookingRoutes from './modules/bookings/booking.routes';
 import chatRoutes from './modules/chat/chat.routes';
 import adminRoutes from './modules/admin/admin.routes';
+import reviewRoutes from './modules/reviews/review.routes';
 
 /**
  * Initialize Express application
@@ -115,6 +116,7 @@ app.use('/api/bids', bidRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Error handling
 app.use(notFoundHandler);

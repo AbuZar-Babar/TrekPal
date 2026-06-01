@@ -96,6 +96,82 @@ class BidRevisionModel extends BidRevisionEntity {
       description: json['description'] as String?,
       offerDetails: OfferDetailsModel.fromJson(json['offerDetails']),
       createdAt: _parseTripDate(json['createdAt']),
+      hotelId: json['hotel']?['id'] as String?,
+      hotelName: json['hotel']?['name'] as String?,
+      roomId: json['room']?['id'] as String?,
+      roomType: json['room']?['type'] as String?,
+      vehicleId: json['vehicle']?['id'] as String?,
+      vehicleModel: json['vehicle'] != null
+          ? '${json['vehicle']['make'] ?? ''} ${json['vehicle']['model'] ?? ''}'.trim()
+          : null,
+    );
+  }
+}
+
+class BidModel extends BidEntity {
+  const BidModel({
+    required super.id,
+    required super.tripRequestId,
+    required super.agencyId,
+    required super.agencyName,
+    required super.price,
+    required super.offerDetails,
+    required super.status,
+    required super.awaitingActionBy,
+    required super.revisionCount,
+    required super.createdAt,
+    required super.updatedAt,
+    super.description,
+    super.tripDestination,
+    super.tripStartDate,
+    super.tripEndDate,
+    super.revisions,
+    super.hotelId,
+    super.hotelName,
+    super.roomId,
+    super.roomType,
+    super.vehicleId,
+    super.vehicleModel,
+  });
+
+  factory BidModel.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> revisions =
+        json['revisions'] as List<dynamic>? ?? const <dynamic>[];
+
+    return BidModel(
+      id: json['id'] as String? ?? '',
+      tripRequestId: json['tripRequestId'] as String? ?? '',
+      agencyId: json['agencyId'] as String? ?? '',
+      agencyName: json['agencyName'] as String? ?? 'Agency',
+      price: (json['price'] as num?)?.toDouble() ?? 0,
+      description: json['description'] as String?,
+      offerDetails: OfferDetailsModel.fromJson(json['offerDetails']),
+      status: json['status'] as String? ?? 'PENDING',
+      awaitingActionBy: json['awaitingActionBy'] as String? ?? 'NONE',
+      revisionCount: json['revisionCount'] as int? ?? revisions.length,
+      createdAt: _parseTripDate(json['createdAt']),
+      updatedAt: _parseTripDate(json['updatedAt']),
+      tripDestination: json['tripDestination'] as String?,
+      tripStartDate: json['tripStartDate'] == null
+          ? null
+          : _parseTripDate(json['tripStartDate']),
+      tripEndDate: json['tripEndDate'] == null
+          ? null
+          : _parseTripDate(json['tripEndDate']),
+      revisions: revisions
+          .map(
+            (dynamic item) =>
+                BidRevisionModel.fromJson(item as Map<String, dynamic>),
+          )
+          .toList(),
+      hotelId: json['hotel']?['id'] as String?,
+      hotelName: json['hotel']?['name'] as String?,
+      roomId: json['room']?['id'] as String?,
+      roomType: json['room']?['type'] as String?,
+      vehicleId: json['vehicle']?['id'] as String?,
+      vehicleModel: json['vehicle'] != null
+          ? '${json['vehicle']['make'] ?? ''} ${json['vehicle']['model'] ?? ''}'.trim()
+          : null,
     );
   }
 }
@@ -145,61 +221,10 @@ class TripRequestModel extends TripRequestEntity {
       roomId: json['room']?['id'] as String?,
       roomType: json['room']?['type'] as String?,
       vehicleId: json['vehicle']?['id'] as String?,
-      vehicleModel: json['vehicle']?['model'] as String?,
+      vehicleModel: json['vehicle'] != null
+          ? '${json['vehicle']['make'] ?? ''} ${json['vehicle']['model'] ?? ''}'.trim()
+          : null,
     );
   }
 }
 
-class BidModel extends BidEntity {
-  const BidModel({
-    required super.id,
-    required super.tripRequestId,
-    required super.agencyId,
-    required super.agencyName,
-    required super.price,
-    required super.offerDetails,
-    required super.status,
-    required super.awaitingActionBy,
-    required super.revisionCount,
-    required super.createdAt,
-    required super.updatedAt,
-    super.description,
-    super.tripDestination,
-    super.tripStartDate,
-    super.tripEndDate,
-    super.revisions,
-  });
-
-  factory BidModel.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> revisions =
-        json['revisions'] as List<dynamic>? ?? const <dynamic>[];
-
-    return BidModel(
-      id: json['id'] as String? ?? '',
-      tripRequestId: json['tripRequestId'] as String? ?? '',
-      agencyId: json['agencyId'] as String? ?? '',
-      agencyName: json['agencyName'] as String? ?? 'Agency',
-      price: (json['price'] as num?)?.toDouble() ?? 0,
-      description: json['description'] as String?,
-      offerDetails: OfferDetailsModel.fromJson(json['offerDetails']),
-      status: json['status'] as String? ?? 'PENDING',
-      awaitingActionBy: json['awaitingActionBy'] as String? ?? 'NONE',
-      revisionCount: json['revisionCount'] as int? ?? revisions.length,
-      createdAt: _parseTripDate(json['createdAt']),
-      updatedAt: _parseTripDate(json['updatedAt']),
-      tripDestination: json['tripDestination'] as String?,
-      tripStartDate: json['tripStartDate'] == null
-          ? null
-          : _parseTripDate(json['tripStartDate']),
-      tripEndDate: json['tripEndDate'] == null
-          ? null
-          : _parseTripDate(json['tripEndDate']),
-      revisions: revisions
-          .map(
-            (dynamic item) =>
-                BidRevisionModel.fromJson(item as Map<String, dynamic>),
-          )
-          .toList(),
-    );
-  }
-}

@@ -106,6 +106,12 @@ class BidRevisionEntity {
     required this.offerDetails,
     required this.createdAt,
     this.description,
+    this.hotelId,
+    this.hotelName,
+    this.roomId,
+    this.roomType,
+    this.vehicleId,
+    this.vehicleModel,
   });
 
   final String id;
@@ -116,6 +122,12 @@ class BidRevisionEntity {
   final String? description;
   final OfferDetailsEntity offerDetails;
   final DateTime createdAt;
+  final String? hotelId;
+  final String? hotelName;
+  final String? roomId;
+  final String? roomType;
+  final String? vehicleId;
+  final String? vehicleModel;
 }
 
 class TripRequestEntity {
@@ -233,6 +245,12 @@ class BidEntity {
     this.tripStartDate,
     this.tripEndDate,
     this.revisions = const <BidRevisionEntity>[],
+    this.hotelId,
+    this.hotelName,
+    this.roomId,
+    this.roomType,
+    this.vehicleId,
+    this.vehicleModel,
   });
 
   final String id;
@@ -251,6 +269,12 @@ class BidEntity {
   final DateTime? tripStartDate;
   final DateTime? tripEndDate;
   final List<BidRevisionEntity> revisions;
+  final String? hotelId;
+  final String? hotelName;
+  final String? roomId;
+  final String? roomType;
+  final String? vehicleId;
+  final String? vehicleModel;
 
   BidEntity copyWith({
     String? id,
@@ -270,6 +294,12 @@ class BidEntity {
     DateTime? tripStartDate,
     DateTime? tripEndDate,
     List<BidRevisionEntity>? revisions,
+    String? hotelId,
+    String? hotelName,
+    String? roomId,
+    String? roomType,
+    String? vehicleId,
+    String? vehicleModel,
   }) {
     return BidEntity(
       id: id ?? this.id,
@@ -288,6 +318,12 @@ class BidEntity {
       tripStartDate: tripStartDate ?? this.tripStartDate,
       tripEndDate: tripEndDate ?? this.tripEndDate,
       revisions: revisions ?? this.revisions,
+      hotelId: hotelId ?? this.hotelId,
+      hotelName: hotelName ?? this.hotelName,
+      roomId: roomId ?? this.roomId,
+      roomType: roomType ?? this.roomType,
+      vehicleId: vehicleId ?? this.vehicleId,
+      vehicleModel: vehicleModel ?? this.vehicleModel,
     );
   }
 }

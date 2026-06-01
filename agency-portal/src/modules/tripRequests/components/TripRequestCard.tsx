@@ -107,6 +107,31 @@ const TripRequestCard = ({
             </div>
           </div>
 
+          {(tripRequest.hotel || tripRequest.vehicle) && (
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)]">
+                Preferred:
+              </span>
+              {tripRequest.hotel && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--panel-subtle)] px-3 py-1 text-xs font-semibold text-[var(--text)]">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3 w-3 shrink-0">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2" />
+                  </svg>
+                  {tripRequest.hotel.name}
+                  {tripRequest.room ? ` · ${tripRequest.room.type}` : ''}
+                </span>
+              )}
+              {tripRequest.vehicle && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--panel-subtle)] px-3 py-1 text-xs font-semibold text-[var(--text)]">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3 w-3 shrink-0">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l1.5-5h11L19 13M5 13v5h2m12-5v5h-2M5 13h14M7 18a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z" />
+                  </svg>
+                  {tripRequest.vehicle.make} {tripRequest.vehicle.model}
+                </span>
+              )}
+            </div>
+          )}
+
           {(tripRequest.description || tripRequest.tripSpecs.specialRequirements) && (
             <div className="grid gap-3 lg:grid-cols-2">
               {tripRequest.description && (

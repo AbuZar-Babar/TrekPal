@@ -10,6 +10,7 @@ import BookingList from './modules/bookings/components/BookingList';
 import ChatPage from './modules/chat/components/ChatPage';
 import Dashboard from './modules/dashboard/components/Dashboard';
 import HotelList from './modules/hotels/components/HotelList';
+import ReviewsList from './modules/reviews/components/ReviewsList';
 import PackageForm from './modules/packages/components/PackageForm';
 import PackageList from './modules/packages/components/PackageList';
 import TripRequestList from './modules/tripRequests/components/TripRequestList';
@@ -153,6 +154,16 @@ function App() {
       <Route
         path="/hotels/:id/edit"
         element={<Navigate to="/hotels" replace />}
+      />
+      <Route
+        path="/reviews"
+        element={(
+          <ProtectedRoute>
+            <Layout>
+              <ReviewsList />
+            </Layout>
+          </ProtectedRoute>
+        )}
       />
       <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
       <Route path="/status" element={<Navigate to="/dashboard" replace />} />

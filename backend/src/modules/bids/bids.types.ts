@@ -74,12 +74,18 @@ export const createBidSchema = z.object({
   price: z.coerce.number().positive('Price must be greater than zero'),
   description: descriptionSchema,
   offerDetails: offerDetailsSchema.default(defaultOfferDetails),
+  hotelId: z.string().trim().optional(),
+  roomId: z.string().trim().optional(),
+  vehicleId: z.string().trim().optional(),
 });
 
 export const counterOfferSchema = z.object({
   price: z.coerce.number().positive('Price must be greater than zero'),
   description: descriptionSchema,
   offerDetails: offerDetailsSchema.default(defaultOfferDetails),
+  hotelId: z.string().trim().optional(),
+  roomId: z.string().trim().optional(),
+  vehicleId: z.string().trim().optional(),
 });
 
 export type OfferDetails = z.infer<typeof offerDetailsSchema>;
@@ -87,6 +93,24 @@ export type CreateBidInput = z.infer<typeof createBidSchema>;
 export type CounterOfferInput = z.infer<typeof counterOfferSchema>;
 export type AgencyBidFiltersInput = z.infer<typeof agencyBidFiltersSchema>;
 export type BidActorRole = typeof ROLES.TRAVELER | typeof ROLES.AGENCY;
+
+export interface BidHotelInfo {
+  id: string;
+  name: string;
+  city: string;
+}
+
+export interface BidRoomInfo {
+  id: string;
+  type: string;
+}
+
+export interface BidVehicleInfo {
+  id: string;
+  make: string;
+  model: string;
+  type: string;
+}
 
 export interface BidRevisionResponse {
   id: string;
@@ -96,6 +120,12 @@ export interface BidRevisionResponse {
   price: number;
   description: string | null;
   offerDetails: OfferDetails;
+  hotelId: string | null;
+  roomId: string | null;
+  vehicleId: string | null;
+  hotel: BidHotelInfo | null;
+  room: BidRoomInfo | null;
+  vehicle: BidVehicleInfo | null;
   createdAt: Date;
 }
 
@@ -107,6 +137,12 @@ export interface BidResponse {
   price: number;
   description: string | null;
   offerDetails: OfferDetails;
+  hotelId: string | null;
+  roomId: string | null;
+  vehicleId: string | null;
+  hotel: BidHotelInfo | null;
+  room: BidRoomInfo | null;
+  vehicle: BidVehicleInfo | null;
   status: string;
   awaitingActionBy: BidAwaitingAction;
   revisionCount: number;

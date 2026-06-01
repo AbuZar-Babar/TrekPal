@@ -334,6 +334,15 @@ class _BidThreadPageState extends State<BidThreadPage> {
                     ? 'Meals included'
                     : 'No meals',
               ),
+              if (agencyAuthored && revision.hotelId != null)
+                _OfferChip(
+                  label:
+                      '🏨 ${revision.hotelName ?? 'Hotel'}${revision.roomType != null ? ' · ${revision.roomType}' : ''}',
+                ),
+              if (agencyAuthored && revision.vehicleId != null)
+                _OfferChip(
+                  label: '🚗 ${revision.vehicleModel ?? 'Vehicle'}',
+                ),
             ],
           ),
         ],
@@ -465,6 +474,75 @@ class _BidThreadPageState extends State<BidThreadPage> {
                   child: Text(bid.description!),
                 ),
               ],
+
+              // ── Agency's proposed hotel/vehicle ──────────────
+              if (bid.hotelId != null || bid.vehicleId != null) ...<Widget>[
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.07),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Agency proposes',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.primary,
+                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (bid.hotelId != null) ...<Widget>[
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.hotel_outlined,
+                                size: 16, color: colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                bid.hotelName ?? 'Selected hotel',
+                                style: theme.textTheme.titleSmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (bid.roomType != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 24, top: 2),
+                            child: Text(
+                              bid.roomType!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                      ],
+                      if (bid.hotelId != null && bid.vehicleId != null)
+                        const SizedBox(height: 8),
+                      if (bid.vehicleId != null)
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.directions_car_outlined,
+                                size: 16, color: colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Text(
+                              bid.vehicleModel ?? 'Selected vehicle',
+                              style: theme.textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 16),
               _buildOfferLine(
                 title: 'Stay',

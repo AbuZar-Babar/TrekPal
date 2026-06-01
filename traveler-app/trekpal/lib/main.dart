@@ -51,6 +51,7 @@ import 'features/transport/data/datasources/transport_remote_datasource.dart';
 import 'features/transport/data/repositories/transport_repository_impl.dart';
 import 'features/transport/domain/usecases/get_vehicles_usecase.dart';
 import 'features/transport/presentation/providers/transport_provider.dart';
+import 'features/reviews/presentation/providers/reviews_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +89,8 @@ Future<void> main() async {
     remoteDataSource: TransportRemoteDataSourceImpl(apiClient: apiClient),
   );
 
+  final reviewsProvider = ReviewsProvider(apiClient: apiClient);
+
   runApp(
     TrekPalApp(
       authProvider: AuthProvider(
@@ -123,6 +126,7 @@ Future<void> main() async {
       transportProvider: TransportProvider(
         getVehiclesUseCase: GetVehiclesUseCase(transportRepository),
       ),
+      reviewsProvider: reviewsProvider,
       marketplaceLiveService: marketplaceLiveService,
       themeController: themeController,
     ),
@@ -139,6 +143,7 @@ class TrekPalApp extends StatelessWidget {
     required this.chatProvider,
     required this.hotelsProvider,
     required this.transportProvider,
+    required this.reviewsProvider,
     required this.marketplaceLiveService,
     required this.themeController,
   });
@@ -150,6 +155,7 @@ class TrekPalApp extends StatelessWidget {
   final ChatProvider chatProvider;
   final HotelsProvider hotelsProvider;
   final TransportProvider transportProvider;
+  final ReviewsProvider reviewsProvider;
   final MarketplaceLiveService marketplaceLiveService;
   final ThemeController themeController;
   static final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
@@ -168,6 +174,7 @@ class TrekPalApp extends StatelessWidget {
         ChangeNotifierProvider<ChatProvider>.value(value: chatProvider),
         ChangeNotifierProvider<HotelsProvider>.value(value: hotelsProvider),
         ChangeNotifierProvider<TransportProvider>.value(value: transportProvider),
+        ChangeNotifierProvider<ReviewsProvider>.value(value: reviewsProvider),
         ChangeNotifierProvider<ThemeController>.value(value: themeController),
       ],
       child: Consumer<ThemeController>(

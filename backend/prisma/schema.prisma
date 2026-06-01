@@ -127,6 +127,7 @@ model Hotel {
   services    HotelService[]
   rooms       Room[]
   bookings    Booking[]
+  bids        Bid[]    @relation("BidHotel")
   reviews     Review[]
   packages    Package[]
   tripRequests TripRequest[]
@@ -199,6 +200,7 @@ model Room {
   // Relations
   hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   bookings    Booking[]
+  bids        Bid[]    @relation("BidRoom")
   availabilities RoomAvailability[]
   tripRequests TripRequest[]
   packageAllocations PackageRoomAllocation[]
@@ -229,6 +231,7 @@ model Vehicle {
   driver      Driver @relation(fields: [driverId], references: [id], onDelete: Restrict)
   vehicleProvider VehicleProvider @relation(fields: [vehicleProviderId], references: [id], onDelete: Cascade)
   bookings    Booking[]
+  bids        Bid[]    @relation("BidVehicle")
   packages    Package[]
   tripRequests TripRequest[]
 
@@ -316,6 +319,9 @@ model Bid {
   id            String   @id @default(cuid())
   tripRequestId String
   agencyId      String
+  hotelId       String?
+  roomId        String?
+  vehicleId     String?
   price         Float
   description   String?
   offerDetails  Json?
@@ -327,6 +333,9 @@ model Bid {
   // Relations
   tripRequest   TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
   agency        Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  hotel         Hotel?      @relation("BidHotel",   fields: [hotelId],   references: [id], onDelete: SetNull)
+  room          Room?       @relation("BidRoom",    fields: [roomId],    references: [id], onDelete: SetNull)
+  vehicle       Vehicle?    @relation("BidVehicle", fields: [vehicleId], references: [id], onDelete: SetNull)
   booking       Booking?
   revisions     BidRevision[]
 
@@ -338,6 +347,9 @@ model BidRevision {
   bidId        String
   actorRole    String
   actorId      String
+  hotelId      String?
+  roomId       String?
+  vehicleId    String?
   price        Float
   description  String?
   offerDetails Json?

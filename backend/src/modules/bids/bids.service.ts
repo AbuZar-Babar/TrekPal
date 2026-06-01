@@ -19,8 +19,15 @@ type BidActor =
   | { role: typeof ROLES.AGENCY; agencyId: string }
   | { role: typeof ROLES.ADMIN };
 
+const hotelSelect = { select: { id: true, name: true, city: true } };
+const roomSelect  = { select: { id: true, type: true } };
+const vehicleSelect = { select: { id: true, make: true, model: true, type: true } };
+
 const bidSummaryInclude = {
   agency: { select: { name: true } },
+  hotel: hotelSelect,
+  room: roomSelect,
+  vehicle: vehicleSelect,
   tripRequest: {
     select: {
       destination: true,
@@ -37,6 +44,9 @@ const bidDetailInclude = {
   ...bidSummaryInclude,
   revisions: {
     orderBy: { createdAt: 'asc' as const },
+    include: {
+      // BidRevision doesn't have relation objects, just store IDs
+    },
   },
 };
 
@@ -49,6 +59,12 @@ function mapBidRevision(revision: any): BidRevisionResponse {
     price: revision.price,
     description: revision.description,
     offerDetails: normalizeOfferDetails(revision.offerDetails),
+    hotelId: revision.hotelId ?? null,
+    roomId: revision.roomId ?? null,
+    vehicleId: revision.vehicleId ?? null,
+    hotel: revision.hotel ?? null,
+    room: revision.room ?? null,
+    vehicle: revision.vehicle ?? null,
     createdAt: revision.createdAt,
   };
 }
@@ -62,6 +78,12 @@ function mapBid(bid: any): BidResponse {
     price: bid.price,
     description: bid.description,
     offerDetails: normalizeOfferDetails(bid.offerDetails),
+    hotelId: bid.hotelId ?? null,
+    roomId: bid.roomId ?? null,
+    vehicleId: bid.vehicleId ?? null,
+    hotel: bid.hotel ?? null,
+    room: bid.room ?? null,
+    vehicle: bid.vehicle ?? null,
     status: bid.status,
     awaitingActionBy: normalizeAwaitingAction(bid.awaitingActionBy),
     revisionCount: bid._count?.revisions ?? bid.revisions?.length ?? 0,
@@ -176,6 +198,9 @@ export class BidsService {
           price: input.price,
           description: input.description ?? null,
           offerDetails: offerDetailsToJson(input.offerDetails),
+          hotelId: input.hotelId ?? null,
+          roomId: input.roomId ?? null,
+          vehicleId: input.vehicleId ?? null,
           awaitingActionBy: BID_AWAITING_ACTION.TRAVELER,
           status: BID_STATUS.PENDING,
         },
@@ -189,6 +214,9 @@ export class BidsService {
           price: input.price,
           description: input.description ?? null,
           offerDetails: offerDetailsToJson(input.offerDetails),
+          hotelId: input.hotelId ?? null,
+          roomId: input.roomId ?? null,
+          vehicleId: input.vehicleId ?? null,
         },
       });
 
@@ -376,6 +404,9 @@ export class BidsService {
       throw new Error('It is not your turn to counteroffer on this bid thread');
     }
 
+    // Only the agency can update hotel/vehicle selection on a revision
+    const isAgency = actorRole === ROLES.AGENCY;
+
     const updatedBid = await prisma.$transaction(async (tx: any) => {
       await tx.bidRevision.create({
         data: {
@@ -385,6 +416,9 @@ export class BidsService {
           price: input.price,
           description: input.description ?? null,
           offerDetails: offerDetailsToJson(input.offerDetails),
+          hotelId: isAgency ? (input.hotelId ?? null) : undefined,
+          roomId: isAgency ? (input.roomId ?? null) : undefined,
+          vehicleId: isAgency ? (input.vehicleId ?? null) : undefined,
         },
       });
 
@@ -394,6 +428,11 @@ export class BidsService {
           price: input.price,
           description: input.description ?? null,
           offerDetails: offerDetailsToJson(input.offerDetails),
+          ...(isAgency && {
+            hotelId: input.hotelId ?? null,
+            roomId: input.roomId ?? null,
+            vehicleId: input.vehicleId ?? null,
+          }),
           awaitingActionBy: negotiationState.nextAwaitingAction,
         },
         include: bidDetailInclude,
@@ -432,11 +471,7 @@ export class BidsService {
     const bid = await prisma.bid.findUnique({
       where: { id: bidId },
       include: {
-        agency: {
-          select: {
-            name: true,
-          },
-        },
+        agency: { select: { name: true } },
         tripRequest: true,
       },
     });
@@ -539,9 +574,14 @@ export class BidsService {
         data: { status: 'ACCEPTED' },
       });
 
-      const driverSnapshot = await bookingAllocationService.getVehicleDriverSnapshot(bid.tripRequest.vehicleId);
+      // Agency's hotel/vehicle selection takes priority over traveler's preference
+      const resolvedHotelId   = bid.hotelId   ?? bid.tripRequest.hotelId;
+      const resolvedRoomId    = bid.roomId    ?? bid.tripRequest.roomId;
+      const resolvedVehicleId = bid.vehicleId ?? bid.tripRequest.vehicleId;
+
+      const driverSnapshot = await bookingAllocationService.getVehicleDriverSnapshot(resolvedVehicleId);
       await bookingAllocationService.assertVehicleAndDriverAvailability({
-        vehicleId: bid.tripRequest.vehicleId,
+        vehicleId: resolvedVehicleId,
         driverId: driverSnapshot.driverId,
         startDate: bid.tripRequest.startDate,
         endDate: bid.tripRequest.endDate,
@@ -553,9 +593,9 @@ export class BidsService {
           agencyId: bid.agencyId,
           tripRequestId: bid.tripRequestId,
           bidId: bid.id,
-          hotelId: bid.tripRequest.hotelId,
-          roomId: bid.tripRequest.roomId,
-          vehicleId: bid.tripRequest.vehicleId,
+          hotelId: resolvedHotelId,
+          roomId: resolvedRoomId,
+          vehicleId: resolvedVehicleId,
           driverId: driverSnapshot.driverId,
           driverNameSnapshot: driverSnapshot.driverNameSnapshot,
           driverPhoneSnapshot: driverSnapshot.driverPhoneSnapshot,

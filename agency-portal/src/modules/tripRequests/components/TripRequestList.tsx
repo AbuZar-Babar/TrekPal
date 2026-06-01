@@ -83,15 +83,16 @@ const TripRequestList = () => {
     try { await dispatch(fetchBidThread(existing.id) as any).unwrap(); } catch { /* handled */ }
   };
 
-  const handleBidSubmit = async ({ price, description, offerDetails }: {
+  const handleBidSubmit = async ({ price, description, offerDetails, hotelId, roomId, vehicleId }: {
     price: number; description?: string; offerDetails: OfferDetails;
+    hotelId?: string; roomId?: string; vehicleId?: string;
   }) => {
     if (!selected) return;
     try {
       if (modalBid) {
-        await dispatch(createCounterOffer({ bidId: modalBid.id, price, description, offerDetails }) as any).unwrap();
+        await dispatch(createCounterOffer({ bidId: modalBid.id, price, description, offerDetails, hotelId, roomId, vehicleId }) as any).unwrap();
       } else {
-        await dispatch(createBid({ tripRequestId: selected.id, price, description, offerDetails }) as any).unwrap();
+        await dispatch(createBid({ tripRequestId: selected.id, price, description, offerDetails, hotelId, roomId, vehicleId }) as any).unwrap();
       }
       setSelected(null);
       dispatch(clearSelectedBid());
@@ -244,6 +245,29 @@ const TripRequestList = () => {
                     <div className="text-xs font-medium text-[var(--text)]">{tr.bidsCount}</div>
                   </div>
                 </div>
+
+                {/* Preferred hotel / vehicle */}
+                {(tr.hotel || tr.vehicle) && (
+                  <div className="flex flex-wrap items-center gap-2 border-t border-[var(--border)] px-5 py-2.5">
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-soft)]">Preferred:</span>
+                    {tr.hotel && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--panel-subtle)] px-2.5 py-0.5 text-[10px] font-semibold text-[var(--text)]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3 w-3 shrink-0">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2" />
+                        </svg>
+                        {tr.hotel.name}{tr.room ? ` · ${tr.room.type}` : ''}
+                      </span>
+                    )}
+                    {tr.vehicle && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--panel-subtle)] px-2.5 py-0.5 text-[10px] font-semibold text-[var(--text)]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3 w-3 shrink-0">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l1.5-5h11L19 13M5 13v5h2m12-5v5h-2M5 13h14M7 18a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z" />
+                        </svg>
+                        {tr.vehicle.make} {tr.vehicle.model}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Description + action */}
                 {(tr.description || tr.tripSpecs.specialRequirements) && (

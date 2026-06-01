@@ -57,6 +57,9 @@ export const createBid = createAsyncThunk(
     price: number;
     description?: string;
     offerDetails: OfferDetails;
+    hotelId?: string;
+    roomId?: string;
+    vehicleId?: string;
   }) => {
     return await bidsService.createBid(data);
   },
@@ -69,6 +72,9 @@ export const createCounterOffer = createAsyncThunk(
     price: number;
     description?: string;
     offerDetails: OfferDetails;
+    hotelId?: string;
+    roomId?: string;
+    vehicleId?: string;
   }) => {
     return await bidsService.createCounterOffer(data);
   },

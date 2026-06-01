@@ -221,6 +221,28 @@ class _BidsViewPageState extends State<BidsViewPage> {
                               ),
                             ],
                           ),
+                          // Agency's proposed hotel/vehicle
+                          if (bid.hotelId != null || bid.vehicleId != null) ...<Widget>[
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
+                              children: <Widget>[
+                                if (bid.hotelId != null)
+                                  _summaryPill(
+                                    context,
+                                    Icons.hotel_outlined,
+                                    '${bid.hotelName ?? 'Hotel'}${bid.roomType != null ? ' · ${bid.roomType}' : ''}',
+                                  ),
+                                if (bid.vehicleId != null)
+                                  _summaryPill(
+                                    context,
+                                    Icons.directions_car_outlined,
+                                    bid.vehicleModel ?? 'Vehicle',
+                                  ),
+                              ],
+                            ),
+                          ],
                           if (bid.description != null &&
                               bid.description!.trim().isNotEmpty) ...<Widget>[
                             const SizedBox(height: 12),
