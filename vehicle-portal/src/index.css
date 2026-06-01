@@ -1,1 +1,88 @@
 @import "../../shared/ui/styles/provider-portal.css";
+
+/* ── Vehicle portal layout overrides ────────────────────────────────────── */
+@layer components {
+  .vp-nav-group {
+    padding: 0.75rem 0.85rem 0.3rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+  }
+
+  html[data-portal='vehicle'] .portal-sidebar-desktop {
+    width: 220px;
+  }
+
+  html[data-portal='vehicle'] .portal-brand {
+    padding: 1rem 1rem 0.875rem;
+  }
+
+  html[data-portal='vehicle'] .portal-brand-mark {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+  }
+
+  html[data-portal='vehicle'] .portal-brand-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  html[data-portal='vehicle'] .portal-brand-subtitle {
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    margin-top: 0.15rem;
+  }
+
+  html[data-portal='vehicle'] .portal-nav {
+    padding: 0.625rem;
+    gap: 0.125rem;
+  }
+
+  html[data-portal='vehicle'] .portal-nav-link {
+    padding: 0.5rem 0.65rem;
+    border-radius: 7px;
+    font-size: 0.8125rem;
+    gap: 0.6rem;
+    transition: background-color 120ms ease, color 120ms ease;
+  }
+
+  html[data-portal='vehicle'] .portal-nav-link:hover {
+    transform: none;
+  }
+
+  html[data-portal='vehicle'] .portal-sidebar-footer {
+    padding: 0.75rem;
+  }
+
+  html[data-portal='vehicle'] .portal-sidebar-logout {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8125rem;
+    border-radius: 7px;
+  }
+
+  html[data-portal='vehicle'] .portal-header-inner {
+    padding: 0.6rem 1.25rem;
+    min-height: 3.25rem;
+  }
+
+  html[data-portal='vehicle'] .portal-icon-btn {
+    border-radius: 8px;
+  }
+
+  html[data-portal='vehicle'] .portal-user-card {
+    border-radius: 10px;
+    padding: 0.4rem 0.6rem;
+  }
+
+  html[data-portal='vehicle'] .portal-avatar {
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+  }
+}

@@ -5,6 +5,107 @@
 @config "../tailwind.config.js";
 
 
+/* ── Auth page layout ────────────────────────────────────────────────────── */
+@layer components {
+  .auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--tp-primary) 8%, transparent), transparent),
+      var(--tp-bg);
+  }
+
+  html[data-theme='dark'] .auth-page {
+    background:
+      radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--tp-primary) 14%, transparent), transparent),
+      var(--tp-bg);
+  }
+
+  .auth-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.5rem;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--tp-border);
+    background: color-mix(in srgb, var(--tp-panel) 90%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .auth-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--tp-text);
+  }
+
+  .auth-logo-mark {
+    display: inline-flex;
+    width: 1.875rem;
+    height: 1.875rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--tp-primary);
+    color: #fff;
+  }
+
+  .auth-logo-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--tp-text);
+  }
+
+  .auth-logo-tag {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--tp-text-soft);
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--tp-border);
+    border-radius: 999px;
+  }
+
+  .auth-body {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3rem 1rem 4rem;
+  }
+
+  .auth-body-center {
+    align-items: center;
+  }
+
+  .auth-card {
+    width: 100%;
+    background: var(--tp-panel);
+    border: 1px solid var(--tp-border);
+    border-radius: 16px;
+    box-shadow: var(--tp-shadow-strong);
+    padding: 2rem;
+  }
+
+  @media (min-width: 640px) {
+    .auth-card {
+      padding: 2.5rem;
+    }
+  }
+
+  .auth-field-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--tp-text-muted);
+  }
+}
+
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
@@ -45,7 +146,12 @@
   }
   
   .btn-primary {
-    @apply px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed active:scale-95;
+    @apply px-4 py-2 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed;
+    background: var(--tp-primary);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.9;
   }
 
   .btn-secondary {
@@ -145,6 +251,101 @@
   .card:hover,
   .portal-partner-card:hover {
     transform: none;
+  }
+}
+
+/* ── Hotel portal sidebar density ───────────────────────────────────────── */
+@layer components {
+  /* Nav group label */
+  .hp-nav-group {
+    padding: 0.75rem 0.85rem 0.3rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tp-text-soft);
+  }
+
+  /* Compact sidebar for hotel portal */
+  html[data-portal='hotel'] .portal-sidebar-desktop {
+    width: 220px;
+  }
+
+  html[data-portal='hotel'] .portal-brand {
+    padding: 1rem 1rem 0.875rem;
+    border-bottom: 1px solid var(--tp-border);
+  }
+
+  html[data-portal='hotel'] .portal-brand-mark {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--tp-primary);
+    color: #fff;
+  }
+
+  html[data-portal='hotel'] .portal-brand-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  html[data-portal='hotel'] .portal-brand-subtitle {
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    margin-top: 0.15rem;
+  }
+
+  html[data-portal='hotel'] .portal-nav {
+    padding: 0.625rem;
+    gap: 0.125rem;
+  }
+
+  html[data-portal='hotel'] .portal-nav-link {
+    padding: 0.5rem 0.65rem;
+    border-radius: 7px;
+    font-size: 0.8125rem;
+    gap: 0.6rem;
+    transition: background-color 120ms ease, color 120ms ease;
+  }
+
+  html[data-portal='hotel'] .portal-nav-link:hover {
+    transform: none;
+  }
+
+  html[data-portal='hotel'] .portal-sidebar-footer {
+    padding: 0.75rem;
+  }
+
+  html[data-portal='hotel'] .portal-sidebar-logout {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8125rem;
+    border-radius: 7px;
+  }
+
+  html[data-portal='hotel'] .portal-header {
+    border-bottom: 1px solid var(--tp-border);
+    background: color-mix(in srgb, var(--tp-canvas, var(--tp-bg)) 84%, transparent);
+  }
+
+  html[data-portal='hotel'] .portal-header-inner {
+    padding: 0.6rem 1.25rem;
+    min-height: 3.25rem;
+  }
+
+  html[data-portal='hotel'] .portal-icon-btn {
+    border-radius: 8px;
+  }
+
+  html[data-portal='hotel'] .portal-user-card {
+    border-radius: 10px;
+    padding: 0.4rem 0.6rem;
+  }
+
+  html[data-portal='hotel'] .portal-avatar {
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
   }
 }
 

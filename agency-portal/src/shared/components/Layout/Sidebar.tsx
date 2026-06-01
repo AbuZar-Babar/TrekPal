@@ -23,8 +23,7 @@ const workNav: NavItem[] = [
 
 const manageNav: NavItem[] = [
   { path: '/packages', label: 'Offers',      shortLabel: 'Offers',   icon: ic('M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10') },
-  { path: '/hotels',   label: 'Hotels',      shortLabel: 'Hotels',   icon: ic('M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2') },
-  { path: '/transport',label: 'Vehicles',    shortLabel: 'Vehicles', icon: ic('M5 13l1.5-5h11L19 13M5 13v5h2m12-5v5h-2M5 13h14') },
+  { path: '/hotels',   label: 'Marketplace', shortLabel: 'Marketplace', icon: ic('M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2') },
 ];
 
 const allNav = [...overviewNav, ...workNav, ...manageNav];

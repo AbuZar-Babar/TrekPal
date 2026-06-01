@@ -4,137 +4,165 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import AuthShell from './AuthShell';
 import { login } from '../store/authSlice';
-import {
-  ValidationErrors,
-  validateEmail,
-  validatePassword,
-} from '../../../shared/utils/validators';
+import { ValidationErrors, validateEmail, validatePassword } from '../../../shared/utils/validators';
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [showPw, setShowPw]     = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [errors, setErrors]     = useState<ValidationErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch  = useDispatch();
+  const navigate  = useNavigate();
 
-  const validateForm = (): boolean => {
-    const nextErrors: ValidationErrors = {};
-
-    const emailError = validateEmail(email);
-    if (emailError) {
-      nextErrors.email = emailError;
-    }
-
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      nextErrors.password = passwordError;
-    }
-
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+  const validate = (): boolean => {
+    const next: ValidationErrors = {};
+    const emailErr = validateEmail(email);
+    if (emailErr) next.email = emailErr;
+    const pwErr = validatePassword(password);
+    if (pwErr) next.password = pwErr;
+    setErrors(next);
+    return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setFormError(null);
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validate()) return;
     setLoading(true);
-
     try {
       await dispatch(login({ email: email.trim(), password }) as any).unwrap();
       navigate('/dashboard');
-    } catch (error: any) {
-      const message = error.message || 'Login failed';
-
-      if (message.toLowerCase().includes('pending approval') || message.toLowerCase().includes('pending admin')) {
-        navigate('/pending-approval', {
-          replace: true,
-          state: {
-            email: email.trim(),
-          },
-        });
+    } catch (err: any) {
+      const msg = err.message || 'Login failed';
+      if (msg.toLowerCase().includes('pending')) {
+        navigate('/pending-approval', { replace: true, state: { email: email.trim() } });
         return;
       }
-
-      setFormError(message);
+      setFormError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AuthShell
-      badge="Vehicle Portal"
-      title="Sign in"
-      subtitle="Access your vehicle partner dashboard."
-    >
-      <div className="app-card px-6 py-6 md:px-8 md:py-8">
-        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+    <AuthShell centered>
+      <div
+        className="w-full rounded-2xl p-8"
+        style={{ background: 'var(--panel)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-strong)' }}
+      >
+        {/* Heading */}
+        <div className="mb-7">
+          <h1 className="text-[1.375rem] font-semibold tracking-tight" style={{ color: 'var(--text)' }}>
+            Sign in
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-soft)' }}>
+            Access your vehicle partner workspace
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          {/* Error */}
           {formError && (
-            <div className="rounded-2xl border border-[var(--danger-bg)] bg-[var(--danger-bg)] px-4 py-3 text-sm text-[var(--danger-text)]">
+            <div
+              className="flex items-start gap-2.5 rounded-xl px-4 py-3 text-sm"
+              style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger-bg)', color: 'var(--danger-text)' }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="mt-0.5 h-4 w-4 shrink-0">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
               {formError}
             </div>
           )}
 
+          {/* Email */}
           <div>
-            <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[var(--text)]">
-              Email
+            <label htmlFor="email" className="block mb-1.5 text-[0.8125rem] font-medium" style={{ color: 'var(--text-muted)' }}>
+              Email address
             </label>
             <input
               id="email"
-              name="email"
               type="email"
+              autoComplete="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="app-field"
               placeholder="vehicle@example.com"
             />
-            {errors.email && <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.email}</p>}
+            {errors.email && <p className="mt-1.5 text-xs" style={{ color: 'var(--danger-text)' }}>{errors.email}</p>}
           </div>
 
+          {/* Password */}
           <div>
-            <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[var(--text)]">
+            <label htmlFor="password" className="block mb-1.5 text-[0.8125rem] font-medium" style={{ color: 'var(--text-muted)' }}>
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="app-field"
-              placeholder="Enter password"
-            />
-            {errors.password && (
-              <p className="mt-2 text-sm text-[var(--danger-text)]">{errors.password}</p>
-            )}
-            <p className="mt-2 text-xs text-[var(--text-soft)]">
-              Login stays blocked until admin approval.
+            <div className="relative">
+              <input
+                id="password"
+                type={showPw ? 'text' : 'password'}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="app-field pr-11"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => setShowPw((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                style={{ color: 'var(--text-soft)' }}
+                aria-label={showPw ? 'Hide password' : 'Show password'}
+              >
+                {showPw ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            {errors.password && <p className="mt-1.5 text-xs" style={{ color: 'var(--danger-text)' }}>{errors.password}</p>}
+            <p className="mt-1.5 text-xs" style={{ color: 'var(--text-soft)' }}>
+              Access is locked until admin approval.
             </p>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="app-btn-primary h-12 w-full px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+            className="app-btn-primary mt-1 h-11 w-full text-sm disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+                Signing in…
+              </span>
+            ) : 'Sign in'}
           </button>
-
-          <div className="border-t border-[var(--border)] pt-5 text-center text-sm text-[var(--text-muted)]">
-            No account yet?{' '}
-            <Link to="/signup" className="font-semibold text-[var(--primary)]">
-              Register vehicle provider
-            </Link>
-          </div>
         </form>
+
+        {/* Footer */}
+        <p
+          className="mt-6 pt-5 text-center text-sm"
+          style={{ borderTop: '1px solid var(--border)', color: 'var(--text-soft)' }}
+        >
+          No account?{' '}
+          <Link to="/signup" className="font-semibold" style={{ color: 'var(--primary)' }}>
+            Register your fleet
+          </Link>
+        </p>
       </div>
     </AuthShell>
   );

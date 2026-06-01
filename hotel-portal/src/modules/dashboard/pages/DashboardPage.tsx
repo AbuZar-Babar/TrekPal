@@ -1,21 +1,15 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BedDouble, MapPin, Image as ImageIcon, Phone, Mail, Star, Clock } from 'lucide-react';
-import { motion } from 'framer-motion';
-
 import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 
 const DashboardPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
 
-  const { data: hotel } = useQuery({
+  const { data: hotel, isLoading } = useQuery({
     queryKey: ['hotel-dashboard', user?.id],
     queryFn: async () => {
-      if (!user?.id) {
-        return null;
-      }
-
+      if (!user?.id) return null;
       const response = await api.get(`/hotels/${user.id}`);
       return response.data?.data ?? null;
     },
@@ -23,225 +17,162 @@ const DashboardPage: React.FC = () => {
   });
 
   const totalRoomUnits = (hotel?.rooms || []).reduce(
-    (sum: number, room: { quantity?: number }) => sum + (room.quantity || 0),
-    0
+    (sum: number, room: any) => sum + (room.quantity || 0), 0
   );
-
   const servicesCount = hotel?.services?.length || 0;
   const imageCount = hotel?.images?.length || 0;
-  const rooms = hotel?.rooms || [];
-
-  const stats = [
-    {
-      label: 'Room Units',
-      value: totalRoomUnits,
-      icon: BedDouble,
-      color: 'bg-blue-500',
-      trend: `${hotel?.rooms?.length || 0} room types`,
-    },
-    {
-      label: 'Services',
-      value: servicesCount,
-      icon: Star,
-      color: 'bg-amber-500',
-      trend: 'Configured services',
-    },
-    {
-      label: 'Gallery Images',
-      value: imageCount,
-      icon: ImageIcon,
-      color: 'bg-purple-500',
-      trend: 'Visible to agencies',
-    },
-  ];
+  const rooms: any[] = hotel?.rooms || [];
 
   return (
-    <div className="space-y-8">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--tp-text)]">Welcome back, {user?.name.split(' ')[0]}!</h1>
-          <p className="text-[var(--tp-text-muted)]">
-            Overview of <span className="font-semibold text-[var(--tp-text)]">{hotel?.name || 'your hotel'}</span>.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-xl border border-[var(--tp-border)] bg-[var(--tp-panel)] px-4 py-2 text-sm font-medium text-[var(--tp-text-muted)]">
-            <Clock className="w-4 h-4" />
-            {new Date().toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-            })}
+    <div className="space-y-5">
+      {/* Page header */}
+      <div className="border-b border-[var(--tp-border)] pb-4">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--tp-text)]">
+          {isLoading ? 'Dashboard' : `${hotel?.name || 'Hotel'}`}
+        </h1>
+        <p className="mt-0.5 text-sm text-[var(--tp-text-soft)]">
+          Overview of your hotel inventory and profile
+        </p>
+      </div>
+
+      {/* Mini stats */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { label: 'Room units', value: totalRoomUnits },
+          { label: 'Room types', value: rooms.length, highlight: true },
+          { label: 'Services', value: servicesCount },
+          { label: 'Gallery', value: `${imageCount} photos` },
+        ].map((s) => (
+          <div key={s.label} className="rounded-lg border border-[var(--tp-border)] bg-[var(--tp-panel)] px-4 py-3">
+            <div className="text-[10px] uppercase tracking-wide text-[var(--tp-text-soft)]">{s.label}</div>
+            <div className={`mt-1 text-lg font-semibold tabular-nums ${s.highlight ? 'text-[var(--tp-primary)]' : 'text-[var(--tp-text)]'}`}>
+              {s.value}
+            </div>
           </div>
-        </div>
-      </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="card p-6 relative group overflow-hidden"
-          >
-            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-[color:color-mix(in_srgb,var(--tp-panel-subtle)_78%,transparent)] opacity-50 transition-transform duration-500 group-hover:scale-110" />
-
-            <div className="flex items-center justify-between mb-4 relative z-10">
-              <div className={`${stat.color} rounded-xl p-3 shadow-lg shadow-black/10`}>
-                <stat.icon className="w-6 h-6 text-white" />
-              </div>
-            </div>
-
-            <div className="relative z-10">
-              <p className="text-sm font-medium text-[var(--tp-text-muted)]">{stat.label}</p>
-              <h3 className="mt-1 text-3xl font-bold text-[var(--tp-text)]">{stat.value}</h3>
-              <p className="mt-2 text-[10px] font-medium text-[var(--tp-text-soft)]">{stat.trend}</p>
-            </div>
-          </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <section className="card p-6 space-y-4">
-          <h2 className="text-xl font-bold text-[var(--tp-text)]">Hotel Profile Snapshot</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-[var(--tp-text-muted)]">Hotel</span>
-              <span className="font-semibold text-[var(--tp-text)]">{hotel?.name || '-'}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="flex items-center gap-1 text-[var(--tp-text-muted)]">
-                <MapPin className="w-4 h-4" /> Location
-              </span>
-              <span className="text-right font-semibold text-[var(--tp-text)]">
-                {hotel?.city || '-'}, {hotel?.country || '-'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="flex items-center gap-1 text-[var(--tp-text-muted)]">
-                <Mail className="w-4 h-4" /> Email
-              </span>
-              <span className="font-semibold text-[var(--tp-text)]">{hotel?.email || '-'}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="flex items-center gap-1 text-[var(--tp-text-muted)]">
-                <Phone className="w-4 h-4" /> Phone
-              </span>
-              <span className="font-semibold text-[var(--tp-text)]">{hotel?.phone || '-'}</span>
-            </div>
+      {/* Profile + status */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-[var(--tp-border)] bg-[var(--tp-panel)]">
+          <div className="border-b border-[var(--tp-border)] px-5 py-3">
+            <h2 className="text-sm font-semibold text-[var(--tp-text)]">Hotel profile</h2>
           </div>
-        </section>
-
-        <section className="card p-6 space-y-4">
-          <h2 className="text-xl font-bold text-[var(--tp-text)]">Operational Summary</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-[var(--tp-text-muted)]">Profile Status</span>
-              <span className="rounded-full bg-emerald-500/12 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400">
-                {user?.status || 'APPROVED'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-[var(--tp-text-muted)]">Room Inventory</span>
-              <span className="font-semibold text-[var(--tp-text)]">{totalRoomUnits} units</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-[var(--tp-text-muted)]">Service Catalog</span>
-              <span className="font-semibold text-[var(--tp-text)]">{servicesCount} services</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-[var(--tp-text-muted)]">Last Updated</span>
-              <span className="font-semibold text-[var(--tp-text)]">
-                {hotel?.updatedAt ? new Date(hotel.updatedAt).toLocaleDateString() : '-'}
-              </span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <section className="card p-6">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-[var(--tp-text)]">Room Inventory</h2>
-            <p className="mt-1 text-sm text-[var(--tp-text-muted)]">
-              Live room types configured for this hotel.
-            </p>
-          </div>
-          <div className="rounded-full bg-[var(--tp-panel-strong)] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[var(--tp-text-muted)]">
-            {rooms.length} type{rooms.length === 1 ? '' : 's'}
+          <div className="divide-y divide-[var(--tp-border)]">
+            {[
+              { label: 'Name', value: hotel?.name || '—' },
+              { label: 'City', value: hotel?.city ? `${hotel.city}, ${hotel.country || ''}` : '—' },
+              { label: 'Email', value: hotel?.email || '—' },
+              { label: 'Phone', value: hotel?.phone || '—' },
+            ].map((row) => (
+              <div key={row.label} className="flex items-center justify-between px-5 py-3 text-sm">
+                <span className="text-[var(--tp-text-soft)]">{row.label}</span>
+                <span className="font-medium text-[var(--tp-text)] text-right max-w-[60%] truncate">{row.value}</span>
+              </div>
+            ))}
           </div>
         </div>
 
+        <div className="rounded-xl border border-[var(--tp-border)] bg-[var(--tp-panel)]">
+          <div className="border-b border-[var(--tp-border)] px-5 py-3">
+            <h2 className="text-sm font-semibold text-[var(--tp-text)]">Operational summary</h2>
+          </div>
+          <div className="divide-y divide-[var(--tp-border)]">
+            {[
+              {
+                label: 'Status',
+                value: (
+                  <span className="inline-flex rounded-full bg-[var(--tp-success-bg)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--tp-success-text)]">
+                    {user?.status || 'Approved'}
+                  </span>
+                ),
+              },
+              { label: 'Room inventory', value: `${totalRoomUnits} units` },
+              { label: 'Service catalog', value: `${servicesCount} services` },
+              {
+                label: 'Last updated',
+                value: hotel?.updatedAt
+                  ? new Date(hotel.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  : '—',
+              },
+            ].map((row) => (
+              <div key={row.label} className="flex items-center justify-between px-5 py-3 text-sm">
+                <span className="text-[var(--tp-text-soft)]">{row.label}</span>
+                {typeof row.value === 'string'
+                  ? <span className="font-medium text-[var(--tp-text)]">{row.value}</span>
+                  : row.value}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Room inventory */}
+      <div className="rounded-xl border border-[var(--tp-border)] bg-[var(--tp-panel)]">
+        <div className="flex items-center justify-between border-b border-[var(--tp-border)] px-5 py-3">
+          <h2 className="text-sm font-semibold text-[var(--tp-text)]">Room inventory</h2>
+          <span className="rounded-full border border-[var(--tp-border)] px-2.5 py-0.5 text-[10px] font-semibold text-[var(--tp-text-soft)]">
+            {rooms.length} type{rooms.length !== 1 ? 's' : ''}
+          </span>
+        </div>
         {rooms.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-[var(--tp-border)] px-4 py-8 text-center text-sm text-[var(--tp-text-muted)]">
-            No rooms have been added for this hotel yet.
+          <div className="flex h-32 items-center justify-center text-sm text-[var(--tp-text-soft)]">
+            No rooms added yet
           </div>
         ) : (
-          <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
             {rooms.map((room: any) => (
-              <div key={room.id} className="rounded-2xl border border-[var(--tp-border)] bg-[var(--tp-panel-subtle)] p-4">
-                <div className="flex items-start justify-between gap-3">
+              <div key={room.id} className="rounded-lg border border-[var(--tp-border)] bg-[var(--tp-panel-subtle)] p-4">
+                <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-base font-bold text-[var(--tp-text)]">{room.type}</h3>
-                    <p className="mt-1 text-sm text-[var(--tp-text-muted)]">
-                      Capacity {room.capacity} guest{room.capacity === 1 ? '' : 's'}
-                    </p>
+                    <div className="font-semibold text-[var(--tp-text)]">{room.type}</div>
+                    <div className="text-xs text-[var(--tp-text-soft)] mt-0.5">{room.capacity} guests · {room.quantity} rooms</div>
                   </div>
-                  <div className="rounded-xl bg-[var(--tp-panel)] px-3 py-2 text-right shadow-sm shadow-black/10">
-                    <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--tp-text-soft)]">
-                      Price
-                    </div>
-                    <div className="text-sm font-bold text-[var(--tp-text)]">
-                      PKR {Number(room.price || 0).toLocaleString()}
-                    </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-[10px] text-[var(--tp-text-soft)]">per night</div>
+                    <div className="text-sm font-semibold text-[var(--tp-text)]">PKR {Number(room.price || 0).toLocaleString()}</div>
                   </div>
                 </div>
-
-                <div className="mt-4 flex items-center justify-between rounded-xl bg-[var(--tp-panel)] px-3 py-2 text-sm">
-                  <span className="text-[var(--tp-text-muted)]">Total rooms</span>
-                  <span className="font-semibold text-[var(--tp-text)]">{room.quantity || 0}</span>
-                </div>
-
                 {(room.amenities || []).length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {(room.amenities || []).map((amenity: string) => (
-                      <span
-                        key={`${room.id}-${amenity}`}
-                        className="rounded-md bg-[var(--tp-panel)] px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--tp-text-muted)]"
-                      >
-                        {amenity}
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {room.amenities.slice(0, 4).map((a: string) => (
+                      <span key={a} className="rounded-full border border-[var(--tp-border)] px-2 py-0.5 text-[10px] text-[var(--tp-text-muted)]">
+                        {a}
                       </span>
                     ))}
+                    {room.amenities.length > 4 && (
+                      <span className="rounded-full border border-[var(--tp-border)] px-2 py-0.5 text-[10px] text-[var(--tp-text-muted)]">
+                        +{room.amenities.length - 4}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
             ))}
           </div>
         )}
-      </section>
+      </div>
 
+      {/* Description */}
       {hotel?.description && (
-        <section className="card p-6">
-          <h2 className="text-xl font-bold text-[var(--tp-text)]">Description</h2>
-          <p className="mt-3 text-sm leading-7 text-[var(--tp-text-muted)]">{hotel.description}</p>
-        </section>
+        <div className="rounded-xl border border-[var(--tp-border)] bg-[var(--tp-panel)] px-5 py-4">
+          <h2 className="text-sm font-semibold text-[var(--tp-text)] mb-2">Description</h2>
+          <p className="text-sm leading-relaxed text-[var(--tp-text-muted)]">{hotel.description}</p>
+        </div>
       )}
 
-      {hotel?.amenities?.length > 0 && (
-        <section className="card p-6">
-          <h2 className="text-xl font-bold text-[var(--tp-text)]">Amenities</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {hotel.amenities.map((amenity: string) => (
-              <span
-                key={amenity}
-                className="rounded-md bg-[var(--tp-panel-strong)] px-2 py-1 text-xs font-semibold text-[var(--tp-text-muted)]"
-              >
-                {amenity}
+      {/* Amenities */}
+      {(hotel?.amenities || []).length > 0 && (
+        <div className="rounded-xl border border-[var(--tp-border)] bg-[var(--tp-panel)] px-5 py-4">
+          <h2 className="text-sm font-semibold text-[var(--tp-text)] mb-3">Hotel amenities</h2>
+          <div className="flex flex-wrap gap-1.5">
+            {hotel.amenities.map((a: string) => (
+              <span key={a} className="rounded-full border border-[var(--tp-border)] bg-[var(--tp-panel-subtle)] px-2.5 py-0.5 text-xs text-[var(--tp-text-muted)]">
+                {a}
               </span>
             ))}
           </div>
-        </section>
+        </div>
       )}
     </div>
   );

@@ -3,7 +3,6 @@ import { Outlet, Navigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { useAuthStore } from '../store/useAuthStore';
-import { motion } from 'framer-motion';
 
 const DashboardLayout: React.FC = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -13,19 +12,14 @@ const DashboardLayout: React.FC = () => {
   }
 
   return (
-    <div className="portal-shell">
+    <div className="portal-shell" style={{ background: 'var(--tp-bg)', color: 'var(--tp-text)' }}>
       <Sidebar />
       <div className="portal-content">
         <Header />
         <main className="portal-main">
-          <motion.div
-            className="portal-container"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
+          <div className="portal-container">
             <Outlet />
-          </motion.div>
+          </div>
         </main>
       </div>
     </div>

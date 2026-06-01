@@ -3,9 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, Mail, Lock, User, MapPin, FileText, Loader2, Upload, CheckCircle2 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import api from '../../../api/axios';
+import { useTheme } from '../../../shared/theme/ThemeProvider';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -19,56 +18,37 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+const allowedMimeTypes = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
+
+const validateUploadFile = (file: File, label: string): string | null => {
+  if (!allowedMimeTypes.has(file.type)) return `${label} must be PDF, JPEG, PNG, or WebP`;
+  if (file.size > 10 * 1024 * 1024) return `${label} must be smaller than 10 MB`;
+  return null;
+};
+
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [locationImage, setLocationImage] = useState<File | null>(null);
   const [businessDoc, setBusinessDoc] = useState<File | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const allowedMimeTypes = new Set([
-    'application/pdf',
-    'image/jpeg',
-    'image/png',
-    'image/webp',
-  ]);
-
-  const validateUploadFile = (file: File, label: string): string | null => {
-    if (!allowedMimeTypes.has(file.type)) {
-      return `${label} must be PDF, JPEG, PNG, or WebP`;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      return `${label} must be smaller than 10MB`;
-    }
-    return null;
-  };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormValues>({
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
     if (!locationImage || !businessDoc) {
-      setError('Please upload both location image and business document');
+      setError('Please upload both location image and business document.');
       return;
     }
-
-    const locationImageError = validateUploadFile(locationImage, 'Location image');
-    if (locationImageError) {
-      setError(locationImageError);
-      return;
-    }
-
-    const businessDocError = validateUploadFile(businessDoc, 'Business document');
-    if (businessDocError) {
-      setError(businessDocError);
-      return;
-    }
+    const locErr = validateUploadFile(locationImage, 'Location image');
+    if (locErr) { setError(locErr); return; }
+    const docErr = validateUploadFile(businessDoc, 'Business document');
+    if (docErr) { setError(docErr); return; }
 
     setIsLoading(true);
     setError(null);
@@ -90,217 +70,246 @@ const RegisterPage: React.FC = () => {
       setTimeout(() => navigate('/login'), 3000);
     } catch (err: any) {
       if (!err?.response) {
-        setError('Unable to reach server. Please check backend is running and CORS allows this portal origin.');
+        setError('Unable to reach server. Please check the backend is running.');
         return;
       }
-
       const details = err?.response?.data?.details;
       if (Array.isArray(details) && details.length > 0) {
-        setError(details.map((item: { message?: string }) => item?.message).filter(Boolean).join(', '));
+        setError(details.map((d: any) => d?.message).filter(Boolean).join(', '));
         return;
       }
-
       setError(err?.response?.data?.message || err?.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Success screen
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <motion.div 
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center"
-        >
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
+      <div className="auth-page">
+        <div className="auth-body auth-body-center">
+          <div style={{ width: '100%', maxWidth: '28rem' }}>
+            <div className="auth-card text-center">
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--tp-success-bg)]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-7 w-7 text-[var(--tp-success-text)]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-[var(--tp-text)]">Application submitted!</h2>
+              <p className="mt-2 text-sm text-[var(--tp-text-soft)]">
+                Your hotel registration has been sent to the TrekPal admin for review. You'll be able to sign in once approved.
+              </p>
+              <p className="mt-4 text-xs text-[var(--tp-text-soft)]">Redirecting to login…</p>
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Registration Successful!</h2>
-          <p className="text-slate-600 mb-6">
-            Your application has been submitted to TrekPal Admin for approval. You will be able to log in once your hotel is approved.
-          </p>
-          <p className="text-sm text-slate-400">Redirecting to login page...</p>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-max-w-md text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <div className="bg-primary-600 p-3 rounded-2xl shadow-lg shadow-primary-200">
-            <Building2 className="w-8 h-8 text-white" />
-          </div>
+    <div className="auth-page">
+      {/* Topbar */}
+      <header className="auth-topbar">
+        <div className="auth-logo">
+          <span className="auth-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+              <path d="M3 21h18M5 21V7h14v14M9 11h2m2 0h2M9 15h2m2 0h2" />
+            </svg>
+          </span>
+          <span className="auth-logo-name">TrekPal</span>
+          <span className="auth-logo-tag">Hotel</span>
         </div>
-        <h2 className="text-3xl font-extrabold text-slate-900">Hotel Partner Program</h2>
-        <p className="mt-2 text-slate-600">Register your hotel and reach thousands of travelers</p>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-100">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-100">
-                {error}
-              </div>
-            )}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          className="portal-icon-btn h-8 w-8"
+        >
+          {theme === 'dark' ? (
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3v2.25m0 13.5V21m9-9h-2.25M5.25 12H3m15.114 6.364l-1.591-1.591M7.477 7.477 5.886 5.886m12.228 0-1.591 1.591M7.477 16.523l-1.591 1.591M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          ) : (
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 12.79A9 9 0 1111.21 3c0 .56.06 1.107.174 1.634A7 7 0 0019.366 12.4c.527.114 1.074.174 1.634.174z" />
+            </svg>
+          )}
+        </button>
+      </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Owner Info */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                  <User className="w-4 h-4 text-primary-500" /> Owner Information
-                </h3>
-                <div>
-                  <label className="label">Full Name</label>
-                  <div className="relative">
-                    <input {...register('name')} className="input-field pl-10" placeholder="John Doe" />
-                    <User className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  </div>
-                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-                </div>
-
-                <div>
-                  <label className="label">Email Address</label>
-                  <div className="relative">
-                    <input {...register('email')} className="input-field pl-10" placeholder="john@example.com" />
-                    <Mail className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  </div>
-                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-                </div>
-
-                <div>
-                  <label className="label">Password</label>
-                  <div className="relative">
-                    <input type="password" {...register('password')} className="input-field pl-10" placeholder="••••••••" />
-                    <Lock className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  </div>
-                  {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-                </div>
-              </div>
-
-              {/* Hotel Info */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-primary-500" /> Hotel Details
-                </h3>
-                <div>
-                  <label className="label">Hotel Name</label>
-                  <div className="relative">
-                    <input {...register('hotelName')} className="input-field pl-10" placeholder="Grand Luxury Hotel" />
-                    <Building2 className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  </div>
-                  {errors.hotelName && <p className="text-red-500 text-xs mt-1">{errors.hotelName.message}</p>}
-                </div>
-
-                <div>
-                  <label className="label">Phone Number</label>
-                  <div className="relative">
-                    <input {...register('phoneNumber')} className="input-field pl-10" placeholder="+92 300 1234567" />
-                    <User className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  </div>
-                  {errors.phoneNumber && <p className="text-red-500 text-xs mt-1">{errors.phoneNumber.message}</p>}
-                </div>
-
-                <div>
-                  <label className="label">Address</label>
-                  <div className="relative">
-                    <input {...register('hotelAddress')} className="input-field pl-10" placeholder="Main Mall Road, Murree" />
-                    <MapPin className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
-                  </div>
-                  {errors.hotelAddress && <p className="text-red-500 text-xs mt-1">{errors.hotelAddress.message}</p>}
-                </div>
-              </div>
+      {/* Body */}
+      <div className="auth-body">
+        <div style={{ width: '100%', maxWidth: '42rem', margin: '0 auto', padding: '2rem 0' }}>
+          <div className="auth-card">
+            {/* Heading */}
+            <div className="mb-7">
+              <h1 className="text-[1.375rem] font-semibold tracking-tight text-[var(--tp-text)]">
+                Register your hotel
+              </h1>
+              <p className="mt-1 text-sm text-[var(--tp-text-soft)]">
+                Join TrekPal and reach thousands of travelers
+              </p>
             </div>
 
-            <div className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+              {/* Error */}
+              {error && (
+                <div className="flex items-start gap-2.5 rounded-xl border border-[var(--tp-danger-bg)] bg-[var(--tp-danger-bg)] px-4 py-3 text-sm text-[var(--tp-danger-text)]">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="mt-0.5 h-4 w-4 shrink-0">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  </svg>
+                  {error}
+                </div>
+              )}
+
+              {/* Section: Account */}
               <div>
-                <label className="label">Description</label>
-                <textarea 
-                  {...register('hotelDescription')} 
-                  className="input-field min-h-[100px] py-3" 
-                  placeholder="Tell us about your hotel, amenities, and surroundings..."
-                />
-                {errors.hotelDescription && <p className="text-red-500 text-xs mt-1">{errors.hotelDescription.message}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Document Uploads */}
-              <div className="space-y-2">
-                <label className="label">Location Image</label>
-                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${locationImage ? 'border-green-200 bg-green-50' : 'border-slate-200 hover:border-primary-300 bg-slate-50'}`}>
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    onChange={(e) => setLocationImage(e.target.files?.[0] || null)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="flex flex-col items-center justify-center text-center">
-                    {locationImage ? (
-                      <>
-                        <CheckCircle2 className="w-8 h-8 text-green-500 mb-1" />
-                        <span className="text-xs font-medium text-green-700">{locationImage.name}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-slate-400 mb-1" />
-                        <span className="text-xs text-slate-500 font-medium">Upload Exterior Photo</span>
-                      </>
-                    )}
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--tp-text-soft)]">Account</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="auth-field-label">Owner name</label>
+                    <input {...register('name')} className="input-field" placeholder="John Doe" />
+                    {errors.name && <p className="mt-1 text-xs text-[var(--tp-danger-text)]">{errors.name.message}</p>}
+                  </div>
+                  <div>
+                    <label className="auth-field-label">Email address</label>
+                    <input {...register('email')} type="email" className="input-field" placeholder="john@example.com" />
+                    {errors.email && <p className="mt-1 text-xs text-[var(--tp-danger-text)]">{errors.email.message}</p>}
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="auth-field-label">Password</label>
+                    <input {...register('password')} type="password" className="input-field" placeholder="Min. 8 characters" />
+                    {errors.password && <p className="mt-1 text-xs text-[var(--tp-danger-text)]">{errors.password.message}</p>}
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="label">Business Document (PDF/Image)</label>
-                <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all ${businessDoc ? 'border-green-200 bg-green-50' : 'border-slate-200 hover:border-primary-300 bg-slate-50'}`}>
-                  <input 
-                    type="file" 
-                    accept=".pdf,image/jpeg,image/png,image/webp"
-                    onChange={(e) => setBusinessDoc(e.target.files?.[0] || null)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="flex flex-col items-center justify-center text-center">
-                    {businessDoc ? (
-                      <>
-                        <FileText className="w-8 h-8 text-green-500 mb-1" />
-                        <span className="text-xs font-medium text-green-700">{businessDoc.name}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-slate-400 mb-1" />
-                        <span className="text-xs text-slate-500 font-medium">Upload Registration Copy</span>
-                      </>
-                    )}
+              {/* Divider */}
+              <div className="border-t border-[var(--tp-border)]" />
+
+              {/* Section: Hotel */}
+              <div>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--tp-text-soft)]">Hotel details</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="auth-field-label">Hotel name</label>
+                    <input {...register('hotelName')} className="input-field" placeholder="Grand Luxury Hotel" />
+                    {errors.hotelName && <p className="mt-1 text-xs text-[var(--tp-danger-text)]">{errors.hotelName.message}</p>}
+                  </div>
+                  <div>
+                    <label className="auth-field-label">Phone number</label>
+                    <input {...register('phoneNumber')} className="input-field" placeholder="+92 300 1234567" />
+                    {errors.phoneNumber && <p className="mt-1 text-xs text-[var(--tp-danger-text)]">{errors.phoneNumber.message}</p>}
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="auth-field-label">Address</label>
+                    <input {...register('hotelAddress')} className="input-field" placeholder="Main Mall Road, Murree, Pakistan" />
+                    {errors.hotelAddress && <p className="mt-1 text-xs text-[var(--tp-danger-text)]">{errors.hotelAddress.message}</p>}
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="auth-field-label">Description</label>
+                    <textarea
+                      {...register('hotelDescription')}
+                      rows={3}
+                      className="input-field resize-none"
+                      placeholder="Tell us about your hotel, amenities, and surroundings…"
+                    />
+                    {errors.hotelDescription && <p className="mt-1 text-xs text-[var(--tp-danger-text)]">{errors.hotelDescription.message}</p>}
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div>
+              {/* Divider */}
+              <div className="border-t border-[var(--tp-border)]" />
+
+              {/* Section: Documents */}
+              <div>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--tp-text-soft)]">Documents</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Location image */}
+                  <div>
+                    <label className="auth-field-label">Exterior / location photo</label>
+                    <label className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-5 text-center transition-colors ${locationImage ? 'border-[var(--tp-success-text)] bg-[var(--tp-success-bg)]' : 'border-[var(--tp-border)] hover:border-[var(--tp-primary)]'}`}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={(e) => setLocationImage(e.target.files?.[0] || null)}
+                      />
+                      {locationImage ? (
+                        <>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-6 w-6 text-[var(--tp-success-text)]">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-xs font-medium text-[var(--tp-success-text)] break-all">{locationImage.name}</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6 text-[var(--tp-text-soft)]">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4-4a3 3 0 014 0l4 4m-4-4v8m6-10V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2" />
+                          </svg>
+                          <span className="text-xs text-[var(--tp-text-soft)]">Click to upload</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+
+                  {/* Business doc */}
+                  <div>
+                    <label className="auth-field-label">Business registration (PDF/Image)</label>
+                    <label className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-5 text-center transition-colors ${businessDoc ? 'border-[var(--tp-success-text)] bg-[var(--tp-success-bg)]' : 'border-[var(--tp-border)] hover:border-[var(--tp-primary)]'}`}>
+                      <input
+                        type="file"
+                        accept=".pdf,image/jpeg,image/png,image/webp"
+                        className="sr-only"
+                        onChange={(e) => setBusinessDoc(e.target.files?.[0] || null)}
+                      />
+                      {businessDoc ? (
+                        <>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-6 w-6 text-[var(--tp-success-text)]">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-xs font-medium text-[var(--tp-success-text)] break-all">{businessDoc.name}</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6 text-[var(--tp-text-soft)]">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5l2 2h3a2 2 0 012 2v14a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="text-xs text-[var(--tp-text-soft)]">Click to upload</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn-primary w-full py-3 text-lg"
+                className="btn-primary h-11 w-full text-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  'Create Hotel Account'
-                )}
+                  <span className="flex items-center gap-2">
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Submitting…
+                  </span>
+                ) : 'Create hotel account'}
               </button>
-            </div>
-          </form>
+            </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-600">
+            {/* Footer */}
+            <p className="mt-6 border-t border-[var(--tp-border)] pt-5 text-center text-sm text-[var(--tp-text-soft)]">
               Already have an account?{' '}
-              <Link to="/login" className="font-semibold text-primary-600 hover:text-primary-500">
-                Log in
+              <Link to="/login" className="font-semibold text-[var(--tp-primary)] hover:underline">
+                Sign in
               </Link>
             </p>
           </div>

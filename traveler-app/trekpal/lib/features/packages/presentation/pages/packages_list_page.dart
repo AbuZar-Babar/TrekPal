@@ -31,7 +31,6 @@ class _PackagesListPageState extends State<PackagesListPage> {
         context.read<PackagesProvider>().fetchPackages().catchError((_) {});
       });
     }
-
     if (canUseMarketplace && !_hasRequestedBookingsLoad) {
       _hasRequestedBookingsLoad = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -40,170 +39,132 @@ class _PackagesListPageState extends State<PackagesListPage> {
     }
   }
 
-  Future<void> _refresh({
-    required bool canUseMarketplace,
-  }) async {
+  Future<void> _refresh({required bool canUseMarketplace}) async {
     final List<Future<void>> tasks = <Future<void>>[
       context.read<PackagesProvider>().fetchPackages(force: true),
     ];
-
     if (canUseMarketplace) {
       tasks.add(context.read<BookingsProvider>().fetchBookings(force: true));
     }
-
     await Future.wait(tasks);
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    final AuthProvider authProvider = context.watch<AuthProvider>();
+    final ColorScheme cs = theme.colorScheme;
+    final AuthProvider auth = context.watch<AuthProvider>();
     final PackagesProvider provider = context.watch<PackagesProvider>();
     final BookingsProvider bookingsProvider = context.watch<BookingsProvider>();
 
-    _ensureLoaded(authProvider.canUseTravelerMarketplace);
+    _ensureLoaded(auth.canUseTravelerMarketplace);
 
     final List<PackageOfferEntity> offers = provider.packages;
-    final int joinedOffers = offers
-        .where(
-          (PackageOfferEntity item) =>
-              bookingsProvider.bookingForPackage(item.id)?.status ==
-                  'CONFIRMED' ||
-              bookingsProvider.bookingForPackage(item.id)?.status ==
-                  'COMPLETED',
-        )
+    final int confirmed = offers
+        .where((o) =>
+            bookingsProvider.bookingForPackage(o.id)?.status == 'CONFIRMED' ||
+            bookingsProvider.bookingForPackage(o.id)?.status == 'COMPLETED')
         .length;
 
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => _refresh(
-            canUseMarketplace: authProvider.canUseTravelerMarketplace,
-          ),
+          onRefresh: () =>
+              _refresh(canUseMarketplace: auth.canUseTravelerMarketplace),
           child: Builder(
             builder: (BuildContext context) {
               if (provider.isLoading && offers.isEmpty) {
                 return const TrekpalLoadingWidget(
-                  message: 'Loading planned trips...',
-                );
+                    message: 'Loading planned trips...');
               }
-
               if (provider.errorMessage != null && offers.isEmpty) {
                 return TrekpalErrorState(
                   message: provider.errorMessage!,
                   onRetry: () => _refresh(
-                    canUseMarketplace: authProvider.canUseTravelerMarketplace,
-                  ),
+                      canUseMarketplace: auth.canUseTravelerMarketplace),
                 );
               }
 
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
                 children: <Widget>[
-                  Text(
-                    'Join a planned trip',
-                    style: theme.textTheme.displayMedium,
+                  // ── Header ────────────────────────────────────
+                  _PageHeader(
+                    eyebrow: 'Agency offers',
+                    title: 'Join a planned trip',
+                    subtitle:
+                        'Open an offer, review what\'s included, then send a booking request.',
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Open an offer, review what is included, then send a booking request.',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 20),
+
+                  // ── Stats ─────────────────────────────────────
                   Row(
                     children: <Widget>[
                       Expanded(
-                        child: _MiniStat(
+                        child: _StatCard(
                           icon: Icons.route_outlined,
-                          label: 'Offers',
+                          label: 'Available',
                           value: '${offers.length}',
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(
-                        child: _MiniStat(
-                          icon: Icons.check_circle_outline,
-                          label: 'Confirmed',
-                          value: '$joinedOffers',
+                        child: _StatCard(
+                          icon: Icons.check_circle_outline_rounded,
+                          label: 'Joined',
+                          value: '$confirmed',
+                          highlight: true,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
-                  if (!authProvider.canUseTravelerMarketplace) ...<Widget>[
+                  const SizedBox(height: 20),
+
+                  // ── KYC gate ──────────────────────────────────
+                  if (!auth.canUseTravelerMarketplace) ...<Widget>[
                     TravelerKycGateCard(
                       title: 'Verify to book',
                       message:
-                          'You can browse offers now. Booking unlocks after traveler KYC approval.',
-                      actionLabel: 'Complete traveler KYC',
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<bool>(
-                            builder: (_) => const TravelerKycPage(),
-                          ),
-                        );
-                      },
+                          'You can browse offers now. Booking unlocks after KYC approval.',
+                      actionLabel: 'Complete KYC',
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<bool>(
+                            builder: (_) => const TravelerKycPage()),
+                      ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 20),
                   ],
+
+                  // ── Offers ────────────────────────────────────
                   if (offers.isEmpty)
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(26),
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.map_outlined,
-                              size: 54,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(height: 18),
-                            Text(
-                              'No offers available right now',
-                              style: theme.textTheme.headlineSmall,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Check back later or pull to refresh after an agency posts a trip offer.',
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 18),
-                            OutlinedButton.icon(
-                              onPressed: () => _refresh(
-                                canUseMarketplace:
-                                    authProvider.canUseTravelerMarketplace,
-                              ),
-                              icon: const Icon(Icons.refresh_outlined),
-                              label: const Text('Refresh offers'),
-                            ),
-                          ],
-                        ),
+                    _EmptyState(
+                      icon: Icons.map_outlined,
+                      title: 'No offers available yet',
+                      subtitle:
+                          'Check back later or pull to refresh after an agency posts a trip.',
+                      action: OutlinedButton.icon(
+                        onPressed: () => _refresh(
+                            canUseMarketplace: auth.canUseTravelerMarketplace),
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('Refresh'),
                       ),
                     )
                   else
                     ...offers.map((PackageOfferEntity offer) {
-                      final BookingEntity? booking = bookingsProvider
-                          .bookingForPackage(offer.id);
+                      final BookingEntity? booking =
+                          bookingsProvider.bookingForPackage(offer.id);
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 14),
-                        child: _OfferPreviewCard(
+                        child: _OfferCard(
                           offer: offer,
                           bookingStatus: booking?.status,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) =>
-                                    PackageOfferDetailsPage(offer: offer),
-                              ),
-                            );
-                          },
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  PackageOfferDetailsPage(offer: offer),
+                            ),
+                          ),
                         ),
                       );
                     }),
@@ -217,8 +178,9 @@ class _PackagesListPageState extends State<PackagesListPage> {
   }
 }
 
-class _OfferPreviewCard extends StatelessWidget {
-  const _OfferPreviewCard({
+// ── Offer card ────────────────────────────────────────────────────────────────
+class _OfferCard extends StatelessWidget {
+  const _OfferCard({
     required this.offer,
     required this.bookingStatus,
     required this.onTap,
@@ -228,24 +190,59 @@ class _OfferPreviewCard extends StatelessWidget {
   final String? bookingStatus;
   final VoidCallback onTap;
 
+  Color _statusBg(ColorScheme cs, bool dark) {
+    if (bookingStatus == 'CONFIRMED' || bookingStatus == 'COMPLETED') {
+      return Colors.green.withValues(alpha: dark ? 0.22 : 0.12);
+    }
+    if (bookingStatus == 'PENDING') {
+      return cs.tertiary.withValues(alpha: 0.14);
+    }
+    if (offer.isSoldOut) {
+      return cs.error.withValues(alpha: 0.12);
+    }
+    return cs.primary.withValues(alpha: dark ? 0.18 : 0.1);
+  }
+
+  Color _statusFg(ColorScheme cs) {
+    if (bookingStatus == 'CONFIRMED' || bookingStatus == 'COMPLETED') {
+      return Colors.green.shade700;
+    }
+    if (bookingStatus == 'PENDING') return cs.tertiary;
+    if (offer.isSoldOut) return cs.error;
+    return cs.primary;
+  }
+
+  String _statusLabel() {
+    if (bookingStatus == 'CONFIRMED' || bookingStatus == 'COMPLETED') {
+      return 'Joined';
+    }
+    if (bookingStatus == 'PENDING') return 'Pending';
+    if (offer.isSoldOut) return 'Sold out';
+    return 'Open';
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    final DateTime? startDate = offer.startDate;
-    final DateTime? endDate = startDate?.add(
-      Duration(days: offer.duration <= 1 ? 0 : offer.duration - 1),
-    );
+    final ColorScheme cs = theme.colorScheme;
+    final bool dark = theme.brightness == Brightness.dark;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
+    final DateTime? start = offer.startDate;
+    final DateTime? end =
+        start?.add(Duration(days: offer.duration <= 1 ? 0 : offer.duration - 1));
+
+    return Material(
+      color: cs.surfaceContainerHighest.withValues(alpha: dark ? 0.32 : 0.5),
+      borderRadius: BorderRadius.circular(24),
       child: InkWell(
+        borderRadius: BorderRadius.circular(24),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              // Row: name + status
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -253,45 +250,93 @@ class _OfferPreviewCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(offer.name, style: theme.textTheme.headlineSmall),
-                        const SizedBox(height: 6),
+                        Text(
+                          offer.name,
+                          style: theme.textTheme.titleLarge,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
                         Text(
                           offer.agencyName,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  _StatusPill(status: bookingStatus),
-                  if (offer.isSoldOut && bookingStatus == null)
-                    const SizedBox(width: 6),
-                  if (offer.isSoldOut && bookingStatus == null)
-                    _StatusPill(status: 'SOLD_OUT'),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _statusBg(cs, dark),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      _statusLabel(),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: _statusFg(cs),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ],
               ),
+
               const SizedBox(height: 14),
+
+              // Destinations
+              if (offer.destinations.isNotEmpty)
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: offer.destinations
+                      .map(
+                        (d) => Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: cs.primary.withValues(
+                                alpha: dark ? 0.14 : 0.08),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            d,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: cs.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+
+              // Meta chips — Wrap handles any length gracefully
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 12,
+                runSpacing: 6,
                 children: <Widget>[
-                  _InfoChip(
+                  _MetaChip(
                     icon: Icons.payments_outlined,
                     label: AppFormatters.currency(offer.price),
                   ),
-                  _InfoChip(
-                    icon: Icons.event_outlined,
-                    label: startDate == null || endDate == null
-                        ? 'Date TBA'
-                        : AppFormatters.dateRange(startDate, endDate),
-                  ),
-                  _InfoChip(
+                  _MetaChip(
                     icon: Icons.today_outlined,
-                    label:
-                        '${offer.duration} day${offer.duration == 1 ? '' : 's'}',
+                    label: '${offer.duration} day${offer.duration == 1 ? '' : 's'}',
                   ),
-                  _InfoChip(
+                  if (start != null && end != null)
+                    _MetaChip(
+                      icon: Icons.event_outlined,
+                      label: AppFormatters.dateRange(start, end),
+                    ),
+                  _MetaChip(
                     icon: Icons.groups_2_outlined,
                     label: offer.isSoldOut
                         ? 'Sold out'
@@ -299,40 +344,28 @@ class _OfferPreviewCard extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'View details →',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: cs.primary,
+                  ),
+                ),
+              ),
+
               if ((offer.description ?? '').trim().isNotEmpty) ...<Widget>[
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   offer.description!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: cs.onSurfaceVariant,
                   ),
                 ),
               ],
-              const SizedBox(height: 14),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      offer.destinations.join(' | '),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'View details',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
@@ -341,122 +374,179 @@ class _OfferPreviewCard extends StatelessWidget {
   }
 }
 
-class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.status});
-
-  final String? status;
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-
-    String label = 'Open';
-    Color background = colorScheme.primary.withValues(alpha: 0.12);
-    Color foreground = colorScheme.primary;
-
-    if (status == 'SOLD_OUT') {
-      label = 'Sold out';
-      background = Colors.red.withValues(alpha: 0.14);
-      foreground = Colors.red.shade700;
-    } else if (status == 'PENDING') {
-      label = 'Waiting';
-      background = colorScheme.tertiary.withValues(alpha: 0.16);
-      foreground = colorScheme.tertiary;
-    } else if (status == 'CONFIRMED' || status == 'COMPLETED') {
-      label = 'Trip ready';
-      background = Colors.green.withValues(alpha: 0.14);
-      foreground = Colors.green.shade700;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelMedium?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w700,
+    final ColorScheme cs = theme.colorScheme;
+    final bool dark = theme.brightness == Brightness.dark;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Icon(icon, size: 13, color: cs.onSurfaceVariant),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: dark ? cs.onSurface : cs.onSurfaceVariant,
+              fontSize: 11,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
 
-class _MiniStat extends StatelessWidget {
-  const _MiniStat({
+// ── Shared ────────────────────────────────────────────────────────────────────
+class _PageHeader extends StatelessWidget {
+  const _PageHeader({
+    required this.eyebrow,
+    required this.title,
+    required this.subtitle,
+  });
+  final String eyebrow;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme cs = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          eyebrow.toUpperCase(),
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: cs.primary,
+            letterSpacing: 1.4,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(title, style: theme.textTheme.headlineMedium),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: cs.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  const _StatCard({
     required this.icon,
     required this.label,
     required this.value,
+    this.highlight = false,
   });
-
   final IconData icon;
   final String label;
   final String value;
+  final bool highlight;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: <Widget>[
-            CircleAvatar(
-              backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-              foregroundColor: colorScheme.primary,
-              child: Icon(icon),
+    final ColorScheme cs = theme.colorScheme;
+    final bool dark = theme.brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      decoration: BoxDecoration(
+        color: highlight
+            ? cs.primary.withValues(alpha: dark ? 0.18 : 0.08)
+            : cs.surfaceContainerHighest.withValues(
+                alpha: dark ? 0.35 : 0.55,
+              ),
+        borderRadius: BorderRadius.circular(18),
+        border: highlight
+            ? Border.all(color: cs.primary.withValues(alpha: 0.22))
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(icon,
+              size: 18,
+              color: highlight ? cs.primary : cs.onSurfaceVariant),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: highlight ? cs.primary : cs.onSurface,
             ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(value, style: theme.textTheme.titleLarge),
-                Text(
-                  label,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: cs.onSurfaceVariant, fontSize: 11),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.label});
-
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.action,
+  });
   final IconData icon;
-  final String label;
+  final String title;
+  final String subtitle;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-
+    final ColorScheme cs = theme.colorScheme;
+    final bool dark = theme.brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(
-          alpha: theme.brightness == Brightness.dark ? 0.26 : 0.5,
-        ),
-        borderRadius: BorderRadius.circular(18),
+        color: cs.surfaceContainerHighest.withValues(
+            alpha: dark ? 0.25 : 0.45),
+        borderRadius: BorderRadius.circular(28),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
         children: <Widget>[
-          Icon(icon, size: 16, color: colorScheme.primary),
-          const SizedBox(width: 6),
-          Text(label, style: theme.textTheme.bodySmall),
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: cs.primary.withValues(alpha: dark ? 0.18 : 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: cs.primary, size: 30),
+          ),
+          const SizedBox(height: 18),
+          Text(title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge),
+          const SizedBox(height: 8),
+          Text(subtitle,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: cs.onSurfaceVariant)),
+          if (action != null) ...<Widget>[
+            const SizedBox(height: 18),
+            action!,
+          ],
         ],
       ),
     );

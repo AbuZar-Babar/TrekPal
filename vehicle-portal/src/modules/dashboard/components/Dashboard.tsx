@@ -8,8 +8,7 @@ import { formatCurrency } from '../../../shared/utils/formatters';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user }     = useSelector((state: RootState) => state.auth);
   const { vehicles } = useSelector((state: RootState) => state.transport);
   const { bookings } = useSelector((state: RootState) => state.bookings);
 
@@ -18,75 +17,123 @@ const Dashboard = () => {
     dispatch(fetchBookings({ limit: 100 }) as any);
   }, [dispatch]);
 
-  const pendingBookings = bookings.filter((booking) => booking.status === 'PENDING');
-  const confirmedBookings = bookings.filter((booking) => booking.status === 'CONFIRMED');
-  const completedBookings = bookings.filter((booking) => booking.status === 'COMPLETED');
-  const availableVehicles = vehicles.filter((vehicle) => vehicle.isAvailable);
-  const confirmedRevenue = bookings
-    .filter((booking) => booking.status === 'CONFIRMED' || booking.status === 'COMPLETED')
-    .reduce((sum, booking) => sum + booking.totalAmount, 0);
-  const stats = [
-    {
-      label: 'Fleet size',
-      value: vehicles.length,
-      note: `${availableVehicles.length} currently available`,
-      icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 13h18l-1.5-5.25A2 2 0 0017.58 6H6.42a2 2 0 00-1.92 1.75L3 13zm2 0v4a1 1 0 001 1h1a2 2 0 104 0h6a2 2 0 104 0h1a1 1 0 001-1v-4" />
-        </svg>
-      ),
-    },
-    {
-      label: 'Pending bookings',
-      value: pendingBookings.length,
-      note: `${confirmedBookings.length} already confirmed`,
-      icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 4h10l3 3v13H4V7l3-3zm0 5h10M8 13h8M8 17h5" />
-        </svg>
-      ),
-    },
-    {
-      label: 'Completed trips',
-      value: completedBookings.length,
-      note: `${formatCurrency(confirmedRevenue)} secured`,
-      icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5 13l4 4L19 7" />
-        </svg>
-      ),
-    },
-    {
-      label: 'Unavailable vehicles',
-      value: vehicles.length - availableVehicles.length,
-      note: `${bookings.length} total bookings on record`,
-      icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 13h18m-4 4h.01M7 17h.01M5 13l1.5-5.25A2 2 0 018.42 6h7.16a2 2 0 011.92 1.75L19 13m-14 0v4a1 1 0 001 1h1a2 2 0 104 0h2a2 2 0 104 0h1a1 1 0 001-1v-4" />
-        </svg>
-      ),
-    },
-  ];
+  const available  = vehicles.filter((v) => v.isAvailable);
+  const pending    = bookings.filter((b) => b.status === 'PENDING');
+  const confirmed  = bookings.filter((b) => b.status === 'CONFIRMED');
+  const completed  = bookings.filter((b) => b.status === 'COMPLETED');
+  const revenue    = bookings
+    .filter((b) => b.status === 'CONFIRMED' || b.status === 'COMPLETED')
+    .reduce((sum, b) => sum + b.totalAmount, 0);
+
+  const recentBookings = [...bookings]
+    .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+    .slice(0, 5);
+
+  const statusClass = (status: string) => {
+    switch (status) {
+      case 'CONFIRMED':  return 'bg-[var(--success-bg)] text-[var(--success-text)]';
+      case 'COMPLETED':  return 'bg-[var(--success-bg)] text-[var(--success-text)]';
+      case 'PENDING':    return 'bg-[var(--warning-bg)] text-[var(--warning-text)]';
+      case 'CANCELLED':  return 'bg-[var(--danger-bg)] text-[var(--danger-text)]';
+      default:           return 'bg-[var(--panel-strong)] text-[var(--text-muted)]';
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <section className="section-title-row">
-        <h2 className="section-title">
-          Welcome back, {user?.name || 'Vehicle partner'}
-        </h2>
-      </section>
+    <div className="space-y-5">
+      {/* Page header */}
+      <div className="border-b border-[var(--border)] pb-4">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">Dashboard</h1>
+        <p className="mt-0.5 text-sm text-[var(--text-soft)]">
+          Welcome back, {user?.name || 'Vehicle partner'} — here's your fleet at a glance
+        </p>
+      </div>
 
-      <section className="grid gap-4 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="surface flex flex-col items-center justify-center p-5 text-center">
-            <div className="mb-2 text-[var(--text-soft)]">{stat.icon}</div>
-            <div className="text-3xl font-bold text-[var(--text)]">{stat.value}</div>
-            <div className="mt-2 text-sm font-medium text-[var(--text-soft)]">{stat.label}</div>
-            <div className="mt-1 text-xs text-[var(--text-muted)]">{stat.note}</div>
+      {/* Mini stats */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { label: 'Fleet size',       value: vehicles.length,  sub: `${available.length} available` },
+          { label: 'Pending',          value: pending.length,   sub: `${confirmed.length} confirmed`, highlight: true },
+          { label: 'Completed trips',  value: completed.length, sub: `${bookings.length} total` },
+          { label: 'Revenue',          value: formatCurrency(revenue), sub: 'confirmed + completed' },
+        ].map((s) => (
+          <div key={s.label} className="rounded-lg border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
+            <div className="text-[10px] uppercase tracking-wide text-[var(--text-soft)]">{s.label}</div>
+            <div className={`mt-1 text-lg font-semibold tabular-nums ${s.highlight ? 'text-[var(--primary)]' : 'text-[var(--text)]'}`}>
+              {s.value}
+            </div>
+            <div className="mt-0.5 text-[10px] text-[var(--text-muted)]">{s.sub}</div>
           </div>
         ))}
-      </section>
+      </div>
 
+      {/* Two-column lower section */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* Fleet overview */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)]">
+          <div className="border-b border-[var(--border)] px-5 py-3">
+            <h2 className="text-sm font-semibold text-[var(--text)]">Fleet overview</h2>
+          </div>
+          {vehicles.length === 0 ? (
+            <div className="flex h-32 items-center justify-center text-sm text-[var(--text-soft)]">
+              No vehicles yet
+            </div>
+          ) : (
+            <div className="divide-y divide-[var(--border)]">
+              {vehicles.slice(0, 6).map((v) => (
+                <div key={v.id} className="flex items-center justify-between px-5 py-3">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text)]">{v.make} {v.model}</div>
+                    <div className="text-xs text-[var(--text-soft)]">{v.type} · {v.capacity} seats</div>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                    v.isAvailable
+                      ? 'bg-[var(--success-bg)] text-[var(--success-text)]'
+                      : 'bg-[var(--danger-bg)] text-[var(--danger-text)]'
+                  }`}>
+                    {v.isAvailable ? 'Available' : 'Unavailable'}
+                  </span>
+                </div>
+              ))}
+              {vehicles.length > 6 && (
+                <div className="px-5 py-2 text-xs text-[var(--text-soft)]">
+                  +{vehicles.length - 6} more vehicles
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Recent bookings */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)]">
+          <div className="border-b border-[var(--border)] px-5 py-3">
+            <h2 className="text-sm font-semibold text-[var(--text)]">Recent bookings</h2>
+          </div>
+          {recentBookings.length === 0 ? (
+            <div className="flex h-32 items-center justify-center text-sm text-[var(--text-soft)]">
+              No bookings yet
+            </div>
+          ) : (
+            <div className="divide-y divide-[var(--border)]">
+              {recentBookings.map((b) => (
+                <div key={b.id} className="flex items-center justify-between px-5 py-3">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text)]">
+                      {b.destination || 'Trip booking'}
+                    </div>
+                    <div className="text-xs text-[var(--text-soft)]">
+                      {b.userName || 'Guest'} · {formatCurrency(b.totalAmount)}
+                    </div>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusClass(b.status)}`}>
+                    {b.status.toLowerCase()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
