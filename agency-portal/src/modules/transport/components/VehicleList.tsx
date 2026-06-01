@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from '../../../store';
 import { formatCurrency, formatDate } from '../../../shared/utils/formatters';
 import { deleteVehicle, fetchVehicles } from '../store/transportSlice';
-import { Vehicle } from '../../../shared/types';
 
 // ── Status helpers ────────────────────────────────────────────────────────────
 const AvailabilityBadge = ({ isAvailable }: { isAvailable: boolean }) => (

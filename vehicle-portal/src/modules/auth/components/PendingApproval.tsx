@@ -13,11 +13,7 @@ const PendingApproval = () => {
   ];
 
   return (
-    <AuthShell
-      badge="Pending review"
-      title="Application under review"
-      subtitle="Your vehicle partner access unlocks after the admin review is complete."
-    >
+    <AuthShell>
       <div className="app-card px-6 py-6 md:px-8 md:py-8">
         <div className="space-y-6">
           <div className="rounded-[18px] border border-[var(--warning-bg)] bg-[var(--warning-bg)] px-5 py-5">
