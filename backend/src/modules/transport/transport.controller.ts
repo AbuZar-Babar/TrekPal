@@ -212,18 +212,30 @@ export class TransportController {
       const limit = parseInt(req.query.limit as string) || 20;
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
+      const startDateStr = req.query.startDate as string | undefined;
+      const endDateStr = req.query.endDate as string | undefined;
+      const dedicatedVehicleStr = req.query.dedicatedVehicle as string | undefined;
+
+      const startDate = startDateStr ? new Date(startDateStr) : undefined;
+      const endDate = endDateStr ? new Date(endDateStr) : undefined;
+      const dedicatedVehicle = dedicatedVehicleStr === 'false' ? false : true;
 
       const result = await transportService.getVehicles(
         page,
         limit,
         status,
-        search
+        search,
+        undefined,
+        startDate,
+        endDate,
+        dedicatedVehicle,
       );
       sendSuccess(res, result, 'Vehicles retrieved successfully');
     } catch (error: any) {
       sendError(res, error.message || 'Failed to get vehicles', 400);
     }
   }
+
 
   /**
    * Get vehicle by ID

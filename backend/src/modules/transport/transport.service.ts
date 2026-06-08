@@ -9,6 +9,7 @@ import {
   VehicleResponse,
 } from './transport.types';
 import { normalizeMediaStoragePaths, resolveMediaUrls } from '../../services/media-storage.service';
+import { bookingAllocationService } from '../bookings/booking-allocation.service';
 
 type VehicleWithRelations = {
   id: string;
@@ -254,8 +255,11 @@ export class TransportService {
     limit: number = 20,
     status?: string,
     search?: string,
+    startDate?: Date,
+    endDate?: Date,
+    dedicatedVehicle?: boolean,
   ): Promise<{ vehicles: VehicleResponse[]; total: number; page: number; limit: number }> {
-    return this.getVehicles(page, limit, status, search, vehicleProviderId);
+    return this.getVehicles(page, limit, status, search, vehicleProviderId, startDate, endDate, dedicatedVehicle);
   }
 
   async getVehicles(
@@ -264,6 +268,9 @@ export class TransportService {
     status?: string,
     search?: string,
     vehicleProviderId?: string,
+    startDate?: Date,
+    endDate?: Date,
+    dedicatedVehicle?: boolean,
   ): Promise<{ vehicles: VehicleResponse[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
 
@@ -309,8 +316,33 @@ export class TransportService {
       prisma.vehicle.count({ where }),
     ]);
 
+    const mappedVehicles = await Promise.all(
+      vehicles.map((vehicle) => this.mapVehicleResponse(vehicle as VehicleWithRelations)),
+    );
+
+    // If date range is provided, annotate each vehicle with availability info
+    if (startDate && endDate) {
+      const checkResults = await Promise.all(
+        mappedVehicles.map((v) =>
+          bookingAllocationService.checkVehicleAvailability({
+            vehicleId: v.id,
+            driverId: v.driverId,
+            startDate,
+            endDate,
+            dedicatedVehicle: dedicatedVehicle ?? true,
+          }),
+        ),
+      );
+      const annotated = mappedVehicles.map((v, i) => ({
+        ...v,
+        isAvailableOnDates: checkResults[i].available,
+        conflictReason: checkResults[i].available ? null : checkResults[i].reason ?? null,
+      }));
+      return { vehicles: annotated, total, page, limit };
+    }
+
     return {
-      vehicles: await Promise.all(vehicles.map((vehicle) => this.mapVehicleResponse(vehicle as VehicleWithRelations))),
+      vehicles: mappedVehicles,
       total,
       page,
       limit,

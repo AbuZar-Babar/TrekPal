@@ -39,12 +39,16 @@ export const transportService = {
 
   /**
    * Get marketplace vehicles (all visible vehicles)
+   * Pass startDate/endDate/dedicatedVehicle to annotate each vehicle with isAvailableOnDates.
    */
   async getMarketplaceVehicles(params?: {
     page?: number;
     limit?: number;
     status?: string;
     search?: string;
+    startDate?: string;
+    endDate?: string;
+    dedicatedVehicle?: boolean;
   }): Promise<PaginatedResponse<Vehicle>> {
     const response = await apiClient.get('/transport', { params });
     const result = response.data.data;

@@ -254,6 +254,7 @@ const mapPackage = async (tripPackage: any): Promise<PackageResponse> => {
     hotelIds: normalizedHotelIds,
     hotelRoomPlan: normalizedRoomPlan,
     vehicleId: tripPackage.vehicleId ?? null,
+    dedicatedVehicle: tripPackage.dedicatedVehicle ?? true,
     name: tripPackage.name,
     description: tripPackage.description,
     price: tripPackage.price,
@@ -431,6 +432,36 @@ export class PackagesService {
     if (!vehicle) {
       throw new Error('Selected vehicle was not found in the approved marketplace');
     }
+  }
+
+  /**
+   * Assert the selected vehicle is free for the package dates.
+   * Dedicated mode: full-range overlap. Transfer mode: departure + return days only.
+   */
+  private async assertVehicleDateAvailability(
+    vehicleId: string | null | undefined,
+    startDate: Date | null | undefined,
+    endDate: Date | null | undefined,
+    dedicatedVehicle: boolean,
+    excludePackageId?: string,
+  ): Promise<void> {
+    if (!vehicleId || !startDate || !endDate) {
+      return;
+    }
+
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { id: vehicleId },
+      select: { driverId: true },
+    });
+
+    await bookingAllocationService.assertVehicleAndDriverAvailability({
+      vehicleId,
+      driverId: vehicle?.driverId ?? null,
+      startDate,
+      endDate,
+      dedicatedVehicle,
+      packageId: excludePackageId,
+    });
   }
 
   private async reserveHeldRooms(
@@ -645,12 +676,23 @@ export class PackagesService {
     );
     await this.assertVehicleMarketplaceAvailability(input.vehicleId ?? null);
 
+    // Block creation if the vehicle is already booked on the package dates
+    const dedicated = input.dedicatedVehicle ?? true;
+    const reservationWindow = getPackageReservationWindow(input.startDate ?? null, input.duration);
+    if (reservationWindow) {
+      await this.assertVehicleDateAvailability(
+        input.vehicleId ?? null,
+        reservationWindow.start,
+        reservationWindow.endExclusive,
+        dedicated,
+      );
+    }
+
     const heldRoomPlan = buildHeldRoomPlan(
       normalizedRoomPlan,
       0,
       Boolean(input.isActive ?? true),
     );
-    const reservationWindow = getPackageReservationWindow(input.startDate ?? null, input.duration);
 
     const packageId = await prisma.$transaction(async (tx: any) => {
       if (heldRoomPlan.length > 0) {
@@ -668,6 +710,7 @@ export class PackagesService {
           hotelIds: normalizedHotelIds,
           hotelRoomPlan: normalizedRoomPlan,
           vehicleId: input.vehicleId ?? null,
+          dedicatedVehicle: input.dedicatedVehicle ?? true,
           name: input.name,
           description: input.description ?? null,
           price: input.price,
@@ -722,6 +765,7 @@ export class PackagesService {
         hotelIds: true,
         hotelRoomPlan: true,
         vehicleId: true,
+        dedicatedVehicle: true,
         startDate: true,
         duration: true,
         isActive: true,
@@ -757,9 +801,21 @@ export class PackagesService {
 
     await this.assertMarketplaceHotelsAvailable(nextHotelIds, nextIsActive);
     await this.assertMarketplaceRoomPlan(nextHotelIds, nextDesiredRoomPlan, nextIsActive);
-    await this.assertVehicleMarketplaceAvailability(
-      input.vehicleId !== undefined ? input.vehicleId ?? null : existing.vehicleId ?? null,
-    );
+    const nextVehicleId = input.vehicleId !== undefined ? input.vehicleId ?? null : existing.vehicleId ?? null;
+    const nextDedicatedVehicle = input.dedicatedVehicle !== undefined ? input.dedicatedVehicle : (existing.dedicatedVehicle ?? true);
+    await this.assertVehicleMarketplaceAvailability(nextVehicleId);
+
+    // Block update if the vehicle is already booked on the new package dates
+    const nextReservationWindowForCheck = getPackageReservationWindow(nextStartDate, nextDuration);
+    if (nextReservationWindowForCheck) {
+      await this.assertVehicleDateAvailability(
+        nextVehicleId,
+        nextReservationWindowForCheck.start,
+        nextReservationWindowForCheck.endExclusive,
+        nextDedicatedVehicle,
+        id, // exclude bookings belonging to THIS package
+      );
+    }
 
     const packageId = await prisma.$transaction(async (tx: any) => {
       await tx.$queryRaw`SELECT id FROM packages WHERE id = ${id} FOR UPDATE`;
@@ -861,6 +917,7 @@ export class PackagesService {
             ? { hotelId: nextHotelIds[0] ?? null, hotelIds: nextHotelIds, hotelRoomPlan: nextDesiredRoomPlan }
             : {}),
           ...(input.vehicleId !== undefined ? { vehicleId: input.vehicleId ?? null } : {}),
+          ...(input.dedicatedVehicle !== undefined ? { dedicatedVehicle: input.dedicatedVehicle } : {}),
           ...(input.name !== undefined ? { name: input.name } : {}),
           ...(input.description !== undefined ? { description: input.description ?? null } : {}),
           ...(input.price !== undefined ? { price: input.price } : {}),

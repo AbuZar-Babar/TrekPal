@@ -83,16 +83,16 @@ const TripRequestList = () => {
     try { await dispatch(fetchBidThread(existing.id) as any).unwrap(); } catch { /* handled */ }
   };
 
-  const handleBidSubmit = async ({ price, description, offerDetails, hotelId, roomId, vehicleId }: {
+  const handleBidSubmit = async ({ price, description, offerDetails, hotelId, roomId, vehicleId, dedicatedVehicle }: {
     price: number; description?: string; offerDetails: OfferDetails;
-    hotelId?: string; roomId?: string; vehicleId?: string;
+    hotelId?: string; roomId?: string; vehicleId?: string; dedicatedVehicle?: boolean;
   }) => {
     if (!selected) return;
     try {
       if (modalBid) {
-        await dispatch(createCounterOffer({ bidId: modalBid.id, price, description, offerDetails, hotelId, roomId, vehicleId }) as any).unwrap();
+        await dispatch(createCounterOffer({ bidId: modalBid.id, price, description, offerDetails, hotelId, roomId, vehicleId, dedicatedVehicle }) as any).unwrap();
       } else {
-        await dispatch(createBid({ tripRequestId: selected.id, price, description, offerDetails, hotelId, roomId, vehicleId }) as any).unwrap();
+        await dispatch(createBid({ tripRequestId: selected.id, price, description, offerDetails, hotelId, roomId, vehicleId, dedicatedVehicle }) as any).unwrap();
       }
       setSelected(null);
       dispatch(clearSelectedBid());

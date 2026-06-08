@@ -59,6 +59,7 @@ function mapBidRevision(revision: any): BidRevisionResponse {
     hotelId: revision.hotelId ?? null,
     roomId: revision.roomId ?? null,
     vehicleId: revision.vehicleId ?? null,
+    dedicatedVehicle: revision.dedicatedVehicle ?? true,
     hotel: revision.hotel ?? null,
     room: revision.room ?? null,
     vehicle: revision.vehicle ?? null,
@@ -78,6 +79,7 @@ function mapBid(bid: any): BidResponse {
     hotelId: bid.hotelId ?? null,
     roomId: bid.roomId ?? null,
     vehicleId: bid.vehicleId ?? null,
+    dedicatedVehicle: bid.dedicatedVehicle ?? true,
     hotel: bid.hotel ?? null,
     room: bid.room ?? null,
     vehicle: bid.vehicle ?? null,
@@ -198,6 +200,7 @@ export class BidsService {
           hotelId: input.hotelId ?? null,
           roomId: input.roomId ?? null,
           vehicleId: input.vehicleId ?? null,
+          dedicatedVehicle: input.dedicatedVehicle ?? true,
           awaitingActionBy: BID_AWAITING_ACTION.TRAVELER,
           status: BID_STATUS.PENDING,
         },
@@ -214,6 +217,7 @@ export class BidsService {
           hotelId: input.hotelId ?? null,
           roomId: input.roomId ?? null,
           vehicleId: input.vehicleId ?? null,
+          dedicatedVehicle: input.dedicatedVehicle ?? true,
         },
       });
 
@@ -416,6 +420,7 @@ export class BidsService {
           hotelId: isAgency ? (input.hotelId ?? null) : undefined,
           roomId: isAgency ? (input.roomId ?? null) : undefined,
           vehicleId: isAgency ? (input.vehicleId ?? null) : undefined,
+          dedicatedVehicle: isAgency ? (input.dedicatedVehicle ?? true) : undefined,
         },
       });
 
@@ -429,6 +434,7 @@ export class BidsService {
             hotelId: input.hotelId ?? null,
             roomId: input.roomId ?? null,
             vehicleId: input.vehicleId ?? null,
+            dedicatedVehicle: input.dedicatedVehicle ?? true,
           }),
           awaitingActionBy: negotiationState.nextAwaitingAction,
         },
@@ -582,6 +588,7 @@ export class BidsService {
         driverId: driverSnapshot.driverId,
         startDate: bid.tripRequest.startDate,
         endDate: bid.tripRequest.endDate,
+        dedicatedVehicle: bid.dedicatedVehicle ?? true,
       });
 
       const booking = await tx.booking.create({
@@ -593,6 +600,7 @@ export class BidsService {
           hotelId: resolvedHotelId,
           roomId: resolvedRoomId,
           vehicleId: resolvedVehicleId,
+          dedicatedVehicle: bid.dedicatedVehicle ?? true,
           driverId: driverSnapshot.driverId,
           driverNameSnapshot: driverSnapshot.driverNameSnapshot,
           driverPhoneSnapshot: driverSnapshot.driverPhoneSnapshot,

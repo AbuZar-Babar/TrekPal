@@ -50,6 +50,7 @@ export const bidsService = {
     hotelId?: string;
     roomId?: string;
     vehicleId?: string;
+    dedicatedVehicle?: boolean;
   }): Promise<Bid> {
     try {
       const response = await apiClient.post('/bids', data);
@@ -67,6 +68,7 @@ export const bidsService = {
     hotelId?: string;
     roomId?: string;
     vehicleId?: string;
+    dedicatedVehicle?: boolean;
   }): Promise<Bid> {
     try {
       const response = await apiClient.post(`/bids/${data.bidId}/counteroffer`, {
@@ -76,6 +78,7 @@ export const bidsService = {
         hotelId: data.hotelId,
         roomId: data.roomId,
         vehicleId: data.vehicleId,
+        dedicatedVehicle: data.dedicatedVehicle,
       });
       return response.data.data;
     } catch (error: any) {

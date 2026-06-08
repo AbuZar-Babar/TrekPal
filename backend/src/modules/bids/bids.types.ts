@@ -77,6 +77,7 @@ export const createBidSchema = z.object({
   hotelId: z.string().trim().optional(),
   roomId: z.string().trim().optional(),
   vehicleId: z.string().trim().optional(),
+  dedicatedVehicle: z.boolean().optional().default(true),
 });
 
 export const counterOfferSchema = z.object({
@@ -86,6 +87,7 @@ export const counterOfferSchema = z.object({
   hotelId: z.string().trim().optional(),
   roomId: z.string().trim().optional(),
   vehicleId: z.string().trim().optional(),
+  dedicatedVehicle: z.boolean().optional().default(true),
 });
 
 export type OfferDetails = z.infer<typeof offerDetailsSchema>;
@@ -123,6 +125,7 @@ export interface BidRevisionResponse {
   hotelId: string | null;
   roomId: string | null;
   vehicleId: string | null;
+  dedicatedVehicle: boolean;
   hotel: BidHotelInfo | null;
   room: BidRoomInfo | null;
   vehicle: BidVehicleInfo | null;
@@ -140,6 +143,7 @@ export interface BidResponse {
   hotelId: string | null;
   roomId: string | null;
   vehicleId: string | null;
+  dedicatedVehicle: boolean;
   hotel: BidHotelInfo | null;
   room: BidRoomInfo | null;
   vehicle: BidVehicleInfo | null;

@@ -31,6 +31,7 @@ export const createPackageSchema = z.object({
     .optional()
     .default([]),
   vehicleId: z.string().trim().min(1).nullable().optional(),
+  dedicatedVehicle: z.boolean().optional().default(true),
   destinations: z
     .array(z.string().trim().min(1, 'Destination cannot be empty'))
     .min(1, 'Add at least one destination'),
@@ -73,6 +74,7 @@ export interface PackageResponse {
     rooms: number;
   }>;
   vehicleId: string | null;
+  dedicatedVehicle: boolean;
   name: string;
   description: string | null;
   price: number;

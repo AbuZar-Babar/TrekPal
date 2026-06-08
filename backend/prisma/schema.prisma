@@ -246,6 +246,7 @@ model Package {
   hotelIds    String[] @default([])
   hotelRoomPlan Json?
   vehicleId   String?
+  dedicatedVehicle Boolean @default(true) // true = vehicle stays full trip, false = transfer only (drop-off + pick-up)
   name        String
   description String?
   price       Float
@@ -322,6 +323,7 @@ model Bid {
   hotelId       String?
   roomId        String?
   vehicleId     String?
+  dedicatedVehicle Boolean @default(true)
   price         Float
   description   String?
   offerDetails  Json?
@@ -350,6 +352,7 @@ model BidRevision {
   hotelId      String?
   roomId       String?
   vehicleId    String?
+  dedicatedVehicle Boolean @default(true)
   price        Float
   description  String?
   offerDetails Json?
@@ -371,6 +374,7 @@ model Booking {
   hotelId       String?
   roomId        String?
   vehicleId     String?
+  dedicatedVehicle Boolean @default(true)
   driverId      String?
   packageId     String?
   driverNameSnapshot   String?

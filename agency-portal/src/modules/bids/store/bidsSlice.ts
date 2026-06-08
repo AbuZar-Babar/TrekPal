@@ -60,6 +60,7 @@ export const createBid = createAsyncThunk(
     hotelId?: string;
     roomId?: string;
     vehicleId?: string;
+    dedicatedVehicle?: boolean;
   }) => {
     return await bidsService.createBid(data);
   },
@@ -75,6 +76,7 @@ export const createCounterOffer = createAsyncThunk(
     hotelId?: string;
     roomId?: string;
     vehicleId?: string;
+    dedicatedVehicle?: boolean;
   }) => {
     return await bidsService.createCounterOffer(data);
   },

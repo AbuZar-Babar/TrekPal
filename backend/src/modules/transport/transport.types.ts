@@ -121,4 +121,7 @@ export interface VehicleResponse {
   };
   createdAt: Date;
   updatedAt: Date;
+  // Populated when queried with date range
+  isAvailableOnDates?: boolean;
+  conflictReason?: string | null;
 }

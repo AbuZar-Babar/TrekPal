@@ -60,6 +60,9 @@ export interface Vehicle {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdAt: string;
   updatedAt: string;
+  // Availability when fetched with date range
+  isAvailableOnDates?: boolean;
+  conflictReason?: string | null;
 }
 
 export interface Hotel {
@@ -107,6 +110,7 @@ export interface Package {
     rooms: number;
   }>;
   vehicleId: string | null;
+  dedicatedVehicle: boolean;
   name: string;
   description?: string | null;
   price: number;
@@ -265,6 +269,7 @@ export interface Bid {
   hotelId: string | null;
   roomId: string | null;
   vehicleId: string | null;
+  dedicatedVehicle: boolean;
   hotel: BidHotelInfo | null;
   room: BidRoomInfo | null;
   vehicle: BidVehicleInfo | null;
