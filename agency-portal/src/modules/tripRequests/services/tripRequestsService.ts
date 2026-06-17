@@ -18,4 +18,9 @@ export const tripRequestsService = {
       limit: result.limit,
     };
   },
+  async getTripRequestById(id: string): Promise<TripRequest> {
+    const response = await apiClient.get(`/trip-requests/${id}`);
+    return response.data.data;
+  },
 };
+

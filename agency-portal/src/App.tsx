@@ -13,6 +13,7 @@ import HotelList from './modules/hotels/components/HotelList';
 import ReviewsList from './modules/reviews/components/ReviewsList';
 import PackageForm from './modules/packages/components/PackageForm';
 import PackageList from './modules/packages/components/PackageList';
+import BidList from './modules/bids/components/BidList';
 import TripRequestList from './modules/tripRequests/components/TripRequestList';
 import Layout from './shared/components/Layout/Layout';
 import { AppDispatch, RootState } from './store';
@@ -113,6 +114,16 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <TripRequestList />
+            </Layout>
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/bids"
+        element={(
+          <ProtectedRoute>
+            <Layout>
+              <BidList />
             </Layout>
           </ProtectedRoute>
         )}
