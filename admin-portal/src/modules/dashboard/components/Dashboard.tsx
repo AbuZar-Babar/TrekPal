@@ -81,14 +81,6 @@ const Dashboard = () => {
   // ---- Business snapshot rows ------------------------------------------
   const businessRows = [
     { label: 'Total bookings', value: (stats?.totalBookings ?? 0).toLocaleString() },
-    {
-      label: 'Total revenue',
-      value: new Intl.NumberFormat('en-PK', {
-        style: 'currency',
-        currency: 'PKR',
-        maximumFractionDigits: 0,
-      }).format(stats?.totalRevenue ?? 0),
-    },
     { label: 'Verified travelers', value: (stats?.verifiedTravelers ?? 0).toLocaleString() },
     { label: 'Approved agencies', value: (stats?.approvedAgencies ?? 0).toLocaleString() },
   ];
