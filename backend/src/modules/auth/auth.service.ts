@@ -81,27 +81,11 @@ export class AuthService {
   }
 
   private getVerificationRedirectUrl(role: string): string {
-    const normalizedRole = this.normalizeRole(role);
-
-    const localUrls: Record<string, string> = {
-      [ROLES.TRAVELER]: 'http://localhost:5173/email-confirmed',
-      [ROLES.AGENCY]: 'http://localhost:5173/email-confirmed',
-      [ROLES.ADMIN]: 'http://localhost:5174/email-confirmed',
-      [ROLES.HOTEL]: 'http://localhost:5175/#/email-confirmed',
-      [ROLES.VEHICLE]: 'http://localhost:5176/#/email-confirmed',
-    };
-
-    const productionUrls: Record<string, string> = {
-      [ROLES.TRAVELER]: 'https://trekpal-agency-portal.onrender.com/email-confirmed',
-      [ROLES.AGENCY]: 'https://trekpal-agency-portal.onrender.com/email-confirmed',
-      [ROLES.ADMIN]: 'https://trekpal-admin-portal.onrender.com/email-confirmed',
-      [ROLES.HOTEL]: 'https://trekpal-hotel-portal.onrender.com/#/email-confirmed',
-      [ROLES.VEHICLE]: 'https://trekpal-vehicle-portal.onrender.com/#/email-confirmed',
-    };
+    void role;
 
     return env.NODE_ENV === 'production'
-      ? (productionUrls[normalizedRole] || 'https://trekpal-agency-portal.onrender.com/email-confirmed')
-      : (localUrls[normalizedRole] || 'http://localhost:5173/email-confirmed');
+      ? 'https://trekpal-agency-portal.onrender.com/email-confirmed'
+      : 'http://localhost:5173/email-confirmed';
   }
 
   private buildToken(user: AuthResponse['user']): string {
