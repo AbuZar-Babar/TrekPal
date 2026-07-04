@@ -33,8 +33,15 @@ class AuthRepositoryImpl implements AuthRepository {
     final AuthSession session = await _remoteDataSource.registerTraveler(
       input: input,
     );
-    await _localDataSource.saveSession(session);
+    if (session.token.isNotEmpty) {
+      await _localDataSource.saveSession(session);
+    }
     return session;
+  }
+
+  @override
+  Future<void> resendVerificationEmail({required String email}) {
+    return _remoteDataSource.resendVerificationEmail(email: email);
   }
 
   @override

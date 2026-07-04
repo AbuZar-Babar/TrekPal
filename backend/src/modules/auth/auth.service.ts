@@ -11,7 +11,9 @@ import {
   isSupabaseConfigured,
   signInWithSupabasePassword,
   verifySupabaseAccessToken,
+  getSupabaseAdminClient,
 } from '../../config/supabase';
+import { env } from '../../config/env';
 import { generateJWT } from '../../utils/jwt.util';
 import {
   UserRegisterInput,
@@ -404,7 +406,7 @@ export class AuthService {
 
     return {
       user: profile,
-      token: this.buildToken(profile),
+      token: isSupabaseConfigured() ? '' : this.buildToken(profile),
     };
   }
 
@@ -461,7 +463,7 @@ export class AuthService {
 
     return {
       user: profile,
-      token: this.buildToken(profile),
+      token: isSupabaseConfigured() ? '' : this.buildToken(profile),
     };
   }
 
@@ -504,7 +506,7 @@ export class AuthService {
 
     return {
       user: profile,
-      token: this.buildToken(profile),
+      token: isSupabaseConfigured() ? '' : this.buildToken(profile),
     };
   }
 
@@ -552,7 +554,7 @@ export class AuthService {
     const profile = this.mapVehicleProvider(provider);
     return {
       user: profile,
-      token: this.buildToken(profile),
+      token: isSupabaseConfigured() ? '' : this.buildToken(profile),
     };
   }
 
@@ -584,7 +586,10 @@ export class AuthService {
     try {
       const result = await signInWithSupabasePassword(input.email, input.password);
       supabaseUser = result.user;
-    } catch {
+    } catch (error: any) {
+      if (error && error.message && error.message.toLowerCase().includes('email not confirmed')) {
+        throw new Error('Email not confirmed. Please check your inbox for the verification link.');
+      }
       throw new Error('Invalid credentials');
     }
 
@@ -702,6 +707,37 @@ export class AuthService {
       user: profile,
       token: this.buildToken(profile),
     };
+  }
+
+  /**
+   * Resend verification email
+   */
+  async resendVerification(email: string): Promise<void> {
+    if (!isSupabaseConfigured()) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Dev Mode] Verification email resend requested for ${email}`);
+        return;
+      }
+      throw new Error('Supabase auth is not configured');
+    }
+
+    const profile = await this.findProfileByEmail(email, false);
+    if (!profile) {
+      throw new Error('No account found with this email address');
+    }
+
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: env.CORS_ORIGIN || 'http://localhost:5173',
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
   }
 }
 

@@ -7,7 +7,8 @@ const PendingApproval = () => {
   const { email, name } = (location.state as { email?: string; name?: string }) || {};
 
   const steps = [
-    'Application submitted',
+    'Verify your email address (check your inbox)',
+    'Application submitted for review',
     'Admin review in progress',
     'Login unlocks after approval',
   ];
@@ -21,7 +22,7 @@ const PendingApproval = () => {
               {name || 'Vehicle provider application'}
             </div>
             <p className="mt-2 text-sm text-[var(--warning-text)]">
-              {email || 'Your email'} is waiting for admin approval.
+              Please verify your email address via the link sent to {email || 'your email'}. Once verified, the administrator will review your application.
             </p>
           </div>
 
@@ -33,8 +34,10 @@ const PendingApproval = () => {
                     index === 0
                       ? 'bg-[var(--success-bg)] text-[var(--success-text)]'
                       : index === 1
-                        ? 'bg-[var(--warning-bg)] text-[var(--warning-text)]'
-                        : 'bg-[var(--panel-strong)] text-[var(--text-soft)]'
+                        ? 'bg-[var(--success-bg)] text-[var(--success-text)]'
+                        : index === 2
+                          ? 'bg-[var(--warning-bg)] text-[var(--warning-text)]'
+                          : 'bg-[var(--panel-strong)] text-[var(--text-soft)]'
                   }`}
                 >
                   {index + 1}

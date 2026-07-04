@@ -98,7 +98,7 @@ const RegisterPage: React.FC = () => {
               </div>
               <h2 className="text-xl font-semibold text-[var(--tp-text)]">Application submitted!</h2>
               <p className="mt-2 text-sm text-[var(--tp-text-soft)]">
-                Your hotel registration has been sent to the TrekPal admin for review. You'll be able to sign in once approved.
+                Please verify your email address via the link sent to your inbox first. Once verified, the TrekPal admin will review your hotel registration. You'll be able to sign in once approved.
               </p>
               <p className="mt-4 text-xs text-[var(--tp-text-soft)]">Redirecting to login…</p>
             </div>

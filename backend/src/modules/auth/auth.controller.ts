@@ -419,6 +419,19 @@ export class AuthController {
       sendError(res, getErrorMessage(error) || 'Token refresh failed', 400);
     }
   }
+
+  /**
+   * Resend verification email
+   * POST /api/auth/resend-verification
+   */
+  async resendVerification(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      await authService.resendVerification(req.body.email);
+      sendSuccess(res, null, 'Verification email resent successfully');
+    } catch (error: unknown) {
+      sendError(res, getErrorMessage(error) || 'Failed to resend verification email', 400);
+    }
+  }
 }
 
 export const authController = new AuthController();

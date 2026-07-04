@@ -31,16 +31,44 @@ class _LoginPageState extends State<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
     final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
     final AuthProvider auth = context.read<AuthProvider>();
+    final String email = _emailController.text.trim();
     try {
       await auth.login(
-        email: _emailController.text.trim(),
+        email: email,
         password: _passwordController.text,
       );
     } catch (_) {
-      if (!context.mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text(auth.errorMessage ?? 'Login failed')),
-      );
+      if (!mounted) return;
+      final String errorMsg = auth.errorMessage ?? 'Login failed';
+      
+      if (errorMsg.contains('Email not confirmed')) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            duration: const Duration(seconds: 8),
+            action: SnackBarAction(
+              label: 'Resend',
+              onPressed: () async {
+                final ScaffoldMessengerState localMessenger = ScaffoldMessenger.of(context);
+                try {
+                  await auth.resendVerificationEmail(email: email);
+                  localMessenger.showSnackBar(
+                    const SnackBar(content: Text('Verification email resent!')),
+                  );
+                } catch (e) {
+                  localMessenger.showSnackBar(
+                    SnackBar(content: Text(auth.errorMessage ?? 'Failed to resend')),
+                  );
+                }
+              },
+            ),
+          ),
+        );
+      } else {
+        messenger.showSnackBar(
+          SnackBar(content: Text(errorMsg)),
+        );
+      }
     }
   }
 

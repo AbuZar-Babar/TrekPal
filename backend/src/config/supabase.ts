@@ -8,6 +8,7 @@ export interface CreateSupabaseAuthUserInput {
   password: string;
   name?: string;
   role: string;
+  emailRedirectTo?: string;
 }
 
 export const isSupabaseConfigured = (): boolean => {
@@ -59,7 +60,7 @@ export const createSupabaseAuthUser = async (
   const { data, error } = await supabase.auth.admin.createUser({
     email: input.email,
     password: input.password,
-    email_confirm: true,
+    email_confirm: false, // Set to false to enforce email verification
     user_metadata: input.name ? { name: input.name } : undefined,
     app_metadata: { role: input.role },
   });
@@ -71,6 +72,20 @@ export const createSupabaseAuthUser = async (
       throw duplicateError;
     }
     throw error || new Error('Failed to create Supabase auth user');
+  }
+
+  // Trigger Supabase to send the verification email
+  const redirectUrl = input.emailRedirectTo || env.CORS_ORIGIN || 'http://localhost:5173';
+  const { error: resendError } = await supabase.auth.resend({
+    type: 'signup',
+    email: input.email,
+    options: {
+      emailRedirectTo: redirectUrl,
+    },
+  });
+
+  if (resendError) {
+    console.error('Failed to send verification email during signup:', resendError);
   }
 
   return data.user;

@@ -2,10 +2,10 @@ import { Link, useLocation } from 'react-router-dom';
 import AuthShell from './AuthShell';
 
 const steps = [
-  { label: 'Application submitted',      done: true,    icon: 'check' },
-  { label: 'Admin review in progress',   done: false,   icon: 'clock' },
-  { label: 'Approval email sent to you', done: false,   icon: 'mail'  },
-  { label: 'Login unlocks',              done: false,   icon: 'lock'  },
+  { label: 'Verify your email (check inbox)', done: false,   icon: 'mail'  },
+  { label: 'Application submitted',          done: true,    icon: 'check' },
+  { label: 'Admin review in progress',       done: false,   icon: 'clock' },
+  { label: 'Login unlocks',                  done: false,   icon: 'lock'  },
 ];
 
 const StepIcon = ({ type, done, active }: { type: string; done: boolean; active: boolean }) => {
@@ -50,19 +50,19 @@ const PendingApproval = () => {
         </h1>
         <p className="mt-1.5 text-sm text-[var(--text-soft)]">
           {name ? <><strong className="text-[var(--text)]">{name}</strong> — </> : null}
-          {email || 'Your application'} is awaiting admin approval.
+          Please verify your email address via the link sent to {email || 'your email'}. Once verified, the administrator will review your application.
         </p>
 
         {/* Timeline */}
         <div className="mt-7 space-y-3 text-left">
           {steps.map((s, i) => (
             <div key={s.label} className="flex items-center gap-3">
-              <StepIcon type={s.icon} done={s.done} active={i === 1} />
+              <StepIcon type={s.icon} done={s.done} active={i === 0} />
               <div>
-                <div className={`text-sm font-medium ${s.done ? 'text-[var(--text)]' : i === 1 ? 'text-[var(--warning-text)]' : 'text-[var(--text-soft)]'}`}>
+                <div className={`text-sm font-medium ${s.done ? 'text-[var(--text)]' : i === 0 ? 'text-[var(--warning-text)]' : 'text-[var(--text-soft)]'}`}>
                   {s.label}
                 </div>
-                {i === 1 && (
+                {i === 2 && (
                   <div className="text-xs text-[var(--text-soft)]">Usually within 1–2 business days</div>
                 )}
               </div>

@@ -75,8 +75,19 @@ class AuthProvider extends ChangeNotifier {
     required TravelerRegistrationInput input,
   }) async {
     await _runBusy(() async {
-      _session = await _registerUseCase(input: input);
-      await _refreshProfile(silent: true);
+      final AuthSession session = await _registerUseCase(input: input);
+      if (session.token.isNotEmpty) {
+        _session = session;
+        await _refreshProfile(silent: true);
+      } else {
+        _session = null;
+      }
+    });
+  }
+
+  Future<void> resendVerificationEmail({required String email}) async {
+    await _runBusy(() async {
+      await _authRepository.resendVerificationEmail(email: email);
     });
   }
 

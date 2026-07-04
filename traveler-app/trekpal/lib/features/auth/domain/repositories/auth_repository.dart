@@ -7,6 +7,8 @@ abstract class AuthRepository {
     required TravelerRegistrationInput input,
   });
 
+  Future<void> resendVerificationEmail({required String email});
+
   Future<AuthUser> fetchProfile();
 
   Future<AuthUser> updateProfile(TravelerProfileUpdate update);

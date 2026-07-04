@@ -69,10 +69,33 @@ class _RegisterPageState extends State<RegisterPage> {
           address: _addressController.text.trim(),
         ),
       );
-      if (!context.mounted) return;
-      Navigator.of(context).pop();
+      if (!mounted) return;
+
+      if (!auth.isAuthenticated) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Verify your email'),
+            content: const Text(
+              'A verification link has been sent to your email. Please verify your email before logging in.',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Dismiss dialog
+                  Navigator.of(context).pop(); // Go back to login screen
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        Navigator.of(context).pop();
+      }
     } catch (_) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(content: Text(auth.errorMessage ?? 'Registration failed')),
       );

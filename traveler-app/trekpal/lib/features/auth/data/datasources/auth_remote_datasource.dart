@@ -41,6 +41,16 @@ class AuthRemoteDataSource {
     return AuthSessionModel.fromJson(data as Map<String, dynamic>);
   }
 
+  Future<void> resendVerificationEmail({
+    required String email,
+  }) async {
+    await _apiClient.post(
+      ApiConstants.resendVerification,
+      authenticated: false,
+      body: <String, dynamic>{'email': email},
+    );
+  }
+
   Future<AuthUserModel> fetchProfile() async {
     final dynamic data = await _apiClient.get(ApiConstants.usersProfile);
     return AuthUserModel.fromJson(data as Map<String, dynamic>);

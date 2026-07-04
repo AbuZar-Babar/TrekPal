@@ -238,6 +238,15 @@ export const refreshTokenSchema = z.object({
 
 export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>['body'];
 
+// Resend Verification Schema
+export const resendVerificationSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+  }),
+});
+
+export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>['body'];
+
 // Auth Response Type
 export interface AuthResponse {
   user: {

@@ -12,6 +12,7 @@ import {
   vehicleRegisterSchema,
   loginSchema,
   verifyCnicSchema,
+  resendVerificationSchema,
 } from './auth.types';
 
 const router = Router();
@@ -91,6 +92,17 @@ router.get(
   '/profile',
   authenticate,
   authController.getProfile.bind(authController)
+);
+
+/**
+ * @route   POST /api/auth/resend-verification
+ * @desc    Resend email verification link
+ * @access  Public
+ */
+router.post(
+  '/resend-verification',
+  validateBody(resendVerificationSchema.shape.body),
+  authController.resendVerification.bind(authController)
 );
 
 /**

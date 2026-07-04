@@ -20,6 +20,7 @@ class ApiConstants {
 
   static const String login = '/auth/login';
   static const String registerTraveler = '/auth/register/user';
+  static const String resendVerification = '/auth/resend-verification';
   static const String authProfile = '/auth/profile';
   static const String usersProfile = '/users/profile';
   static const String usersProfileAvatar = '/users/profile/avatar';
