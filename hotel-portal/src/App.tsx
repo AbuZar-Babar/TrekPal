@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LoginPage from './modules/auth/pages/LoginPage';
+import EmailConfirmedPage from './modules/auth/pages/EmailConfirmedPage';
 import RegisterPage from './modules/auth/pages/RegisterPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardPage from './modules/dashboard/pages/DashboardPage';
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/email-confirmed" element={<EmailConfirmedPage />} />
           
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />

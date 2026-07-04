@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from './store';
 import Layout from './shared/components/Layout/Layout';
 import AdminLoginForm from './modules/auth/components/AdminLoginForm';
+import EmailConfirmedPage from './modules/auth/pages/EmailConfirmedPage';
 import Dashboard from './modules/dashboard/components/Dashboard';
 import AgencyList from './modules/agencies/components/AgencyList';
 import UserList from './modules/users/components/UserList';
@@ -26,6 +27,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<AdminLoginForm />} />
+      <Route path="/email-confirmed" element={<EmailConfirmedPage />} />
       <Route
         path="/dashboard"
         element={

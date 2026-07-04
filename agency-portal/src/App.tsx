@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import LoginForm from './modules/auth/components/LoginForm';
 import PendingApproval from './modules/auth/components/PendingApproval';
+import EmailConfirmedPage from './modules/auth/pages/EmailConfirmedPage';
 import RegisterForm from './modules/auth/components/RegisterForm';
 import { getProfile } from './modules/auth/store/authSlice';
 import BookingList from './modules/bookings/components/BookingList';
@@ -67,6 +68,7 @@ function App() {
       <Route path="/login" element={<LoginForm />} />
       <Route path="/signup" element={<RegisterForm />} />
       <Route path="/pending-approval" element={<PendingApproval />} />
+      <Route path="/email-confirmed" element={<EmailConfirmedPage />} />
 
       <Route
         path="/dashboard"

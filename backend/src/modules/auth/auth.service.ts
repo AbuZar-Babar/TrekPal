@@ -80,6 +80,30 @@ export class AuthService {
     return this.normalizeRole(user.app_metadata?.role ?? user.user_metadata?.role);
   }
 
+  private getVerificationRedirectUrl(role: string): string {
+    const normalizedRole = this.normalizeRole(role);
+
+    const localUrls: Record<string, string> = {
+      [ROLES.TRAVELER]: 'http://localhost:5173/email-confirmed',
+      [ROLES.AGENCY]: 'http://localhost:5173/email-confirmed',
+      [ROLES.ADMIN]: 'http://localhost:5174/email-confirmed',
+      [ROLES.HOTEL]: 'http://localhost:5175/#/email-confirmed',
+      [ROLES.VEHICLE]: 'http://localhost:5176/#/email-confirmed',
+    };
+
+    const productionUrls: Record<string, string> = {
+      [ROLES.TRAVELER]: 'https://trekpal-agency-portal.onrender.com/email-confirmed',
+      [ROLES.AGENCY]: 'https://trekpal-agency-portal.onrender.com/email-confirmed',
+      [ROLES.ADMIN]: 'https://trekpal-admin-portal.onrender.com/email-confirmed',
+      [ROLES.HOTEL]: 'https://trekpal-hotel-portal.onrender.com/#/email-confirmed',
+      [ROLES.VEHICLE]: 'https://trekpal-vehicle-portal.onrender.com/#/email-confirmed',
+    };
+
+    return env.NODE_ENV === 'production'
+      ? (productionUrls[normalizedRole] || 'https://trekpal-agency-portal.onrender.com/email-confirmed')
+      : (localUrls[normalizedRole] || 'http://localhost:5173/email-confirmed');
+  }
+
   private buildToken(user: AuthResponse['user']): string {
     const fallbackUid = user.authUid?.trim() || user.id;
     return generateJWT({
@@ -382,6 +406,7 @@ export class AuthService {
         password: input.password,
         name: input.name,
         role: ROLES.TRAVELER,
+        emailRedirectTo: this.getVerificationRedirectUrl(ROLES.TRAVELER),
       });
       authUid = supabaseUser.id;
     } else if (process.env.NODE_ENV === 'development') {
@@ -422,6 +447,7 @@ export class AuthService {
         password: input.password,
         name: input.name,
         role: ROLES.AGENCY,
+        emailRedirectTo: this.getVerificationRedirectUrl(ROLES.AGENCY),
       });
       authUid = supabaseUser.id;
     } else if (process.env.NODE_ENV === 'development') {
@@ -479,6 +505,7 @@ export class AuthService {
         password: input.password,
         name: input.name,
         role: ROLES.HOTEL,
+        emailRedirectTo: this.getVerificationRedirectUrl(ROLES.HOTEL),
       });
       authUid = supabaseUser.id;
     } else if (process.env.NODE_ENV === 'development') {
@@ -519,6 +546,7 @@ export class AuthService {
         password: input.password,
         name: input.name,
         role: ROLES.VEHICLE,
+        emailRedirectTo: this.getVerificationRedirectUrl(ROLES.VEHICLE),
       });
       authUid = supabaseUser.id;
     } else if (process.env.NODE_ENV === 'development') {
@@ -727,11 +755,7 @@ export class AuthService {
     }
 
     const supabase = getSupabaseAdminClient();
-    const redirectUrl =
-      env.SUPABASE_EMAIL_REDIRECT_URL ||
-      (env.NODE_ENV === 'production'
-        ? 'https://trekpal-agency-portal.onrender.com/login'
-        : 'http://localhost:5173/login');
+    const redirectUrl = this.getVerificationRedirectUrl(profile.role);
 
     const { error } = await supabase.auth.resend({
       type: 'signup',

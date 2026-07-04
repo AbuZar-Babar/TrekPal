@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import LoginForm from './modules/auth/components/LoginForm';
 import PendingApproval from './modules/auth/components/PendingApproval';
+import EmailConfirmedPage from './modules/auth/pages/EmailConfirmedPage';
 import RegisterForm from './modules/auth/components/RegisterForm';
 import { getProfile } from './modules/auth/store/authSlice';
 import Dashboard from './modules/dashboard/components/Dashboard';
@@ -75,6 +76,7 @@ function App() {
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/signup" element={<Navigate to="/register" replace />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
+          <Route path="/email-confirmed" element={<EmailConfirmedPage />} />
 
           <Route
             path="/dashboard"
