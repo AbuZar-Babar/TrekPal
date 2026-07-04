@@ -23,11 +23,12 @@ JWT_EXPIRES_IN=7d
 # Supabase (required for KYC uploads + signed URL generation)
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_EMAIL_REDIRECT_URL=https://trekpal-agency-portal.onrender.com/login
 SUPABASE_STORAGE_BUCKET_KYC=kyc-private
 SUPABASE_SIGNED_URL_TTL_SECONDS=3600
 
-# CORS - Frontend URL
-CORS_ORIGIN=http://localhost:5173
+# CORS - comma-separated origins are supported
+CORS_ORIGIN=http://localhost:5173,http://localhost:5174,https://trekpal-admin-portal.onrender.com,https://trekpal-agency-portal.onrender.com,https://trekpal-hotel-portal.onrender.com,https://trekpal-vehicle-portal.onrender.com
 `;
 
 const envPath = path.join(__dirname, '.env');

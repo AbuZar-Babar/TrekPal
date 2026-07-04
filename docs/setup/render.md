@@ -36,7 +36,8 @@ DATABASE_URL=postgresql://... # runtime/pooled connection string
 DIRECT_URL=postgresql://... # direct connection string for Prisma migrations
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
-CORS_ORIGIN=https://your-admin-site.onrender.com,https://your-agency-site.onrender.com
+SUPABASE_EMAIL_REDIRECT_URL=https://trekpal-agency-portal.onrender.com/login
+CORS_ORIGIN=https://trekpal-admin-portal.onrender.com,https://trekpal-agency-portal.onrender.com,https://trekpal-hotel-portal.onrender.com,https://trekpal-vehicle-portal.onrender.com
 ```
 
 Notes:

@@ -12,7 +12,10 @@ export interface CreateSupabaseAuthUserInput {
 }
 
 const getEmailRedirectUrl = (override?: string): string => {
-  return override || env.SUPABASE_EMAIL_REDIRECT_URL || env.CORS_ORIGIN || 'http://localhost:5173';
+  const productionDefault = 'https://trekpal-agency-portal.onrender.com/login';
+  const localDefault = 'http://localhost:5173/login';
+
+  return override || env.SUPABASE_EMAIL_REDIRECT_URL || (env.NODE_ENV === 'production' ? productionDefault : localDefault);
 };
 
 export const isSupabaseConfigured = (): boolean => {

@@ -727,11 +727,17 @@ export class AuthService {
     }
 
     const supabase = getSupabaseAdminClient();
+    const redirectUrl =
+      env.SUPABASE_EMAIL_REDIRECT_URL ||
+      (env.NODE_ENV === 'production'
+        ? 'https://trekpal-agency-portal.onrender.com/login'
+        : 'http://localhost:5173/login');
+
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,
       options: {
-        emailRedirectTo: env.SUPABASE_EMAIL_REDIRECT_URL || env.CORS_ORIGIN || 'http://localhost:5173',
+        emailRedirectTo: redirectUrl,
       },
     });
 
