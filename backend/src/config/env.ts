@@ -16,6 +16,7 @@ const envSchema = z.object({
   // Supabase Storage (required in production for KYC uploads/signing)
   SUPABASE_URL: z.string().url().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  SUPABASE_EMAIL_REDIRECT_URL: z.string().url().optional(),
   SUPABASE_STORAGE_BUCKET_KYC: z.string().min(1).default('kyc-private'),
   SUPABASE_STORAGE_BUCKET_MEDIA: z.string().min(1).optional(),
   SUPABASE_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
@@ -34,6 +35,7 @@ const parsedEnv = envSchema.parse({
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_EMAIL_REDIRECT_URL: process.env.SUPABASE_EMAIL_REDIRECT_URL,
   SUPABASE_STORAGE_BUCKET_KYC: process.env.SUPABASE_STORAGE_BUCKET_KYC,
   SUPABASE_STORAGE_BUCKET_MEDIA: process.env.SUPABASE_STORAGE_BUCKET_MEDIA,
   SUPABASE_SIGNED_URL_TTL_SECONDS: process.env.SUPABASE_SIGNED_URL_TTL_SECONDS,
@@ -61,6 +63,7 @@ export const env = {
   JWT_EXPIRES_IN: string;
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
+  SUPABASE_EMAIL_REDIRECT_URL?: string;
   SUPABASE_STORAGE_BUCKET_KYC: string;
   SUPABASE_STORAGE_BUCKET_MEDIA?: string;
   SUPABASE_SIGNED_URL_TTL_SECONDS: number;

@@ -731,7 +731,7 @@ export class AuthService {
       type: 'signup',
       email,
       options: {
-        emailRedirectTo: env.CORS_ORIGIN || 'http://localhost:5173',
+        emailRedirectTo: env.SUPABASE_EMAIL_REDIRECT_URL || env.CORS_ORIGIN || 'http://localhost:5173',
       },
     });
 

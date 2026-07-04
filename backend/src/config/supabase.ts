@@ -11,6 +11,10 @@ export interface CreateSupabaseAuthUserInput {
   emailRedirectTo?: string;
 }
 
+const getEmailRedirectUrl = (override?: string): string => {
+  return override || env.SUPABASE_EMAIL_REDIRECT_URL || env.CORS_ORIGIN || 'http://localhost:5173';
+};
+
 export const isSupabaseConfigured = (): boolean => {
   return Boolean(env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY);
 };
@@ -75,7 +79,7 @@ export const createSupabaseAuthUser = async (
   }
 
   // Trigger Supabase to send the verification email
-  const redirectUrl = input.emailRedirectTo || env.CORS_ORIGIN || 'http://localhost:5173';
+  const redirectUrl = getEmailRedirectUrl(input.emailRedirectTo);
   const { error: resendError } = await supabase.auth.resend({
     type: 'signup',
     email: input.email,
