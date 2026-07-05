@@ -44,7 +44,9 @@ class _LoginPageState extends State<LoginPage> {
       if (errorMsg.contains('Email not confirmed')) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text(errorMsg),
+            content: const Text(
+              'Verify your email first. After confirming it, sign in again and you will go to KYC.',
+            ),
             duration: const Duration(seconds: 8),
             action: SnackBarAction(
               label: 'Resend',

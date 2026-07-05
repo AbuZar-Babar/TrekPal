@@ -76,9 +76,9 @@ class _RegisterPageState extends State<RegisterPage> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) => AlertDialog(
-            title: const Text('Verify your email'),
+            title: const Text('Email verification sent'),
             content: const Text(
-              'A verification link has been sent to your email. Please verify your email before logging in.',
+              'A verification link has been sent to your email. Verify it first, then sign in to continue to KYC.',
             ),
             actions: <Widget>[
               TextButton(
@@ -321,18 +321,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 )
                               : const Text('Create account'),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Terms
-                      Center(
-                        child: Text(
-                          'By creating an account, you agree to our Terms of Service and Privacy Policy.',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: cs.onSurfaceVariant,
-                          ),
                         ),
                       ),
                     ],
