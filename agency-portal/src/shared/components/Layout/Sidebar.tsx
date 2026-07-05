@@ -19,6 +19,7 @@ const workNav: NavItem[] = [
   { path: '/trip-requests', label: 'Requests',  shortLabel: 'Requests', icon: ic('M4 6h16M4 12h16M4 18h10') },
   { path: '/bookings',      label: 'Bookings',  shortLabel: 'Bookings', icon: ic('M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z') },
   { path: '/bids',          label: 'Bids',      shortLabel: 'Bids',     icon: ic('M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 000 4h6a2 2 0 000-4M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4') },
+  { path: '/chat',          label: 'Chat',      shortLabel: 'Chat',     icon: ic('M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z') },
 ];
 
 const manageNav: NavItem[] = [
