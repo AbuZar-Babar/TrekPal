@@ -47,6 +47,13 @@ export const signup = createAsyncThunk(
     officeCity?: string;
     license?: string;
     ntn?: string;
+    cnicImage?: File;
+    ownerPhoto?: File;
+    licenseCertificate?: File;
+    ntnCertificate?: File;
+    officeProof?: File;
+    bankCertificate?: File;
+    additionalSupportingDocument?: File;
   }) => {
     const response = await authService.signup(data);
     // Don't store token/user if status is PENDING - they need approval first

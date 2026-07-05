@@ -33,15 +33,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   @override
   void initState() {
     super.initState();
+    final BookingsProvider bookingsProvider = context.read<BookingsProvider>();
+    final ReviewsProvider reviewsProvider = context.read<ReviewsProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
-        await context.read<BookingsProvider>().fetchBookingById(
+        await bookingsProvider.fetchBookingById(
           widget.bookingId,
         );
       } catch (_) {}
       // Load existing review for this booking
       try {
-        await context.read<ReviewsProvider>().loadReviewForBooking(
+        await reviewsProvider.loadReviewForBooking(
           widget.bookingId,
         );
       } catch (_) {}

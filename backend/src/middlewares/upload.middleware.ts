@@ -57,6 +57,19 @@ export const uploadHotelDocuments = upload.fields([
     { name: 'businessDoc', maxCount: 1 },
 ]);
 
+/**
+ * Middleware for vehicle provider registration upload
+ */
+export const uploadVehicleDocuments = upload.fields([
+    { name: 'cnicImage', maxCount: 1 },
+    { name: 'ownerPhoto', maxCount: 1 },
+    { name: 'licenseCertificate', maxCount: 1 },
+    { name: 'ntnCertificate', maxCount: 1 },
+    { name: 'officeProof', maxCount: 1 },
+    { name: 'bankCertificate', maxCount: 1 },
+    { name: 'additionalSupportingDocument', maxCount: 1 },
+]);
+
 const ALLOWED_MEDIA_IMAGE_MIME_TYPES = new Set<string>([
   'image/jpeg',
   'image/png',

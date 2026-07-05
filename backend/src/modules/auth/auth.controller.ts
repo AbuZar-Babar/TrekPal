@@ -5,7 +5,7 @@ import { authService } from './auth.service';
 import { sendSuccess, sendError } from '../../utils/response.util';
 import { getErrorMessage } from '../../utils/error.util';
 import { deleteKycFile, uploadKycFile } from '../../services/kyc-storage.service';
-import { AgencyRegisterInput } from './auth.types';
+import { AgencyRegisterInput, VehicleRegisterInput } from './auth.types';
 import {
   inferKycExtensionFromMimeType,
   resolveKycMimeType,
@@ -55,6 +55,35 @@ const hotelRegistrationFileFields: HotelRegistrationFileField[] = [
   'businessDoc',
 ];
 
+type VehicleRegistrationFileField =
+  | 'cnicImage'
+  | 'ownerPhoto'
+  | 'licenseCertificate'
+  | 'ntnCertificate'
+  | 'officeProof'
+  | 'bankCertificate'
+  | 'additionalSupportingDocument';
+
+const vehicleDocumentLabels: Record<VehicleRegistrationFileField, string> = {
+  cnicImage: 'CNIC image',
+  ownerPhoto: 'owner photo',
+  licenseCertificate: 'license certificate',
+  ntnCertificate: 'NTN certificate',
+  officeProof: 'office ownership or rent proof',
+  bankCertificate: 'bank certificate',
+  additionalSupportingDocument: 'additional supporting document',
+};
+
+const vehicleRegistrationFileFields: VehicleRegistrationFileField[] = [
+  'cnicImage',
+  'ownerPhoto',
+  'licenseCertificate',
+  'ntnCertificate',
+  'officeProof',
+  'bankCertificate',
+  'additionalSupportingDocument',
+];
+
 const requiredAgencyFileFields = (input: AgencyRegisterInput): AgencyApplicationFileField[] => {
   const required: AgencyApplicationFileField[] = [
     'cnicImage',
@@ -72,6 +101,14 @@ const requiredAgencyFileFields = (input: AgencyRegisterInput): AgencyApplication
   return required;
 };
 
+const requiredVehicleFileFields = (): VehicleRegistrationFileField[] => {
+  return [
+    'cnicImage',
+    'ownerPhoto',
+    'licenseCertificate',
+  ];
+};
+
 const buildKycObjectPath = (
   uploadBatchId: string,
   fieldName: string,
@@ -81,6 +118,17 @@ const buildKycObjectPath = (
   const extension =
     originalExt || inferKycExtensionFromMimeType(file.mimetype);
   return `agencies/pending/${uploadBatchId}/${fieldName}${extension}`;
+};
+
+const buildVehicleKycObjectPath = (
+  uploadBatchId: string,
+  fieldName: string,
+  file: Express.Multer.File
+): string => {
+  const originalExt = path.extname(file.originalname || '').toLowerCase();
+  const extension =
+    originalExt || inferKycExtensionFromMimeType(file.mimetype);
+  return `vehicles/pending/${uploadBatchId}/${fieldName}${extension}`;
 };
 
 const getAuthErrorStatusCode = (message: string): number => {
@@ -303,10 +351,61 @@ export class AuthController {
   }
 
   async registerVehicleProvider(req: AuthRequest, res: Response): Promise<void> {
+    const uploadedObjectPaths: string[] = [];
     try {
-      const result = await authService.registerVehicleProvider(req.body);
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const input = req.body as VehicleRegisterInput;
+      const missingRequiredFiles = requiredVehicleFileFields().filter(
+        (fieldName) => !files?.[fieldName]?.[0]
+      );
+
+      if (missingRequiredFiles.length > 0) {
+        sendError(
+          res,
+          `Missing required documents: ${missingRequiredFiles.map((field) => vehicleDocumentLabels[field]).join(', ')}`,
+          400
+        );
+        return;
+      }
+
+      const uploadBatchId = `vehicles-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const uploadedDocuments: Partial<Record<VehicleRegistrationFileField, string>> = {};
+
+      for (const fieldName of vehicleRegistrationFileFields) {
+        const file = files?.[fieldName]?.[0];
+        if (!file) {
+          continue;
+        }
+
+        const objectPath = buildVehicleKycObjectPath(uploadBatchId, fieldName, file);
+        await uploadKycFile(
+          file.buffer,
+          resolveKycMimeType(file.mimetype, file.originalname),
+          objectPath,
+        );
+        uploadedObjectPaths.push(objectPath);
+        uploadedDocuments[fieldName] = objectPath;
+      }
+
+      const result = await authService.registerVehicleProvider({
+        ...input,
+        cnicImageUrl: uploadedDocuments.cnicImage,
+        ownerPhotoUrl: uploadedDocuments.ownerPhoto,
+        licenseCertificateUrl: uploadedDocuments.licenseCertificate,
+        ntnCertificateUrl: uploadedDocuments.ntnCertificate,
+        officeProofUrl: uploadedDocuments.officeProof,
+        bankCertificateUrl: uploadedDocuments.bankCertificate,
+        additionalSupportingDocumentUrl: uploadedDocuments.additionalSupportingDocument,
+      });
+
       sendSuccess(res, result, 'Vehicle provider registered successfully. Pending admin approval.', 201);
     } catch (error: any) {
+      if (uploadedObjectPaths.length > 0) {
+        await Promise.allSettled(
+          uploadedObjectPaths.map((objectPath) => deleteKycFile(objectPath))
+        );
+      }
+
       if (error.code === 'auth/email-already-exists') {
         sendError(res, 'Email already registered', 409);
       } else if (error.code === 'P2002') {

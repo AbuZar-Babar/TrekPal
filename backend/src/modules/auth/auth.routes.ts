@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authController } from './auth.controller';
 import { authenticate } from '../../middlewares/auth.middleware';
-import { uploadKycDocuments, uploadHotelDocuments } from '../../middlewares/upload.middleware';
+import { uploadKycDocuments, uploadHotelDocuments, uploadVehicleDocuments } from '../../middlewares/upload.middleware';
 import {
   validateBody,
 } from '../../middlewares/validation.middleware';
@@ -55,6 +55,7 @@ router.post(
 
 router.post(
   '/register/vehicle',
+  uploadVehicleDocuments as any,
   validateBody(vehicleRegisterSchema.shape.body),
   authController.registerVehicleProvider.bind(authController),
 );

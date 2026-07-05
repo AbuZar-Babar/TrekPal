@@ -85,4 +85,25 @@
     border-radius: 8px;
     font-size: 0.75rem;
   }
+
+  /* File drop zone */
+  .auth-drop-zone {
+    display: block;
+    cursor: pointer;
+    border: 1.5px dashed var(--border-strong);
+    border-radius: 12px;
+    padding: 1rem;
+    background: var(--panel-subtle);
+    transition: border-color 150ms ease, background-color 150ms ease;
+  }
+
+  .auth-drop-zone:hover {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+
+  .auth-drop-zone-done {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
 }

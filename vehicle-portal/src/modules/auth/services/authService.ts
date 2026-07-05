@@ -58,13 +58,31 @@ export const authService = {
     officeCity?: string;
     license?: string;
     ntn?: string;
+    cnicImage?: File;
+    ownerPhoto?: File;
+    licenseCertificate?: File;
+    ntnCertificate?: File;
+    officeProof?: File;
+    bankCertificate?: File;
+    additionalSupportingDocument?: File;
   }): Promise<{ user: User; token: string; status: string }> {
     if (!data.email || !data.password || !data.name) {
       throw new Error('All fields are required');
     }
 
     try {
-      const response = await apiClient.post('/auth/register/vehicle', data);
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, val]) => {
+        if (val !== undefined && val !== null) {
+          formData.append(key, val);
+        }
+      });
+
+      const response = await apiClient.post('/auth/register/vehicle', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       const { user, token } = response.data.data || response.data;
 
