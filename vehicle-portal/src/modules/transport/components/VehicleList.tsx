@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from '../../../store';
 import { formatCurrency, formatDate, formatStatusLabel } from '../../../shared/utils/formatters';
 import { deleteVehicle, fetchVehicles } from '../store/transportSlice';
+import ConfirmModal from '../../../shared/components/UI/ConfirmModal';
 
 const VehicleList = () => {
   const dispatch  = useDispatch();
@@ -14,14 +15,16 @@ const VehicleList = () => {
   const [search, setSearch]   = useState('');
   const [page, setPage]       = useState(1);
   const [filter, setFilter]   = useState<'' | 'AVAILABLE' | 'UNAVAILABLE'>('');
+  const [vehicleToDelete, setVehicleToDelete] = useState<{ id: string; model: string } | null>(null);
 
   useEffect(() => {
     dispatch(fetchVehicles({ page, limit: 20, search: search || undefined }) as any);
   }, [dispatch, page, search]);
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this vehicle?')) return;
-    await dispatch(deleteVehicle(id) as any);
+  const confirmDelete = async () => {
+    if (!vehicleToDelete) return;
+    await dispatch(deleteVehicle(vehicleToDelete.id) as any).unwrap();
+    setVehicleToDelete(null);
     dispatch(fetchVehicles({ page, limit: 20, search: search || undefined }) as any);
   };
 
@@ -169,7 +172,7 @@ const VehicleList = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(v.id)}
+                          onClick={() => setVehicleToDelete({ id: v.id, model: `${v.make} ${v.model}` })}
                           className="h-8 rounded-lg border border-[var(--border)] px-3 text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] transition-colors"
                         >
                           Delete
@@ -235,7 +238,7 @@ const VehicleList = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(v.id)}
+                      onClick={() => setVehicleToDelete({ id: v.id, model: `${v.make} ${v.model}` })}
                       className="flex-1 h-8 rounded-lg border border-[var(--border)] text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] transition-colors"
                     >
                       Delete
@@ -262,6 +265,21 @@ const VehicleList = () => {
           </button>
         </div>
       )}
+
+      {/* Custom Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(vehicleToDelete)}
+        onClose={() => setVehicleToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Vehicle"
+        description={
+          <>
+            Are you sure you want to permanently delete{' '}
+            <span className="font-semibold text-[var(--text)]">{vehicleToDelete?.model}</span>? This action cannot be undone.
+          </>
+        }
+        confirmText="Delete Vehicle"
+      />
     </div>
   );
 };

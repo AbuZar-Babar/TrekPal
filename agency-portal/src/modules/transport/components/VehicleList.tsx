@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from '../../../store';
 import { formatCurrency, formatDate } from '../../../shared/utils/formatters';
 import { deleteVehicle, fetchVehicles } from '../store/transportSlice';
+import ConfirmModal from '../../../shared/components/UI/ConfirmModal';
 
 // ── Status helpers ────────────────────────────────────────────────────────────
 const AvailabilityBadge = ({ isAvailable }: { isAvailable: boolean }) => (
@@ -26,6 +27,7 @@ const VehicleList = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [availabilityFilter, setAvailabilityFilter] = useState<'' | 'AVAILABLE' | 'UNAVAILABLE'>('');
+  const [vehicleToDelete, setVehicleToDelete] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -37,11 +39,11 @@ const VehicleList = () => {
     );
   }, [dispatch, page, search]);
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this vehicle?')) {
-      await dispatch(deleteVehicle(id) as any);
-      dispatch(fetchVehicles({ page, limit: 20, search: search || undefined }) as any);
-    }
+  const confirmDelete = async () => {
+    if (!vehicleToDelete) return;
+    await dispatch(deleteVehicle(vehicleToDelete.id) as any).unwrap();
+    setVehicleToDelete(null);
+    dispatch(fetchVehicles({ page, limit: 20, search: search || undefined }) as any);
   };
 
   // Compute stats
@@ -206,7 +208,7 @@ const VehicleList = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(vehicle.id)}
+                          onClick={() => setVehicleToDelete({ id: vehicle.id, name: `${vehicle.make} ${vehicle.model}` })}
                           className="h-8 rounded-lg border border-[var(--border)] px-3 text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] transition-colors"
                         >
                           Delete
@@ -270,7 +272,7 @@ const VehicleList = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(vehicle.id)}
+                      onClick={() => setVehicleToDelete({ id: vehicle.id, name: `${vehicle.make} ${vehicle.model}` })}
                       className="flex-1 h-8 rounded-lg border border-[var(--border)] text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] transition-colors"
                     >
                       Delete
@@ -303,6 +305,20 @@ const VehicleList = () => {
           </button>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={Boolean(vehicleToDelete)}
+        onClose={() => setVehicleToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Vehicle"
+        description={
+          <>
+            Are you sure you want to delete{' '}
+            <span className="font-semibold text-[var(--text)]">{vehicleToDelete?.name}</span>? This action cannot be undone.
+          </>
+        }
+        confirmText="Delete Vehicle"
+      />
     </div>
   );
 };

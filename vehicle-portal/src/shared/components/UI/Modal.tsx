@@ -1,3 +1,2 @@
-// TODO: Implement Modal component
-// Reusable modal/dialog component
-
+export { default as ConfirmModal } from './ConfirmModal';
+export type { ConfirmModalProps } from './ConfirmModal';

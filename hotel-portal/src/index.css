@@ -12,14 +12,22 @@
     display: flex;
     flex-direction: column;
     background:
-      radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--tp-primary) 8%, transparent), transparent),
-      var(--tp-bg);
+      radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--tp-primary) 10%, transparent), transparent),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.9)),
+      url('./assets/hotel_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   html[data-theme='dark'] .auth-page {
     background:
       radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--tp-primary) 14%, transparent), transparent),
-      var(--tp-bg);
+      linear-gradient(to bottom, rgba(10, 10, 12, 0.82), rgba(10, 10, 12, 0.92)),
+      url('./assets/hotel_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .auth-topbar {
@@ -29,8 +37,11 @@
     height: 3.5rem;
     padding: 0 1.5rem;
     border-bottom: 1px solid var(--tp-border);
-    background: color-mix(in srgb, var(--tp-panel) 90%, transparent);
-    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--tp-panel) 96%, transparent);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+    position: relative;
+    z-index: 10;
   }
 
   .auth-logo {

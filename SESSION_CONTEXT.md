@@ -32,12 +32,6 @@ Use this file as the first project-specific context in new Codex sessions.
 - Health check endpoint: `/health`
 - API base pattern: `https://<render-service>.onrender.com/api`
 
-## Important docs
-
-- Project overview: `README.md`
-- Render setup: `docs/setup/render.md`
-- Database setup: `docs/setup/database.md`
-- Architecture: `docs/ARCHITECTURE.md`
 
 ## Instruction for future sessions
 

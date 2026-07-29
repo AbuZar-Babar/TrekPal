@@ -5,6 +5,7 @@ import { RootState } from '../../../store';
 import EntityDetailModal from '../../../shared/components/management/EntityDetailModal';
 import { formatDate, getInitials } from '../../../shared/utils/formatters';
 import { approveHotel, fetchHotels, rejectHotel } from '../store/hotelSlice';
+import ConfirmModal from '../../../shared/components/UI/ConfirmModal';
 
 const statusClassMap: Record<string, string> = {
   PENDING: 'sovereign-pill sovereign-pill-warning',
@@ -14,12 +15,15 @@ const statusClassMap: Record<string, string> = {
 
 const HotelApprovalList = () => {
   const dispatch = useDispatch();
-  const { hotels, loading, error, pagination } = useSelector((state: RootState) => state.hotels);
+  const { hotels, loading, error, pagination } = useSelector(
+    (state: RootState) => state.hotels
+  );
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedHotelId, setSelectedHotelId] = useState<string | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [hotelToApprove, setHotelToApprove] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -39,13 +43,18 @@ const HotelApprovalList = () => {
     }
   }, [hotels, selectedHotelId]);
 
-  const selectedHotel = hotels.find((hotel) => hotel.id === selectedHotelId) ?? null;
+  const selectedHotel = useMemo(
+    () => hotels.find((hotel) => hotel.id === selectedHotelId) || null,
+    [hotels, selectedHotelId]
+  );
   const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.limit));
 
   const tabCounts = useMemo(() => {
     const base = { ALL: pagination.total, PENDING: 0, APPROVED: 0, REJECTED: 0 };
     hotels.forEach((hotel) => {
-      base[hotel.status as 'PENDING' | 'APPROVED' | 'REJECTED'] += 1;
+      if (hotel.status in base) {
+        base[hotel.status as 'PENDING' | 'APPROVED' | 'REJECTED'] += 1;
+      }
     });
     return base;
   }, [hotels, pagination.total]);
@@ -60,11 +69,11 @@ const HotelApprovalList = () => {
       }) as any
     );
 
-  const handleApprove = async (id: string) => {
-    if (window.confirm('Approve this hotel listing?')) {
-      await dispatch(approveHotel({ id }) as any);
-      refreshList();
-    }
+  const confirmApprove = async () => {
+    if (!hotelToApprove) return;
+    await dispatch(approveHotel({ id: hotelToApprove.id }) as any).unwrap();
+    setHotelToApprove(null);
+    refreshList();
   };
 
   const handleReject = async (id: string) => {
@@ -88,7 +97,7 @@ const HotelApprovalList = () => {
       {selectedHotel.status !== 'APPROVED' && (
         <button
           type="button"
-          onClick={() => handleApprove(selectedHotel.id)}
+          onClick={() => setHotelToApprove({ id: selectedHotel.id, name: selectedHotel.name })}
           className="sovereign-button-primary h-12 px-5"
         >
           Approve Hotel
@@ -428,6 +437,21 @@ const HotelApprovalList = () => {
           </div>
         ) : null}
       </EntityDetailModal>
+
+      <ConfirmModal
+        isOpen={Boolean(hotelToApprove)}
+        onClose={() => setHotelToApprove(null)}
+        onConfirm={confirmApprove}
+        title="Approve Hotel"
+        description={
+          <>
+            Are you sure you want to approve{' '}
+            <span className="font-semibold text-[var(--text)]">{hotelToApprove?.name}</span>?
+          </>
+        }
+        confirmText="Approve Hotel"
+        variant="info"
+      />
     </div>
   );
 };

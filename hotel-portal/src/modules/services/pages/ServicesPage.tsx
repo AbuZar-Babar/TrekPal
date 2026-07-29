@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 interface HotelService {
   id: string;
@@ -15,6 +16,7 @@ const ServicesPage: React.FC = () => {
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingService, setEditingService] = useState<HotelService | null>(null);
+  const [serviceToDelete, setServiceToDelete] = useState<HotelService | null>(null);
 
   const { data: hotel, isLoading } = useQuery({
     queryKey: ['hotel-services', user?.id],
@@ -49,6 +51,7 @@ const ServicesPage: React.FC = () => {
     mutationFn: (serviceId: string) => api.delete(`/hotels/services/${serviceId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hotel-services', user?.id] });
+      setServiceToDelete(null);
     },
   });
 
@@ -117,9 +120,7 @@ const ServicesPage: React.FC = () => {
                   Edit
                 </button>
                 <button
-                  onClick={() => {
-                    if (confirm('Delete this service?')) deleteMutation.mutate(service.id);
-                  }}
+                  onClick={() => setServiceToDelete(service)}
                   className="flex-1 h-8 rounded-lg border border-[var(--tp-border)] text-xs font-medium text-[var(--tp-danger-text)] hover:bg-[var(--tp-danger-bg)] transition-colors"
                 >
                   Delete
@@ -146,6 +147,23 @@ const ServicesPage: React.FC = () => {
           isLoading={updateMutation.isPending}
         />
       )}
+
+      <ConfirmModal
+        isOpen={Boolean(serviceToDelete)}
+        onClose={() => setServiceToDelete(null)}
+        onConfirm={async () => {
+          if (serviceToDelete) await deleteMutation.mutateAsync(serviceToDelete.id);
+        }}
+        title="Delete Service"
+        description={
+          <>
+            Are you sure you want to delete{' '}
+            <span className="font-semibold text-[var(--tp-text)]">{serviceToDelete?.name}</span>? This action cannot be undone.
+          </>
+        }
+        confirmText="Delete Service"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 };

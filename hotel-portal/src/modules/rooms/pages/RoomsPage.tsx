@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 interface Room {
   id: string;
@@ -19,6 +20,7 @@ const RoomsPage: React.FC = () => {
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const [roomToDelete, setRoomToDelete] = useState<Room | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const { data: hotel, isLoading, isError } = useQuery({
@@ -62,6 +64,7 @@ const RoomsPage: React.FC = () => {
     mutationFn: (roomId: string) => api.delete(`/hotels/rooms/${roomId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hotel', user?.id] });
+      setRoomToDelete(null);
     },
     onError: (error: any) => {
       setActionError(error?.response?.data?.message || 'Failed to delete room');
@@ -164,9 +167,7 @@ const RoomsPage: React.FC = () => {
                     Edit
                   </button>
                   <button
-                    onClick={() => {
-                      if (confirm('Delete this room type?')) deleteMutation.mutate(room.id);
-                    }}
+                    onClick={() => setRoomToDelete(room)}
                     className="flex-1 h-8 rounded-lg border border-[var(--tp-border)] text-xs font-medium text-[var(--tp-danger-text)] hover:bg-[var(--tp-danger-bg)] transition-colors"
                   >
                     Delete
@@ -194,6 +195,23 @@ const RoomsPage: React.FC = () => {
           isLoading={updateMutation.isPending}
         />
       )}
+
+      <ConfirmModal
+        isOpen={Boolean(roomToDelete)}
+        onClose={() => setRoomToDelete(null)}
+        onConfirm={async () => {
+          if (roomToDelete) await deleteMutation.mutateAsync(roomToDelete.id);
+        }}
+        title="Delete Room Type"
+        description={
+          <>
+            Are you sure you want to delete{' '}
+            <span className="font-semibold text-[var(--tp-text)]">{roomToDelete?.type}</span>? This action cannot be undone.
+          </>
+        }
+        confirmText="Delete Room"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 };

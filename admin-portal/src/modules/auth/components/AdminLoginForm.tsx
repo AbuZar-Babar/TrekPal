@@ -6,6 +6,7 @@ import ErrorPopup from '../../../shared/components/ErrorPopup';
 import { PortalPageTransition } from '../../../shared/components/motion/portalMotion';
 import { useTheme } from '../../../shared/theme/ThemeProvider';
 import { login } from '../store/authSlice';
+import adminBg from '../../../assets/admin_bg.png';
 
 const AdminLoginForm = () => {
   const [email, setEmail] = useState('');
@@ -23,9 +24,7 @@ const AdminLoginForm = () => {
 
     try {
       if (password.length < 8) {
-        setError('Password must be at least 8 characters');
-        setLoading(false);
-        return;
+        throw new Error('Password must be at least 8 characters');
       }
 
       await dispatch(login({ email, password }) as any).unwrap();
@@ -38,7 +37,17 @@ const AdminLoginForm = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+    <div
+      className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10"
+      style={{
+        background: theme === 'dark'
+          ? `radial-gradient(circle at top left, rgba(255,255,255,0.02), transparent), linear-gradient(to bottom, rgba(24, 24, 28, 0.85), rgba(24, 24, 28, 0.95)), url(${adminBg})`
+          : `radial-gradient(circle at top left, rgba(0,0,0,0.02), transparent), linear-gradient(to bottom, rgba(242, 242, 245, 0.82), rgba(242, 242, 245, 0.92)), url(${adminBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       {error && <ErrorPopup message={error} onClose={() => setError(null)} />}
 
       <div className="pointer-events-none absolute inset-0">

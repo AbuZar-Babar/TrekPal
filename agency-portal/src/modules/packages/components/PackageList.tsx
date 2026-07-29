@@ -6,6 +6,7 @@ import { RootState } from '../../../store';
 import { Package } from '../../../shared/types';
 import { formatCurrency } from '../../../shared/utils/formatters';
 import { deletePackage, fetchPackages } from '../store/packagesSlice';
+import ConfirmModal from '../../../shared/components/UI/ConfirmModal';
 
 // ── Status helpers ────────────────────────────────────────────────────────────
 const StatusBadge = ({ isActive }: { isActive: boolean }) => (
@@ -28,16 +29,17 @@ const PackageList = () => {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+  const [packageToDelete, setPackageToDelete] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     dispatch(fetchPackages({ page, limit: 20, search: search || undefined }) as any);
   }, [dispatch, page, search]);
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Delete this trip offer?')) {
-      await dispatch(deletePackage(id) as any);
-      dispatch(fetchPackages({ page, limit: 20, search: search || undefined }) as any);
-    }
+  const confirmDelete = async () => {
+    if (!packageToDelete) return;
+    await dispatch(deletePackage(packageToDelete.id) as any).unwrap();
+    setPackageToDelete(null);
+    dispatch(fetchPackages({ page, limit: 20, search: search || undefined }) as any);
   };
 
   // Compute stats from all packages
@@ -221,7 +223,7 @@ const PackageList = () => {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(pkg.id)}
+                  onClick={() => setPackageToDelete({ id: pkg.id, name: pkg.name })}
                   className="h-8 rounded-lg border border-[var(--border)] px-3 text-xs font-medium text-[var(--danger-text)] hover:bg-[var(--danger-bg)] transition-colors"
                 >
                   Delete
@@ -251,6 +253,20 @@ const PackageList = () => {
       {selectedPackage && (
         <PackageDetailModal pkg={selectedPackage} onClose={() => setSelectedPackage(null)} />
       )}
+
+      <ConfirmModal
+        isOpen={Boolean(packageToDelete)}
+        onClose={() => setPackageToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Trip Offer"
+        description={
+          <>
+            Are you sure you want to delete{' '}
+            <span className="font-semibold text-[var(--text)]">{packageToDelete?.name}</span>? This action cannot be undone.
+          </>
+        }
+        confirmText="Delete Offer"
+      />
     </div>
   );
 };

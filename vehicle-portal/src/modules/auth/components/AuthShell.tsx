@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useTheme } from '../../../shared/theme/ThemeProvider';
+import vehicleBg from '../../../assets/vehicle_bg.png';
 
 interface AuthShellProps {
   children: ReactNode;
@@ -13,7 +14,12 @@ const AuthShell = ({ children, centered = true }: AuthShellProps) => {
     <div
       className="min-h-screen flex flex-col"
       style={{
-        background: `radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--primary) 8%, transparent), transparent), var(--bg)`,
+        background: theme === 'dark'
+          ? `radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--primary) 14%, transparent), transparent), linear-gradient(to bottom, rgba(10, 10, 12, 0.82), rgba(10, 10, 12, 0.92)), url(${vehicleBg})`
+          : `radial-gradient(ellipse 70% 40% at 60% -10%, color-mix(in srgb, var(--primary) 10%, transparent), transparent), linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.9)), url(${vehicleBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Topbar */}
@@ -21,8 +27,11 @@ const AuthShell = ({ children, centered = true }: AuthShellProps) => {
         className="flex items-center justify-between h-14 px-6 shrink-0"
         style={{
           borderBottom: '1px solid var(--border)',
-          background: 'color-mix(in srgb, var(--panel) 90%, transparent)',
-          backdropFilter: 'blur(14px)',
+          background: 'color-mix(in srgb, var(--panel) 96%, transparent)',
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.08)',
+          position: 'relative',
+          zIndex: 10,
         }}
       >
         <div className="flex items-center gap-2.5">

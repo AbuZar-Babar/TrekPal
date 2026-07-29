@@ -8,7 +8,6 @@ import '../../../../core/widgets/error_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/participant_roster.dart';
 import '../../../chat/presentation/pages/chat_room_page.dart';
-import '../../../complaints/presentation/pages/complaint_form_page.dart';
 import '../../../reviews/domain/entities/review_entities.dart';
 import '../../../reviews/presentation/pages/review_form_page.dart';
 import '../../../reviews/presentation/providers/reviews_provider.dart';
@@ -242,186 +241,163 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 ),
               ],
               const SizedBox(height: 18),
-              Text('Tools', style: theme.textTheme.titleLarge),
+              Text('Tools & Actions', style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              )),
               const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.35,
                 children: <Widget>[
                   if (canCancelStatus)
-                    SizedBox(
-                      width: 156,
-                      child: _ActionCard(
-                        icon: Icons.cancel_outlined,
-                        label: 'Cancel trip',
-                        subtitle: canCancel
-                            ? 'Allowed'
-                            : 'Before ${AppFormatters.date(cancelCutoff)}',
-                        onTap: () async {
-                          final ScaffoldMessengerState messenger =
-                              ScaffoldMessenger.of(context);
-                          if (!canCancel) {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Trips can only be cancelled 3 days before the start date (until ${AppFormatters.date(cancelCutoff)}).',
-                                ),
-                              ),
-                            );
-                            return;
-                          }
-
-                          final bool? confirmed = await showDialog<bool>(
-                            context: context,
-                            builder: (BuildContext dialogContext) {
-                              return AlertDialog(
-                                title: const Text('Cancel this trip?'),
-                                content: const Text(
-                                  'You will opt out from this trip. This cannot be undone.',
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () => Navigator.of(
-                                      dialogContext,
-                                    ).pop(false),
-                                    child: const Text('Keep booking'),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () => Navigator.of(
-                                      dialogContext,
-                                    ).pop(true),
-                                    child: const Text('Cancel trip'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-
-                          if (confirmed != true || !context.mounted) {
-                            return;
-                          }
-
-                          try {
-                            await context
-                                .read<BookingsProvider>()
-                                .cancelBooking(booking.id);
-                            if (!context.mounted) {
-                              return;
-                            }
-                            messenger.showSnackBar(
-                              const SnackBar(
-                                content: Text('Trip cancelled successfully'),
-                              ),
-                            );
-                          } catch (_) {
-                            if (!context.mounted) {
-                              return;
-                            }
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  context.read<BookingsProvider>().errorMessage ??
-                                      'Unable to cancel this trip',
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  if (agencyPhone != null)
-                    SizedBox(
-                      width: 156,
-                      child: _ActionCard(
-                        icon: Icons.content_copy_outlined,
-                        label: 'Copy number',
-                        subtitle: 'Emergency',
-                        onTap: () async {
-                          await Clipboard.setData(
-                            ClipboardData(text: agencyPhone),
-                          );
-                          if (!context.mounted) {
-                            return;
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Agency number copied'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  if (isCompleted && existingReview == null)
-                    SizedBox(
-                      width: 156,
-                      child: _ActionCard(
-                        icon: Icons.star_rounded,
-                        label: 'Rate trip',
-                        subtitle: 'Share feedback',
-                        highlight: true,
-                        onTap: () async {
-                          final bool? submitted = await Navigator.of(context).push<bool>(
-                            MaterialPageRoute<bool>(
-                              builder: (_) => ReviewFormPage(
-                                bookingId: booking.id,
-                                destination: destination,
-                              ),
-                            ),
-                          );
-                          if (submitted == true && context.mounted) {
-                            // Review was submitted — provider already updated
-                          }
-                        },
-                      ),
-                    ),
-                  SizedBox(
-                    width: 156,
-                    child: _ActionCard(
-                      icon: Icons.forum_outlined,
-                      label: 'Trip chat',
-                      subtitle: booking.packageId != null
-                          ? 'Live'
-                          : 'Offer only',
-                      onTap: () {
-                        if (booking.packageId == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                    _ActionCard(
+                      icon: Icons.cancel_outlined,
+                      label: 'Cancel Trip',
+                      subtitle: canCancel
+                          ? 'Cancel booking'
+                          : 'Until ${AppFormatters.date(cancelCutoff)}',
+                      color: Colors.red,
+                      onTap: () async {
+                        final ScaffoldMessengerState messenger =
+                            ScaffoldMessenger.of(context);
+                        if (!canCancel) {
+                          messenger.showSnackBar(
+                            SnackBar(
                               content: Text(
-                                'Trip chat is available for joined offers only.',
+                                'Trips can only be cancelled 3 days before the start date (until ${AppFormatters.date(cancelCutoff)}).',
                               ),
                             ),
                           );
                           return;
                         }
 
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => ChatRoomPage(
-                              packageId: booking.packageId,
-                              fallbackTitle: destination,
+                        final bool? confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (BuildContext dialogContext) {
+                            return AlertDialog(
+                              title: const Text('Cancel this trip?'),
+                              content: const Text(
+                                'You will opt out from this trip. This cannot be undone.',
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(
+                                    dialogContext,
+                                  ).pop(false),
+                                  child: const Text('Keep booking'),
+                                ),
+                                FilledButton(
+                                  onPressed: () => Navigator.of(
+                                    dialogContext,
+                                  ).pop(true),
+                                  child: const Text('Cancel trip'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        if (confirmed != true || !context.mounted) {
+                          return;
+                        }
+
+                        try {
+                          await context
+                              .read<BookingsProvider>()
+                              .cancelBooking(booking.id);
+                          if (!context.mounted) {
+                            return;
+                          }
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Trip cancelled successfully'),
                             ),
+                          );
+                        } catch (_) {
+                          if (!context.mounted) {
+                            return;
+                          }
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                context.read<BookingsProvider>().errorMessage ??
+                                    'Unable to cancel this trip',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  if (agencyPhone != null)
+                    _ActionCard(
+                      icon: Icons.content_copy_outlined,
+                      label: 'Copy Contact',
+                      subtitle: 'Emergency phone',
+                      color: Colors.blue,
+                      onTap: () async {
+                        await Clipboard.setData(
+                          ClipboardData(text: agencyPhone),
+                        );
+                        if (!context.mounted) {
+                          return;
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Agency number copied'),
                           ),
                         );
                       },
                     ),
-                  ),
-                  SizedBox(
-                    width: 156,
-                    child: _ActionCard(
-                      icon: Icons.report_problem_outlined,
-                      label: 'Complaint',
-                      subtitle: 'Mockup',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => ComplaintFormPage(
+                  if (isCompleted && existingReview == null)
+                    _ActionCard(
+                      icon: Icons.star_rounded,
+                      label: 'Rate Trip',
+                      subtitle: 'Share feedback',
+                      color: Colors.amber,
+                      onTap: () async {
+                        final bool? submitted = await Navigator.of(context).push<bool>(
+                          MaterialPageRoute<bool>(
+                            builder: (_) => ReviewFormPage(
                               bookingId: booking.id,
-                              subject: destination,
+                              destination: destination,
                             ),
                           ),
                         );
+                        if (submitted == true && context.mounted) {
+                          // Review was submitted — provider already updated
+                        }
                       },
                     ),
+                  _ActionCard(
+                    icon: Icons.forum_outlined,
+                    label: 'Trip Chat',
+                    subtitle: booking.packageId != null ? 'Live discussion' : 'Joined offers only',
+                    color: Colors.teal,
+                    onTap: () {
+                      if (booking.packageId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Trip chat is available for joined offers only.',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => ChatRoomPage(
+                            packageId: booking.packageId,
+                            fallbackTitle: destination,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -449,14 +425,14 @@ class _ActionCard extends StatelessWidget {
     required this.label,
     required this.subtitle,
     required this.onTap,
-    this.highlight = false,
+    this.color,
   });
 
   final IconData icon;
   final String label;
   final String subtitle;
   final VoidCallback onTap;
-  final bool highlight;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -464,40 +440,66 @@ class _ActionCard extends StatelessWidget {
     final ColorScheme colorScheme = theme.colorScheme;
     final bool dark = theme.brightness == Brightness.dark;
 
-    final Color iconBg = highlight
-        ? Colors.amber.withValues(alpha: dark ? 0.22 : 0.14)
-        : colorScheme.primary.withValues(alpha: 0.12);
-    final Color iconFg = highlight ? Colors.amber.shade700 : colorScheme.primary;
+    final Color baseColor = color ?? colorScheme.primary;
+    final Color cardBg = dark ? baseColor.withValues(alpha: 0.08) : baseColor.withValues(alpha: 0.05);
+    final Color borderCol = baseColor.withValues(alpha: dark ? 0.25 : 0.15);
+    final Color iconBgCol = baseColor.withValues(alpha: dark ? 0.2 : 0.12);
+    final Color iconFgCol = baseColor;
 
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30),
-        side: highlight
-            ? BorderSide(color: Colors.amber.withValues(alpha: 0.4))
-            : BorderSide.none,
+    return Container(
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: borderCol,
+          width: 1,
+        ),
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(30),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: <Widget>[
-              CircleAvatar(
-                backgroundColor: iconBg,
-                foregroundColor: iconFg,
-                child: Icon(icon),
-              ),
-              const SizedBox(height: 12),
-              Text(label, style: theme.textTheme.titleSmall),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: iconBgCol,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: iconFgCol,
+                    size: 20,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                Text(
+                  label,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: dark ? Colors.white : colorScheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: dark ? Colors.white60 : colorScheme.onSurfaceVariant,
+                    fontSize: 11,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
       ),

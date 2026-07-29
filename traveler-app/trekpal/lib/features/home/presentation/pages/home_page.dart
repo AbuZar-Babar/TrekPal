@@ -12,7 +12,6 @@ import '../../../auth/presentation/pages/traveler_kyc_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bookings/presentation/pages/bookings_list_page.dart';
 import '../../../chat/presentation/pages/chat_list_page.dart';
-import '../../../complaints/presentation/pages/complaint_form_page.dart';
 import '../../../packages/presentation/pages/packages_list_page.dart';
 import '../../../trip_requests/presentation/pages/trip_requests_list_page.dart';
 
@@ -191,40 +190,17 @@ class _AccountTabState extends State<_AccountTab> {
                 ],
 
                 // ── Quick actions ─────────────────────────────
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: _ActionTile(
-                        icon: Icons.forum_outlined,
-                        title: 'Chat',
-                        subtitle: 'Joined offers',
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                              builder: (_) => const ChatListPage()),
-                        ),
-                        cs: cs,
-                        theme: theme,
-                        dark: dark,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _ActionTile(
-                        icon: Icons.report_problem_outlined,
-                        title: 'Support',
-                        subtitle: 'File a complaint',
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const ComplaintFormPage(
-                                subject: 'General support'),
-                          ),
-                        ),
-                        cs: cs,
-                        theme: theme,
-                        dark: dark,
-                      ),
-                    ),
-                  ],
+                _ActionTile(
+                  icon: Icons.forum_outlined,
+                  title: 'Chat',
+                  subtitle: 'Joined offers',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                        builder: (_) => const ChatListPage()),
+                  ),
+                  cs: cs,
+                  theme: theme,
+                  dark: dark,
                 ),
                 const SizedBox(height: 16),
 

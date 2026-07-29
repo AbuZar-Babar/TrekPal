@@ -5,6 +5,7 @@ import { RootState } from '../../../store';
 import EntityDetailModal from '../../../shared/components/management/EntityDetailModal';
 import { formatDate, formatCurrency, getInitials } from '../../../shared/utils/formatters';
 import { approveVehicle, fetchVehicles, rejectVehicle } from '../store/vehiclesSlice';
+import ConfirmModal from '../../../shared/components/UI/ConfirmModal';
 
 const statusClassMap: Record<string, string> = {
   PENDING: 'sovereign-pill sovereign-pill-warning',
@@ -22,6 +23,7 @@ const VehicleApprovalList = () => {
   const [page, setPage] = useState(1);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [vehicleToApprove, setVehicleToApprove] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -41,7 +43,10 @@ const VehicleApprovalList = () => {
     }
   }, [selectedVehicleId, vehicles]);
 
-  const selectedVehicle = vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? null;
+  const selectedVehicle = useMemo(
+    () => vehicles.find((vehicle) => vehicle.id === selectedVehicleId) || null,
+    [selectedVehicleId, vehicles]
+  );
   const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.limit));
 
   const tabCounts = useMemo(() => {
@@ -62,11 +67,11 @@ const VehicleApprovalList = () => {
       }) as any
     );
 
-  const handleApprove = async (id: string) => {
-    if (window.confirm('Approve this vehicle record?')) {
-      await dispatch(approveVehicle({ id }) as any);
-      refreshList();
-    }
+  const confirmApprove = async () => {
+    if (!vehicleToApprove) return;
+    await dispatch(approveVehicle({ id: vehicleToApprove.id }) as any).unwrap();
+    setVehicleToApprove(null);
+    refreshList();
   };
 
   const handleReject = async (id: string) => {
@@ -82,7 +87,7 @@ const VehicleApprovalList = () => {
       {selectedVehicle.status !== 'APPROVED' && (
         <button
           type="button"
-          onClick={() => handleApprove(selectedVehicle.id)}
+          onClick={() => setVehicleToApprove({ id: selectedVehicle.id, name: `${selectedVehicle.make} ${selectedVehicle.model}` })}
           className="sovereign-button-primary h-12 px-5"
         >
           Approve Vehicle
@@ -338,6 +343,21 @@ const VehicleApprovalList = () => {
           </div>
         ) : null}
       </EntityDetailModal>
+
+      <ConfirmModal
+        isOpen={Boolean(vehicleToApprove)}
+        onClose={() => setVehicleToApprove(null)}
+        onConfirm={confirmApprove}
+        title="Approve Vehicle"
+        description={
+          <>
+            Are you sure you want to approve{' '}
+            <span className="font-semibold text-[var(--text)]">{vehicleToApprove?.name}</span>?
+          </>
+        }
+        confirmText="Approve Vehicle"
+        variant="info"
+      />
     </div>
   );
 };
