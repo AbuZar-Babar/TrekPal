@@ -12,8 +12,8 @@ import '../../../auth/presentation/pages/traveler_kyc_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bookings/presentation/pages/bookings_list_page.dart';
 import '../../../chat/presentation/pages/chat_list_page.dart';
-import '../../../packages/presentation/pages/packages_list_page.dart';
 import '../../../trip_requests/presentation/pages/trip_requests_list_page.dart';
+import 'discover_hub_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,10 +35,10 @@ class _HomePageState extends State<HomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: const <Widget>[
+          DiscoverHubPage(),
           TripRequestsListPage(),
-          PackagesListPage(),
           BookingsListPage(),
-          _AccountTab(),
+          ChatListPage(),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -69,14 +69,14 @@ class _HomePageState extends State<HomePage> {
                   setState(() => _currentIndex = i),
               destinations: const <NavigationDestination>[
                 NavigationDestination(
-                  icon: Icon(Icons.edit_note_outlined),
-                  selectedIcon: Icon(Icons.edit_note),
-                  label: 'Request',
+                  icon: Icon(Icons.explore_outlined),
+                  selectedIcon: Icon(Icons.explore),
+                  label: 'Explore',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.route_outlined),
-                  selectedIcon: Icon(Icons.route),
-                  label: 'Offers',
+                  icon: Icon(Icons.edit_note_outlined),
+                  selectedIcon: Icon(Icons.edit_note),
+                  label: 'Requests',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.luggage_outlined),
@@ -84,9 +84,9 @@ class _HomePageState extends State<HomePage> {
                   label: 'Trips',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.account_circle_outlined),
-                  selectedIcon: Icon(Icons.account_circle),
-                  label: 'You',
+                  icon: Icon(Icons.forum_outlined),
+                  selectedIcon: Icon(Icons.forum),
+                  label: 'Inbox',
                 ),
               ],
             ),
@@ -97,15 +97,15 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ── Account tab ───────────────────────────────────────────────────────────────
-class _AccountTab extends StatefulWidget {
-  const _AccountTab();
+// ── Account page ───────────────────────────────────────────────────────────────
+class AccountPage extends StatefulWidget {
+  const AccountPage({super.key});
 
   @override
-  State<_AccountTab> createState() => _AccountTabState();
+  State<AccountPage> createState() => _AccountPageState();
 }
 
-class _AccountTabState extends State<_AccountTab> {
+class _AccountPageState extends State<AccountPage> {
   Future<void> _pickAvatar() async {
     final AuthProvider auth = context.read<AuthProvider>();
     final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
@@ -120,8 +120,8 @@ class _AccountTabState extends State<_AccountTab> {
     final String mime = name.endsWith('.png')
         ? 'image/png'
         : name.endsWith('.webp')
-            ? 'image/webp'
-            : 'image/jpeg';
+        ? 'image/webp'
+        : 'image/jpeg';
     try {
       await auth.uploadTravelerAvatar(
         ProfileImageUpload(fileName: file.name, bytes: bytes, mimeType: mime),
@@ -153,8 +153,11 @@ class _AccountTabState extends State<_AccountTab> {
     final String kycStatus = user?.travelerKycStatus ?? 'NOT_SUBMITTED';
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Profile'),
+      ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 120),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
         children: <Widget>[
           // ── Profile hero ──────────────────────────────────────
           _ProfileHero(

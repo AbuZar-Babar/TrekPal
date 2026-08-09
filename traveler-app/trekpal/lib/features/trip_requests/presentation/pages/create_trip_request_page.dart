@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/utils/extensions.dart';
@@ -136,7 +136,6 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
           _showValidation('Add at least 1 room');
           return false;
         }
-        return true;
         return true;
       case 4:
         final String? descriptionError = AppValidators.maxLength(
@@ -967,6 +966,11 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: isSubmitting ? null : _back,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: colorScheme.onSurface,
+                          side: BorderSide(color: colorScheme.outlineVariant),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
                         child: Text(_currentStep == 0 ? 'Cancel' : 'Back'),
                       ),
                     ),
@@ -974,6 +978,12 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: isSubmitting ? null : _continue,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.secondary,
+                          foregroundColor: colorScheme.brightness == Brightness.dark ? Colors.black : Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 0,
+                        ),
                         child: Text(
                           isSubmitting
                               ? 'Publishing...'

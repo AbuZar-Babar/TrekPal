@@ -250,12 +250,12 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: highlight
-            ? cs.primary.withValues(alpha: dark ? 0.18 : 0.08)
+            ? cs.secondary.withValues(alpha: dark ? 0.18 : 0.08)
             : cs.surfaceContainerHighest.withValues(
                 alpha: dark ? 0.35 : 0.55),
         borderRadius: BorderRadius.circular(18),
         border: highlight
-            ? Border.all(color: cs.primary.withValues(alpha: 0.22))
+            ? Border.all(color: cs.secondary.withValues(alpha: 0.22))
             : null,
       ),
       child: Column(
@@ -263,12 +263,12 @@ class _StatCard extends StatelessWidget {
         children: <Widget>[
           Icon(icon,
               size: 18,
-              color: highlight ? cs.primary : cs.onSurfaceVariant),
+              color: highlight ? cs.secondary : cs.onSurfaceVariant),
           const SizedBox(height: 10),
           Text(
             value,
             style: theme.textTheme.titleLarge?.copyWith(
-              color: highlight ? cs.primary : cs.onSurface,
+              color: highlight ? cs.secondary : cs.onSurface,
             ),
           ),
           const SizedBox(height: 2),

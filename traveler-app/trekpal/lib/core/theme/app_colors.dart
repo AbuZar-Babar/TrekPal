@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFF2A5D9C);
-  static const Color primaryStrong = Color(0xFF1F4C84);
-  static const Color primarySoft = Color(0xFFA7C8FF);
+  static const Color primary = Color(0xFFAECEBC); // Light Forest Jade
+  static const Color primaryStrong = Color(0xFF0E2B1F); // Deep Forest Jade
+  static const Color primarySoft = Color(0xFFC9EAD7);
 
-  static const Color sand = Color(0xFFF4DFC7);
-  static const Color sandSoft = Color(0xFFFCF9F4);
-  static const Color paper = Color(0xFFFCF9F4);
-  static const Color paperRaised = Color(0xFFFFFFFF);
+  static const Color sand = Color(0xFFFFD799); // Light Gold/Sand
+  static const Color sandSoft = Color(0xFFFFDEAC);
+  static const Color paper = Color(0xFF111415); // Onyx Slate Base background
+  static const Color paperRaised = Color(0xFF1D2021); // Deep Moss Container surface
 
-  static const Color secondary = Color(0xFF6B5C4C);
-  static const Color clay = Color(0xFF8B735C);
+  static const Color secondary = Color(0xFFFEBA38); // Sunrise Gold highlight
+  static const Color clay = Color(0xFF6A4800);
 
-  static const Color ink = Color(0xFF1C1C19);
-  static const Color inkMuted = Color(0xFF5C5953);
+  static const Color ink = Color(0xFFE1E3E4); // Light Text
+  static const Color inkMuted = Color(0xFF8C928D); // Muted Sage Text
 
-  static const Color forest = Color(0xFF245E4B);
-  static const Color moss = Color(0xFF3D7A68);
-  static const Color amber = Color(0xFFC88A2C);
-  static const Color danger = Color(0xFFBA4D3E);
+  static const Color forest = Color(0xFF0E2B1F);
+  static const Color moss = Color(0xFF1D2021);
+  static const Color amber = Color(0xFFFEB300); // Accent Gold
+  static const Color danger = Color(0xFFFFB4AB); // Error color
 
-  static const Color night = Color(0xFF14181F);
-  static const Color nightRaised = Color(0xFF1C212B);
-  static const Color nightCard = Color(0xFF232A35);
-  static const Color nightOutline = Color(0xFF384150);
-  static const Color nightText = Color(0xFFF4EFE8);
+  static const Color night = Color(0xFF111415);
+  static const Color nightRaised = Color(0xFF1D2021);
+  static const Color nightCard = Color(0xFF282A2B);
+  static const Color nightOutline = Color(0xFF424844);
+  static const Color nightText = Color(0xFFE1E3E4);
 
   static const Color pine = primaryStrong;
   static const Color mist = paper;

@@ -9,66 +9,66 @@ class AppTheme {
 
   static const ColorScheme _lightScheme = ColorScheme(
     brightness: Brightness.light,
-    primary: AppColors.primary,
+    primary: AppColors.primaryStrong, // Deep Forest Jade
     onPrimary: Colors.white,
-    primaryContainer: Color(0xFF4776B7),
-    onPrimaryContainer: Colors.white,
-    secondary: AppColors.secondary,
-    onSecondary: Colors.white,
+    primaryContainer: AppColors.primary, // Light Forest Jade
+    onPrimaryContainer: AppColors.primaryStrong,
+    secondary: AppColors.secondary, // Sunrise Gold
+    onSecondary: AppColors.paper,
     secondaryContainer: AppColors.sand,
-    onSecondaryContainer: AppColors.ink,
+    onSecondaryContainer: AppColors.clay,
     tertiary: AppColors.forest,
     onTertiary: Colors.white,
-    tertiaryContainer: Color(0xFFDDEBDD),
-    onTertiaryContainer: AppColors.ink,
+    tertiaryContainer: AppColors.primarySoft,
+    onTertiaryContainer: AppColors.primaryStrong,
     error: AppColors.danger,
     onError: Colors.white,
-    errorContainer: Color(0xFFFFDAD3),
-    onErrorContainer: AppColors.ink,
-    surface: AppColors.paper,
-    onSurface: AppColors.ink,
-    surfaceContainerHighest: Color(0xFFE9E3DA),
-    onSurfaceVariant: AppColors.inkMuted,
-    outline: Color(0xFFC9C1B5),
-    outlineVariant: Color(0xFFE7E0D5),
+    errorContainer: Color(0xFFFFDAD6),
+    onErrorContainer: Color(0xFF93000A),
+    surface: Color(0xFFF8F9FA), // Clean off-white
+    onSurface: AppColors.primaryStrong,
+    surfaceContainerHighest: Color(0xFFE9EAE5),
+    onSurfaceVariant: Color(0xFF5C605A),
+    outline: AppColors.inkMuted,
+    outlineVariant: Color(0xFFE0E4DC),
     shadow: Color(0x14000000),
     scrim: Color(0x66000000),
-    inverseSurface: Color(0xFF31302D),
-    onInverseSurface: Color(0xFFF3F0EB),
-    inversePrimary: AppColors.primarySoft,
-    surfaceTint: AppColors.primary,
+    inverseSurface: AppColors.paper,
+    onInverseSurface: AppColors.ink,
+    inversePrimary: AppColors.primary,
+    surfaceTint: AppColors.primaryStrong,
   );
 
   static const ColorScheme _darkScheme = ColorScheme(
     brightness: Brightness.dark,
-    primary: Color(0xFF8FB8F5),
-    onPrimary: Color(0xFF082548),
-    primaryContainer: Color(0xFF1E4C81),
-    onPrimaryContainer: Color(0xFFE8F1FF),
-    secondary: Color(0xFFD9C4AF),
-    onSecondary: Color(0xFF2D2319),
-    secondaryContainer: Color(0xFF4F4438),
-    onSecondaryContainer: Color(0xFFF6E8D6),
-    tertiary: Color(0xFF86CFAF),
-    onTertiary: Color(0xFF0E3A2A),
-    tertiaryContainer: Color(0xFF234A3B),
-    onTertiaryContainer: Color(0xFFD9F3E6),
-    error: Color(0xFFFFB4A8),
+    primary: AppColors.primary, // Light Forest Jade
+    onPrimary: AppColors.primaryStrong, // Deep Forest Jade
+    primaryContainer: AppColors.primaryStrong,
+    onPrimaryContainer: AppColors.inkMuted,
+    secondary: AppColors.secondary, // Sunrise Gold
+    onSecondary: Color(0xFF432C00),
+    secondaryContainer: AppColors.secondary,
+    onSecondaryContainer: AppColors.clay,
+    tertiary: AppColors.ink,
+    onTertiary: AppColors.primaryStrong,
+    tertiaryContainer: AppColors.primaryStrong,
+    onTertiaryContainer: AppColors.primary,
+    error: AppColors.danger,
     onError: Color(0xFF690005),
-    errorContainer: Color(0xFF8E1614),
-    onErrorContainer: Color(0xFFFFDAD4),
-    surface: AppColors.night,
-    onSurface: AppColors.nightText,
-    surfaceContainerHighest: AppColors.nightCard,
-    onSurfaceVariant: Color(0xFFD0C7BD),
-    outline: AppColors.nightOutline,
-    outlineVariant: Color(0xFF313845),
+    errorContainer: Color(0xFF93000a),
+    onErrorContainer: Color(0xFFFFDAD6),
+    surface: AppColors.paper, // Onyx Slate Base background
+    onSurface: AppColors.ink, // Crisp text
+    surfaceContainerHighest: AppColors.paperRaised, // Deep Moss Container surface
+    onSurfaceVariant: Color(0xFFC2C8C2),
+    outline: AppColors.inkMuted,
+    outlineVariant: Color(0xFF424844),
     shadow: Colors.black,
     scrim: Colors.black,
-    inverseSurface: AppColors.paper,
-    onInverseSurface: AppColors.ink,
+    inverseSurface: Color(0xFFF8F9FA),
+    onInverseSurface: AppColors.primaryStrong,
     inversePrimary: AppColors.primaryStrong,
-    surfaceTint: Color(0xFF8FB8F5),
+    surfaceTint: AppColors.primary,
   );
 
   static ThemeData _buildTheme(ColorScheme colorScheme) {
@@ -76,70 +76,71 @@ class AppTheme {
     final TextTheme baseTextTheme = dark
         ? Typography.whiteMountainView
         : Typography.blackMountainView;
-    final TextTheme manropeTheme = GoogleFonts.manropeTextTheme(baseTextTheme);
-    final TextTheme textTheme = manropeTheme.copyWith(
-      displayLarge: GoogleFonts.notoSerif(
-        textStyle: manropeTheme.displayLarge?.copyWith(
-          fontSize: 42,
-          fontWeight: FontWeight.w700,
-          height: 1.08,
-        ),
-      ),
-      displayMedium: GoogleFonts.notoSerif(
-        textStyle: manropeTheme.displayMedium?.copyWith(
-          fontSize: 36,
-          fontWeight: FontWeight.w700,
-          height: 1.1,
-        ),
-      ),
-      headlineLarge: GoogleFonts.notoSerif(
-        textStyle: manropeTheme.headlineLarge?.copyWith(
+    final TextTheme interTheme = GoogleFonts.interTextTheme(baseTextTheme);
+    final TextTheme textTheme = interTheme.copyWith(
+      displayLarge: GoogleFonts.montserrat(
+        textStyle: interTheme.displayLarge?.copyWith(
           fontSize: 32,
           fontWeight: FontWeight.w700,
-          height: 1.15,
+          height: 1.2,
+          letterSpacing: -0.02,
         ),
       ),
-      headlineMedium: GoogleFonts.notoSerif(
-        textStyle: manropeTheme.headlineMedium?.copyWith(
+      displayMedium: GoogleFonts.montserrat(
+        textStyle: interTheme.displayMedium?.copyWith(
           fontSize: 28,
           fontWeight: FontWeight.w700,
-          height: 1.16,
+          height: 1.2,
         ),
       ),
-      headlineSmall: GoogleFonts.notoSerif(
-        textStyle: manropeTheme.headlineSmall?.copyWith(
+      headlineLarge: GoogleFonts.montserrat(
+        textStyle: interTheme.headlineLarge?.copyWith(
           fontSize: 24,
           fontWeight: FontWeight.w700,
-          height: 1.18,
+          height: 1.2,
         ),
       ),
-      titleLarge: GoogleFonts.notoSerif(
-        textStyle: manropeTheme.titleLarge?.copyWith(
+      headlineMedium: GoogleFonts.montserrat(
+        textStyle: interTheme.headlineMedium?.copyWith(
           fontSize: 20,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
+          height: 1.2,
         ),
       ),
-      titleMedium: manropeTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w700,
+      headlineSmall: GoogleFonts.montserrat(
+        textStyle: interTheme.headlineSmall?.copyWith(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          height: 1.2,
+        ),
+      ),
+      titleLarge: GoogleFonts.montserrat(
+        textStyle: interTheme.titleLarge?.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      titleMedium: interTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
       ),
-      titleSmall: manropeTheme.titleSmall?.copyWith(
-        fontWeight: FontWeight.w700,
+      titleSmall: interTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
       ),
-      labelLarge: manropeTheme.labelLarge?.copyWith(
-        fontWeight: FontWeight.w800,
+      labelLarge: interTheme.labelLarge?.copyWith(
+        fontWeight: FontWeight.w700,
         letterSpacing: 0.9,
       ),
-      labelMedium: manropeTheme.labelMedium?.copyWith(
-        fontWeight: FontWeight.w700,
+      labelMedium: interTheme.labelMedium?.copyWith(
+        fontWeight: FontWeight.w600,
         letterSpacing: 0.8,
       ),
-      bodyLarge: manropeTheme.bodyLarge?.copyWith(height: 1.48),
-      bodyMedium: manropeTheme.bodyMedium?.copyWith(height: 1.45),
-      bodySmall: manropeTheme.bodySmall?.copyWith(
+      bodyLarge: interTheme.bodyLarge?.copyWith(height: 1.45),
+      bodyMedium: interTheme.bodyMedium?.copyWith(height: 1.4),
+      bodySmall: interTheme.bodySmall?.copyWith(
         color: colorScheme.onSurfaceVariant,
-        height: 1.4,
+        height: 1.35,
       ),
     );
 

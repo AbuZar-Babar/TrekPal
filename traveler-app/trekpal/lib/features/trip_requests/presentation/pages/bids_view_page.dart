@@ -183,7 +183,8 @@ class _BidsViewPageState extends State<BidsViewPage> {
                               Text(
                                 AppFormatters.currency(bid.price),
                                 style: theme.textTheme.headlineSmall?.copyWith(
-                                  color: colorScheme.primary,
+                                  color: colorScheme.secondary,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
@@ -264,7 +265,7 @@ class _BidsViewPageState extends State<BidsViewPage> {
                                   ),
                                 ),
                               ),
-                              FilledButton.tonalIcon(
+                              ElevatedButton.icon(
                                 onPressed: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute<void>(
@@ -275,6 +276,12 @@ class _BidsViewPageState extends State<BidsViewPage> {
                                     ),
                                   );
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colorScheme.secondary,
+                                  foregroundColor: colorScheme.brightness == Brightness.dark ? Colors.black : Colors.white,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  elevation: 0,
+                                ),
                                 icon: const Icon(Icons.forum_outlined),
                                 label: const Text('Open thread'),
                               ),

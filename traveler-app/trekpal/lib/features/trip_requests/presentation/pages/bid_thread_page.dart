@@ -306,7 +306,8 @@ class _BidThreadPageState extends State<BidThreadPage> {
           Text(
             AppFormatters.currency(revision.price),
             style: theme.textTheme.headlineSmall?.copyWith(
-              color: colorScheme.primary,
+              color: colorScheme.secondary,
+              fontWeight: FontWeight.bold,
             ),
           ),
           if (revision.description != null &&
@@ -738,6 +739,11 @@ class _BidThreadPageState extends State<BidThreadPage> {
                                       !authProvider.canUseTravelerMarketplace
                                   ? null
                                   : () => _submitCounterOffer(bid),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: colorScheme.onSurface,
+                                side: BorderSide(color: colorScheme.outlineVariant),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
                               child: Text(
                                 provider.isNegotiating
                                     ? 'Sending...'
@@ -755,6 +761,12 @@ class _BidThreadPageState extends State<BidThreadPage> {
                                       !authProvider.canUseTravelerMarketplace
                                   ? null
                                   : () => _acceptBid(bid),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.secondary,
+                                foregroundColor: colorScheme.brightness == Brightness.dark ? Colors.black : Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                elevation: 0,
+                              ),
                               child: Text(
                                 bookingsProvider.isLoading
                                     ? 'Accepting...'
