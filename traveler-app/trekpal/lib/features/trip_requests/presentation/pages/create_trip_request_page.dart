@@ -838,115 +838,120 @@ class _CreateTripRequestPageState extends State<CreateTripRequestPage> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Step ${_currentStep + 1} of ${titles.length}',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colorScheme.primary,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    prompts[_currentStep],
-                    style: theme.textTheme.displayMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    descriptions[_currentStep],
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(999),
-                    child: LinearProgressIndicator(
-                      value: (_currentStep + 1) / titles.length,
-                      minHeight: 6,
-                      backgroundColor: colorScheme.surfaceContainerHighest,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: List<Widget>.generate(titles.length, (int index) {
-                      final bool isActive = index == _currentStep;
-                      final bool isComplete = index < _currentStep;
-
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isActive
-                              ? colorScheme.primary
-                              : isComplete
-                              ? colorScheme.tertiaryContainer
-                              : colorScheme.surfaceContainerHighest.withValues(
-                                  alpha: theme.brightness == Brightness.dark
-                                      ? 0.46
-                                      : 0.6,
-                                ),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          titles[index],
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: isActive
-                                ? colorScheme.onPrimary
-                                : isComplete
-                                ? colorScheme.onTertiaryContainer
-                                : colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 720),
-                    child: Container(
-                      padding: const EdgeInsets.all(22),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest.withValues(
-                          alpha: theme.brightness == Brightness.dark
-                              ? 0.42
-                              : 0.5,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 220),
-                        switchInCurve: Curves.easeOut,
-                        switchOutCurve: Curves.easeIn,
-                        transitionBuilder:
-                            (Widget child, Animation<double> animation) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: const Offset(0.08, 0),
-                                    end: Offset.zero,
-                                  ).animate(animation),
-                                  child: child,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Step ${_currentStep + 1} of ${titles.length}',
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: colorScheme.primary,
+                                  letterSpacing: 1.0,
                                 ),
-                              );
-                            },
-                        child: _buildStepContent(),
-                      ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                prompts[_currentStep],
+                                style: theme.textTheme.displayMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                descriptions[_currentStep],
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(999),
+                                child: LinearProgressIndicator(
+                                  value: (_currentStep + 1) / titles.length,
+                                  minHeight: 6,
+                                  backgroundColor: colorScheme.surfaceContainerHighest,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Wrap(
+                                spacing: 10,
+                                runSpacing: 10,
+                                children: List<Widget>.generate(titles.length, (int index) {
+                                  final bool isActive = index == _currentStep;
+                                  final bool isComplete = index < _currentStep;
+
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isActive
+                                          ? colorScheme.primary
+                                          : isComplete
+                                          ? colorScheme.tertiaryContainer
+                                          : colorScheme.surfaceContainerHighest.withValues(
+                                              alpha: theme.brightness == Brightness.dark
+                                                  ? 0.46
+                                                  : 0.6,
+                                            ),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      titles[index],
+                                      style: theme.textTheme.labelMedium?.copyWith(
+                                        color: isActive
+                                            ? colorScheme.onPrimary
+                                            : isComplete
+                                            ? colorScheme.onTertiaryContainer
+                                            : colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(22),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest.withValues(
+                              alpha: theme.brightness == Brightness.dark
+                                  ? 0.42
+                                  : 0.5,
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 220),
+                            switchInCurve: Curves.easeOut,
+                            switchOutCurve: Curves.easeIn,
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: const Offset(0.08, 0),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                            child: _buildStepContent(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

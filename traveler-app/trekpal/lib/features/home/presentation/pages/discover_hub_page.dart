@@ -8,6 +8,8 @@ import '../../../packages/domain/entities/package_offer_entity.dart';
 import '../../../packages/presentation/pages/package_offer_details_page.dart';
 import '../../../packages/presentation/pages/packages_list_page.dart';
 import '../../../packages/presentation/providers/packages_provider.dart';
+import '../../../hotels/presentation/pages/hotels_list_page.dart';
+import '../../../transport/presentation/pages/vehicles_list_page.dart';
 import 'home_page.dart';
 
 class DiscoverHubPage extends StatefulWidget {
@@ -20,7 +22,7 @@ class DiscoverHubPage extends StatefulWidget {
 class _DiscoverHubPageState extends State<DiscoverHubPage> {
   String _activeCategory = 'Trending';
   final TextEditingController _searchController = TextEditingController();
-  double _maxPrice = 200000;
+  double _maxPrice = 50000;
   int _maxDuration = 14;
   bool _hideSoldOut = false;
   String _sortBy = 'price_asc';
@@ -78,11 +80,11 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
         }
       }
 
-      if (offer.price > _maxPrice) {
+      if (_maxPrice < 50000 && offer.price > _maxPrice) {
         return false;
       }
 
-      if (offer.duration > _maxDuration) {
+      if (_maxDuration < 14 && offer.duration > _maxDuration) {
         return false;
       }
 
@@ -249,6 +251,13 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                   icon: Icons.bed_outlined,
                   imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80',
                   dark: dark,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const HotelsListPage(),
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 16),
@@ -258,6 +267,13 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                   icon: Icons.directions_car_outlined,
                   imageUrl: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=300&q=80',
                   dark: dark,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const VehiclesListPage(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -320,43 +336,47 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
     required IconData icon,
     required String imageUrl,
     required bool dark,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(
-          image: NetworkImage(imageUrl),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withValues(alpha: 0.5),
-            BlendMode.darken,
-          ),
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 16,
-            bottom: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: AppColors.secondary, size: 24),
-                const SizedBox(height: 4),
-                Text(
-                  title,
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.5),
+              BlendMode.darken,
             ),
           ),
-        ],
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              left: 16,
+              bottom: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: AppColors.secondary, size: 24),
+                  const SizedBox(height: 4),
+                  Text(
+                    title,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -458,14 +478,18 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'PKR ${offer.price} / person',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondary,
+                    Expanded(
+                      child: Text(
+                        'PKR ${offer.price} / person',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.secondary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).push(
@@ -501,6 +525,7 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
 
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: dark ? AppColors.paperRaised : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -512,10 +537,16 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: EdgeInsets.fromLTRB(
+                24,
+                16,
+                24,
+                32 + MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Container(
@@ -540,7 +571,7 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                       TextButton(
                         onPressed: () {
                           setModalState(() {
-                            _maxPrice = 200000;
+                            _maxPrice = 50000;
                             _maxDuration = 14;
                             _hideSoldOut = false;
                             _sortBy = 'price_asc';
@@ -564,7 +595,7 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                     children: [
                       Text('Max Price', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                       Text(
-                        _maxPrice >= 200000
+                        _maxPrice >= 50000
                             ? 'Any Price'
                             : 'PKR ${_maxPrice.toStringAsFixed(0)}',
                         style: TextStyle(
@@ -577,9 +608,9 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                   const SizedBox(height: 8),
                   Slider(
                     value: _maxPrice,
-                    min: 10000,
-                    max: 200000,
-                    divisions: 19,
+                    min: 1000,
+                    max: 50000,
+                    divisions: 49,
                     activeColor: AppColors.secondary,
                     inactiveColor: cs.outlineVariant.withValues(alpha: 0.3),
                     onChanged: (double val) {
@@ -596,7 +627,9 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                     children: [
                       Text('Max Duration', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                       Text(
-                        '$_maxDuration Days',
+                        _maxDuration >= 14
+                            ? 'Max Duration'
+                            : '$_maxDuration Days',
                         style: TextStyle(
                           color: AppColors.secondary,
                           fontWeight: FontWeight.bold,
@@ -714,7 +747,8 @@ class _DiscoverHubPageState extends State<DiscoverHubPage> {
                   ),
                 ],
               ),
-            );
+            ),
+          );
           },
         );
       },

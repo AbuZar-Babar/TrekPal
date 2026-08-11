@@ -12,10 +12,8 @@ This document tracks traveler mobile application features that are currently imp
 ### 🏷️ 2. Category Chips Filtering [COMPLETED]
 - **Implementation State:** Fully integrated. Selecting activity chips (Trekking, Camping, etc.) filters package results in real-time by scanning keywords in titles, descriptions, and destinations.
 
-### 🏨 3. Quick Portals (Hotels & Transport)
-- **Current State:** Immersive card widgets with background images and title/icons.
-- **Unimplemented Behavior:** Tapping these portals does not navigate anywhere.
-- **Future Integration:** Route travelers to the standalone `HotelsListPage` and `VehiclesListPage` when they want to book items individually.
+### 🏨 3. Quick Portals (Hotels & Transport) [COMPLETED]
+- **Implementation State:** Fully integrated. Tapping "Hotels" routes to `HotelsListPage` fetching live database entries via `HotelsProvider`. Tapping "Transport" routes to `VehiclesListPage` fetching active vehicle providers via `TransportProvider`. Both pages feature search, visual dark cards, and dynamic filter criteria.
 
 ### 🎟️ 4. Expedition Detail & Direct Booking
 - **Current State:** Dynamic package cards fetched via `PackagesProvider` from the backend API. Tapping "Book" navigates to the real `PackageOfferDetailsPage` for that package.

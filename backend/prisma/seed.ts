@@ -504,7 +504,7 @@ const packageSeed = [
     vehicleModel: 'Prado',
     name: 'Hunza Spring Escape',
     description:
-      '4 days in Hunza with scenic transport, hotel stay, guided sightseeing, breakfast, and a bonfire night.',
+      '4 days in Hunza with scenic transport, hotel stay, guided trekking sightseeing, breakfast, and a bonfire night.',
     price: 68000,
     duration: 4,
     destinations: ['Hunza', 'Altit Fort', 'Attabad Lake'],
@@ -519,7 +519,7 @@ const packageSeed = [
     vehicleModel: 'Hiace',
     name: 'Makran Coast Weekend',
     description:
-      '3 days of coastline views, hotel stay, comfortable van transport, meals on the beach, and evening music.',
+      '3 days of coastline views, hotel stay, comfortable van transport, beach camping, and evening music.',
     price: 42000,
     duration: 3,
     destinations: ['Ormara', 'Kund Malir', 'Makran Coast'],
@@ -534,7 +534,7 @@ const packageSeed = [
     vehicleModel: 'Civic',
     name: 'Swat Valley Getaway',
     description:
-      '2 days in Swat with boutique stay, breakfast, local guide support, and private transport from Lahore.',
+      '2 days in Swat with boutique stay, breakfast, local guide support, and private road trips transport from Lahore.',
     price: 36000,
     duration: 2,
     destinations: ['Swat', 'Malam Jabba', 'Mingora'],
@@ -549,7 +549,7 @@ const packageSeed = [
     vehicleModel: 'Coaster',
     name: 'Skardu Explorer Loop',
     description:
-      '5 days in Skardu with hotel stay, group coaster transport, breakfast, lake visit, and city exploration.',
+      '5 days in Skardu with hotel stay, group coaster transport, breakfast, lake trekking and camping.',
     price: 74000,
     duration: 5,
     destinations: ['Skardu', 'Shangrila', 'Upper Kachura Lake'],
@@ -564,7 +564,7 @@ const packageSeed = [
     vehicleModel: 'Fortuner',
     name: 'Sunset Coast Escape',
     description:
-      '2 nights on the coast with cliff hotel stay, SUV transfer, sunset dinner, and beach stopovers.',
+      '2 nights on the coast with cliff hotel stay, SUV road trips, sunset beach camping, and stopovers.',
     price: 48500,
     duration: 3,
     destinations: ['Pasni', 'Astola Viewpoint', 'Gwadar'],
@@ -925,15 +925,59 @@ async function upsertHotels(agencies: Map<string, { id: string }>) {
 async function upsertVehicles(agencies: Map<string, { id: string }>) {
   const map = new Map<string, { id: string; agencyId: string; model: string }>();
 
+  // Ensure there is a vehicle provider account
+  const providerEmail = 'wheels.provider@trekpal.demo';
+  const providerName = 'Wheels Transport Provider';
+  const authUser = await ensureAuthUser(
+    providerEmail,
+    TRAVELER_PASSWORD,
+    ROLES.VEHICLE ?? 'VEHICLE',
+    providerName,
+  );
+
+  const vehicleProvider = await prisma.vehicleProvider.upsert({
+    where: { email: providerEmail },
+    update: {
+      authUid: authUser.id,
+      name: providerName,
+      status: 'APPROVED',
+    },
+    create: {
+      authUid: authUser.id,
+      email: providerEmail,
+      name: providerName,
+      status: 'APPROVED',
+    },
+  });
+
   for (const vehicle of vehicleSeed) {
     const agency = agencies.get(vehicle.agencyEmail);
     if (!agency) {
       throw new Error(`Agency not found for vehicle ${vehicle.make} ${vehicle.model}`);
     }
 
+    // Ensure a driver exists for this vehicle
+    const driverId = `drv_${vehicle.make.toLowerCase()}_${vehicle.model.toLowerCase()}`;
+    const driver = await prisma.driver.upsert({
+      where: { id: driverId },
+      update: {
+        name: `${vehicle.make} ${vehicle.model} Driver`,
+        phone: '+923000000000',
+        licenseNumber: 'PK-DL-99999',
+        status: 'ACTIVE',
+      },
+      create: {
+        id: driverId,
+        vehicleProviderId: vehicleProvider.id,
+        name: `${vehicle.make} ${vehicle.model} Driver`,
+        phone: '+923000000000',
+        licenseNumber: 'PK-DL-99999',
+        status: 'ACTIVE',
+      },
+    });
+
     const existing = await prisma.vehicle.findFirst({
       where: {
-        agencyId: agency.id,
         make: vehicle.make,
         model: vehicle.model,
         year: vehicle.year,
@@ -944,6 +988,8 @@ async function upsertVehicles(agencies: Map<string, { id: string }>) {
       ? await prisma.vehicle.update({
           where: { id: existing.id },
           data: {
+            vehicleProviderId: vehicleProvider.id,
+            driverId: driver.id,
             type: vehicle.type,
             capacity: vehicle.capacity,
             pricePerDay: vehicle.pricePerDay,
@@ -954,7 +1000,8 @@ async function upsertVehicles(agencies: Map<string, { id: string }>) {
         })
       : await prisma.vehicle.create({
           data: {
-            agencyId: agency.id,
+            vehicleProviderId: vehicleProvider.id,
+            driverId: driver.id,
             type: vehicle.type,
             make: vehicle.make,
             model: vehicle.model,
@@ -967,7 +1014,11 @@ async function upsertVehicles(agencies: Map<string, { id: string }>) {
           },
         });
 
-    map.set(vehicle.model, record);
+    map.set(vehicle.model, {
+      id: record.id,
+      agencyId: agency.id,
+      model: record.model,
+    });
   }
 
   return map;

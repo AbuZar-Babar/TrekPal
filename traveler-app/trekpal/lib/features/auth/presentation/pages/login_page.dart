@@ -82,14 +82,14 @@ class _LoginPageState extends State<LoginPage> {
     final AuthProvider auth = context.watch<AuthProvider>();
 
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          // ── Hero header ──────────────────────────────────────────────
-          _HeroHeader(dark: dark, cs: cs, theme: theme),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            // ── Hero header ──────────────────────────────────────────────
+            _HeroHeader(dark: dark, cs: cs, theme: theme),
 
-          // ── Form panel ───────────────────────────────────────────────
-          Expanded(
-            child: SingleChildScrollView(
+            // ── Form panel ───────────────────────────────────────────────
+            Padding(
               padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
               child: Center(
                 child: ConstrainedBox(
@@ -245,8 +245,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

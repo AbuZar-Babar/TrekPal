@@ -227,7 +227,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                               child: Container(
                                 margin: const EdgeInsets.only(bottom: 12),
                                 padding: const EdgeInsets.all(14),
-                                constraints: const BoxConstraints(maxWidth: 320),
+                                constraints: BoxConstraints(
+                                  maxWidth: MediaQuery.of(context).size.width * 0.75,
+                                ),
                                 decoration: BoxDecoration(
                                   color: isMine
                                       ? colorScheme.primary

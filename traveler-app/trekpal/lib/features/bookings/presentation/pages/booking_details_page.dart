@@ -11,6 +11,8 @@ import '../../../chat/presentation/pages/chat_room_page.dart';
 import '../../../reviews/domain/entities/review_entities.dart';
 import '../../../reviews/presentation/pages/review_form_page.dart';
 import '../../../reviews/presentation/providers/reviews_provider.dart';
+import '../../../hotels/presentation/providers/hotels_provider.dart';
+import '../../../transport/presentation/providers/transport_provider.dart';
 import '../../domain/entities/booking_entities.dart';
 import '../providers/bookings_provider.dart';
 
@@ -34,6 +36,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     super.initState();
     final BookingsProvider bookingsProvider = context.read<BookingsProvider>();
     final ReviewsProvider reviewsProvider = context.read<ReviewsProvider>();
+    final HotelsProvider hotelsProvider = context.read<HotelsProvider>();
+    final TransportProvider transportProvider = context.read<TransportProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         await bookingsProvider.fetchBookingById(
@@ -45,6 +49,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         await reviewsProvider.loadReviewForBooking(
           widget.bookingId,
         );
+      } catch (_) {}
+      // Load hotels & vehicles for lookup
+      try {
+        await hotelsProvider.fetchHotels().catchError((_) {});
+      } catch (_) {}
+      try {
+        await transportProvider.fetchVehicles().catchError((_) {});
       } catch (_) {}
     });
   }
@@ -143,6 +154,19 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               reviewsProvider.reviewForBooking(widget.bookingId);
           final bool isCompleted = booking.status == 'COMPLETED';
 
+          final HotelsProvider hotelsProvider = context.watch<HotelsProvider>();
+          final TransportProvider transportProvider = context.watch<TransportProvider>();
+
+          final matchingHotels = hotelsProvider.hotels.where((h) => h.id == booking.hotelId).toList();
+          final String hotelName = matchingHotels.isNotEmpty
+              ? matchingHotels.first.name
+              : (booking.hotelId != null ? 'Fetching hotel...' : 'Not included');
+
+          final matchingVehicles = transportProvider.vehicles.where((v) => v.id == booking.vehicleId).toList();
+          final String vehicleName = matchingVehicles.isNotEmpty
+              ? '${matchingVehicles.first.make} ${matchingVehicles.first.model}'
+              : (booking.vehicleId != null ? 'Fetching vehicle...' : 'Not included');
+
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: <Widget>[
@@ -223,6 +247,24 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     label: 'Booking ID',
                     value: booking.id,
                   ),
+                  if (booking.hotelId != null) ...[
+                    const SizedBox(height: 12),
+                    _detailCard(
+                      context,
+                      icon: Icons.hotel_outlined,
+                      label: 'Hotel Booked',
+                      value: hotelName,
+                    ),
+                  ],
+                  if (booking.vehicleId != null) ...[
+                    const SizedBox(height: 12),
+                    _detailCard(
+                      context,
+                      icon: Icons.directions_car_outlined,
+                      label: 'Vehicle Used',
+                      value: vehicleName,
+                    ),
+                  ],
                 ],
               ),
               if (booking.packageParticipants.isNotEmpty) ...<Widget>[
@@ -245,13 +287,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 fontWeight: FontWeight.bold,
               )),
               const SizedBox(height: 12),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.35,
+              Column(
                 children: <Widget>[
                   if (canCancelStatus)
                     _ActionCard(
@@ -447,6 +483,7 @@ class _ActionCard extends StatelessWidget {
     final Color iconFgCol = baseColor;
 
     return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
@@ -461,13 +498,11 @@ class _ActionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
               children: <Widget>[
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: iconBgCol,
                     shape: BoxShape.circle,
@@ -475,28 +510,37 @@ class _ActionCard extends StatelessWidget {
                   child: Icon(
                     icon,
                     color: iconFgCol,
-                    size: 20,
+                    size: 22,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  label,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: dark ? Colors.white : colorScheme.onSurface,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        label,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: dark ? Colors.white : colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: dark ? Colors.white60 : colorScheme.onSurfaceVariant,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: dark ? Colors.white60 : colorScheme.onSurfaceVariant,
-                    fontSize: 11,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: dark ? Colors.white30 : Colors.black26,
+                  size: 16,
                 ),
               ],
             ),

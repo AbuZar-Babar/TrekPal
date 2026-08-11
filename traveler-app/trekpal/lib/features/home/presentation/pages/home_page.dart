@@ -192,21 +192,6 @@ class _AccountPageState extends State<AccountPage> {
                   const SizedBox(height: 16),
                 ],
 
-                // ── Quick actions ─────────────────────────────
-                _ActionTile(
-                  icon: Icons.forum_outlined,
-                  title: 'Chat',
-                  subtitle: 'Joined offers',
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                        builder: (_) => const ChatListPage()),
-                  ),
-                  cs: cs,
-                  theme: theme,
-                  dark: dark,
-                ),
-                const SizedBox(height: 16),
-
                 // ── Profile info ──────────────────────────────
                 _SectionCard(
                   title: 'Profile',
@@ -539,57 +524,6 @@ class _KycBanner extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Action tile ───────────────────────────────────────────────────────────────
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    required this.cs,
-    required this.theme,
-    required this.dark,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-  final ColorScheme cs;
-  final ThemeData theme;
-  final bool dark;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: cs.surfaceContainerHighest.withValues(alpha: dark ? 0.32 : 0.5),
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Icon(icon, color: cs.primary, size: 22),
-              const SizedBox(height: 12),
-              Text(title, style: theme.textTheme.titleSmall),
-              const SizedBox(height: 3),
-              Text(
-                subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

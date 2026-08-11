@@ -66,11 +66,28 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
       );
 
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Thank you for your review!')),
+      final bool dark = Theme.of(context).brightness == Brightness.dark;
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            backgroundColor: dark ? AppColors.paperRaised : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text('Review Completed'),
+            content: const Text('Thank you for your feedback!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext); // pop dialog
+                  Navigator.of(context).pop(true); // pop ReviewFormPage
+                },
+                child: Text('OK', style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          );
+        },
       );
-      Navigator.of(context).pop(true); // pop with success
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

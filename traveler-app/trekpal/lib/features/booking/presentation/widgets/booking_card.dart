@@ -16,6 +16,9 @@ class BookingCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width - 80,
+      ),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(
           alpha: theme.brightness == Brightness.dark ? 0.36 : 0.54,
@@ -27,7 +30,13 @@ class BookingCard extends StatelessWidget {
         children: <Widget>[
           Icon(icon, size: 16, color: colorScheme.primary),
           const SizedBox(width: 8),
-          Text(label, style: theme.textTheme.bodySmall),
+          Flexible(
+            child: Text(
+              label,
+              style: theme.textTheme.bodySmall,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
