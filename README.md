@@ -149,3 +149,4 @@ TrekPal uses Prisma ORM to interact with the database. You can manage setup usin
 For in-depth analysis and dependency maps:
 1. Open `graphify-out/dashboard.html` in any web browser.
 2. Explore the interactive **Global Ecosystem Graph** mapping routes, real-time websockets events, and Prisma schema links across the codebases.
+ by AbuZar 
